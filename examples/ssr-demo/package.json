@@ -1,0 +1,26 @@
+{
+  "name": "ssr-demo",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx server.ts",
+    "build:client": "vite build --outDir dist/client --ssrManifest",
+    "build:server": "vite build --outDir dist/server --ssr src/entry-server.tsx",
+    "build": "pnpm build:client && pnpm build:server",
+    "preview": "NODE_ENV=production tsx server.ts"
+  },
+  "dependencies": {
+    "@tanstack/dom-vite": "workspace:*",
+    "@tanstack/react": "workspace:*",
+    "@tanstack/react-dom": "workspace:*",
+    "@tanstack/react-dom-server": "workspace:*"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.59.1",
+    "@types/node": "^22.10.2",
+    "jsdom": "^25.0.1",
+    "tsx": "^4.19.2",
+    "vite": "^5.4.11"
+  }
+}

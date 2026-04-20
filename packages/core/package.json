@@ -1,0 +1,27 @@
+{
+  "name": "@tanstack/dom-core",
+  "version": "0.1.0-alpha.3",
+  "description": "VDOM types and diff algorithm for tanstack-dom",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "echo done-by-root-build"
+  },
+  "publishConfig": {
+    "access": "public",
+    "tag": "next"
+  }
+}

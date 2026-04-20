@@ -1,0 +1,12 @@
+{
+  "name": "dom-jsx-playground",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Original direct-to-DOM JSX runtime experiment, preserved for reference",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 3000",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  }
+}

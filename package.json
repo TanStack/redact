@@ -1,0 +1,22 @@
+{
+  "name": "tanstack-dom",
+  "private": true,
+  "version": "0.0.0",
+  "description": "A minimal React-compatible runtime for TanStack Start apps",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "dev": "pnpm -r --parallel --filter='./packages/*' run dev",
+    "test": "pnpm --filter tests test",
+    "test:types": "tsc --noEmit",
+    "size": "node scripts/size.mjs",
+    "example:playground": "pnpm --filter dom-jsx-playground dev"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.0",
+    "typescript": "~5.9.3",
+    "vite": "^5.4.11",
+    "vitest": "^2.1.8"
+  },
+  "packageManager": "pnpm@9.15.0"
+}

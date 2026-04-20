@@ -1,0 +1,38 @@
+{
+  "name": "@tanstack/react",
+  "version": "0.1.0-alpha.3",
+  "description": "Drop-in 'react' replacement for TanStack Start apps",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./dist/index.js"
+    },
+    "./jsx-runtime": {
+      "types": "./src/jsx-runtime.ts",
+      "import": "./dist/jsx-runtime.js"
+    },
+    "./jsx-dev-runtime": {
+      "types": "./src/jsx-runtime.ts",
+      "import": "./dist/jsx-runtime.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "sideEffects": false,
+  "dependencies": {
+    "@tanstack/dom-core": "0.1.0-alpha.3"
+  },
+  "scripts": {
+    "build": "node ../../scripts/build.mjs"
+  },
+  "publishConfig": {
+    "access": "public",
+    "tag": "next"
+  }
+}

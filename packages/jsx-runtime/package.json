@@ -1,0 +1,28 @@
+{
+  "name": "@tanstack/jsx-runtime",
+  "version": "0.0.0",
+  "description": "JSX runtime (classic + automatic) for tanstack-dom",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "dependencies": {
+    "@tanstack/dom-core": "workspace:*"
+  },
+  "scripts": {
+    "build": "echo TODO",
+    "dev": "echo TODO",
+    "size": "echo TODO"
+  },
+  "private": true
+}

@@ -1,0 +1,26 @@
+{
+  "name": "tests",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@tanstack/dom-core": "workspace:*",
+    "@tanstack/react": "workspace:*",
+    "@tanstack/react-dom": "workspace:*",
+    "@tanstack/react-dom-server": "workspace:*",
+    "@tanstack/jsx-runtime": "workspace:*",
+    "@tanstack/scheduler": "workspace:*",
+    "@tanstack/dom-hydration-runtime": "workspace:*"
+  },
+  "devDependencies": {
+    "vitest": "^2.1.8",
+    "@vitest/browser": "^2.1.8",
+    "jsdom": "^25.0.1",
+    "preact": "link:/Users/tannerlinsley/GitHub/preact",
+    "preact-render-to-string": "^6.5.0"
+  }
+}
