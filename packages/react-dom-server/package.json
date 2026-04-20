@@ -1,6 +1,6 @@
 {
   "name": "@tanstack/react-dom-server",
-  "version": "0.1.0-alpha.3",
+  "version": "0.1.0-alpha.4",
   "description": "Drop-in 'react-dom/server' replacement for TanStack Start apps",
   "type": "module",
   "main": "./dist/index.js",
