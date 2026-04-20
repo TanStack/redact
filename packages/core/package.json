@@ -1,7 +1,7 @@
 {
   "name": "@tanstack/dom-core",
   "version": "0.1.0-alpha.3",
-  "description": "VDOM types and diff algorithm for tanstack-dom",
+  "description": "VDOM types and diff algorithm for tanstack-react",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",

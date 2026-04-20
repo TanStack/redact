@@ -1,4 +1,4 @@
-# tanstack-dom
+# tanstack-react
 
 A minimal, API-compatible React drop-in replacement targeting TanStack Start apps.
 

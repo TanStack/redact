@@ -1,5 +1,5 @@
 {
-  "name": "tanstack-dom",
+  "name": "tanstack-react",
   "private": true,
   "version": "0.0.0",
   "description": "A minimal React-compatible runtime for TanStack Start apps",

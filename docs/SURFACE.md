@@ -209,7 +209,7 @@ packages/
 ```
 
 Each exposes the exact package name React uses via `package.json` `name` field so bundler aliases map cleanly:
-- `tanstack-dom` → alias plan for consumers
+- `tanstack-react` → alias plan for consumers
 - Individual subpackages use `name: "react"` etc. when installed as replacements (or we publish under a namespace and consumers configure aliases).
 
 ---

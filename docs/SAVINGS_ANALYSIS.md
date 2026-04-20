@@ -4,7 +4,7 @@ Numbers from `scripts/size-react-real.mjs` (esbuild: bundle + minify + `NODE_ENV
 
 ## Per-entry comparison vs React 19.2.3
 
-| Entry | React 19 gzip | tanstack-dom gzip | Ratio | Savings |
+| Entry | React 19 gzip | tanstack-react gzip | Ratio | Savings |
 |---|---:|---:|---:|---:|
 | `react` | 3.3 KB | 2.1 KB | 64% | −1.2 KB |
 | `react/jsx-runtime` | 0.7 KB | 0.2 KB | 29% | −0.5 KB |

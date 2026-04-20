@@ -1,7 +1,7 @@
 {
   "name": "@tanstack/dom-vite",
   "version": "0.1.0-alpha.3",
-  "description": "Vite plugin — installs tanstack-dom in place of react/react-dom.",
+  "description": "Vite plugin — installs tanstack-react in place of react/react-dom.",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",

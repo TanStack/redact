@@ -10,7 +10,7 @@ test('playground renders, no page errors, interactivity works', async ({ page })
   })
 
   await page.goto('/')
-  await expect(page.locator('h1', { hasText: 'tanstack-dom playground' })).toBeVisible()
+  await expect(page.locator('h1', { hasText: 'tanstack-react playground' })).toBeVisible()
 
   // Streaming boundaries resolve
   await expect(page.locator('p', { hasText: 'Hello from a 300 ms' })).toBeVisible({ timeout: 4000 })

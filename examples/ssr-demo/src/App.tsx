@@ -14,12 +14,12 @@ export default function App() {
     <html>
       <head>
         <meta charset="utf-8" />
-        <title>tanstack-dom · playground</title>
+        <title>tanstack-react · playground</title>
         <style>{BASE_CSS}</style>
       </head>
       <body>
         <header>
-          <h1>tanstack-dom playground</h1>
+          <h1>tanstack-react playground</h1>
           <p class="sub">
             A React-compatible shim in ~8.9 KB gzip. Each section exercises a
             feature or surfaces a known shortcoming. Server-streams where
@@ -66,7 +66,7 @@ export default function App() {
         </main>
 
         <footer>
-          <a href="https://github.com/tanstack/tanstack-dom">tanstack-dom</a>
+          <a href="https://github.com/tanstack/tanstack-react">tanstack-react</a>
           {' · '}
           <span>
             gray <code>watch</code> badges mark known divergences from React.

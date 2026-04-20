@@ -69,7 +69,7 @@ export * from '@tanstack/react-dom/client'
 `
 
 const { total, totalIn, gz, rows } = await analyzeByInput(entry)
-console.log(`\n=== tanstack-dom client bundle composition ===`)
+console.log(`\n=== tanstack-react client bundle composition ===`)
 console.log(`Final minified: ${total} B, gzip: ${gz} B\n`)
 console.log(
   `  ${'File'.padEnd(55)}  ${'min B'.padStart(8)}  ${'% total'.padStart(8)}`,

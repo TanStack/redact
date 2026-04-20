@@ -153,7 +153,7 @@ export function tanstackDom(options: TanStackDomOptions = {}): any {
   }
 
   return {
-    name: 'tanstack-dom',
+    name: 'tanstack-react',
     enforce: 'pre',
 
     config() {
