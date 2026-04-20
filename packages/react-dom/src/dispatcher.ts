@@ -86,17 +86,27 @@ export function makeDispatcher() {
       const fiber = getCurrentFiber()
       const prevDeps = hook.deps
       if (prevDeps !== undefined && depsEqual(prevDeps, deps)) return
-      // Cleanup previous
-      if (hook.cleanup) {
-        try {
-          hook.cleanup()
-        } catch {}
-        hook.cleanup = null
-      }
       hook.deps = deps
       const effect: Effect = {
         tag: 'effect',
         create: () => {
+          // Run the prior cleanup INSIDE the effect run, not during the
+          // dispatch/render phase. If render A → B → C all happen back-to-
+          // back before the passive microtask drains, dispatch-time cleanup
+          // only fires once (between A→B) and effects B + C both run fresh,
+          // leaving two side-effects (e.g. two plot SVGs) in the DOM. Doing
+          // it here, at effect-run time, means every new create first tears
+          // down whatever cleanup is currently live on the hook.
+          if (hook.cleanup) {
+            try { hook.cleanup() } catch {}
+            // The prior cleanup was also pushed onto fiber.cleanups; remove
+            // it so unmount doesn't double-call it.
+            if (fiber.cleanups) {
+              const i = fiber.cleanups.indexOf(hook.cleanup)
+              if (i >= 0) fiber.cleanups.splice(i, 1)
+            }
+            hook.cleanup = null
+          }
           const c = create()
           hook.cleanup = typeof c === 'function' ? c : null
           return hook.cleanup
@@ -112,16 +122,20 @@ export function makeDispatcher() {
       const fiber = getCurrentFiber()
       const prevDeps = hook.deps
       if (prevDeps !== undefined && depsEqual(prevDeps, deps)) return
-      if (hook.cleanup) {
-        try {
-          hook.cleanup()
-        } catch {}
-        hook.cleanup = null
-      }
       hook.deps = deps
       const effect: Effect = {
         tag: 'layout',
         create: () => {
+          // Mirror useEffect: tear down the prior cleanup at run time so
+          // coalesced renders don't leak side-effects.
+          if (hook.cleanup) {
+            try { hook.cleanup() } catch {}
+            if (fiber.cleanups) {
+              const i = fiber.cleanups.indexOf(hook.cleanup)
+              if (i >= 0) fiber.cleanups.splice(i, 1)
+            }
+            hook.cleanup = null
+          }
           const c = create()
           hook.cleanup = typeof c === 'function' ? c : null
           return hook.cleanup
