@@ -45,9 +45,21 @@ export async function streamHtml(
   try {
     const boundaries: SuspendedBoundary[] = []
 
+    // Buffer shell + bootstrap into a string[] and flush as a single emit.
+    // Per-emit overhead in renderToReadableStream is TextEncoder.encode +
+    // controller.enqueue — each walkHost normally fires 3+ emits (opening
+    // tag, per-attribute, closing bracket), which for a ~30-component tree
+    // is ~100 stream-controller round-trips. Batching collapses those into
+    // one encode and one enqueue per shell — measured ~2-4% of total SSR
+    // time on CPU profiles.
+    const shellChunks: string[] = []
+    const bufferedEmit: Emit = (chunk) => {
+      shellChunks.push(chunk)
+    }
+
     // 1. Render the shell
     walk(children, {
-      emit,
+      emit: bufferedEmit,
       onSuspend: (b) => boundaries.push(b),
       nextBoundaryId: () => state.nextId++,
     })
@@ -62,14 +74,16 @@ export async function streamHtml(
       (options.bootstrapScripts?.length ?? 0) > 0 ||
       (options.bootstrapModules?.length ?? 0) > 0
     if (boundaries.length > 0 || hasBootstrap) {
-      emit(`<script${nonce ? ` nonce="${nonce}"` : ''}>${BOUNDARY_REVEAL_RUNTIME}</script>`)
+      shellChunks.push(`<script${nonce ? ` nonce="${nonce}"` : ''}>${BOUNDARY_REVEAL_RUNTIME}</script>`)
       for (const s of options.bootstrapScripts ?? []) {
-        emit(bootstrapTag(s, 'script', nonce))
+        shellChunks.push(bootstrapTag(s, 'script', nonce))
       }
       for (const m of options.bootstrapModules ?? []) {
-        emit(bootstrapTag(m, 'module', nonce))
+        shellChunks.push(bootstrapTag(m, 'module', nonce))
       }
     }
+
+    if (shellChunks.length) emit(shellChunks.join(''))
 
     // 3. Stream suspended boundaries as they resolve
     for (const b of boundaries) streamBoundary(b, emit, options, state)
