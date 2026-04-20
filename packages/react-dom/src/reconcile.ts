@@ -734,10 +734,26 @@ function renderFunction(fiber: Fiber, domParent: Node, anchor: Node | null): voi
           ...(fiber.memoizedState ?? {}),
           _pendingHydration: true,
         }
-        e.then(
-          () => scheduleUpdate(fiber),
-          () => scheduleUpdate(fiber),
-        )
+        // Mirror renderLazy's guard: mark the nearest Suspense ancestor as
+        // awaiting hydration-resume, so any re-render of that Suspense (e.g.
+        // rehydrateBoundary fired by $RC, or an unrelated state update from a
+        // sibling) doesn't re-enter `tryChildren`, re-throw, and flip Suspense
+        // into its suspended+pending path — which would unmount our deferred
+        // subtree and remount a fallback on top of the SSR content. By
+        // pinning the Suspense to a "hydration-suspended" no-op until our
+        // resume fires, the deferred re-render owns the adoption pass.
+        let sus: Fiber | null = fiber.parent
+        while (sus && sus.tag !== FiberTag.Suspense) sus = sus.parent
+        if (sus && sus.memoizedState) {
+          ;(sus.memoizedState as any)._awaitingLazyHydration = true
+        }
+        const clearAwait = () => {
+          if (sus && sus.memoizedState) {
+            ;(sus.memoizedState as any)._awaitingLazyHydration = false
+          }
+          scheduleUpdate(fiber)
+        }
+        e.then(clearAwait, clearAwait)
         deferredForHydration = true
       } else {
         handleSuspended(fiber, e)
