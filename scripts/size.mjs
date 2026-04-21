@@ -62,6 +62,9 @@ for (const entry of entries) {
     treeShaking: true,
     write: false,
     alias,
+    // Consumers build with NODE_ENV=production; mirror here so `if (process.env.NODE_ENV !== 'production')`
+    // dev-only branches get DCE'd the same way in our size numbers as in shipped bundles.
+    define: { 'process.env.NODE_ENV': '"production"' },
     logLevel: 'warning',
   })
   const bytes = result.outputFiles[0].contents

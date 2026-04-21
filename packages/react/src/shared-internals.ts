@@ -49,6 +49,16 @@ export const ReactSharedInternals: SharedInternals = {
 
 export function getDispatcher(): Dispatcher {
   const d = ReactSharedInternals.H
-  if (!d) throw new Error('Hooks can only be called inside a function component.')
+  if (!d) {
+    if (process.env.NODE_ENV !== 'production') {
+      throw new Error(
+        'Hooks can only be called inside a function component. ' +
+          'If this fires during SSR/RSC, the most common cause is a component that uses client-only hooks ' +
+          '(useState, useContext, useRouter, etc.) being rendered in the RSC server environment without a ' +
+          '"use client" directive at the top of its file.',
+      )
+    }
+    throw new Error('Hooks can only be called inside a function component.')
+  }
   return d
 }
