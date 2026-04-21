@@ -528,13 +528,20 @@ function placeChildrenInOrder(parent: Fiber, domParent: Node, anchor: Node | nul
     if (inOrder) return
   }
 
-  // Forward-iterate and only move doms whose .nextSibling already points to
-  // the correct next target (doms[i+1] or the trailing anchor). Forward order
-  // minimizes unnecessary moves when the disturbance is a newly inserted
-  // leading sibling: moving it to the front leaves the rest untouched. A
-  // reverse pass would have to re-anchor every stable sibling after the first
-  // move, cancelling their CSS transitions (observed: drawer slide animation).
-  for (let i = 0; i < doms.length; i++) {
+  // Reverse-iterate, anchoring each node before the one that should follow it.
+  // This works because by the time we're placing doms[i], doms[i+1] is already
+  // in its final slot. Forward iteration is buggy: insertBefore(doms[i],
+  // doms[i+1]) pulls doms[i] forward past any nodes that SHOULD move behind
+  // it, leaving those nodes mis-anchored (app-starter Analyze/Lucky swap, npm
+  // stats library dropdown reorder — both reported by users).
+  //
+  // Concrete example: start=[A, R, L], target=[A, L, R]. Forward pass gives
+  // [L, A, R] (wrong). Reverse pass moves R to end, then L and A are already
+  // correct — 1 move, matches target.
+  //
+  // Skip nodes already in their target position so CSS transitions on stable
+  // siblings aren't cancelled (e.g. drawer slide animation).
+  for (let i = doms.length - 1; i >= 0; i--) {
     const d = doms[i]!
     const targetNext: Node | null = i + 1 < doms.length ? doms[i + 1]! : anchor
     if (d.parentNode !== domParent || d.nextSibling !== targetNext) {
