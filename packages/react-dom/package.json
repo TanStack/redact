@@ -1,6 +1,6 @@
 {
   "name": "@tanstack/react-dom",
-  "version": "0.1.0-alpha.5",
+  "version": "0.1.0-alpha.7",
   "description": "Drop-in 'react-dom' replacement for TanStack Start apps",
   "type": "module",
   "main": "./dist/index.js",
@@ -26,8 +26,8 @@
   ],
   "sideEffects": false,
   "dependencies": {
-    "@tanstack/dom-core": "workspace:*",
-    "@tanstack/react": "workspace:*"
+    "@tanstack/dom-core": "0.1.0-alpha.7",
+    "@tanstack/react": "0.1.0-alpha.7"
   },
   "scripts": {
     "build": "echo done-by-root-build"

@@ -1,6 +1,6 @@
 {
   "name": "@tanstack/scheduler",
-  "version": "0.1.0-alpha.3",
+  "version": "0.1.0-alpha.7",
   "description": "Drop-in 'scheduler' replacement — microtask-based, no time slicing",
   "type": "module",
   "main": "./dist/index.js",
