@@ -1,6 +1,6 @@
 {
   "name": "@tanstack/dom-vite",
-  "version": "0.1.0-alpha.7",
+  "version": "0.1.0-alpha.8",
   "description": "Vite plugin — installs tanstack-react in place of react/react-dom.",
   "type": "module",
   "main": "./dist/index.js",
@@ -18,11 +18,11 @@
   ],
   "sideEffects": false,
   "dependencies": {
-    "@tanstack/dom-core": "0.1.0-alpha.7",
-    "@tanstack/scheduler": "0.1.0-alpha.7",
-    "@tanstack/react": "0.1.0-alpha.7",
-    "@tanstack/react-dom": "0.1.0-alpha.7",
-    "@tanstack/react-dom-server": "0.1.0-alpha.7"
+    "@tanstack/dom-core": "0.1.0-alpha.8",
+    "@tanstack/scheduler": "0.1.0-alpha.8",
+    "@tanstack/react": "0.1.0-alpha.8",
+    "@tanstack/react-dom": "0.1.0-alpha.8",
+    "@tanstack/react-dom-server": "0.1.0-alpha.8"
   },
   "peerDependencies": {
     "vite": ">=5"
