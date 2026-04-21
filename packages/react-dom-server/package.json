@@ -18,8 +18,8 @@
   ],
   "sideEffects": false,
   "dependencies": {
-    "@tanstack/dom-core": "0.1.0-alpha.3",
-    "@tanstack/react": "0.1.0-alpha.3"
+    "@tanstack/dom-core": "workspace:*",
+    "@tanstack/react": "workspace:*"
   },
   "scripts": {
     "build": "echo done-by-root-build"

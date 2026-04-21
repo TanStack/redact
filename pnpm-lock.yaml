@@ -59,20 +59,20 @@ importers:
   packages/dom-vite:
     dependencies:
       '@tanstack/dom-core':
-        specifier: 0.1.0-alpha.3
-        version: 0.1.0-alpha.3
+        specifier: workspace:*
+        version: link:../core
       '@tanstack/react':
-        specifier: 0.1.0-alpha.3
-        version: 0.1.0-alpha.3
+        specifier: workspace:*
+        version: link:../react
       '@tanstack/react-dom':
-        specifier: 0.1.0-alpha.3
-        version: 0.1.0-alpha.3
+        specifier: workspace:*
+        version: link:../react-dom
       '@tanstack/react-dom-server':
-        specifier: 0.1.0-alpha.3
-        version: 0.1.0-alpha.3
+        specifier: workspace:*
+        version: link:../react-dom-server
       '@tanstack/scheduler':
-        specifier: 0.1.0-alpha.3
-        version: 0.1.0-alpha.3
+        specifier: workspace:*
+        version: link:../scheduler
       vite:
         specifier: '>=5'
         version: 5.4.21(@types/node@25.6.0)(lightningcss@1.30.2)
@@ -88,26 +88,26 @@ importers:
   packages/react:
     dependencies:
       '@tanstack/dom-core':
-        specifier: 0.1.0-alpha.3
-        version: 0.1.0-alpha.3
+        specifier: workspace:*
+        version: link:../core
 
   packages/react-dom:
     dependencies:
       '@tanstack/dom-core':
-        specifier: 0.1.0-alpha.3
-        version: 0.1.0-alpha.3
+        specifier: workspace:*
+        version: link:../core
       '@tanstack/react':
-        specifier: 0.1.0-alpha.3
-        version: 0.1.0-alpha.3
+        specifier: workspace:*
+        version: link:../react
 
   packages/react-dom-server:
     dependencies:
       '@tanstack/dom-core':
-        specifier: 0.1.0-alpha.3
-        version: 0.1.0-alpha.3
+        specifier: workspace:*
+        version: link:../core
       '@tanstack/react':
-        specifier: 0.1.0-alpha.3
-        version: 0.1.0-alpha.3
+        specifier: workspace:*
+        version: link:../react
 
   packages/scheduler: {}
 
@@ -143,10 +143,10 @@ importers:
         version: 25.0.1
       preact:
         specifier: link:/Users/tannerlinsley/GitHub/preact
-        version: link:../../preact
+        version: link:../../../../../preact
       preact-render-to-string:
         specifier: ^6.5.0
-        version: 6.6.7(preact@preact)
+        version: 6.6.7(preact@..+..+..+preact)
       vitest:
         specifier: ^2.1.8
         version: 2.1.9(@types/node@25.6.0)(@vitest/browser@2.1.9)(jsdom@25.0.1)(lightningcss@1.30.2)(msw@2.13.4(@types/node@25.6.0)(typescript@5.9.3))
@@ -832,21 +832,6 @@ packages:
     resolution: {integrity: sha512-lWMnixq/QzxyhTV6NjQJ4SFo1J6PvOX8vUx5Wb4bBPsEb+8xZ89Bz6kOXpfXj9ak9AHTQVQzlgzBEc1SyM27xQ==}
     cpu: [x64]
     os: [win32]
-
-  '@tanstack/dom-core@0.1.0-alpha.3':
-    resolution: {integrity: sha512-H28e7bhNySHyRloQiGSP+N6/XZzfhvG39Y8/j4wZ2LYWCVVAO1HLmpvAxPGR7qlGt1Nb1wa6VJJkenxr3fiZRA==}
-
-  '@tanstack/react-dom-server@0.1.0-alpha.3':
-    resolution: {integrity: sha512-2/UYgA3jCEj8mhMUhilglT/diYgnedbioNj2ljlnGhGQOhL32Z0UwxEEq4ZBLoAZxBGXQwKRDcoMakiVGl4MJg==}
-
-  '@tanstack/react-dom@0.1.0-alpha.3':
-    resolution: {integrity: sha512-ug/huPkkQ6klJ0BQSaogl6e/eqxbgCu9G9/o8bDr0KH3JlKJtA5feWJTjJpyjL6lAnh1M/ryqnZrosZadXr21Q==}
-
-  '@tanstack/react@0.1.0-alpha.3':
-    resolution: {integrity: sha512-CYjIS8nRfRo1h9iHlNIQs2ihdDDL1lKOGCkAqBKRDfmThqg47smLgQCFJ/oD9dkwiskY8fmtW9Ixw2lTzZL2PQ==}
-
-  '@tanstack/scheduler@0.1.0-alpha.3':
-    resolution: {integrity: sha512-RyETyBYefa1xVOEKj8WIRnoXisKL2yc8fG+u07PAiidvFuS5K4+PMgVVWnnaLy5jH98epxTxaoKoxJxQvnkfpw==}
 
   '@testing-library/dom@10.4.1':
     resolution: {integrity: sha512-o4PXJQidqJl82ckFaXUeoAW+XysPLauYI43Abki5hABd853iMhitooc6znOnczgbTYmEP6U6/y1ZyKAIsvMKGg==}
@@ -2017,24 +2002,6 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.60.1':
     optional: true
 
-  '@tanstack/dom-core@0.1.0-alpha.3': {}
-
-  '@tanstack/react-dom-server@0.1.0-alpha.3':
-    dependencies:
-      '@tanstack/dom-core': 0.1.0-alpha.3
-      '@tanstack/react': 0.1.0-alpha.3
-
-  '@tanstack/react-dom@0.1.0-alpha.3':
-    dependencies:
-      '@tanstack/dom-core': 0.1.0-alpha.3
-      '@tanstack/react': 0.1.0-alpha.3
-
-  '@tanstack/react@0.1.0-alpha.3':
-    dependencies:
-      '@tanstack/dom-core': 0.1.0-alpha.3
-
-  '@tanstack/scheduler@0.1.0-alpha.3': {}
-
   '@testing-library/dom@10.4.1':
     dependencies:
       '@babel/code-frame': 7.29.0
@@ -2590,9 +2557,9 @@ snapshots:
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
-  preact-render-to-string@6.6.7(preact@preact):
+  preact-render-to-string@6.6.7(preact@..+..+..+preact):
     dependencies:
-      preact: link:../preact
+      preact: link:../../../../preact
 
   pretty-format@27.5.1:
     dependencies:

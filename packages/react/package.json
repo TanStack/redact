@@ -26,7 +26,7 @@
   ],
   "sideEffects": false,
   "dependencies": {
-    "@tanstack/dom-core": "0.1.0-alpha.3"
+    "@tanstack/dom-core": "workspace:*"
   },
   "scripts": {
     "build": "node ../../scripts/build.mjs"

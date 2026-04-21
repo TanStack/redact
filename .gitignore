@@ -25,3 +25,6 @@ dist-ssr
 
 # Claude local scratch + worktrees (absolute paths, not portable)
 .claude/
+
+# Local tanstack.com test copy for shim iteration
+tanstack-com-test/
