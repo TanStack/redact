@@ -570,35 +570,30 @@ function collectChildren(parent: Fiber): Fiber[] {
 // Rendering per fiber tag
 // ---------------------------------------------------------------------------
 
+type RenderFn = (fiber: Fiber, domParent: Node, anchor: Node | null) => void
+// Indexed by FiberTag. Relies on function-declaration hoisting: the render*
+// functions below all use `function` keyword, so they're initialized before
+// module code runs.
+const RENDERERS: Array<RenderFn | undefined> = (() => {
+  const t: Array<RenderFn | undefined> = new Array(13)
+  t[FiberTag.Text] = renderText
+  t[FiberTag.Host] = renderHost
+  t[FiberTag.Function] = renderFunction
+  t[FiberTag.Class] = renderClass
+  t[FiberTag.Fragment] = renderFragment
+  t[FiberTag.Provider] = renderProvider
+  t[FiberTag.Consumer] = renderConsumer
+  t[FiberTag.ForwardRef] = renderForwardRef
+  t[FiberTag.Memo] = renderMemo
+  t[FiberTag.Lazy] = renderLazy
+  t[FiberTag.Suspense] = renderSuspense
+  t[FiberTag.Portal] = renderPortal
+  return t
+})()
+
 function renderFiber(fiber: Fiber, domParent: Node, anchor: Node | null): void {
-  switch (fiber.tag) {
-    case FiberTag.Text:
-      return renderText(fiber, domParent, anchor)
-    case FiberTag.Host:
-      return renderHost(fiber, domParent, anchor)
-    case FiberTag.Function:
-      return renderFunction(fiber, domParent, anchor)
-    case FiberTag.Class:
-      return renderClass(fiber, domParent, anchor)
-    case FiberTag.Fragment:
-      return renderFragment(fiber, domParent, anchor)
-    case FiberTag.Provider:
-      return renderProvider(fiber, domParent, anchor)
-    case FiberTag.Consumer:
-      return renderConsumer(fiber, domParent, anchor)
-    case FiberTag.ForwardRef:
-      return renderForwardRef(fiber, domParent, anchor)
-    case FiberTag.Memo:
-      return renderMemo(fiber, domParent, anchor)
-    case FiberTag.Lazy:
-      return renderLazy(fiber, domParent, anchor)
-    case FiberTag.Suspense:
-      return renderSuspense(fiber, domParent, anchor)
-    case FiberTag.Portal:
-      return renderPortal(fiber, domParent, anchor)
-    default:
-      return
-  }
+  const fn = RENDERERS[fiber.tag]
+  if (fn) fn(fiber, domParent, anchor)
 }
 
 function renderText(fiber: Fiber, domParent: Node, anchor: Node | null): void {
