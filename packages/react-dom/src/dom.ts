@@ -267,7 +267,15 @@ function setEventHandler(el: Element, name: string, next: any, prev: any): void 
       event: eventName,
       capture,
     }
-    entry.listener = (e: Event) => entry.current(e)
+    entry.listener = (e: Event) => {
+      // React hands handlers a SyntheticEvent that carries `.nativeEvent`.
+      // Many libraries check `event.nativeEvent.isComposing` (react-instantsearch)
+      // or `event.nativeEvent.shiftKey` (UI kits) — without the alias they throw
+      // on `undefined.foo`. Aliasing the native event to itself is the cheapest
+      // way to satisfy the shape without building a full synthetic layer.
+      if ((e as any).nativeEvent === undefined) (e as any).nativeEvent = e
+      entry.current(e)
+    }
     handlers[key] = entry
     el.addEventListener(eventName, entry.listener, capture)
     return
