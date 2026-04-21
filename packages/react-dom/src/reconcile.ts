@@ -635,8 +635,18 @@ function renderHost(fiber: Fiber, domParent: Node, anchor: Node | null): void {
     const hydrated = currentRoot?.hydrating ? adoptHostDom(fiber, fiber.parent!) : false
     if (!hydrated) {
       fiber.dom = createHostNode(type, isSvg)
+      // Two passes so form-control attributes (notably <input type>) are in
+      // place before event handlers attach. setEventHandler reads the
+      // element's runtime state to decide the DOM event name (e.g. onChange
+      // → `input` vs `change`); binding before `type` is applied would
+      // attach to the wrong event for checkbox/radio/file inputs.
       for (const k in props) {
         if (isSelect && (k === 'value' || k === 'defaultValue')) continue
+        if (isEventProp(k)) continue
+        setProp(fiber.dom as Element, k, props[k], undefined, isSvg)
+      }
+      for (const k in props) {
+        if (!isEventProp(k)) continue
         setProp(fiber.dom as Element, k, props[k], undefined, isSvg)
       }
       insertInto(domParent, fiber.dom, anchor)
@@ -647,8 +657,16 @@ function renderHost(fiber: Fiber, domParent: Node, anchor: Node | null): void {
     for (const k in prev) {
       if (!(k in props)) setProp(el, k, undefined, prev[k], isSvg)
     }
+    // Non-event props first for the same reason as above: a `type` change
+    // must land before we ask setEventHandler to resolve the DOM event for
+    // `onChange`.
     for (const k in props) {
       if (isSelect && (k === 'value' || k === 'defaultValue')) continue
+      if (isEventProp(k)) continue
+      if (prev[k] !== props[k]) setProp(el, k, props[k], prev[k], isSvg)
+    }
+    for (const k in props) {
+      if (!isEventProp(k)) continue
       if (prev[k] !== props[k]) setProp(el, k, props[k], prev[k], isSvg)
     }
     if (prev !== props) syncRefIfChanged(fiber, fiber.dom)
@@ -1518,6 +1536,15 @@ function runEffect(fiber: Fiber, effect: Effect, root: FiberRoot): void {
 // ---------------------------------------------------------------------------
 // Utilities
 // ---------------------------------------------------------------------------
+
+function isEventProp(name: string): boolean {
+  return (
+    name.length > 2 &&
+    name.charCodeAt(0) === 111 /* o */ &&
+    name.charCodeAt(1) === 110 /* n */ &&
+    name.charCodeAt(2) >= 65 /* 'A'-ish: any uppercase start (onClick, onChange, …) */
+  )
+}
 
 function shallowEqual(a: any, b: any): boolean {
   if (a === b) return true

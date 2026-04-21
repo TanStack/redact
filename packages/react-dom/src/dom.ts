@@ -243,33 +243,66 @@ function setEventHandler(el: Element, name: string, next: any, prev: any): void 
   if (next != null && typeof next !== 'function') next = null
 
   const capture = name.endsWith('Capture')
-  const eventName = normalizeEventName(name.slice(2, capture ? -7 : undefined))
+  const reactEventName = name.slice(2, capture ? -7 : undefined)
+  const eventName = domEventFor(reactEventName, el)
 
+  // Key by the React prop name (not DOM event name) so `onChange` and
+  // `onInput` on the same text input — which both dispatch from the native
+  // `input` event — can coexist without clobbering each other's handlers.
   const handlers = ((el as any).__handlers ||= Object.create(null))
-  const key = eventName + (capture ? '_c' : '_b')
+  const key = name
 
-  if (handlers[key] && !next) {
-    el.removeEventListener(eventName, handlers[key].listener, capture)
+  const existing = handlers[key]
+
+  if (existing && !next) {
+    el.removeEventListener(existing.event, existing.listener, existing.capture)
     handlers[key] = null
     return
   }
 
-  if (!handlers[key] && next) {
-    const entry = { current: next as Function, listener: null as any }
+  if (!existing && next) {
+    const entry = {
+      current: next as Function,
+      listener: null as any,
+      event: eventName,
+      capture,
+    }
     entry.listener = (e: Event) => entry.current(e)
     handlers[key] = entry
     el.addEventListener(eventName, entry.listener, capture)
     return
   }
 
-  if (handlers[key]) {
-    handlers[key].current = next
+  if (existing) {
+    // Re-bind if the effective DOM event changed (e.g. <input> whose `type`
+    // flipped from "text" to "checkbox" — onChange should now follow `change`
+    // instead of `input`). This is rare but keeps semantics correct.
+    if (existing.event !== eventName || existing.capture !== capture) {
+      el.removeEventListener(existing.event, existing.listener, existing.capture)
+      existing.event = eventName
+      existing.capture = capture
+      el.addEventListener(eventName, existing.listener, capture)
+    }
+    existing.current = next
   }
 }
 
-function normalizeEventName(name: string): string {
-  const lower = name.toLowerCase()
-  // React naming quirks → DOM
+function domEventFor(reactEventName: string, el: Element): string {
+  const lower = reactEventName.toLowerCase()
+  // React's `onChange` on text-like <input> and <textarea> maps to the
+  // native `input` event so handlers fire on every keystroke. On checkbox,
+  // radio, file inputs, and <select>, React's `onChange` maps to the
+  // native `change` event (which fires on click / option select).
+  if (lower === 'change') {
+    const tag = el.tagName
+    if (tag === 'TEXTAREA') return 'input'
+    if (tag === 'INPUT') {
+      const type = ((el as HTMLInputElement).type || 'text').toLowerCase()
+      if (type !== 'checkbox' && type !== 'radio' && type !== 'file') {
+        return 'input'
+      }
+    }
+  }
   if (lower === 'doubleclick') return 'dblclick'
   return lower
 }
