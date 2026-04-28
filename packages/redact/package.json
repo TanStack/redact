@@ -1,6 +1,6 @@
 {
   "name": "@tanstack/redact",
-  "version": "0.1.0-alpha.10",
+  "version": "0.0.1",
   "description": "React, redacted. A minimal React-API-compatible drop-in replacement.",
   "type": "module",
   "main": "./dist/react/index.js",
@@ -78,7 +78,6 @@
     "build": "echo done-by-root-build"
   },
   "publishConfig": {
-    "access": "public",
-    "tag": "next"
+    "access": "public"
   }
 }
