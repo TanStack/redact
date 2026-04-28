@@ -10,6 +10,7 @@
     "test": "pnpm --filter tests test",
     "test:types": "tsc --noEmit",
     "size": "node scripts/size.mjs",
+    "size:check": "node scripts/size-check.mjs",
     "example:playground": "pnpm --filter dom-jsx-playground dev"
   },
   "devDependencies": {

@@ -1,0 +1,83 @@
+{
+  "name": "@tanstack/redact",
+  "version": "0.0.1",
+  "description": "React, redacted. A minimal React-API-compatible drop-in replacement.",
+  "type": "module",
+  "main": "./dist/react/index.js",
+  "module": "./dist/react/index.js",
+  "types": "./dist/react/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/react/index.d.ts",
+      "import": "./dist/react/index.js"
+    },
+    "./jsx-runtime": {
+      "types": "./dist/react/jsx-runtime.d.ts",
+      "import": "./dist/react/jsx-runtime.js"
+    },
+    "./jsx-dev-runtime": {
+      "types": "./dist/react/jsx-runtime.d.ts",
+      "import": "./dist/react/jsx-runtime.js"
+    },
+    "./dom": {
+      "types": "./dist/dom/index.d.ts",
+      "import": "./dist/dom/index.js"
+    },
+    "./dom-client": {
+      "types": "./dist/dom/client.d.ts",
+      "import": "./dist/dom/client.js"
+    },
+    "./dom-test-utils": {
+      "types": "./dist/dom/test-utils.d.ts",
+      "import": "./dist/dom/test-utils.js"
+    },
+    "./server": {
+      "types": "./dist/server/index.d.ts",
+      "import": "./dist/server/index.js"
+    },
+    "./scheduler": {
+      "types": "./dist/scheduler/index.d.ts",
+      "import": "./dist/scheduler/index.js"
+    },
+    "./vite": {
+      "types": "./dist/vite/index.d.ts",
+      "import": "./dist/vite/index.js"
+    },
+    "./features/*": {
+      "types": "./dist/dom/features/*.d.ts",
+      "import": "./dist/dom/features/*.js"
+    },
+    "./_all": {
+      "types": "./dist/dom/_all.d.ts",
+      "import": "./dist/dom/_all.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "sideEffects": [
+    "./src/dom/features/**",
+    "./dist/dom/features/**",
+    "./src/dom/index.ts",
+    "./src/dom/client.ts",
+    "./src/dom/_all.ts",
+    "./dist/dom/index.js",
+    "./dist/dom/client.js",
+    "./dist/dom/_all.js"
+  ],
+  "peerDependencies": {
+    "vite": ">=5"
+  },
+  "peerDependenciesMeta": {
+    "vite": {
+      "optional": true
+    }
+  },
+  "scripts": {
+    "build": "echo done-by-root-build"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

@@ -1,123 +1,89 @@
 #!/usr/bin/env node
-// Build every @tanstack/* package to dist/ as ESM + .d.ts.
-// Consumers install these as normal npm packages.
+// Build the @tanstack/redact package to dist/.
+//
+// The package is laid out as one tree with internal subdirectories
+// (core, react, dom, server, scheduler, vite). Every TS module is emitted
+// as its own dist file, with relative imports preserved literally — that
+// keeps a single runtime instance of every module no matter which subpath
+// the consumer imports first, and preserves the import-graph boundaries
+// the `redact()` Vite plugin needs at consumer-build time to swap feature
+// `index.js` modules for their `stub.js` counterparts.
 import { build } from 'esbuild'
 import { execSync } from 'node:child_process'
-import { cpSync, mkdirSync, readFileSync, rmSync, writeFileSync, existsSync } from 'node:fs'
-import { resolve, dirname } from 'node:path'
+import {
+  cpSync,
+  mkdirSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+  existsSync,
+  readdirSync,
+  statSync,
+} from 'node:fs'
+import { resolve, dirname, relative, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = resolve(__dirname, '..')
+const pkgDir = resolve(root, 'packages/redact')
+const srcDir = resolve(pkgDir, 'src')
+const distDir = resolve(pkgDir, 'dist')
 
-// No aliases during build — rely on `external` to keep cross-package imports
-// as bare specifiers so consumers resolve them through their own package
-// resolution, ensuring ONE runtime instance of each @tanstack/* module.
+function listTsFiles(dir) {
+  const out = []
+  for (const name of readdirSync(dir)) {
+    const full = resolve(dir, name)
+    const st = statSync(full)
+    if (st.isDirectory()) {
+      out.push(...listTsFiles(full))
+    } else if (full.endsWith('.ts') && !full.endsWith('.d.ts')) {
+      out.push(full)
+    }
+  }
+  return out
+}
 
-const packages = [
-  {
-    name: '@tanstack/dom-core',
-    dir: 'packages/core',
-    entries: { 'index.js': 'src/index.ts' },
+// Each TS module emits its own dist file with all relative imports kept as
+// literal external imports in the output. This preserves boundaries the
+// `redact()` plugin needs to swap features/<name>/index.js → stub.js at
+// consumer-build time, and keeps single-instance state because each module
+// is emitted exactly once in dist/.
+const externalizeRelative = {
+  name: 'externalize-relative',
+  setup(b) {
+    b.onResolve({ filter: /^\.\.?\// }, (args) => {
+      if (args.kind === 'entry-point') return null
+      return { external: true, path: args.path }
+    })
   },
-  {
-    name: '@tanstack/scheduler',
-    dir: 'packages/scheduler',
-    entries: { 'index.js': 'src/index.ts' },
-  },
-  {
-    name: '@tanstack/react',
-    dir: 'packages/react',
-    entries: {
-      'index.js': 'src/index.ts',
-      'jsx-runtime.js': 'src/jsx-runtime.ts',
-    },
-  },
-  {
-    name: '@tanstack/react-dom',
-    dir: 'packages/react-dom',
-    // Build the internal union first, then thin re-export shims that import
-    // from it. Keeps a single copy of reconciler state across all entries.
-    entries: {
-      '_all.js': 'src/_all.ts',
-    },
-    postBuild: ({ distDir }) => {
-      // Emit tiny facades that re-export from _all.js
-      writeFileSync(
-        resolve(distDir, 'index.js'),
-        `export { flushSync, unstable_batchedUpdates, createPortal, preconnect, prefetchDNS, preload, preinit, preloadModule, preinitModule, version } from './_all.js'
-export * as default from './_all.js'
-`,
-      )
-      writeFileSync(
-        resolve(distDir, 'client.js'),
-        `export { createRoot, hydrateRoot } from './_all.js'\n`,
-      )
-      writeFileSync(
-        resolve(distDir, 'test-utils.js'),
-        `export { act } from './_all.js'\n`,
-      )
-    },
-  },
-  {
-    name: '@tanstack/react-dom-server',
-    dir: 'packages/react-dom-server',
-    entries: { 'index.js': 'src/index.ts' },
-  },
-  {
-    name: '@tanstack/dom-vite',
-    dir: 'packages/dom-vite',
-    entries: { 'index.js': 'src/index.ts' },
-    external: ['vite', 'node:*'],
-    platform: 'node',
-  },
-]
+}
 
-async function buildPackage(pkg) {
-  const pkgDir = resolve(root, pkg.dir)
-  const distDir = resolve(pkgDir, 'dist')
+async function buildPackage() {
   rmSync(distDir, { recursive: true, force: true })
   mkdirSync(distDir, { recursive: true })
 
-  // Keep cross-@tanstack imports EXTERNAL so consumers end up with a single
-  // copy of each package. If we inlined (`bundle: true` without externals),
-  // @tanstack/react-dom's dist would include its own ReactSharedInternals and
-  // hooks would break with "mismatching versions of React" when user code
-  // also imports @tanstack/react directly.
-  const externals = [
-    '@tanstack/react',
-    '@tanstack/react/jsx-runtime',
-    '@tanstack/react-dom',
-    '@tanstack/react-dom/client',
-    '@tanstack/react-dom/test-utils',
-    '@tanstack/react-dom-server',
-    '@tanstack/dom-core',
-    '@tanstack/scheduler',
-    ...(pkg.external ?? []),
-  ]
-  // Build all entries of a package together with splitting enabled so shared
-  // modules (e.g. react-dom's hydration.ts imported by both index and client)
-  // end up in one chunk — otherwise each entry gets its own copy and
-  // module-level state (CLAIMED WeakSet, caches) ends up duplicated at
-  // runtime, breaking cross-entry coordination.
-  const entryPoints = Object.entries(pkg.entries).map(([out, src]) => ({
-    in: resolve(pkgDir, src),
-    out: out.replace(/\.js$/, ''),
-  }))
-  await build({
-    entryPoints,
-    bundle: true,
-    format: 'esm',
-    platform: pkg.platform ?? 'browser',
-    target: 'es2022',
-    outdir: distDir,
-    external: externals,
-    sourcemap: true,
-    logLevel: 'warning',
-  })
+  const tsFiles = listTsFiles(srcDir)
+  console.log(`Building @tanstack/redact: ${tsFiles.length} entries...\n`)
 
-  if (pkg.postBuild) {
-    pkg.postBuild({ distDir })
+  for (const tsFile of tsFiles) {
+    const relPath = relative(srcDir, tsFile).replace(/\.ts$/, '')
+    // The vite plugin runs in Node — uses fs/path/url. Browser/SSR code
+    // never imports from `vite/`, so the `node:` builtins it uses are
+    // safe to leave external in that one entry.
+    const isVite = relPath.startsWith('vite' + sep) || relPath === 'vite'
+    await build({
+      entryPoints: [{ in: tsFile, out: relPath }],
+      bundle: true,
+      format: 'esm',
+      platform: isVite ? 'node' : 'browser',
+      target: 'es2022',
+      outdir: distDir,
+      external: isVite ? ['vite', 'node:*'] : [],
+      sourcemap: true,
+      splitting: false,
+      plugins: [externalizeRelative],
+      logLevel: 'warning',
+    })
   }
 
   // Generate .d.ts files. tsc --emitDeclarationOnly.
@@ -134,14 +100,7 @@ async function buildPackage(pkg) {
       outDir: './dist',
       rootDir: './src',
       jsx: 'react-jsx',
-      jsxImportSource: '@tanstack/react',
-      paths: {
-        '@tanstack/dom-core': [resolve(root, 'packages/core/src/index.ts')],
-        '@tanstack/react': [resolve(root, 'packages/react/src/index.ts')],
-        '@tanstack/react/jsx-runtime': [resolve(root, 'packages/react/src/jsx-runtime.ts')],
-        '@tanstack/react-dom': [resolve(root, 'packages/react-dom/src/index.ts')],
-        '@tanstack/react-dom/client': [resolve(root, 'packages/react-dom/src/client.ts')],
-      },
+      jsxImportSource: '@tanstack/redact',
     },
     include: [resolve(pkgDir, 'src/**/*')],
   }
@@ -155,11 +114,8 @@ async function buildPackage(pkg) {
     rmSync(tsconfigPath, { force: true })
   }
 
-  console.log(`  ✓ ${pkg.name}`)
+  console.log(`\n  ✓ @tanstack/redact`)
 }
 
-console.log('Building packages...\n')
-for (const pkg of packages) {
-  await buildPackage(pkg)
-}
+await buildPackage()
 console.log('\nDone.')

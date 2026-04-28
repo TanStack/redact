@@ -3,7 +3,7 @@
   "compilerOptions": {
     "types": ["node"],
     "jsx": "react-jsx",
-    "jsxImportSource": "@tanstack/react"
+    "jsxImportSource": "@tanstack/redact"
   },
   "include": ["src/**/*", "server.ts", "vite.config.ts"]
 }

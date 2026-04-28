@@ -8,13 +8,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@tanstack/dom-core": "workspace:*",
-    "@tanstack/react": "workspace:*",
-    "@tanstack/react-dom": "workspace:*",
-    "@tanstack/react-dom-server": "workspace:*",
-    "@tanstack/jsx-runtime": "workspace:*",
-    "@tanstack/scheduler": "workspace:*",
-    "@tanstack/dom-hydration-runtime": "workspace:*"
+    "@tanstack/redact": "workspace:*"
   },
   "devDependencies": {
     "vitest": "^2.1.8",

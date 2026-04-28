@@ -18,7 +18,7 @@
     "verbatimModuleSyntax": false,
     "resolveJsonModule": true,
     "jsx": "react-jsx",
-    "jsxImportSource": "@tanstack/react",
+    "jsxImportSource": "@tanstack/redact",
     "types": [],
     "composite": false
   },
