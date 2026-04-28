@@ -25,18 +25,9 @@ importers:
 
   examples/ssr-demo:
     dependencies:
-      '@tanstack/dom-vite':
+      '@tanstack/redact':
         specifier: workspace:*
-        version: link:../../packages/dom-vite
-      '@tanstack/react':
-        specifier: workspace:*
-        version: link:../../packages/react
-      '@tanstack/react-dom':
-        specifier: workspace:*
-        version: link:../../packages/react-dom
-      '@tanstack/react-dom-server':
-        specifier: workspace:*
-        version: link:../../packages/react-dom-server
+        version: link:../../packages/redact
     devDependencies:
       '@playwright/test':
         specifier: ^1.59.1
@@ -54,86 +45,17 @@ importers:
         specifier: ^5.4.11
         version: 5.4.21(@types/node@22.19.17)(lightningcss@1.30.2)
 
-  packages/core: {}
-
-  packages/dom-vite:
+  packages/redact:
     dependencies:
-      '@tanstack/dom-core':
-        specifier: workspace:*
-        version: link:../core
-      '@tanstack/react':
-        specifier: workspace:*
-        version: link:../react
-      '@tanstack/react-dom':
-        specifier: workspace:*
-        version: link:../react-dom
-      '@tanstack/react-dom-server':
-        specifier: workspace:*
-        version: link:../react-dom-server
-      '@tanstack/scheduler':
-        specifier: workspace:*
-        version: link:../scheduler
       vite:
         specifier: '>=5'
         version: 5.4.21(@types/node@25.6.0)(lightningcss@1.30.2)
 
-  packages/hydration-runtime: {}
-
-  packages/jsx-runtime:
-    dependencies:
-      '@tanstack/dom-core':
-        specifier: workspace:*
-        version: link:../core
-
-  packages/react:
-    dependencies:
-      '@tanstack/dom-core':
-        specifier: workspace:*
-        version: link:../core
-
-  packages/react-dom:
-    dependencies:
-      '@tanstack/dom-core':
-        specifier: workspace:*
-        version: link:../core
-      '@tanstack/react':
-        specifier: workspace:*
-        version: link:../react
-
-  packages/react-dom-server:
-    dependencies:
-      '@tanstack/dom-core':
-        specifier: workspace:*
-        version: link:../core
-      '@tanstack/react':
-        specifier: workspace:*
-        version: link:../react
-
-  packages/scheduler: {}
-
   tests:
     dependencies:
-      '@tanstack/dom-core':
+      '@tanstack/redact':
         specifier: workspace:*
-        version: link:../packages/core
-      '@tanstack/dom-hydration-runtime':
-        specifier: workspace:*
-        version: link:../packages/hydration-runtime
-      '@tanstack/jsx-runtime':
-        specifier: workspace:*
-        version: link:../packages/jsx-runtime
-      '@tanstack/react':
-        specifier: workspace:*
-        version: link:../packages/react
-      '@tanstack/react-dom':
-        specifier: workspace:*
-        version: link:../packages/react-dom
-      '@tanstack/react-dom-server':
-        specifier: workspace:*
-        version: link:../packages/react-dom-server
-      '@tanstack/scheduler':
-        specifier: workspace:*
-        version: link:../packages/scheduler
+        version: link:../packages/redact
     devDependencies:
       '@vitest/browser':
         specifier: ^2.1.8

@@ -1,11 +1,11 @@
 import { defineConfig } from 'vite'
-import { tanstackDom } from '@tanstack/dom-vite'
+import { redact } from '@tanstack/redact/vite'
 
 export default defineConfig({
-  plugins: [tanstackDom()],
+  plugins: [redact()],
   esbuild: {
     jsx: 'automatic',
-    jsxImportSource: '@tanstack/react',
+    jsxImportSource: '@tanstack/redact',
   },
   server: { middlewareMode: true },
   appType: 'custom',
