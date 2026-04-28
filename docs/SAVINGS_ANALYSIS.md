@@ -1,25 +1,27 @@
 # Where the size savings come from
 
-Numbers from `scripts/size-react-real.mjs` (esbuild: bundle + minify + `NODE_ENV=production` + tree-shake + gzip). Both stacks measured identically.
+Numbers from `scripts/size.mjs` (esbuild: bundle + minify + `NODE_ENV=production` + tree-shake + gzip) for `@tanstack/redact@0.0.1`, and `scripts/size-react-real.mjs` for React 19.2.3 measured identically.
 
 ## Per-entry comparison vs React 19.2.3
 
-| Entry | React 19 gzip | tanstack-react gzip | Ratio | Savings |
+| Entry | React 19 gzip | `@tanstack/redact` (full) | Ratio | Savings |
 |---|---:|---:|---:|---:|
-| `react` | 3.3 KB | 2.1 KB | 64% | −1.2 KB |
-| `react/jsx-runtime` | 0.7 KB | 0.2 KB | 29% | −0.5 KB |
-| `react-dom` | 4.4 KB | 6.8 KB | 154% | +2.4 KB\* |
-| `react-dom/client` | **60.3 KB** | **7.1 KB** | **12%** | **−53.2 KB** |
-| `react-dom/server` | 61.1 KB | 4.0 KB | 7% | −57.1 KB |
-| **Client total** (react + react-dom/client + jsx-runtime) | **60.5 KB** | **8.9 KB** | **15%** | **−51.6 KB** |
+| `react` | 3.29 KB | 2.65 KB | 81% | −0.64 KB |
+| `react/jsx-runtime` | 731 B | 189 B | 26% | −542 B |
+| `react-dom` | 4.35 KB | 8.53 KB | 196% | +4.18 KB\* |
+| `react-dom/client` | **60.27 KB** | **9.07 KB** | **15%** | **−51.20 KB** |
+| `react-dom/server` | 61.11 KB | 4.59 KB | 8% | −56.52 KB |
+| **Client total** (`react` + `react-dom/client` + `react/jsx-runtime`) | **60.48 KB** | **11.18 KB** | **18%** | **−49.30 KB** |
 
-\* `react-dom` (the index) looks worse because React splits it into a tiny facade over `react-dom/client`; ours is one file. Real apps ship `react-dom/client`, so that row is what matters.
+\* `react-dom` (the index) looks worse because React splits it into a tiny facade over `react-dom/client`; ours ships `createPortal`, `flushSync`, `unstable_batchedUpdates`, and resource-hint stubs in one file. Real apps ship `react-dom/client`, so that row is what matters.
+
+The `nano` preset (every opt-in feature stubbed) brings `react-dom/client` down further to **6.75 KB gzip** — a 2.32 KB savings vs `full` and a **8.9× reduction** vs React's `react-dom/client`.
 
 React 18 was ~43 KB gzip for the full client runtime; React 19 jumped to ~60 KB mostly because of `use()`, server actions (`useActionState`, `useFormStatus`), `useOptimistic`, view transitions, and async-transition plumbing.
 
-**Bottom line: a single-import client bundle shrinks from ~60 KB to ~9 KB, a 51 KB (~85%) reduction.** The win comes almost entirely from `react-dom/client` — React's `react` package is only ~3 KB to begin with.
+**Bottom line: a single-import client bundle shrinks from ~60 KB to ~11 KB, a ~49 KB (~82%) reduction at full parity, or to ~9.4 KB (~84% reduction) on the `nano` preset.** The win comes almost entirely from `react-dom/client` — React's `react` package is only ~3 KB to begin with.
 
-## Where those 51 KB go in React (approximation)
+## Where those ~49 KB go in React (approximation)
 
 Reading React's source, the 60 KB of `react-dom/client` roughly splits as:
 
@@ -41,12 +43,30 @@ Reading React's source, the 60 KB of `react-dom/client` roughly splits as:
 | Portals with full container-handoff + event retargeting | 1 KB | basic |
 | Class component lifecycles (getSnapshotBeforeUpdate, legacy context) | 1 KB | most lifecycles |
 
-Total accounted: ~52 KB, which matches the observed delta.
+Total accounted: ~52 KB, which roughly matches the observed 51 KB delta on `react-dom/client`.
+
+## Per-feature savings (full → stub)
+
+The 8 opt-in features can each be stubbed individually. Numbers from `pnpm size`, measuring `react-dom/client` with the listed feature flagged off:
+
+| Feature | full → stub savings (gzip) |
+|---|---:|
+| `portal` | ~30 B |
+| `context` | ~80 B |
+| `suspense` | **~640 B** |
+| `memo` | ~80 B |
+| `forwardRef` | ~70 B |
+| `lazy` | ~20 B |
+| `classComponents` | ~200 B |
+| `hydration` | **~1270 B** |
+| **All off (`nano` preset)** | **~2320 B** |
+
+Stubbed features still carry a small registration footprint (matcher entry that maps the React element type to Fragment, dispatcher capability defaults). The `nano` preset's total savings is slightly less than the sum of individual savings because some feature code is shared.
 
 ## What we **didn't** skip
 
 We implement in full or close to full:
-- Common hooks: `useState`, `useReducer`, `useEffect`, `useLayoutEffect`, `useRef`, `useMemo`, `useCallback`, `useContext`, `useImperativeHandle`, `useSyncExternalStore`, `use()`
+- Common hooks: `useState`, `useReducer`, `useEffect`, `useLayoutEffect`, `useRef`, `useMemo`, `useCallback`, `useContext`, `useImperativeHandle`, `useSyncExternalStore`, `useSyncExternalStoreWithSelector`, `use()`, `useEffectEvent`
 - `createElement`, `cloneElement`, `isValidElement`, `Children.*`
 - `createContext` with `Provider` / `Consumer` / `useContext`
 - `memo`, `forwardRef`, `lazy` with Suspense integration
@@ -72,9 +92,9 @@ Ranked by how likely they are to bite a real app:
 7. **Typing feels slightly worse under contention** — no priority boost for user input.
 8. **StrictMode is a no-op** — dev-mode detection of unsafe side effects is gone.
 
-## What this means for the 8.9 KB budget
+## What this means for the 11 KB budget
 
-Client bundle is 8.9 KB gzip total; the reconciler + dispatcher + dom + hydration alone is 7.1 KB. That 7.1 KB is what shaves 53 KB off React's 60 KB `react-dom/client` — a **~8.5× reduction**. The delta comes from skipping the four things that define React's production runtime:
+Client bundle is 11.18 KB gzip total at full parity; the reconciler + dispatcher + DOM + hydration alone is ~8.3 KB. That ~8.3 KB is what shaves 51 KB off React's 60 KB `react-dom/client` — a **6.6× reduction**. The delta comes from skipping the four things that define React's production runtime:
 
 - Fiber (double-buffered work-in-progress tree)
 - Scheduler (priority + lanes + interruption)
@@ -87,6 +107,6 @@ Re-adding any of them costs:
 - Full synthetic events: +4–6 KB
 - Dev warnings + DevTools: +3–5 KB
 
-All four together: +14–22 KB, taking us to 22–30 KB — still roughly half of React, but no longer Preact-territory.
+All four together: +14–22 KB, taking us to 25–33 KB — still roughly half of React, but no longer Preact-territory.
 
 **The size claim isn't magic.** We skipped the four expensive subsystems, kept the API shape, and accepted the UX trade-offs that come with that choice.
