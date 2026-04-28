@@ -1,7 +1,6 @@
-# React 19 API Surface — Implementation Plan
+# React 19 API Surface — `@tanstack/redact`
 
-Goal: API-complete drop-in replacement for `react` + `react-dom` targeting TanStack Start apps (tanstack.com).
-Target size: ~8-11KB gzipped client.
+API-complete drop-in replacement for `react` + `react-dom` targeting TanStack Start apps (tanstack.com). Shipped as `@tanstack/redact@0.0.1`. Client total: **11.18 KB gzip** (full preset) / **9.40 KB gzip** (nano preset, with feature flags off).
 
 ## Legend
 
@@ -197,20 +196,26 @@ React and react-dom coordinate via `ReactSharedInternals` (current dispatcher, b
 
 ## Package layout
 
+A single `@tanstack/redact` package with subpath exports. Each subpath maps to a React-shape specifier the Vite plugin (or your own bundler aliases) rewrites:
+
 ```
-packages/
-  core/                   # VDOM types + diff algorithm
-  react/                  # 'react' entrypoint
-  react-dom/              # 'react-dom' + 'react-dom/client'
-  react-dom-server/       # 'react-dom/server'
-  jsx-runtime/            # 'react/jsx-runtime' + 'react/jsx-dev-runtime'
-  scheduler/              # 'scheduler' shim
-  hydration-runtime/      # tiny inline script for boundary reveal + event replay
+packages/redact/
+  src/
+    core/                 # VDOM types + symbols (FiberTag, Hook, ReactNode, …)
+    react/                # 'react'                  → @tanstack/redact
+    dom/                  # 'react-dom'              → @tanstack/redact/dom
+                          # 'react-dom/client'       → @tanstack/redact/dom-client
+                          # 'react-dom/test-utils'   → @tanstack/redact/dom-test-utils
+      features/           # opt-in features (each is index/full/stub triple)
+        portal/  context/  suspense/  memo/
+        forward-ref/  lazy/  class/  hydration/
+    server/               # 'react-dom/server'       → @tanstack/redact/server
+    scheduler/            # 'scheduler'              → @tanstack/redact/scheduler
+    vite/                 # redact() Vite plugin     → @tanstack/redact/vite
+  package.json            # subpath exports for all of the above + ./features/* + ./_all
 ```
 
-Each exposes the exact package name React uses via `package.json` `name` field so bundler aliases map cleanly:
-- `tanstack-react` → alias plan for consumers
-- Individual subpackages use `name: "react"` etc. when installed as replacements (or we publish under a namespace and consumers configure aliases).
+Bundler aliases are wired up by the `redact()` Vite plugin (or manually for non-Vite bundlers). User code keeps its canonical `import { useState } from 'react'` — the swap happens at the bundler level, never at the source level.
 
 ---
 
@@ -224,16 +229,17 @@ Each exposes the exact package name React uses via `package.json` `name` field s
 
 ---
 
-## Size budget (working targets)
+## Size (shipped)
 
-| Package | Target gzip |
-|---|---|
-| react | 2.0 KB |
-| react-dom (client) | 5.0 KB |
-| react-dom-server | 3.0 KB (server-only, doesn't count toward client) |
-| jsx-runtime | 0.3 KB |
-| scheduler | 0.2 KB |
-| hydration-runtime | 0.8 KB (inline) |
-| **Total client** | **~8-9 KB** |
+Numbers from `pnpm size` against `@tanstack/redact@0.0.1`. The user-facing column names are the React-shape aliases the Vite plugin sets up.
 
-Server-side weight doesn't matter for the page-weight goal.
+| Subpath | min | gzip | brotli |
+|---|---:|---:|---:|
+| `react` | 6.59 KB | **2.65 KB** | 2.41 KB |
+| `react/jsx-runtime` | 247 B | 189 B | 178 B |
+| `react-dom/client` (`full`) | 26.56 KB | **9.07 KB** | 8.21 KB |
+| `react-dom/client` (`nano`) | 18.75 KB | **6.75 KB** | 6.10 KB |
+| `react-dom/server` | 11.48 KB | 4.59 KB | 4.16 KB |
+| **Client total** (`full`: react + react-dom/client + jsx-runtime) | 32.63 KB | **11.18 KB** | 10.14 KB |
+
+Server-side weight doesn't count toward the page-weight goal. Per-feature gzip deltas (for sizing individual feature flags) live in [SAVINGS_ANALYSIS.md](./SAVINGS_ANALYSIS.md).
