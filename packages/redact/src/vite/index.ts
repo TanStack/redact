@@ -306,35 +306,33 @@ export function redact(options: RedactOptions = {}): any {
       const excludeList = entries.map(([k]) => k)
       // Single package — only one name to dedupe / no-external.
       const noExt = ['@tanstack/redact']
-      // Top-level resolve.alias so `react` → `@tanstack/redact` happens
-      // BEFORE any plugin-based resolveId hook fires. The Cloudflare
-      // vite-plugin's rolldown worker-runner pre-scans the worker entry's
-      // exports and resolves bare specifiers via Vite's alias map directly
-      // (not via plugin hooks), so without this it would resolve `react` to
-      // the real npm package and try to `require()` it in a Worker (no CJS
-      // support). Object form is required — array form is silently ignored
-      // by rolldown's worker-runner.
       const aliasMap = Object.fromEntries(entries.filter(([from, to]) => from !== to))
-      // Scope optimizeDeps to client + ssr environments ONLY. Do NOT set a
-      // top-level optimizeDeps — in Vite 6+ that's effectively the client
-      // env's default but also seeps into the rsc env's `'use client'`
-      // analysis, causing flood warnings like "inconsistently optimized".
       // Dedupe `@tanstack/redact` so Vite resolves it to a single instance
       // even when multiple packages (e.g. @tanstack/react-router and user
       // code) drag it into different parts of the module graph.
       const dedupe = noExt
+      // Scope `resolve.alias` to client + ssr environments ONLY. Do NOT set
+      // a top-level alias: it would apply to the `rsc` environment too,
+      // where `@vitejs/plugin-rsc`'s vendored `react-server-dom-server`
+      // imports `react` and needs the *real* React (with the `.d` field on
+      // ReactSharedInternals that our shim deliberately doesn't have).
+      // Aliasing `react` → `@tanstack/redact` in the RSC env crashes Flight
+      // serialization. The Cloudflare vite-plugin's rolldown worker-runner
+      // also pre-scans bare specifiers via Vite's alias map (not plugin
+      // hooks), but it scans within the *ssr* environment specifically —
+      // so per-env `environments.ssr.resolve.alias` covers it. The
+      // `enforce: 'pre'` resolveId hook below already skips RSC, so the
+      // remaining concern is alias placement. Object form is required —
+      // array form is silently ignored by rolldown's worker-runner.
       return {
-        resolve: {
-          alias: aliasMap,
-          dedupe,
-        },
         environments: {
           client: {
             optimizeDeps: { exclude: excludeList },
+            resolve: { alias: aliasMap, dedupe },
           },
           ssr: {
             optimizeDeps: { exclude: excludeList },
-            resolve: { noExternal: noExt },
+            resolve: { alias: aliasMap, dedupe, noExternal: noExt },
           },
         },
         ssr: { noExternal: noExt },
