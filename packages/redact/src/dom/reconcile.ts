@@ -1068,14 +1068,15 @@ function attachRef(fiber: Fiber, value: any): void {
   const ref = fiber.ref ?? (fiber.pendingProps?.ref ?? null)
   if (!ref) return
   if (typeof ref === 'function') {
-    const cleanup = ref(value)
-    if (typeof cleanup === 'function') {
+    // Match React's commit-phase semantics: callback refs run after render
+    // (during the layout/commit phase), not during render. Calling them
+    // synchronously here breaks libraries that assert no event handlers run
+    // during render (e.g. base-ui's useStableCallback trampoline).
+    scheduleLifecycle(fiber, () => {
+      const cleanup = ref(value)
       fiber.cleanups ||= []
-      fiber.cleanups.push(cleanup)
-    } else {
-      fiber.cleanups ||= []
-      fiber.cleanups.push(() => ref(null))
-    }
+      fiber.cleanups.push(typeof cleanup === 'function' ? cleanup : () => ref(null))
+    })
   } else {
     ref.current = value
   }
