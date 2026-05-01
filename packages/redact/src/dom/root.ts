@@ -36,8 +36,18 @@ export function createRoot(container: Element | DocumentFragment, options: RootO
   rootFiber.root = root
   rootFiber.stateNode = container
 
+  let firstRender = true
   return {
     render(children) {
+      if (firstRender) {
+        firstRender = false
+        // Match real React's `clearContainer` semantics: blow away any pre-render
+        // markup (server-rendered placeholder, splash shells, etc.) on the
+        // initial commit so it doesn't stack with the React tree.
+        if ((container as Node).nodeType === 1 /* ELEMENT_NODE */) {
+          ;(container as Element).textContent = ''
+        }
+      }
       flushSyncWork(() => {
         renderRoot(root, children)
       })
