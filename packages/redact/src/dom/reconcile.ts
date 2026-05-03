@@ -1089,11 +1089,10 @@ function syncRefIfChanged(fiber: Fiber, value: any): void {
 }
 
 function detachRef(ref: any): void {
-  if (typeof ref === 'function') {
-    try {
-      ref(null)
-    } catch {}
-  } else if (ref && typeof ref === 'object') {
+  // Function refs are handled via fiber.cleanups (queued in attachRef during
+  // the commit phase): the cleanup either invokes the user-returned cleanup
+  // fn or calls ref(null). Calling ref(null) here would double-fire it.
+  if (ref && typeof ref === 'object') {
     ref.current = null
   }
 }
