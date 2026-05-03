@@ -1,4 +1,21 @@
 export { createElement, cloneElement, isValidElement, createRef, Fragment } from './element'
+export type {
+  ReactElement,
+  ReactNode,
+  Key,
+  Ref,
+  RefObject,
+  RefCallback,
+  Dispatch,
+  SetStateAction,
+  EffectCallback,
+  DependencyList,
+} from '../core'
+
+// Lightweight functional-component alias — matches React's FC shape closely
+// enough for the common `const X: FC<P> = (props) => …` pattern used in
+// tests and downstream consumer code.
+export type FC<P = {}> = (props: P & { children?: import('../core').ReactNode }) => import('../core').ReactElement | null
 export {
   useState,
   useReducer,

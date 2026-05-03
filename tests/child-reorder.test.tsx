@@ -101,7 +101,7 @@ describe('child reorder — DOM placement', () => {
           {items.map((item) => (
             <li
               key={item}
-              ref={(el) => {
+              ref={(el: HTMLLIElement | null) => {
                 if (el) itemRefs.set(item, el)
               }}
             >

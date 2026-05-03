@@ -14,23 +14,23 @@ const root = resolve(__dirname, '..')
 
 // gzip-byte budgets per named configuration. Update intentionally — size
 // regressions should require a conscious choice, not slip through CI.
-// Current sizes (Apr 2026): 2447 / 9241 / 8078 / 8581. Budgets include a
-// small cushion over current (~60 B) to absorb minor noise. Shrink budgets
+// Current sizes (May 2026): 2716 / 9305 / 6934 / 8649 / 8002. Budgets include
+// a small cushion over current (~60 B) to absorb minor noise. Shrink budgets
 // when you intentionally make the bundle smaller.
 const BUDGETS = {
-  'react': 2500,
-  'react-dom/client': 9300,
-  'react-dom/client (nano)': 6950,
-  'react-dom/client (suspense=stub)': 8650,
-  'react-dom/client (hydration=stub)': 8000,
+  'redact': 2780,
+  'redact/dom-client': 9370,
+  'redact/dom-client (nano)': 7000,
+  'redact/dom-client (suspense=stub)': 8710,
+  'redact/dom-client (hydration=stub)': 8060,
 }
 
 const alias = {
-  '@tanstack/dom-core': resolve(root, 'packages/core/src/index.ts'),
-  '@tanstack/react/jsx-runtime': resolve(root, 'packages/react/src/jsx-runtime.ts'),
-  '@tanstack/react': resolve(root, 'packages/react/src/index.ts'),
-  '@tanstack/react-dom/client': resolve(root, 'packages/react-dom/src/client.ts'),
-  '@tanstack/react-dom': resolve(root, 'packages/react-dom/src/index.ts'),
+  '@tanstack/redact/jsx-runtime': resolve(root, 'packages/redact/src/react/jsx-runtime.ts'),
+  '@tanstack/redact/dom-client': resolve(root, 'packages/redact/src/dom/client.ts'),
+  '@tanstack/redact/dom': resolve(root, 'packages/redact/src/dom/index.ts'),
+  '@tanstack/redact/server': resolve(root, 'packages/redact/src/server/index.ts'),
+  '@tanstack/redact': resolve(root, 'packages/redact/src/react/index.ts'),
 }
 
 const FEATURE_DIR_MAP = {
@@ -85,24 +85,24 @@ rmSync(outDir, { recursive: true, force: true })
 mkdirSync(outDir, { recursive: true })
 
 const entries = [
-  { name: 'react', path: 'packages/react/src/index.ts' },
-  { name: 'react-dom/client', path: 'packages/react-dom/src/client.ts' },
+  { name: 'redact', path: 'packages/redact/src/react/index.ts' },
+  { name: 'redact/dom-client', path: 'packages/redact/src/dom/client.ts' },
   {
-    name: 'react-dom/client (nano)',
-    path: 'packages/react-dom/src/client.ts',
+    name: 'redact/dom-client (nano)',
+    path: 'packages/redact/src/dom/client.ts',
     features: {
       portal: false, context: false, suspense: false, memo: false,
       forwardRef: false, lazy: false, classComponents: false, hydration: false,
     },
   },
   {
-    name: 'react-dom/client (suspense=stub)',
-    path: 'packages/react-dom/src/client.ts',
+    name: 'redact/dom-client (suspense=stub)',
+    path: 'packages/redact/src/dom/client.ts',
     features: { suspense: false },
   },
   {
-    name: 'react-dom/client (hydration=stub)',
-    path: 'packages/react-dom/src/client.ts',
+    name: 'redact/dom-client (hydration=stub)',
+    path: 'packages/redact/src/dom/client.ts',
     features: { hydration: false },
   },
 ]

@@ -87,7 +87,7 @@ describe('ReactDOMServerIntegration / select', () => {
         <option value="bar">A {'B'}</option>
       </select>,
     )) as HTMLSelectElement
-    const option = e.options[0]
+    const option = e.options[0]!
     expect(option.textContent).toBe('A B')
     expect(option.value).toBe('bar')
     expect(option.selected).toBe(true)
@@ -99,7 +99,7 @@ describe('ReactDOMServerIntegration / select', () => {
         <option>A {'B'}</option>
       </select>,
     )) as HTMLSelectElement
-    const option = e.options[0]
+    const option = e.options[0]!
     expect(option.value).toBe('A B')
     expect(option.selected).toBe(true)
   })

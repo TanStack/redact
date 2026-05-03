@@ -71,9 +71,9 @@ export interface FiberRoot {
   current: Fiber
   pending: Set<Fiber>
   scheduled: boolean
-  onRecoverableError?: (err: unknown) => void
-  onCaughtError?: (err: unknown) => void
-  onUncaughtError?: (err: unknown) => void
+  onRecoverableError?: ((err: unknown) => void) | undefined
+  onCaughtError?: ((err: unknown) => void) | undefined
+  onUncaughtError?: ((err: unknown) => void) | undefined
   identifierPrefix: string
   hydrating: boolean
 }

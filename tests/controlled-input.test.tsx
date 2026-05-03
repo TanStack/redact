@@ -35,7 +35,7 @@ describe('controlled inputs — onChange semantics', () => {
         <input
           id="search"
           value={v}
-          onChange={(e) => {
+          onChange={(e: any) => {
             changes.push((e.target as HTMLInputElement).value)
             setV((e.target as HTMLInputElement).value)
           }}
@@ -62,7 +62,7 @@ describe('controlled inputs — onChange semantics', () => {
         <textarea
           id="ta"
           value={v}
-          onChange={(e) => {
+          onChange={(e: any) => {
             changes.push((e.target as HTMLTextAreaElement).value)
             setV((e.target as HTMLTextAreaElement).value)
           }}
@@ -86,7 +86,7 @@ describe('controlled inputs — onChange semantics', () => {
         <input
           id="search"
           defaultValue=""
-          onInput={(e) => {
+          onInput={(e: any) => {
             inputs.push((e.target as HTMLInputElement).value)
           }}
         />
@@ -110,8 +110,8 @@ describe('controlled inputs — onChange semantics', () => {
         <input
           id="both"
           defaultValue=""
-          onChange={(e) => changes.push((e.target as HTMLInputElement).value)}
-          onInput={(e) => inputs.push((e.target as HTMLInputElement).value)}
+          onChange={(e: any) => changes.push((e.target as HTMLInputElement).value)}
+          onInput={(e: any) => inputs.push((e.target as HTMLInputElement).value)}
         />
       )
     }
@@ -134,7 +134,7 @@ describe('controlled inputs — onChange semantics', () => {
           id="cb"
           type="checkbox"
           checked={checked}
-          onChange={(e) => {
+          onChange={(e: any) => {
             fires++
             setChecked((e.target as HTMLInputElement).checked)
           }}
@@ -195,7 +195,7 @@ describe('controlled inputs — onChange semantics', () => {
         <select
           id="s"
           value={v}
-          onChange={(e) => {
+          onChange={(e: any) => {
             const next = (e.target as HTMLSelectElement).value
             changes.push(next)
             setV(next)
@@ -224,7 +224,7 @@ describe('controlled inputs — onChange semantics', () => {
         <input
           id="ctrl"
           value={v.toUpperCase()}
-          onChange={(e) => setV((e.target as HTMLInputElement).value)}
+          onChange={(e: any) => setV((e.target as HTMLInputElement).value)}
         />
       )
     }

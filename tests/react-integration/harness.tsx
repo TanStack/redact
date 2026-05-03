@@ -111,12 +111,12 @@ export { serverRender, streamRender, clientCleanRender, hydrateOnServerString, R
 
 export const TEXT_NODE_TYPE = 3
 
-export function expectNode(node: Node | null, type: number, value: string): void {
+export function expectNode(node: Node | null | undefined, type: number, value: string): void {
   expect(node).not.toBe(null)
   expect(node!.nodeType).toBe(type)
   expect(node!.nodeValue).toMatch(value)
 }
 
-export function expectTextNode(node: Node | null, text: string): void {
+export function expectTextNode(node: Node | null | undefined, text: string): void {
   expectNode(node, TEXT_NODE_TYPE, text)
 }

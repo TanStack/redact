@@ -82,7 +82,7 @@ export function useSyncExternalStore<T>(
   return getDispatcher().useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
 }
 
-export function use<T>(resource: any): T {
+export function use<T>(resource: PromiseLike<T> | { _currentValue: T } | { $$typeof: symbol; _currentValue: T }): T {
   return getDispatcher().use(resource)
 }
 

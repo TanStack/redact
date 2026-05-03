@@ -42,7 +42,7 @@ describe('callback refs — commit-phase semantics', () => {
         return (
           <div
             id="target"
-            ref={(el) => {
+            ref={(el: HTMLDivElement | null) => {
               calledAtAll = true
               if (rendering) calledDuringRender = true
               receivedNode = el as HTMLElement | null
@@ -69,7 +69,7 @@ describe('callback refs — commit-phase semantics', () => {
     function App({ show }: { show: boolean }) {
       return (
         <div>
-          {show ? <span ref={(el) => calls.push(el as HTMLElement | null)} /> : null}
+          {show ? <span ref={(el: HTMLSpanElement | null) => calls.push(el as HTMLElement | null)} /> : null}
         </div>
       )
     }

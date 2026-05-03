@@ -40,10 +40,10 @@ export interface SuspendedBoundary {
 
 export interface WalkOptions {
   emit: (chunk: string) => void
-  onSuspend?: (boundary: SuspendedBoundary) => void
+  onSuspend?: ((boundary: SuspendedBoundary) => void) | undefined
   nextBoundaryId: () => number
-  bootstrapped?: boolean
-  isBoundaryResolution?: boolean
+  bootstrapped?: boolean | undefined
+  isBoundaryResolution?: boolean | undefined
   /**
    * Tracks whether the most recent emission within the *current text flow*
    * ended with a text node. When the next emission is also text, we emit a
