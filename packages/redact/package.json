@@ -19,6 +19,10 @@
       "types": "./dist/react/jsx-runtime.d.ts",
       "default": "./dist/react/jsx-runtime.js"
     },
+    "./compiler-runtime": {
+      "types": "./dist/react/compiler-runtime.d.ts",
+      "default": "./dist/react/compiler-runtime.js"
+    },
     "./dom": {
       "types": "./dist/dom/index.d.ts",
       "default": "./dist/dom/index.js"

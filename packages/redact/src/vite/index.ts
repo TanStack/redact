@@ -164,6 +164,7 @@ const ALIASES: Record<string, string> = {
   // React drop-in shim targets. Subpaths first.
   'react/jsx-runtime': '@tanstack/redact/jsx-runtime',
   'react/jsx-dev-runtime': '@tanstack/redact/jsx-dev-runtime',
+  'react/compiler-runtime': '@tanstack/redact/compiler-runtime',
   'react-dom/client': '@tanstack/redact/dom-client',
   'react-dom/server': '@tanstack/redact/server',
   'react-dom/test-utils': '@tanstack/redact/dom-test-utils',
@@ -180,6 +181,7 @@ const ALIASES: Record<string, string> = {
   // Subpaths first here too.
   '@tanstack/redact/jsx-runtime': '@tanstack/redact/jsx-runtime',
   '@tanstack/redact/jsx-dev-runtime': '@tanstack/redact/jsx-dev-runtime',
+  '@tanstack/redact/compiler-runtime': '@tanstack/redact/compiler-runtime',
   '@tanstack/redact/dom-client': '@tanstack/redact/dom-client',
   '@tanstack/redact/dom-test-utils': '@tanstack/redact/dom-test-utils',
   '@tanstack/redact/server': '@tanstack/redact/server',

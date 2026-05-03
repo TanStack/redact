@@ -16,6 +16,7 @@ import { describe, it, expect } from 'vitest'
 
 import * as redact from '@tanstack/redact'
 import * as redactJsxRuntime from '@tanstack/redact/jsx-runtime'
+import * as redactCompilerRuntime from '@tanstack/redact/compiler-runtime'
 import * as redactDom from '@tanstack/redact/dom'
 import * as redactDomClient from '@tanstack/redact/dom-client'
 import * as redactDomTestUtils from '@tanstack/redact/dom-test-utils'
@@ -97,6 +98,14 @@ describe('public API surface', () => {
     `)
   })
 
+  it('@tanstack/redact/compiler-runtime', () => {
+    expect(surface(redactCompilerRuntime)).toMatchInlineSnapshot(`
+      [
+        "c",
+      ]
+    `)
+  })
+
   it('@tanstack/redact/dom', () => {
     expect(surface(redactDom)).toMatchInlineSnapshot(`
       [
@@ -119,6 +128,7 @@ describe('public API surface', () => {
     expect(surface(redactDomClient)).toMatchInlineSnapshot(`
       [
         "createRoot",
+        "default",
         "hydrateRoot",
       ]
     `)

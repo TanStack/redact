@@ -13,6 +13,7 @@ export default defineConfig({
     alias: {
       '@tanstack/redact/jsx-runtime': r('packages/redact/src/react/jsx-runtime.ts'),
       '@tanstack/redact/jsx-dev-runtime': r('packages/redact/src/react/jsx-runtime.ts'),
+      '@tanstack/redact/compiler-runtime': r('packages/redact/src/react/compiler-runtime.ts'),
       '@tanstack/redact/dom-client': r('packages/redact/src/dom/client.ts'),
       '@tanstack/redact/dom-test-utils': r('packages/redact/src/dom/test-utils.ts'),
       '@tanstack/redact/dom': r('packages/redact/src/dom/index.ts'),
@@ -23,6 +24,7 @@ export default defineConfig({
       // React-shape aliases — what consumers will actually import
       'react/jsx-runtime': r('packages/redact/src/react/jsx-runtime.ts'),
       'react/jsx-dev-runtime': r('packages/redact/src/react/jsx-runtime.ts'),
+      'react/compiler-runtime': r('packages/redact/src/react/compiler-runtime.ts'),
       react: r('packages/redact/src/react/index.ts'),
       'react-dom/client': r('packages/redact/src/dom/client.ts'),
       'react-dom/server': r('packages/redact/src/server/index.ts'),
