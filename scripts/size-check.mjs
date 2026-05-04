@@ -28,9 +28,10 @@ const BUDGETS = {
   'redact': 2780,
   // dom-client + variants ~150 B above their earlier budgets to accommodate
   // the stable-list reconciler fast path, renderHost single-pass diff,
-  // singleton dispatcher, and text-wrapper-elimination changes (PR #N).
+  // singleton dispatcher, and text-wrapper-elimination changes (PR #7).
   // These collectively cut the canonical render bench by ~25 % and put
-  // redact ~20 % ahead of React on the same workload.
+  // redact ~20 % ahead of React on the same workload. Already includes the
+  // ~26-33 B for the sibling-order second pass from the earlier fix.
   'redact/dom-client': 9650,
   'redact/dom-client (nano)': 7270,
   'redact/dom-client (suspense=stub)': 8980,
