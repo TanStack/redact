@@ -373,6 +373,16 @@ export function reconcileChildren(
   for (const c of newChildren) if (c != null) unkeyedNew++
   let budget = unkeyedNew - unkeyedOld
 
+  // Pass 1 (this loop): match against existing fibers and build the sibling
+  // chain. Pass 2 (after the loop) renders each fiber with the correct
+  // per-child anchor — the firstDomNode of its next still-mounted sibling,
+  // or the parent's own anchor for the rightmost. Without per-child anchors
+  // a child whose render output type changes from no-DOM (Portal, null) to
+  // an in-flow host gets appended to the end of domParent (every child
+  // would otherwise share the parent's anchor) and never moves before its
+  // later siblings. Hit by the t3code Sidebar swap from a portal-rendering
+  // <Sheet> to a <div data-slot=sidebar> when isMobile flips during a
+  // Provider re-render.
   for (let i = 0; i < newChildren.length; i++) {
     const child = newChildren[i]
     if (child == null) continue
@@ -438,9 +448,23 @@ export function reconcileChildren(
     if (prevNewFiber) prevNewFiber.sibling = fiber
     else parent.child = fiber
     prevNewFiber = fiber
+  }
 
-    // Render this fiber (mount or update)
-    renderFiber(fiber, domParent, anchor)
+  // Pass 2: walk the sibling chain we just built and render each fiber
+  // forward with the correct per-child anchor. During hydration the cursor
+  // walks DOM forward and each renderFiber adopts the next existing node,
+  // so per-child anchors are moot — fall back to the parent's anchor.
+  const hydrating = !!currentRoot?.hydrating
+  for (let f: Fiber | null = parent.child; f; f = f.sibling) {
+    let a = anchor
+    if (!hydrating) {
+      // Find the firstDomNode of the next still-mounted sibling, if any.
+      for (let s: Fiber | null = f.sibling; s; s = s.sibling) {
+        const d = firstDomNode(s)
+        if (d && d.parentNode === domParent) { a = d; break }
+      }
+    }
+    renderFiber(f, domParent, a)
   }
 
   if (!prevNewFiber) parent.child = null
@@ -499,8 +523,8 @@ function placeChildrenInOrder(parent: Fiber, domParent: Node, anchor: Node | nul
   }
 
   // Pre-check: if our fiber-owned DOM is already in document order within
-  // domParent AND the end anchor matches, no reorder is needed. This is the
-  // common case on stable re-renders, and avoids detaching/re-attaching
+  // domParent AND the trailing anchor matches, no reorder is needed. This is
+  // the common case on stable re-renders, and avoids detaching/re-attaching
   // subtrees (which cancels CSS animations and triggers layout).
   if (doms.length > 0) {
     let current: Node | null = doms[0]!
@@ -513,6 +537,22 @@ function placeChildrenInOrder(parent: Fiber, domParent: Node, anchor: Node | nul
         current = current.nextSibling
       }
       if (current !== doms[i]) inOrder = false
+    }
+    // Also verify the LAST dom's next sibling lines up with `anchor`. A
+    // single-dom collection (or correctly-internally-ordered doms) can sit
+    // at the WRONG absolute position in domParent and still pass the
+    // relative-order check above. This happens when a fiber's render output
+    // changes from no-DOM (e.g. a Portal-using <Sheet>, or null) to an
+    // in-flow host element: the new host is appended to the end of
+    // domParent (because the parent reconcileChildren loop hands every
+    // child the same anchor — typically null), and without this trailing
+    // check it would never get moved before its later siblings.
+    if (inOrder) {
+      let last: Node | null = doms[doms.length - 1]!.nextSibling
+      while (last && !doms.includes(last as Node) && last !== anchor) {
+        last = last.nextSibling
+      }
+      if (last !== anchor) inOrder = false
     }
     if (inOrder) return
   }

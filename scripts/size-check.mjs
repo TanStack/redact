@@ -14,15 +14,22 @@ const root = resolve(__dirname, '..')
 
 // gzip-byte budgets per named configuration. Update intentionally — size
 // regressions should require a conscious choice, not slip through CI.
-// Current sizes (May 2026): 2716 / 9305 / 6934 / 8649 / 8002. Budgets include
+// Current sizes (May 2026): 2715 / 9396 / 7026 / 8739 / 8093. Budgets include
 // a small cushion over current (~60 B) to absorb minor noise. Shrink budgets
 // when you intentionally make the bundle smaller.
+//
+// May 2026 bump (+~30 B on dom-client variants): reconcileChildren now does
+// a second forward pass to compute per-child anchors so a child whose
+// render output type changes from no-DOM (Portal/null) to an in-flow host
+// lands before its later siblings instead of getting appended to the end of
+// domParent. Fixes a sibling-order regression hit by t3code's Sidebar
+// portal→div swap on mobile→desktop.
 const BUDGETS = {
   'redact': 2780,
-  'redact/dom-client': 9370,
-  'redact/dom-client (nano)': 7000,
-  'redact/dom-client (suspense=stub)': 8710,
-  'redact/dom-client (hydration=stub)': 8060,
+  'redact/dom-client': 9460,
+  'redact/dom-client (nano)': 7090,
+  'redact/dom-client (suspense=stub)': 8800,
+  'redact/dom-client (hydration=stub)': 8160,
 }
 
 const alias = {
