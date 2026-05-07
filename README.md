@@ -7,6 +7,8 @@
 - **707/707** unit + integration tests passing, SSR + streaming Suspense + hydration included
 - Running in production on [tanstack.com](https://tanstack.com) as of 2026-04-20
 
+For background on the motivation, the "projection" framing, the architectural approach, and the production performance results, see the blog post: [Projecting React](https://tannerlinsley.com/posts/projecting-react).
+
 ---
 
 ## Quick start
@@ -66,14 +68,6 @@ redact({
 ```
 
 Full feature matrix and alternative configuration paths below.
-
----
-
-## How it works in 30 seconds
-
-`@tanstack/redact/dom` is built as an irreducible core (fiber reconciler, host DOM, core hooks, elements) plus **8 opt-in features** layered on top. Each feature has a `full.ts` (real implementation) and a `stub.ts` (graceful degradation). Features self-register with the reconciler at module load — renderers, type matchers, capability hooks.
-
-Feature selection is a bundler-level concern. The `@tanstack/redact/vite` plugin's `resolveId` hook swaps `features/<name>/index.js` → `features/<name>/stub.js` for features you've flagged off. Stubbed features' full code never enters the module graph, so tree-shaking strips it. No user-code changes. No runtime branching.
 
 ---
 
@@ -382,21 +376,6 @@ Whichever path you choose, check that stubbed features' full code isn't in your 
 - Behavioral 1:1 parity with React under concurrent-mode stress
 
 See [docs/SURFACE.md](./docs/SURFACE.md) for the full React-19 export-by-export audit.
-
----
-
-## Performance
-
-Measured against TanStack Router + TanStack Start benchmarks (`pnpm nx run @benchmarks/client-nav:test:perf:react`, `@benchmarks/ssr:test:perf:react`):
-
-| Bench | Real React | This shim | Ratio |
-|---|---:|---:|---:|
-| `client-nav` (router-driven navigation loop) | 34.9 hz | **78.1 hz** | **2.24× faster** |
-| `ssr` (request loop) | ~48 hz | **168 hz** | **~3× faster**[^1] |
-
-[^1]: SSR speedup requires a latent `stringifyValue` bug in `@tanstack/router-core` to be patched (exception-throwing in a hot loop was eating 34% of request time regardless of renderer — see `scripts/repro-router-hang.mjs`).
-
-On tanstack.com (full site, not just renderer): Lighthouse perf scores at parity with stock React, consistent FCP wins across desktop/mobile, mild LCP regression on RSC-heavy pages (tied to the shim's Flight-deserialize suspend/resume), CLS/TBT ≈ 0. Full 30-run median breakdown: [tanstack.com/docs/perf/lighthouse-shim-vs-react-2026-04-20.md](https://github.com/TanStack/tanstack.com/blob/main/docs/perf/lighthouse-shim-vs-react-2026-04-20.md).
 
 ---
 
