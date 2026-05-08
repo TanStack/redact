@@ -315,6 +315,10 @@ function walkHost(
   const parentTextState = opts.textState
   const childOpts: WalkOptions = { ...opts, textState: { lastWasText: false } }
 
+  if (tag === 'html' && !hasHeadChild(props.children)) {
+    opts.emit('<head></head>')
+  }
+
   const dangerouslyHtml = props.dangerouslySetInnerHTML?.__html
 
   if (isTextarea && textareaValue != null) {
@@ -351,6 +355,32 @@ function walkHost(
   if (isSelect) popSelectContext()
   // Host element closing resets outer flow — next sibling text starts fresh.
   if (parentTextState) parentTextState.lastWasText = false
+}
+
+function hasHeadChild(children: unknown): boolean {
+  if (children == null || typeof children === 'boolean') return false
+  if (Array.isArray(children)) return children.some(hasHeadChild)
+  if (typeof children !== 'string' && isIterable(children)) {
+    for (const child of children as Iterable<unknown>) {
+      if (hasHeadChild(child)) return true
+    }
+    return false
+  }
+  return isElementOfType(children, 'head')
+}
+
+function isElementOfType(value: unknown, type: string): value is ReactElement {
+  const marker = (value as ReactElement | null)?.$$typeof as unknown
+  return (
+    !!value &&
+    typeof value === 'object' &&
+    (marker === REACT_ELEMENT_TYPE || marker === REACT_LEGACY_ELEMENT_TYPE) &&
+    (value as ReactElement).type === type
+  )
+}
+
+function isIterable(value: unknown): value is Iterable<unknown> {
+  return !!value && typeof (value as { [Symbol.iterator]?: unknown })[Symbol.iterator] === 'function'
 }
 
 function walkComponent(
