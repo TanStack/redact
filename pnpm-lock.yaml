@@ -11,6 +11,9 @@ importers:
       esbuild:
         specifier: ^0.28.0
         version: 0.28.0
+      playwright:
+        specifier: ^1.59.1
+        version: 1.59.1
       typescript:
         specifier: ~5.9.3
         version: 5.9.3
@@ -22,6 +25,16 @@ importers:
         version: 2.1.9(@types/node@25.6.0)(@vitest/browser@2.1.9)(jsdom@25.0.1)(lightningcss@1.30.2)(msw@2.13.4(@types/node@25.6.0)(typescript@5.9.3))
 
   examples/dom-jsx-playground: {}
+
+  examples/perf-bench:
+    dependencies:
+      '@tanstack/redact':
+        specifier: workspace:*
+        version: link:../../packages/redact
+    devDependencies:
+      vite:
+        specifier: ^5.4.11
+        version: 5.4.21(@types/node@25.6.0)(lightningcss@1.30.2)
 
   examples/ssr-demo:
     dependencies:
@@ -1950,11 +1963,10 @@ snapshots:
   '@types/node@25.6.0':
     dependencies:
       undici-types: 7.19.2
-    optional: true
 
   '@types/set-cookie-parser@2.4.10':
     dependencies:
-      '@types/node': 22.19.17
+      '@types/node': 25.6.0
 
   '@types/statuses@2.0.6': {}
 
@@ -2627,8 +2639,7 @@ snapshots:
 
   undici-types@6.21.0: {}
 
-  undici-types@7.19.2:
-    optional: true
+  undici-types@7.19.2: {}
 
   until-async@3.0.2: {}
 
