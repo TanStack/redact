@@ -37,6 +37,53 @@ describe('hydrateRoot(document, <html/>)', () => {
     expect(doc.documentElement.querySelector('h1')?.textContent).toBe('hi')
   })
 
+  it('server-renders a head when an html tree omits it', () => {
+    function App() {
+      return (
+        <html>
+          <body>
+            <h1>hi</h1>
+          </body>
+        </html>
+      )
+    }
+
+    expect(renderToString(<App />)).toBe(
+      '<!DOCTYPE html><html><head></head><body><h1>hi</h1></body></html>',
+    )
+  })
+
+  it('hydrates React 19-style top-level head tags from document.head', () => {
+    function App() {
+      return (
+        <>
+          <meta name="viewport" content="width=device-width" />
+          <html>
+            <body>
+              <h1>hi</h1>
+            </body>
+          </html>
+        </>
+      )
+    }
+
+    const doc = buildDocumentFrom(
+      '<!doctype html><html><head><meta name="viewport" content="width=device-width"></head><body><h1>hi</h1></body></html>',
+    )
+    const origHtml = doc.documentElement
+    const errors: unknown[] = []
+
+    hydrateRoot(doc as any, <App />, {
+      onRecoverableError: (e) => errors.push(e),
+      onUncaughtError: (e) => errors.push(e),
+    })
+
+    expect(doc.documentElement).toBe(origHtml)
+    expect(doc.head.querySelectorAll('meta[name="viewport"]').length).toBe(1)
+    expect(doc.documentElement.querySelector('h1')?.textContent).toBe('hi')
+    expect(errors).toEqual([])
+  })
+
   it('a root-level component suspending during hydration does not append a second <html>', async () => {
     // Mirrors Start's <StartClient/> → <Await promise={...}> pattern: the
     // root-most component throws a promise synchronously during hydrateRoot.
