@@ -50,7 +50,17 @@ function depsEqual(
   return true
 }
 
+// Singleton — every method reads render context via ReactSharedInternals,
+// and per-hook closures live on the hook itself, so nothing is render-local
+// to capture. Allocating a fresh wrapper + 17 method closures per function-
+// component render was pure GC pressure.
+const DISPATCHER = makeDispatcherImpl()
+
 export function makeDispatcher() {
+  return DISPATCHER
+}
+
+function makeDispatcherImpl() {
   return {
     useState<S>(initial: S | (() => S)) {
       return this.useReducer<S, S | ((p: S) => S)>(

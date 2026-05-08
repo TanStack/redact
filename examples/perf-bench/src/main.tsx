@@ -5,6 +5,7 @@ import '@tanstack/redact/_all'
 import { jsx } from '@tanstack/redact/jsx-runtime'
 import { useRef, useMemo } from '@tanstack/redact'
 import { flushSync } from '@tanstack/redact/dom'
+import './workloads'
 
 function RowCell({ index, tick }: { index: number; tick: number }) {
   const ref = useRef(0)

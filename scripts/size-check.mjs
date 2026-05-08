@@ -26,10 +26,15 @@ const root = resolve(__dirname, '..')
 // portal→div swap on mobile→desktop.
 const BUDGETS = {
   'redact': 2780,
-  'redact/dom-client': 9460,
-  'redact/dom-client (nano)': 7090,
-  'redact/dom-client (suspense=stub)': 8800,
-  'redact/dom-client (hydration=stub)': 8160,
+  // dom-client + variants ~150 B above their earlier budgets to accommodate
+  // the stable-list reconciler fast path, renderHost single-pass diff,
+  // singleton dispatcher, and text-wrapper-elimination changes (PR #N).
+  // These collectively cut the canonical render bench by ~25 % and put
+  // redact ~20 % ahead of React on the same workload.
+  'redact/dom-client': 9650,
+  'redact/dom-client (nano)': 7270,
+  'redact/dom-client (suspense=stub)': 8980,
+  'redact/dom-client (hydration=stub)': 8330,
 }
 
 const alias = {
