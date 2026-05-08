@@ -166,6 +166,8 @@ const ALIASES: Record<string, string> = {
   'react/jsx-dev-runtime': '@tanstack/redact/jsx-dev-runtime',
   'react/compiler-runtime': '@tanstack/redact/compiler-runtime',
   'react-dom/client': '@tanstack/redact/dom-client',
+  'react-dom/server.edge': '@tanstack/redact/server',
+  'react-dom/static.edge': '@tanstack/redact/server',
   'react-dom/server': '@tanstack/redact/server',
   'react-dom/test-utils': '@tanstack/redact/dom-test-utils',
   'react-dom': '@tanstack/redact/dom',
