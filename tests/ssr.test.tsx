@@ -146,4 +146,47 @@ describe('renderToReadableStream', () => {
     expect(out).toContain('$RC(')
     await stream.allReady
   })
+
+  it('emits escaped inline bootstrap script content', async () => {
+    const stream = await renderToReadableStream(<div>hello</div>, {
+      bootstrapScriptContent: 'globalThis.started = "</script>"',
+    } as any)
+    const out = await streamToString(stream)
+    expect(out).toContain('<div>hello</div>')
+    expect(out).toContain('<script>globalThis.started = "<\\/script>"</script>')
+    await stream.allReady
+  })
+
+  it('retries when the root render suspends before any boundary', async () => {
+    let resolve!: (value: string) => void
+    const promise = new Promise<string>((r) => {
+      resolve = r
+    })
+    function App() {
+      return <main>{React.use(promise)}</main>
+    }
+
+    const stream = await renderToReadableStream(<App />)
+    resolve('ready')
+    const out = await streamToString(stream)
+    expect(out).toBe('<main>ready</main>')
+    await stream.allReady
+  })
+
+  it('moves leading head tags into an existing document head', async () => {
+    const stream = await renderToReadableStream(
+      <>
+        <meta name="viewport" content="width=device-width" />
+        <html>
+          <head></head>
+          <body>ok</body>
+        </html>
+      </>,
+    )
+    const out = await streamToString(stream)
+    expect(out).toBe(
+      '<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width"/></head><body>ok</body></html>',
+    )
+    await stream.allReady
+  })
 })

@@ -8,10 +8,12 @@ import {
 } from './dispatcher'
 import { walk, type SuspendedBoundary } from './walk'
 import { BOUNDARY_REVEAL_RUNTIME, revealScript } from './bootstrap-script'
+import { escapeScript } from './escape'
 
 export interface StreamOptions {
   identifierPrefix?: string
   nonce?: string
+  bootstrapScriptContent?: string | ReadonlyArray<string>
   bootstrapScripts?: ReadonlyArray<string | { src: string; async?: boolean; nonce?: string }>
   bootstrapModules?: ReadonlyArray<string | { src: string; nonce?: string }>
   onError?: (error: unknown) => string | void
@@ -57,12 +59,34 @@ export async function streamHtml(
       shellChunks.push(chunk)
     }
 
-    // 1. Render the shell
-    walk(children, {
-      emit: bufferedEmit,
-      onSuspend: (b) => boundaries.push(b),
-      nextBoundaryId: () => state.nextId++,
-    })
+    // 1. Render the shell. A root-level `use(promise)` has no Suspense
+    // boundary to capture it, but App Router SSR commonly suspends at this
+    // level while resolving the RSC stream. Wait and retry without leaking
+    // partial shell chunks or boundary ids from the aborted attempt.
+    let shellRendered = false
+    let rootRetries = 0
+    while (!shellRendered) {
+      const chunkCount = shellChunks.length
+      const boundaryCount = boundaries.length
+      const nextId = state.nextId
+      try {
+        walk(children, {
+          emit: bufferedEmit,
+          onSuspend: (b) => boundaries.push(b),
+          nextBoundaryId: () => state.nextId++,
+        })
+        shellRendered = true
+      } catch (err) {
+        shellChunks.length = chunkCount
+        boundaries.length = boundaryCount
+        state.nextId = nextId
+        if (!isThenable(err)) throw err
+        if (++rootRetries > 50) {
+          throw new Error('renderToReadableStream exceeded 50 root suspension retries.')
+        }
+        await err
+      }
+    }
 
     // 2. Inject runtime + bootstrap scripts (once, after shell). Skip the
     // reveal/event-replay runtime when nothing needs it — no suspensions to
@@ -71,10 +95,14 @@ export async function streamHtml(
     // matches React's behavior where `renderToReadableStream` of a static
     // tree emits only the markup.
     const hasBootstrap =
+      bootstrapScriptContentToArray(options.bootstrapScriptContent).length > 0 ||
       (options.bootstrapScripts?.length ?? 0) > 0 ||
       (options.bootstrapModules?.length ?? 0) > 0
     if (boundaries.length > 0 || hasBootstrap) {
       shellChunks.push(`<script${nonce ? ` nonce="${nonce}"` : ''}>${BOUNDARY_REVEAL_RUNTIME}</script>`)
+      for (const content of bootstrapScriptContentToArray(options.bootstrapScriptContent)) {
+        shellChunks.push(inlineBootstrapTag(content, nonce))
+      }
       for (const s of options.bootstrapScripts ?? []) {
         shellChunks.push(bootstrapTag(s, 'script', nonce))
       }
@@ -83,7 +111,7 @@ export async function streamHtml(
       }
     }
 
-    if (shellChunks.length) emit(shellChunks.join(''))
+    if (shellChunks.length) emit(normalizeDocumentShell(shellChunks.join('')))
 
     // 3. Stream suspended boundaries as they resolve
     for (const b of boundaries) streamBoundary(b, emit, options, state)
@@ -144,6 +172,59 @@ async function drain(state: OrchestratorState): Promise<void> {
   while (state.pending.size > 0) {
     await Promise.race(state.pending)
   }
+}
+
+function isThenable(value: unknown): value is Promise<unknown> {
+  return !!value && typeof (value as { then?: unknown }).then === 'function'
+}
+
+function bootstrapScriptContentToArray(
+  content: StreamOptions['bootstrapScriptContent'],
+): string[] {
+  if (content === undefined) return []
+  return typeof content === 'string' ? [content] : [...content]
+}
+
+function inlineBootstrapTag(content: string, defaultNonce: string | undefined): string {
+  const nAttr = defaultNonce ? ` nonce="${defaultNonce}"` : ''
+  return `<script${nAttr}>${escapeScript(content)}</script>`
+}
+
+function normalizeDocumentShell(html: string): string {
+  const doctypeIndex = html.indexOf('<!DOCTYPE html><html')
+  if (doctypeIndex <= 0) return html
+
+  const headPrefix = html.slice(0, doctypeIndex)
+  if (!isHeadPrefix(headPrefix)) return html
+
+  const documentHtml = html.slice(doctypeIndex)
+  const headOpen = documentHtml.match(/<head(?:\s[^>]*)?>/)
+  if (!headOpen || headOpen.index === undefined) return html
+
+  const insertAt = headOpen.index + headOpen[0].length
+  return documentHtml.slice(0, insertAt) + headPrefix + documentHtml.slice(insertAt)
+}
+
+function isHeadPrefix(value: string): boolean {
+  if (!value) return false
+  return stripLeadingHeadTags(value).trim() === ''
+}
+
+function stripLeadingHeadTags(value: string): string {
+  let rest = value
+  let changed = true
+  while (changed) {
+    changed = false
+    const next = rest.replace(
+      /^\s*(?:<meta\b[^>]*>|<link\b[^>]*>|<base\b[^>]*>|<title\b[^>]*>[\s\S]*?<\/title>|<style\b[^>]*>[\s\S]*?<\/style>|<script\b[^>]*>[\s\S]*?<\/script>)/i,
+      '',
+    )
+    if (next !== rest) {
+      rest = next
+      changed = true
+    }
+  }
+  return rest
 }
 
 function bootstrapTag(
