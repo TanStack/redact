@@ -1074,6 +1074,12 @@ export function unmountAllChildren(parent: Fiber, domParent: Node): void {
 // ---------------------------------------------------------------------------
 
 function insertInto(parent: Node, node: Node, anchor: Node | null): void {
+  const projectedHeadParent = getDocumentHeadInsertionParent(parent, node)
+  if (projectedHeadParent) {
+    projectedHeadParent.appendChild(node)
+    return
+  }
+
   // Anchor may have been removed or moved since it was computed (mutations
   // from unmount, boundary reveal, user code, HMR). If it's no longer a child
   // of `parent`, fall back to append — trying to insertBefore a non-child
@@ -1083,6 +1089,15 @@ function insertInto(parent: Node, node: Node, anchor: Node | null): void {
   } else {
     parent.appendChild(node)
   }
+}
+
+const DOCUMENT_HEAD_TAGS = new Set(['base', 'link', 'meta', 'script', 'style', 'title'])
+
+function getDocumentHeadInsertionParent(parent: Node, node: Node): HTMLHeadElement | null {
+  if (parent.nodeType !== 9 || node.nodeType !== 1) return null
+  const tag = (node as Element).tagName.toLowerCase()
+  if (!DOCUMENT_HEAD_TAGS.has(tag)) return null
+  return (parent as Document).head
 }
 
 function getHostParent(fiber: Fiber): Node {
@@ -1260,4 +1275,3 @@ function isEventProp(name: string): boolean {
     name.charCodeAt(2) >= 65 /* 'A'-ish: any uppercase start (onClick, onChange, …) */
   )
 }
-

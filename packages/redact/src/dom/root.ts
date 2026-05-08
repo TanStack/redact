@@ -1,4 +1,11 @@
-import { FiberTag, createFiber, type FiberRoot, type ReactNode } from '../core'
+import {
+  FiberTag,
+  REACT_ELEMENT_TYPE,
+  createFiber,
+  type FiberRoot,
+  type ReactElement,
+  type ReactNode,
+} from '../core'
 import { renderRoot, flushSyncWork, batchedUpdates } from './reconcile'
 import {
   beginHydration,
@@ -92,8 +99,10 @@ export function hydrateRoot(
 
   beginHydration(root)
   try {
+    const normalizedInitialChildren =
+      isDocumentContainer(container) ? normalizeDocumentChildren(initialChildren) : initialChildren
     flushSyncWork(() => {
-      renderRoot(root, initialChildren)
+      renderRoot(root, normalizedInitialChildren)
     })
   } finally {
     endHydration(root)
@@ -103,7 +112,7 @@ export function hydrateRoot(
   return {
     render(children) {
       flushSyncWork(() => {
-        renderRoot(root, children)
+        renderRoot(root, isDocumentContainer(container) ? normalizeDocumentChildren(children) : children)
       })
     },
     unmount() {
@@ -111,6 +120,93 @@ export function hydrateRoot(
         renderRoot(root, null)
       })
     },
+  }
+}
+
+const HEAD_TAGS = new Set(['base', 'link', 'meta', 'script', 'style', 'title'])
+
+function isDocumentContainer(container: unknown): container is Document {
+  return !!container && (container as Node).nodeType === 9
+}
+
+function normalizeDocumentChildren(children: ReactNode): ReactNode {
+  const list = toChildArray(children)
+  const htmlIndex = list.findIndex((child) => isHostElement(child, 'html'))
+  if (htmlIndex === -1) return children
+
+  const headNodes = list.filter(isHeadElement)
+  if (headNodes.length === 0) return children
+
+  const htmlElement = list[htmlIndex] as ReactElement
+  const normalizedHtml = hoistIntoHtmlHead(htmlElement, headNodes)
+  return list
+    .filter((child, index) => index === htmlIndex || !isHeadElement(child))
+    .map((child) => (child === htmlElement ? normalizedHtml : child))
+}
+
+function hoistIntoHtmlHead(htmlElement: ReactElement, headNodes: ReactNode[]): ReactElement {
+  const htmlChildren = toChildArray(htmlElement.props?.children)
+  const headIndex = htmlChildren.findIndex((child) => isHostElement(child, 'head'))
+  let nextChildren: ReactNode[]
+
+  if (headIndex === -1) {
+    nextChildren = [
+      createHostElement('head', { children: headNodes }),
+      ...htmlChildren,
+    ]
+  } else {
+    const headElement = htmlChildren[headIndex] as ReactElement
+    const existingHeadChildren = toChildArray(headElement.props?.children)
+    const nextHead = {
+      ...headElement,
+      props: {
+        ...headElement.props,
+        children: [...headNodes, ...existingHeadChildren],
+      },
+    }
+    nextChildren = htmlChildren.map((child, index) => (index === headIndex ? nextHead : child))
+  }
+
+  return {
+    ...htmlElement,
+    props: {
+      ...htmlElement.props,
+      children: nextChildren,
+    },
+  }
+}
+
+function toChildArray(children: unknown): ReactNode[] {
+  if (children == null || typeof children === 'boolean') return []
+  if (Array.isArray(children)) return children as ReactNode[]
+  if (isReactElement(children)) return [children]
+  if (typeof children !== 'string' && isIterable(children)) return Array.from(children) as ReactNode[]
+  return [children as ReactNode]
+}
+
+function isHeadElement(value: ReactNode): boolean {
+  return isReactElement(value) && typeof value.type === 'string' && HEAD_TAGS.has(value.type)
+}
+
+function isHostElement(value: ReactNode, tag: string): boolean {
+  return isReactElement(value) && value.type === tag
+}
+
+function isReactElement(value: unknown): value is ReactElement {
+  return !!value && typeof value === 'object' && (value as ReactElement).$$typeof === REACT_ELEMENT_TYPE
+}
+
+function isIterable(value: unknown): value is Iterable<ReactNode> {
+  return !!value && typeof (value as { [Symbol.iterator]?: unknown })[Symbol.iterator] === 'function'
+}
+
+function createHostElement(type: string, props: Record<string, unknown>): ReactElement {
+  return {
+    $$typeof: REACT_ELEMENT_TYPE,
+    type,
+    key: null,
+    ref: null,
+    props,
   }
 }
 

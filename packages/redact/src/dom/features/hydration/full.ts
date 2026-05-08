@@ -147,6 +147,8 @@ const HEAD_KEY_ATTRS: Record<string, ReadonlyArray<string>> = {
   title: [],
 }
 
+const DOCUMENT_HEAD_TAGS = new Set(['base', 'link', 'meta', 'script', 'style', 'title'])
+
 // DOM elements already claimed by some fiber during this hydration pass.
 const CLAIMED = new WeakSet<Node>()
 
@@ -246,13 +248,23 @@ export function adoptHostDom(fiber: Fiber, parent: Fiber): boolean {
   if (!cursor) return false
 
   const tag = (fiber.type as string).toLowerCase()
+  const documentHeadParent = getDocumentHeadParent(cursor.parent, tag)
   const parentEl = cursor.parent as Element
   const parentTag =
     parentEl.nodeType === 1 ? (parentEl as Element).tagName.toLowerCase() : ''
-  const isHeadish = parentTag === 'head' || parentTag === 'html'
+  const isHeadish = parentTag === 'head' || parentTag === 'html' || !!documentHeadParent
 
   let candidate: ChildNode | null
-  if (isHeadish) {
+  if (documentHeadParent) {
+    // React 19 can project <meta>/<title>/<link> from anywhere in the tree into
+    // document.head. Redact does not have that projection yet, so when a
+    // document-root hydration pass sees a top-level head element, adopt it
+    // from <head> rather than trying to append it beside <html>.
+    candidate = new HydrationCursor(documentHeadParent).takeMatchingHeadElement(
+      tag,
+      fiber.pendingProps ?? {},
+    )
+  } else if (isHeadish) {
     // Head/html children are position-insensitive — server may emit them in
     // a different order than the React tree (React 19 head hoisting, etc.).
     // Scan forward without removing non-matching nodes; match on attribute
@@ -295,6 +307,11 @@ export function adoptHostDom(fiber: Fiber, parent: Fiber): boolean {
   // Set up child cursor for this host's children
   hydrationCursors.set(fiber, new HydrationCursor(candidate))
   return true
+}
+
+function getDocumentHeadParent(parent: Node, tag: string): HTMLHeadElement | null {
+  if (parent.nodeType !== 9 || !DOCUMENT_HEAD_TAGS.has(tag)) return null
+  return (parent as Document).head
 }
 
 export function adoptTextDom(fiber: Fiber, parent: Fiber, text: string): boolean {
