@@ -11,10 +11,12 @@
     "test:types": "tsc --noEmit",
     "size": "node scripts/size.mjs",
     "size:check": "node scripts/size-check.mjs",
-    "example:playground": "pnpm --filter dom-jsx-playground dev"
+    "example:playground": "pnpm --filter dom-jsx-playground dev",
+    "bench": "node scripts/run-bench.mjs"
   },
   "devDependencies": {
     "esbuild": "^0.28.0",
+    "playwright": "^1.59.1",
     "typescript": "~5.9.3",
     "vite": "^5.4.11",
     "vitest": "^2.1.8"

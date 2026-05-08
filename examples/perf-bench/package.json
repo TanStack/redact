@@ -1,0 +1,16 @@
+{
+  "name": "perf-bench",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "preview": "vite preview --port 4173 --strictPort"
+  },
+  "dependencies": {
+    "@tanstack/redact": "workspace:*"
+  },
+  "devDependencies": {
+    "vite": "^5.4.11"
+  }
+}
