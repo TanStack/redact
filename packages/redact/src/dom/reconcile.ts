@@ -209,20 +209,15 @@ function rerenderFiber(fiber: Fiber, root: FiberRoot): void {
 // Element → children normalization
 // ---------------------------------------------------------------------------
 
-type TextChild = { _text: string }
-type NormalizedChild = ReactElement | TextChild | null
+// Text children pass through as raw strings — no wrapper. The previous
+// `{_text: string}` shape allocated tens of thousands of objects per
+// stable-list re-render and dominated minor-GC pressure. `typeof === 'string'`
+// is also robust to RSC renderable proxies (which have `has` traps that
+// would fool a `'_text' in child` predicate but can't fool `typeof`).
+type NormalizedChild = ReactElement | string | null
 
-// NEVER use `'_text' in child` to distinguish text wrappers from elements.
-// TanStack's RSC renderable proxies (createRscProxy with renderable: true) are
-// Proxy wrappers around real React elements whose `has` trap returns `true`
-// for ANY string key — so `'_text' in rscProxy` is TRUE even though the proxy
-// is an element. That misidentification set a Text fiber's `pendingProps` to
-// `child._text` (another chained RSC proxy), which then rendered as
-// `[object Object]` when createTextNode stringified the element. React
-// elements always carry `$$typeof`; our text wrapper never does — so the
-// presence of `$$typeof` is the invariant we rely on.
-function isTextChild(child: Exclude<NormalizedChild, null>): child is TextChild {
-  return (child as any).$$typeof === undefined
+function isTextChild(child: Exclude<NormalizedChild, null>): child is string {
+  return typeof child === 'string'
 }
 
 export function childrenToArray(children: ReactNode): NormalizedChild[] {
@@ -233,11 +228,15 @@ export function childrenToArray(children: ReactNode): NormalizedChild[] {
 
 function pushChildren(node: ReactNode, out: NormalizedChild[]): void {
   if (node == null || typeof node === 'boolean') return
-  if (typeof node === 'string' || typeof node === 'number') {
+  if (typeof node === 'string') {
     // Empty strings render no text node (matches React + the `<!-- -->`
     // separator elision on the SSR side so server/client agree).
     if (node === '') return
-    out.push({ _text: '' + node })
+    out.push(node)
+    return
+  }
+  if (typeof node === 'number') {
+    out.push('' + node)
     return
   }
   if (Array.isArray(node)) {
@@ -298,7 +297,7 @@ function fiberFromChild(child: NormalizedChild, parent: Fiber): Fiber {
   if (!child) return createFiber(FiberTag.Fragment, null, null)
   if (isTextChild(child)) {
     const f = createFiber(FiberTag.Text, null, null)
-    f.pendingProps = child._text
+    f.pendingProps = child
     f.parent = parent
     return f
   }
@@ -344,44 +343,31 @@ export function reconcileChildren(
   domParent: Node,
   anchor: Node | null,
 ): void {
-  // Fast path: unkeyed positional steady-state. The vast majority of real
-  // re-renders hit this case (e.g. a stable list whose items shift props but
-  // not structure). Walk the existing sibling chain and newChildren in
-  // lockstep; if every pair matches by type and neither side has keys or
-  // null gaps, skip the Map / Set / Array allocations and just update
-  // pendingProps / type / ref in place. The render pass below is unchanged.
-  // Falls back to the slow path on the first divergence.
+  // Fast path: unkeyed positional steady-state. Walk the existing sibling
+  // chain and newChildren in lockstep, validating AND committing in one pass.
+  // On any divergence we fall back to the slow path, which rebuilds the
+  // sibling chain anyway — partial pendingProps writes are idempotent.
+  // Skips the Map / Set / existing-array allocation entirely.
   if (!currentRoot?.hydrating) {
     let f: Fiber | null = parent.child
-    let i = 0
     let ok = true
-    for (; i < newChildren.length; i++) {
+    for (let i = 0; i < newChildren.length; i++) {
       const child = newChildren[i]
-      if (child == null) { ok = false; break }
-      if (!f) { ok = false; break }
-      if (f.key != null) { ok = false; break }
-      if (!isTextChild(child) && (child as ReactElement).key != null) { ok = false; break }
-      if (!sameType(f, child)) { ok = false; break }
+      if (child == null || !f || f.key != null) { ok = false; break }
+      if (typeof child === 'string') {
+        if (f.tag !== FiberTag.Text) { ok = false; break }
+        f.pendingProps = child
+      } else {
+        if ((child as ReactElement).key != null) { ok = false; break }
+        if (f.type !== (child as ReactElement).type) { ok = false; break }
+        f.pendingProps = (child as ReactElement).props
+        f.ref = (child as any).ref ?? null
+      }
       f = f.sibling
     }
     if (ok && f === null) {
-      // All matched. Update each fiber's per-render state in place.
-      let g: Fiber | null = parent.child
-      for (let j = 0; j < newChildren.length; j++) {
-        const child = newChildren[j]!
-        if (isTextChild(child)) {
-          g!.pendingProps = child._text
-        } else {
-          // type is already === child.type by sameType; assignment is a
-          // no-op write but keeps the slow-path semantic that we accept
-          // "type identity preserved" matches.
-          g!.pendingProps = (child as ReactElement).props
-          g!.ref = (child as any).ref ?? null
-        }
-        g = g!.sibling
-      }
-      // Pass 2: render forward with per-child anchors. This is the same loop
-      // as the slow path's pass 2.
+      // Pass 2: render forward with per-child anchors. Identical to the slow
+      // path's pass 2.
       for (let r: Fiber | null = parent.child; r; r = r.sibling) {
         let a = anchor
         for (let s: Fiber | null = r.sibling; s; s = s.sibling) {
@@ -481,7 +467,7 @@ export function reconcileChildren(
       claimed.add(match)
       fiber = match
       if (isTextChild(child!)) {
-        fiber.pendingProps = child._text
+        fiber.pendingProps = child
       } else {
         fiber.type = (child as ReactElement).type
         fiber.pendingProps = (child as ReactElement).props
@@ -725,9 +711,7 @@ export function renderFiber(fiber: Fiber, domParent: Node, anchor: Node | null):
 
 function renderText(fiber: Fiber, domParent: Node, anchor: Node | null): void {
   const text = fiber.pendingProps as string
-  // Steady-state fast path: text identity unchanged since last render →
-  // skip the Text.data getter (a native call) and the memoizedProps write.
-  // Static literal-string children hit this on every re-render after mount.
+  // Identity-unchanged fast path: skip the native Text.data write entirely.
   if (fiber.dom && fiber.memoizedProps === text) return
   if (!fiber.dom) {
     const hydrated = currentRoot?.hydrating ? adoptTextDom(fiber, fiber.parent!, text) : false
@@ -735,7 +719,9 @@ function renderText(fiber: Fiber, domParent: Node, anchor: Node | null): void {
       fiber.dom = document.createTextNode(text)
       insertInto(domParent, fiber.dom, anchor)
     }
-  } else if ((fiber.dom as Text).data !== text) {
+  } else {
+    // Past the fast path, and adoptTextDom already realigned `.data` on
+    // hydration — `.data !== text` here is guaranteed, so write directly.
     ;(fiber.dom as Text).data = text
   }
   fiber.memoizedProps = text
