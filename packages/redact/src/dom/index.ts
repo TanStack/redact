@@ -14,6 +14,22 @@ export function preinit(_href: string, _opts?: any): void {}
 export function preloadModule(_href: string, _opts?: any): void {}
 export function preinitModule(_href: string, _opts?: any): void {}
 
+export const __DOM_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE = {
+  d: {
+    f() {},
+    r() {},
+    D() {},
+    C() {},
+    L() {},
+    m() {},
+    X() {},
+    S() {},
+    M() {},
+  },
+  p: 0,
+  findDOMNode: null,
+}
+
 export const version = '19.2.3'
 
 // Required by React's default export consumers
@@ -29,5 +45,6 @@ export default {
   preinit,
   preloadModule,
   preinitModule,
+  __DOM_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE,
   version: '19.2.3',
 }
