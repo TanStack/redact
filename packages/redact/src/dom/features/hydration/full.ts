@@ -21,18 +21,18 @@ const GUARD_WINDOW_MS = 3000
 export function installHydrationScrollGuard(): void {
   if (typeof window === 'undefined') return
   const w = window as any
-  if (w.__tdomScrollGuardInstalled) return
-  w.__tdomScrollGuardInstalled = true
+  if (w.__redactScrollGuardInstalled) return
+  w.__redactScrollGuardInstalled = true
   const guardStartedAt = performance.now()
   let lastUserScrollAt = 0
   let programmatic = 0
-  w.__tdomScrollLog = []
+  w.__redactScrollLog = []
   window.addEventListener(
     'scroll',
     () => {
       if (programmatic === 0) {
         lastUserScrollAt = performance.now()
-        w.__tdomScrollLog.push({ t: Math.round(lastUserScrollAt), ev: 'user-scroll', y: window.scrollY })
+        w.__redactScrollLog.push({ t: Math.round(lastUserScrollAt), ev: 'user-scroll', y: window.scrollY })
       }
     },
     { capture: true, passive: true },
@@ -43,7 +43,7 @@ export function installHydrationScrollGuard(): void {
     const inGuardWindow = now - guardStartedAt < GUARD_WINDOW_MS
     const userScrolledRecently = lastUserScrollAt > 0 && now - lastUserScrollAt < 1500
     if (inGuardWindow && userScrolledRecently) {
-      w.__tdomScrollLog.push({
+      w.__redactScrollLog.push({
         t: Math.round(now),
         ev: 'suppressed',
         args: JSON.stringify(args).slice(0, 80),
@@ -52,7 +52,7 @@ export function installHydrationScrollGuard(): void {
       })
       return
     }
-    w.__tdomScrollLog.push({
+    w.__redactScrollLog.push({
       t: Math.round(now),
       ev: 'allowed',
       args: JSON.stringify(args).slice(0, 80),
