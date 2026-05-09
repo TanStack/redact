@@ -6,9 +6,12 @@
  *     main bundle can replay them against un-hydrated subtrees ($RE_q buffer).
  *
  * Wire format:
- *   Fallback:  <!--$?ID--><div hidden id="B:ID">fallback</div><!--/$-->
+ *   Fallback:  <!--$?ID--><div id="B:ID">fallback</div><!--/$-->
  *   Resolved:  emits <div hidden id="S:ID">real</div><script>$RC(ID)</script>
  *              which splices real into place and rewrites the comment to <!--$ID-->.
+ *              The fallback div is visible (it's the user-visible loading
+ *              state); only the resolved-content staging div is `hidden`
+ *              before $RC moves its children inline.
  *
  * Client hydration calls $RH(ID, cb) to register a callback invoked once the
  * boundary has been revealed (or immediately, if it was already revealed).
