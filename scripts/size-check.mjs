@@ -32,10 +32,15 @@ const BUDGETS = {
   // These collectively cut the canonical render bench by ~25 % and put
   // redact ~20 % ahead of React on the same workload. Already includes the
   // ~26-33 B for the sibling-order second pass from the earlier fix.
-  'redact/dom-client': 9650,
-  'redact/dom-client (nano)': 7270,
-  'redact/dom-client (suspense=stub)': 8980,
-  'redact/dom-client (hydration=stub)': 8330,
+  //
+  // 0.0.11 bump (+~400-450 B on dom-client variants): vinext SSR/hydration
+  // compatibility — document-head projection in render and hydration, plus
+  // the __DOM_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE stub
+  // on the dom entry. See PRs #8-#11 for context.
+  'redact/dom-client': 10100,
+  'redact/dom-client (nano)': 7700,
+  'redact/dom-client (suspense=stub)': 9460,
+  'redact/dom-client (hydration=stub)': 8780,
 }
 
 const alias = {
