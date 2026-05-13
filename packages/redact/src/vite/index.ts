@@ -82,6 +82,22 @@ interface ResolvedFeatures {
   hydration: boolean
 }
 
+// On-disk folder names (kebab-case) → ResolvedFeatures keys (camelCase). The
+// resolveId hook receives the bare specifier from `features/index.ts`'s
+// `import './<folder>'` calls, so the matched name is always the folder.
+// Without this remap, `forwardRef: false` and `classComponents: false` were
+// silently no-ops because `'forward-ref' in features` and `'class' in features`
+// are both false.
+const FOLDER_TO_FEATURE: Record<string, keyof ResolvedFeatures> = {
+  portal: 'portal',
+  context: 'context',
+  suspense: 'suspense',
+  memo: 'memo',
+  'forward-ref': 'forwardRef',
+  lazy: 'lazy',
+  class: 'classComponents',
+}
+
 const PRESET_DEFAULTS: Record<RedactPreset, ResolvedFeatures> = {
   // Opt-in: everything off. Turn individual features on via `features`.
   nano: {
@@ -373,9 +389,10 @@ export function redact(options: RedactOptions = {}): any {
       if (importer && /[\\/]features[\\/]index\.[jt]sx?$/.test(importer)) {
         const m = id.match(/^\.\/([a-z-]+)$/)
         if (m) {
-          const name = m[1] as keyof ResolvedFeatures
-          if (name in features && !features[name]) {
-            const r = await this.resolve(`./${name}/stub`, importer, {
+          const folder = m[1]!
+          const name = FOLDER_TO_FEATURE[folder]
+          if (name && !features[name]) {
+            const r = await this.resolve(`./${folder}/stub`, importer, {
               ...opts,
               skipSelf: true,
             })
