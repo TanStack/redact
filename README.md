@@ -2,9 +2,9 @@
 
 **React, redacted.** A minimal React-19-API-compatible drop-in replacement, **~4× smaller** than canonical React. Shipped as a single `@tanstack/redact` package with subpath exports for the `react` / `react-dom` / `react-dom/server` / `scheduler` / `react/jsx-runtime` shapes. User code keeps its canonical `import { useState } from 'react'` — the swap happens at the bundler level.
 
-- **9.07 KB** gzip at full drop-in parity (vs ~45 KB for React 19)
-- **6.75 KB** gzip with every opt-in feature stubbed (`nano` preset)
-- **707/707** unit + integration tests passing, SSR + streaming Suspense + hydration included
+- **10.03 KB** gzip at full drop-in parity (vs ~45 KB for React 19)
+- **7.49 KB** gzip with every opt-in feature stubbed (`nano` preset)
+- **731/731** unit + integration tests passing, SSR + streaming Suspense + hydration included
 - Running in production on [tanstack.com](https://tanstack.com) as of 2026-04-20
 
 For background on the motivation, the "projection" framing, the architectural approach, and the production performance results, see the blog post: [Projecting React](https://tannerlinsley.com/posts/projecting-react).
@@ -39,8 +39,8 @@ import { createRoot, hydrateRoot } from 'react-dom/client'
 Two presets — pick a starting point, flip flags from there:
 
 ```ts
-redact({ preset: 'full' })        // 9.07 KB — everything on, opt OUT individual features
-redact({ preset: 'nano' })        // 6.75 KB — everything off, opt IN what you need
+redact({ preset: 'full' })        // 10.03 KB — everything on, opt OUT individual features
+redact({ preset: 'nano' })        // 7.49 KB — everything off, opt IN what you need
 ```
 
 Opt out from `full`:
@@ -79,21 +79,21 @@ Full feature matrix and alternative configuration paths below.
 |---|---|---|---:|
 | `portal` | `createPortal` into alt container | Children render in place, `container` ignored | ~30 B |
 | `context` | Provider push/pop + consumer walk | Provider → Fragment; `useContext` returns default | ~80 B |
-| `suspense` | Boundary + fallback + streaming hydration | Suspense → Fragment; thenables retry on settle | **~640 B** |
+| `suspense` | Boundary + fallback + streaming hydration, DOM-preserving re-suspension | Suspense → Fragment; thenables retry on settle | **~820 B** |
 | `memo` | `shallowEqual` prop-equality gate | Passes through every parent render | ~80 B |
 | `forwardRef` | Ref forwarded to inner fn | Ref dropped (React 19 "refs as props" still works) | ~70 B |
 | `lazy` | Full hydration coordination | Sync-resolvable payloads work; async retries on settle | ~20 B |
 | `classComponents` | Full lifecycle + `contextType` + error boundaries | `constructor` + `render` + `setState` only | ~200 B |
-| `hydration` | SSR DOM adoption, streaming boundaries, scroll guard, event replay | `hydrateRoot` throws; use `createRoot` for SPA | **~1270 B** |
+| `hydration` | SSR DOM adoption, streaming boundaries, scroll guard, event replay | `hydrateRoot` throws; use `createRoot` for SPA | **~1310 B** |
 
-**Always on** (irreducible core, ~6.7 KB gzip): fiber reconciler with keyed child diffing, host DOM mount/update, `useState` / `useReducer` / `useEffect` / `useLayoutEffect` / `useInsertionEffect` / `useRef` / `useMemo` / `useCallback` / `useId` / `useSyncExternalStore` / `use` (for thenables), native event binding, Fragments, StrictMode/Profiler (aliased to Fragment), element creation + JSX runtime.
+**Always on** (irreducible core, ~7.5 KB gzip): fiber reconciler with keyed child diffing, host DOM mount/update, `useState` / `useReducer` / `useEffect` / `useLayoutEffect` / `useInsertionEffect` / `useRef` / `useMemo` / `useCallback` / `useId` / `useSyncExternalStore` / `use` (for thenables), native event binding, Fragments, StrictMode/Profiler (aliased to Fragment), element creation + JSX runtime.
 
 ### Presets
 
 | Preset | What's on | `react-dom/client` gzip | Intent |
 |---|---|---:|---|
-| `full` (default) | all 8 features | **9.07 KB** | Drop-in React — opt OUT individual features you don't need |
-| **`nano`** | none | **6.75 KB** | Start minimal — opt IN individual features you need |
+| `full` (default) | all 8 features | **10.03 KB** | Drop-in React — opt OUT individual features you don't need |
+| **`nano`** | none | **7.49 KB** | Start minimal — opt IN individual features you need |
 
 Two presets, not a spectrum: every app either wants most of React (start from `full`, opt out) or a tight bundle (start from `nano`, opt in). Per-feature overrides merge on top of preset defaults either way.
 
@@ -436,12 +436,12 @@ Subpath sizes from `pnpm size`. The `react` / `react-dom/client` / `react-dom/se
 
 | Entry | min | gzip | brotli |
 |---|---:|---:|---:|
-| `react`              (= `@tanstack/redact`)             | 6.59 KB | 2.65 KB | 2.41 KB |
-| `react/jsx-runtime`  (= `@tanstack/redact/jsx-runtime`) | 247 B | 189 B | 178 B |
-| `react-dom/client`   (= `@tanstack/redact/dom-client`, `full`) | 26.56 KB | **9.07 KB** | 8.21 KB |
-| `react-dom/client`   (= `@tanstack/redact/dom-client`, `nano`) | 18.75 KB | **6.75 KB** | 6.10 KB |
-| `react-dom/server`   (= `@tanstack/redact/server`)      | 11.48 KB | 4.59 KB | 4.16 KB |
-| **Client total** (`full`: react + react-dom/client + jsx-runtime) | 32.63 KB | **11.18 KB** | 10.14 KB |
+| `react`              (= `@tanstack/redact`)             | 6.59 KB | 2.65 KB | 2.42 KB |
+| `react/jsx-runtime`  (= `@tanstack/redact/jsx-runtime`) | 247 B | 189 B | 187 B |
+| `react-dom/client`   (= `@tanstack/redact/dom-client`, `full`) | 29.65 KB | **10.03 KB** | 9.11 KB |
+| `react-dom/client`   (= `@tanstack/redact/dom-client`, `nano`) | 20.86 KB | **7.49 KB** | 6.79 KB |
+| `react-dom/server`   (= `@tanstack/redact/server`)      | 12.90 KB | 5.09 KB | 4.61 KB |
+| **Client total** (`full`: react + react-dom/client + jsx-runtime) | 35.81 KB | **12.24 KB** | 11.07 KB |
 
 Regenerate with `pnpm size`.
 

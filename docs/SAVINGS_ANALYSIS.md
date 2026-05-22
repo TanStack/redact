@@ -8,18 +8,18 @@ Numbers from `scripts/size.mjs` (esbuild: bundle + minify + `NODE_ENV=production
 |---|---:|---:|---:|---:|
 | `react` | 3.29 KB | 2.65 KB | 81% | −0.64 KB |
 | `react/jsx-runtime` | 731 B | 189 B | 26% | −542 B |
-| `react-dom` | 4.35 KB | 8.53 KB | 196% | +4.18 KB\* |
-| `react-dom/client` | **60.27 KB** | **9.07 KB** | **15%** | **−51.20 KB** |
-| `react-dom/server` | 61.11 KB | 4.59 KB | 8% | −56.52 KB |
-| **Client total** (`react` + `react-dom/client` + `react/jsx-runtime`) | **60.48 KB** | **11.18 KB** | **18%** | **−49.30 KB** |
+| `react-dom` | 4.35 KB | 9.24 KB | 213% | +4.89 KB\* |
+| `react-dom/client` | **60.27 KB** | **10.03 KB** | **17%** | **−50.24 KB** |
+| `react-dom/server` | 61.11 KB | 5.09 KB | 8% | −56.02 KB |
+| **Client total** (`react` + `react-dom/client` + `react/jsx-runtime`) | **60.48 KB** | **12.24 KB** | **20%** | **−48.24 KB** |
 
 \* `react-dom` (the index) looks worse because React splits it into a tiny facade over `react-dom/client`; ours ships `createPortal`, `flushSync`, `unstable_batchedUpdates`, and resource-hint stubs in one file. Real apps ship `react-dom/client`, so that row is what matters.
 
-The `nano` preset (every opt-in feature stubbed) brings `react-dom/client` down further to **6.75 KB gzip** — a 2.32 KB savings vs `full` and a **8.9× reduction** vs React's `react-dom/client`.
+The `nano` preset (every opt-in feature stubbed) brings `react-dom/client` down further to **7.49 KB gzip** — a 2.54 KB savings vs `full` and an **8.0× reduction** vs React's `react-dom/client`.
 
 React 18 was ~43 KB gzip for the full client runtime; React 19 jumped to ~60 KB mostly because of `use()`, server actions (`useActionState`, `useFormStatus`), `useOptimistic`, view transitions, and async-transition plumbing.
 
-**Bottom line: a single-import client bundle shrinks from ~60 KB to ~11 KB, a ~49 KB (~82%) reduction at full parity, or to ~9.4 KB (~84% reduction) on the `nano` preset.** The win comes almost entirely from `react-dom/client` — React's `react` package is only ~3 KB to begin with.
+**Bottom line: a single-import client bundle shrinks from ~60 KB to ~12 KB, a ~48 KB (~80%) reduction at full parity, or to ~10.3 KB (~83% reduction) on the `nano` preset.** The win comes almost entirely from `react-dom/client` — React's `react` package is only ~3 KB to begin with.
 
 ## Where those ~49 KB go in React (approximation)
 
@@ -52,14 +52,14 @@ The 8 opt-in features can each be stubbed individually. Numbers from `pnpm size`
 | Feature | full → stub savings (gzip) |
 |---|---:|
 | `portal` | ~30 B |
-| `context` | ~80 B |
-| `suspense` | **~640 B** |
+| `context` | ~60 B |
+| `suspense` | **~820 B** |
 | `memo` | ~80 B |
 | `forwardRef` | ~70 B |
-| `lazy` | ~20 B |
-| `classComponents` | ~200 B |
-| `hydration` | **~1270 B** |
-| **All off (`nano` preset)** | **~2320 B** |
+| `lazy` | ~10 B |
+| `classComponents` | ~180 B |
+| `hydration` | **~1310 B** |
+| **All off (`nano` preset)** | **~2540 B** |
 
 Stubbed features still carry a small registration footprint (matcher entry that maps the React element type to Fragment, dispatcher capability defaults). The `nano` preset's total savings is slightly less than the sum of individual savings because some feature code is shared.
 
@@ -92,9 +92,9 @@ Ranked by how likely they are to bite a real app:
 7. **Typing feels slightly worse under contention** — no priority boost for user input.
 8. **StrictMode is a no-op** — dev-mode detection of unsafe side effects is gone.
 
-## What this means for the 11 KB budget
+## What this means for the 12 KB budget
 
-Client bundle is 11.18 KB gzip total at full parity; the reconciler + dispatcher + DOM + hydration alone is ~8.3 KB. That ~8.3 KB is what shaves 51 KB off React's 60 KB `react-dom/client` — a **6.6× reduction**. The delta comes from skipping the four things that define React's production runtime:
+Client bundle is 12.24 KB gzip total at full parity; the reconciler + dispatcher + DOM + hydration alone is ~9 KB. That ~9 KB is what shaves 50 KB off React's 60 KB `react-dom/client` — a **6.0× reduction**. The delta comes from skipping the four things that define React's production runtime:
 
 - Fiber (double-buffered work-in-progress tree)
 - Scheduler (priority + lanes + interruption)
