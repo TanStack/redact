@@ -1,6 +1,6 @@
 {
   "name": "@tanstack/redact",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "React, redacted. A minimal React-API-compatible drop-in replacement.",
   "type": "module",
   "main": "./dist/react/index.js",
