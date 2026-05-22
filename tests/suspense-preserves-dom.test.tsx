@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, afterEach } from 'vitest'
 import * as React from 'react'
 import { createRoot } from 'react-dom/client'
 
@@ -7,6 +7,10 @@ function setup() {
   document.body.appendChild(c)
   return c
 }
+
+afterEach(() => {
+  document.body.innerHTML = ''
+})
 
 async function flush(n = 10) {
   for (let i = 0; i < n; i++) await Promise.resolve()
