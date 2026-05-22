@@ -1,6 +1,6 @@
 # React 19 API Surface — `@tanstack/redact`
 
-API-complete drop-in replacement for `react` + `react-dom` targeting TanStack Start apps (tanstack.com). Shipped as `@tanstack/redact@0.0.1`. Client total: **11.18 KB gzip** (full preset) / **9.40 KB gzip** (nano preset, with feature flags off).
+API-complete drop-in replacement for `react` + `react-dom` targeting TanStack Start apps (tanstack.com). Shipped as `@tanstack/redact@0.0.1`. Client total: **12.24 KB gzip** (full preset) / **10.33 KB gzip** (nano preset, with feature flags off).
 
 ## Legend
 
@@ -235,11 +235,11 @@ Numbers from `pnpm size` against `@tanstack/redact@0.0.1`. The user-facing colum
 
 | Subpath | min | gzip | brotli |
 |---|---:|---:|---:|
-| `react` | 6.59 KB | **2.65 KB** | 2.41 KB |
-| `react/jsx-runtime` | 247 B | 189 B | 178 B |
-| `react-dom/client` (`full`) | 26.56 KB | **9.07 KB** | 8.21 KB |
-| `react-dom/client` (`nano`) | 18.75 KB | **6.75 KB** | 6.10 KB |
-| `react-dom/server` | 11.48 KB | 4.59 KB | 4.16 KB |
-| **Client total** (`full`: react + react-dom/client + jsx-runtime) | 32.63 KB | **11.18 KB** | 10.14 KB |
+| `react` | 6.59 KB | **2.65 KB** | 2.42 KB |
+| `react/jsx-runtime` | 247 B | 189 B | 187 B |
+| `react-dom/client` (`full`) | 29.65 KB | **10.03 KB** | 9.11 KB |
+| `react-dom/client` (`nano`) | 20.86 KB | **7.49 KB** | 6.79 KB |
+| `react-dom/server` | 12.90 KB | 5.09 KB | 4.61 KB |
+| **Client total** (`full`: react + react-dom/client + jsx-runtime) | 35.81 KB | **12.24 KB** | 11.07 KB |
 
 Server-side weight doesn't count toward the page-weight goal. Per-feature gzip deltas (for sizing individual feature flags) live in [SAVINGS_ANALYSIS.md](./SAVINGS_ANALYSIS.md).

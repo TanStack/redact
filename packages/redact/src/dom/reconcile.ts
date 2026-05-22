@@ -1014,7 +1014,7 @@ export function isThenable(x: any): x is Promise<any> {
 // Unmount
 // ---------------------------------------------------------------------------
 
-function unmountFiber(fiber: Fiber, domParent: Node): void {
+export function unmountFiber(fiber: Fiber, domParent: Node): void {
   fiber.unmounted = true
   // Recurse first
   let c = fiber.child

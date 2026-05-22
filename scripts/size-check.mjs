@@ -14,8 +14,8 @@ const root = resolve(__dirname, '..')
 
 // gzip-byte budgets per named configuration. Update intentionally — size
 // regressions should require a conscious choice, not slip through CI.
-// Current sizes (May 2026): 2715 / 9396 / 7026 / 8739 / 8093. Budgets include
-// a small cushion over current (~60 B) to absorb minor noise. Shrink budgets
+// Current sizes (May 2026): 2715 / 10274 / 7671 / 9426 / 8963. Budgets
+// include a small cushion (~60 B) to absorb minor noise. Shrink budgets
 // when you intentionally make the bundle smaller.
 //
 // May 2026 bump (+~30 B on dom-client variants): reconcileChildren now does
@@ -37,10 +37,19 @@ const BUDGETS = {
   // compatibility — document-head projection in render and hydration, plus
   // the __DOM_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE stub
   // on the dom entry. See PRs #8-#11 for context.
-  'redact/dom-client': 10100,
+  //
+  // May 2026 bump (+~150-185 B on Suspense-bearing dom-client variants):
+  // Suspense now preserves committed primary DOM on re-suspension instead of
+  // calling unmountAllChildren — saves scrollTop / focus / selection /
+  // component state across the suspended window. Hides root host doms,
+  // mounts fallback in a detached Fragment fiber off `fiber.child`, restores
+  // on resolve. Hits `redact/dom-client` (full) and the `hydration=stub`
+  // variant (which still ships Suspense). `suspense=stub` and `nano` don't
+  // grow. See PR #16.
+  'redact/dom-client': 10340,
   'redact/dom-client (nano)': 7700,
   'redact/dom-client (suspense=stub)': 9460,
-  'redact/dom-client (hydration=stub)': 8780,
+  'redact/dom-client (hydration=stub)': 9030,
 }
 
 const alias = {
