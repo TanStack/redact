@@ -44,6 +44,41 @@ function makeStore<T>(initial: T): Store<T> {
 }
 
 describe('useSyncExternalStore cleanup on unmount', () => {
+  it('subscribes after render when the store synchronously notifies', async () => {
+    const container = setup()
+    let snapshot = 0
+    let renders = 0
+    let isRendering = false
+    let subscribedDuringRender = false
+
+    function subscribe(cb: () => void) {
+      subscribedDuringRender ||= isRendering
+      cb()
+      return () => {}
+    }
+
+    function getSnapshot() {
+      snapshot += 1
+      return snapshot
+    }
+
+    function View() {
+      isRendering = true
+      const v = React.useSyncExternalStore(subscribe, getSnapshot, getSnapshot)
+      isRendering = false
+      renders += 1
+      return <span>{v}</span>
+    }
+
+    const root = createRoot(container)
+    root.render(<View />)
+    await Promise.resolve()
+
+    expect(subscribedDuringRender).toBe(false)
+    expect(renders).toBe(2)
+    expect(container.querySelector('span')!.textContent).toBe(String(snapshot))
+  })
+
   it('runs unsubscribe when parent stops rendering child', async () => {
     const container = setup()
     const store = makeStore(0)

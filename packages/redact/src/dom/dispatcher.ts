@@ -226,6 +226,16 @@ function makeDispatcherImpl() {
     ): T {
       const fiber = getCurrentFiber()
       const hook = nextHook()
+      const store: {
+        getSnapshot: () => T
+        getServerSnapshot: (() => T) | undefined
+      } = hook.queue ?? {
+        getSnapshot,
+        getServerSnapshot,
+      }
+      hook.queue = store
+      store.getSnapshot = getSnapshot
+      store.getServerSnapshot = getServerSnapshot
 
       // During hydration, use the server snapshot (if provided) so the tree
       // matches the SSR output. Components like TanStack Router's ClientOnly
@@ -238,37 +248,67 @@ function makeDispatcherImpl() {
         isHydrating && getServerSnapshot ? getServerSnapshot() : getSnapshot()
       hook.state = value
 
-      if (hook.cleanup == null) {
-        const forceUpdate = () => {
-          let next: T
-          try {
-            next = getSnapshot()
-          } catch {
-            scheduleUpdate(fiber)
-            return
-          }
-          if (!Object.is(hook.state, next)) {
-            hook.state = next
-            scheduleUpdate(fiber)
-          }
-        }
-        const unsubscribe = subscribe(forceUpdate)
-        hook.cleanup = unsubscribe
-        // Register with fiber so unmountFiber runs it. Without this, the store
-        // keeps holding forceUpdate and every store update schedules an already-
-        // unmounted fiber — its rerender walks stale .parent pointers and mounts
-        // zombie DOM into the old parent.
-        if (typeof unsubscribe === 'function') {
-          fiber.cleanups ||= []
-          fiber.cleanups.push(unsubscribe)
-        }
+      const deps = [subscribe]
+      if (hook.deps === undefined || !depsEqual(hook.deps, deps)) {
+        hook.deps = deps
+        const effect: Effect = {
+          tag: 'layout',
+          deps,
+          destroy: undefined,
+          create: () => {
+            if (hook.cleanup) {
+              try {
+                hook.cleanup()
+              } catch {
+                // ignore cleanup failures
+              }
+              if (fiber.cleanups) {
+                const i = fiber.cleanups.indexOf(hook.cleanup)
+                if (i >= 0) fiber.cleanups.splice(i, 1)
+              }
+              hook.cleanup = null
+            }
 
-        // If we served the server snapshot, run a post-hydration check so
-        // components like `useHydrated()` flip from false → true after the
-        // initial render commits. Queued late so hydration finishes first.
-        if (isHydrating && getServerSnapshot) {
-          queueMicrotask(() => queueMicrotask(forceUpdate))
+            let unsubscribed = false
+            const cleanup = () => {
+              unsubscribed = true
+              if (typeof unsubscribe === 'function') {
+                unsubscribe()
+              }
+            }
+            const forceUpdate = () => {
+              if (unsubscribed || fiber.unmounted) {
+                return
+              }
+
+              let next: T
+              try {
+                next = store.getSnapshot()
+              } catch {
+                scheduleUpdate(fiber)
+                return
+              }
+
+              if (!Object.is(hook.state, next)) {
+                hook.state = next
+                scheduleUpdate(fiber)
+              }
+            }
+            const unsubscribe = subscribe(forceUpdate)
+
+            // If we served the server snapshot, run a post-hydration check so
+            // components like `useHydrated()` flip from false → true after the
+            // initial render commits. Queued late so hydration finishes first.
+            if (isHydrating && store.getServerSnapshot) {
+              queueMicrotask(() => queueMicrotask(forceUpdate))
+            }
+
+            forceUpdate()
+            hook.cleanup = cleanup
+            return cleanup
+          },
         }
+        enqueueEffect(fiber, effect)
       }
       return value
     },
