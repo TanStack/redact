@@ -283,9 +283,27 @@ function resolveSpecifier(
   }
 }
 
+interface OptimizeDepsWithInclude {
+  include?: Array<string>
+}
+
+function pruneOptimizeDepsInclude(
+  optimizeDeps: OptimizeDepsWithInclude | undefined,
+  blocked: ReadonlySet<string>,
+): void {
+  if (!optimizeDeps?.include) return
+
+  optimizeDeps.include = optimizeDeps.include.filter((id) => {
+    const tailSpecifier = id.split('>').pop()?.trim() ?? id
+    return !blocked.has(id) && !blocked.has(tailSpecifier)
+  })
+}
+
 export function redact(options: RedactOptions = {}): any {
   const skip = new Set(options.skip ?? [])
   const entries = Object.entries(ALIASES).filter(([k]) => !skip.has(k))
+  const excludeList = entries.map(([k]) => k)
+  const optimizeDepsBlocked = new Set(excludeList)
   const features = resolveFeatures(options.preset ?? 'full', options.features ?? {})
 
   const resolvedMap: Record<string, string> = {}
@@ -302,12 +320,11 @@ export function redact(options: RedactOptions = {}): any {
     done = true
   }
 
-  return {
+  return [{
     name: 'redact',
     enforce: 'pre',
 
     config() {
-      const excludeList = entries.map(([k]) => k)
       // Single package — only one name to dedupe / no-external.
       const noExt = ['@tanstack/redact']
       const aliasMap = Object.fromEntries(entries.filter(([from, to]) => from !== to))
@@ -397,7 +414,21 @@ export function redact(options: RedactOptions = {}): any {
 
       return resolvedMap[id] ?? null
     },
-  }
+  }, {
+    name: 'redact:optimize-deps-guard',
+    enforce: 'post',
+
+    configResolved(config: any) {
+      // `optimizeDeps.exclude` loses when another plugin force-adds the same
+      // ids to `include`. That lets Vite pre-bundle real React next to Redact,
+      // producing duplicate dispatcher state. Prune after config settles so
+      // Redact's client/SSR shims stay canonical.
+      pruneOptimizeDepsInclude(config.optimizeDeps, optimizeDepsBlocked)
+      pruneOptimizeDepsInclude(config.environments?.client?.optimizeDeps, optimizeDepsBlocked)
+      pruneOptimizeDepsInclude(config.environments?.ssr?.optimizeDeps, optimizeDepsBlocked)
+      // Leave `environments.rsc` untouched. RSC depends on real React internals.
+    },
+  }]
 }
 
 export default redact
