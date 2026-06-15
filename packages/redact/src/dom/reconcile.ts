@@ -1,6 +1,5 @@
 import {
   FiberTag,
-  FiberFlag,
   createFiber,
   REACT_ELEMENT_TYPE,
   REACT_LEGACY_ELEMENT_TYPE,
@@ -23,13 +22,11 @@ import { makeDispatcher } from './dispatcher'
 import {
   adoptHostDom,
   adoptTextDom,
-  tryConsumeBoundary,
-  advanceCursorPast,
   setHydrationCursor,
   getHydrationCursor,
   clearHydrationCursor,
-  HydrationCursor,
   findHostParent as findHydrationHost,
+  abortHydration,
 } from './features/hydration'
 
 // ---------------------------------------------------------------------------
@@ -52,19 +49,19 @@ const pendingRoots = new Set<FiberRoot>()
 let forceRerenderingFiber: Fiber | null = null
 
 export function scheduleUpdate(fiber: Fiber): void {
-  // Drop updates scheduled on already-unmounted fibers. Subscribers (router,
+  // Drop updates scheduled on already-um fibers. Subscribers (router,
   // query, any external store) can fire after unmount if their cleanup was
   // missed, and letting those reach rerenderFiber mounts zombie DOM into the
   // old .parent's DOM (which stays reachable via the stale pointer).
-  if (fiber.unmounted) return
+  if (fiber.um) return
   const root = findRoot(fiber)
   if (!root) return
-  root.pending.add(fiber)
-  fiber.dirty = true
+  root.p.add(fiber)
+  fiber.dy = true
   pendingRoots.add(root)
   if (isBatching) return
-  if (!root.scheduled) {
-    root.scheduled = true
+  if (!root.s) {
+    root.s = true
     queueMicrotask(flushPending)
   }
 }
@@ -98,23 +95,26 @@ function flushPending(): void {
     let guard = 0
     while (pendingRoots.size > 0) {
       if (++guard > 50) {
-        throw new Error('flushPending exceeded 50 iterations — suspected infinite update loop.')
+        if (process.env.NODE_ENV !== 'production') {
+          throw new Error('flushPending exceeded 50 iterations — suspected infinite update loop.')
+        }
+        throw new Error()
       }
       const roots = [...pendingRoots]
       pendingRoots.clear()
       for (const root of roots) {
-        root.scheduled = false
+        root.s = false
         // Render each pending fiber from shallowest first so an ancestor's
         // cascade reaches descendants before we try to render them directly.
-        // Descendants rendered via cascade still have `dirty=true` (only
+        // Descendants rendered via cascade still have `dy=true` (only
         // rerenderFiber clears it); when we later reach them in this loop,
-        // rerenderFiber's own `if (!dirty) return` is our short-circuit. We
-        // previously filtered descendants of dirty ancestors here, but that
+        // rerenderFiber's own `if (!dy) return` is our short-circuit. We
+        // previously filtered descendants of dy ancestors here, but that
         // loses updates whenever an ancestor's render doesn't actually reach
         // the descendant — e.g. React.memo bailing on equal props. Keep all
-        // dirty fibers and let rerenderFiber de-dupe via its dirty check.
-        const pending = [...root.pending]
-        root.pending.clear()
+        // dy fibers and let rerenderFiber de-dupe via its dy check.
+        const pending = [...root.p]
+        root.p.clear()
         pending.sort((a, b) => fiberDepth(a) - fiberDepth(b))
         for (const fiber of pending) {
           rerenderFiber(fiber, root)
@@ -125,6 +125,12 @@ function flushPending(): void {
   } finally {
     flushing = false
   }
+}
+
+export function discardPendingWork(root: FiberRoot): void {
+  root.p.clear()
+  root.s = false
+  pendingRoots.delete(root)
 }
 
 function fiberDepth(fiber: Fiber): number {
@@ -151,13 +157,13 @@ export function findRoot(fiber: Fiber): FiberRoot | null {
 // ---------------------------------------------------------------------------
 
 export function renderRoot(root: FiberRoot, children: ReactNode): void {
-  const rootFiber = root.current
-  rootFiber.pendingProps = { children }
+  const rootFiber = root.r
+  rootFiber.pp = { children }
   currentRoot = root
   try {
-    reconcileChildren(rootFiber, childrenToArray(children), root.container as Node, null)
-    rootFiber.memoizedProps = rootFiber.pendingProps
-    rootFiber.dirty = false
+    reconcileChildren(rootFiber, childrenToArray(children), root.c as Node, null)
+    rootFiber.mp = rootFiber.pp
+    rootFiber.dy = false
   } finally {
     currentRoot = null
   }
@@ -165,29 +171,29 @@ export function renderRoot(root: FiberRoot, children: ReactNode): void {
 }
 
 function rerenderFiber(fiber: Fiber, root: FiberRoot): void {
-  if (!fiber.dirty) return
-  // Skip fibers that were unmounted between scheduling and flush. Without this,
+  if (!fiber.dy) return
+  // Skip fibers that were um between scheduling and flush. Without this,
   // the flush loop re-enters a zombie fiber whose .parent is still set; its
   // render mounts fresh DOM into the old parent's still-attached DOM (since
   // unmountFiber only clears fiber.child, not fiber.parent). Visible as route
   // content from a previous location staying on screen after nav, because a
-  // pending rerender on the old route's LibraryLandingPage (unmounted during
+  // pending rerender on the old route's LibraryLandingPage (um during
   // Outlet's shallow-first render) still fires from root.pending.
-  if (fiber.unmounted) return
+  if (fiber.um) return
   // Clear BEFORE rendering so a scheduleUpdate() triggered mid-render (e.g.
-  // error boundary catching a descendant throw) marks us dirty for the next
+  // error boundary catching a descendant throw) marks us dy for the next
   // flush iteration instead of being wiped out when render() completes.
-  fiber.dirty = false
+  fiber.dy = false
   currentRoot = root
   // If this rerender is resuming a hydration that was deferred by a suspension,
   // re-activate hydration mode for its duration so descendants adopt DOM
   // instead of re-creating it.
   const resumeHydration =
-    fiber.memoizedState && (fiber.memoizedState as any)._pendingHydration === true
-  const prevHydrating = root.hydrating
+    fiber.ms && (fiber.ms as any).p === true
+  const prevHydrating = root.h
   if (resumeHydration) {
-    delete (fiber.memoizedState as any)._pendingHydration
-    root.hydrating = true
+    delete (fiber.ms as any).p
+    root.h = true
   }
   const prevForcing = forceRerenderingFiber
   forceRerenderingFiber = fiber
@@ -196,7 +202,7 @@ function rerenderFiber(fiber: Fiber, root: FiberRoot): void {
   } finally {
     forceRerenderingFiber = prevForcing
     if (resumeHydration) {
-      root.hydrating = prevHydrating
+      root.h = prevHydrating
       // Deferred hydration completed — detach the preserved cursor so future
       // updates (post-hydration state changes) don't try to adopt stale DOM.
       clearHydrationCursor(fiber)
@@ -269,7 +275,7 @@ function pushChildren(node: ReactNode, out: NormalizedChild[]): void {
 }
 
 function isIterable(obj: any): boolean {
-  return obj != null && typeof obj !== 'string' && typeof obj[Symbol.iterator] === 'function'
+  return obj != null && typeof obj[Symbol.iterator] == 'function'
 }
 
 function getKeyOf(child: NormalizedChild, index: number): string {
@@ -297,7 +303,7 @@ function fiberFromChild(child: NormalizedChild, parent: Fiber): Fiber {
   if (!child) return createFiber(FiberTag.Fragment, null, null)
   if (isTextChild(child)) {
     const f = createFiber(FiberTag.Text, null, null)
-    f.pendingProps = child
+    f.pp = child
     f.parent = parent
     return f
   }
@@ -317,13 +323,13 @@ function fiberFromChild(child: NormalizedChild, parent: Fiber): Fiber {
       if (matched !== null) break
     }
     if (matched !== null) tag = matched
-    else if (typeof type === 'function') {
+    else if (typeof type == 'function') {
       tag = type.prototype && type.prototype.isReactComponent ? FiberTag.Class : FiberTag.Function
     }
   }
   const f = createFiber(tag, type, child.key ?? null)
   f.ref = (child as any).ref ?? null
-  f.pendingProps = child.props
+  f.pp = child.props
   f.parent = parent
   return f
 }
@@ -346,9 +352,9 @@ export function reconcileChildren(
   // Fast path: unkeyed positional steady-state. Walk the existing sibling
   // chain and newChildren in lockstep, validating AND committing in one pass.
   // On any divergence we fall back to the slow path, which rebuilds the
-  // sibling chain anyway — partial pendingProps writes are idempotent.
+  // sibling chain anyway — partial pp writes are idempotent.
   // Skips the Map / Set / existing-array allocation entirely.
-  if (!currentRoot?.hydrating) {
+  if (!currentRoot?.h) {
     let f: Fiber | null = parent.child
     let ok = true
     for (let i = 0; i < newChildren.length; i++) {
@@ -356,11 +362,11 @@ export function reconcileChildren(
       if (child == null || !f || f.key != null) { ok = false; break }
       if (typeof child === 'string') {
         if (f.tag !== FiberTag.Text) { ok = false; break }
-        f.pendingProps = child
+        f.pp = child
       } else {
         if ((child as ReactElement).key != null) { ok = false; break }
         if (f.type !== (child as ReactElement).type) { ok = false; break }
-        f.pendingProps = (child as ReactElement).props
+        f.pp = (child as ReactElement).props
         f.ref = (child as any).ref ?? null
       }
       f = f.sibling
@@ -395,7 +401,7 @@ export function reconcileChildren(
   //   budget > 0: more new than old remain → treat slot as an INSERTION: keep
   //               the old cursor and create a fresh fiber for new[i].
   //   budget < 0: more old than new remain → treat slot as a DELETION: advance
-  //               the old cursor past the mismatched fiber (it'll be unmounted
+  //               the old cursor past the mismatched fiber (it'll be um
   //               in the unclaimed pass) and retry.
   //   budget == 0: equal remaining → treat as REPLACE by preferring delete
   //               until budget flips positive or we hit a match.
@@ -453,7 +459,7 @@ export function reconcileChildren(
           break
         }
         // Deletion (or replace-as-delete-first): advance past cand. It remains
-        // unclaimed and will be unmounted at the end.
+        // unclaimed and will be um at the end.
         existingIdx++
         budget++
       }
@@ -467,10 +473,10 @@ export function reconcileChildren(
       claimed.add(match)
       fiber = match
       if (isTextChild(child!)) {
-        fiber.pendingProps = child
+        fiber.pp = child
       } else {
         fiber.type = (child as ReactElement).type
-        fiber.pendingProps = (child as ReactElement).props
+        fiber.pp = (child as ReactElement).props
         fiber.ref = (child as any).ref ?? null
       }
     } else {
@@ -490,7 +496,7 @@ export function reconcileChildren(
   // forward with the correct per-child anchor. During hydration the cursor
   // walks DOM forward and each renderFiber adopts the next existing node,
   // so per-child anchors are moot — fall back to the parent's anchor.
-  const hydrating = !!currentRoot?.hydrating
+  const hydrating = !!currentRoot?.h
   for (let f: Fiber | null = parent.child; f; f = f.sibling) {
     let a = anchor
     if (!hydrating) {
@@ -542,10 +548,8 @@ export function reconcileChildren(
   // on each re-render causes stylesheet flash and re-download. Head element
   // ordering is semantically fluid; the browser doesn't care about exact
   // order within <head>.
-  const parentIsHead =
-    (domParent as Element).nodeType === 1 &&
-    (domParent as Element).tagName.toLowerCase() === 'head'
-  if (structurallyChanged && !currentRoot?.hydrating && !parentIsHead) {
+  const parentIsHead = (domParent as Element).nodeName === 'HEAD'
+  if (structurallyChanged && !currentRoot?.h && !parentIsHead) {
     placeChildrenInOrder(parent, domParent, anchor)
   }
 }
@@ -710,11 +714,11 @@ export function renderFiber(fiber: Fiber, domParent: Node, anchor: Node | null):
 }
 
 function renderText(fiber: Fiber, domParent: Node, anchor: Node | null): void {
-  const text = fiber.pendingProps as string
+  const text = fiber.pp as string
   // Identity-unchanged fast path: skip the native Text.data write entirely.
-  if (fiber.dom && fiber.memoizedProps === text) return
+  if (fiber.dom && fiber.mp === text) return
   if (!fiber.dom) {
-    const hydrated = currentRoot?.hydrating ? adoptTextDom(fiber, fiber.parent!, text) : false
+    const hydrated = currentRoot?.h ? adoptTextDom(fiber, fiber.parent!, text) : false
     if (!hydrated) {
       fiber.dom = document.createTextNode(text)
       insertInto(domParent, fiber.dom, anchor)
@@ -724,13 +728,13 @@ function renderText(fiber: Fiber, domParent: Node, anchor: Node | null): void {
     // hydration — `.data !== text` here is guaranteed, so write directly.
     ;(fiber.dom as Text).data = text
   }
-  fiber.memoizedProps = text
-  // dirty cleared at rerender start; leaving true lets mid-render schedule persist
+  fiber.mp = text
+  // dy cleared at rerender start; leaving true lets mid-render schedule persist
 }
 
 function renderHost(fiber: Fiber, domParent: Node, anchor: Node | null): void {
-  const props = fiber.pendingProps ?? {}
-  const prev = fiber.memoizedProps ?? {}
+  const props = fiber.pp ?? {}
+  const prev = fiber.mp ?? {}
   const type = fiber.type as string
   const isSvg = type === 'svg' || (domParent as Element).namespaceURI === 'http://www.w3.org/2000/svg'
 
@@ -744,7 +748,7 @@ function renderHost(fiber: Fiber, domParent: Node, anchor: Node | null): void {
       : undefined
 
   if (!fiber.dom) {
-    const hydrated = currentRoot?.hydrating ? adoptHostDom(fiber, fiber.parent!) : false
+    const hydrated = currentRoot?.h ? adoptHostDom(fiber, fiber.parent!) : false
     if (!hydrated) {
       fiber.dom = createHostNode(type, isSvg)
       // Two passes so form-control attributes (notably <input type>) are in
@@ -806,23 +810,22 @@ function renderHost(fiber: Fiber, domParent: Node, anchor: Node | null): void {
   // structural mismatch (server produced more than client wants). Report.
   // <head>/<html> are position-insensitive — leftover here is normal
   // (Vite dev-style injections, SSR-only scripts, etc.).
-  if (currentRoot?.hydrating) {
+  if (currentRoot?.h) {
     const parentTag = (fiber.type as string).toLowerCase()
-    if (parentTag !== 'head' && parentTag !== 'html') {
+    const hasOpaqueHydrationChildren =
+      props.dangerouslySetInnerHTML != null ||
+      (parentTag === 'textarea' && (props.value != null || props.defaultValue != null))
+    if (parentTag !== 'head' && parentTag !== 'html' && !hasOpaqueHydrationChildren) {
       const cursor = getHydrationCursor(fiber)
       if (cursor) {
-        const leftover = cursor.remaining().filter(
-          (n) => n.nodeType === 1 || n.nodeType === 3,
-        )
-        if (leftover.length > 0 && currentRoot.onRecoverableError) {
-          currentRoot.onRecoverableError(
-            new Error(
-              `Hydration mismatch: server rendered ${leftover.length} extra ` +
-                `${leftover.length === 1 ? 'node' : 'nodes'} inside <${parentTag}> ` +
-                `that the client tree did not.`,
-            ),
+        if (cursor.has()) {
+          const error = new Error(
+            process.env.NODE_ENV !== 'production'
+              ? `Hydration mismatch: server rendered extra nodes inside <${parentTag}>.`
+              : 'Hydration mismatch.',
           )
-          for (const n of leftover) n.parentNode?.removeChild(n)
+          if (currentRoot.re) currentRoot.re(error)
+          abortHydration(error, fiber)
         }
       }
     }
@@ -841,63 +844,28 @@ function renderHost(fiber: Fiber, domParent: Node, anchor: Node | null): void {
     }
   }
 
-  fiber.memoizedProps = props
-  // dirty cleared at rerender start; leaving true lets mid-render schedule persist
+  fiber.mp = props
+  // dy cleared at rerender start; leaving true lets mid-render schedule persist
 }
 
 function renderFunction(fiber: Fiber, domParent: Node, anchor: Node | null): void {
   const prevDispatcher = ReactSharedInternals.H
-  const prevFiber = ReactSharedInternals.currentFiber
-  const prevHook = ReactSharedInternals.currentHook
-  const prevIndex = ReactSharedInternals.hookIndex
+  const prevFiber = ReactSharedInternals.F
+  const prevHook = ReactSharedInternals.K
+  const prevIndex = ReactSharedInternals.I
 
   ReactSharedInternals.H = makeDispatcher()
-  ReactSharedInternals.currentFiber = fiber
-  ReactSharedInternals.currentHook = null
-  ReactSharedInternals.hookIndex = 0
+  ReactSharedInternals.F = fiber
+  ReactSharedInternals.K = null
+  ReactSharedInternals.I = 0
 
   let rendered: ReactNode
   let deferredForHydration = false
   try {
-    rendered = (fiber.type as Function)(fiber.pendingProps ?? {})
+    rendered = (fiber.type as Function)(fiber.pp ?? {})
   } catch (e: any) {
     if (isThenable(e)) {
-      if (currentRoot?.hydrating) {
-        // Suspension during initial hydration. Leave the existing DOM alone
-        // and preserve the in-scope hydration cursor on THIS fiber so it
-        // survives the synchronous endHydration() that fires when the initial
-        // hydrateRoot() call returns. When the promise settles, the fiber
-        // re-renders (see rerenderFiber) with hydration re-activated and its
-        // descendants adopt DOM instead of creating new nodes.
-        const hostParent = findHydrationHost(fiber)
-        const inheritedCursor = getHydrationCursor(hostParent)
-        if (inheritedCursor) {
-          setHydrationCursor(fiber, inheritedCursor)
-        }
-        fiber.memoizedState = {
-          ...(fiber.memoizedState ?? {}),
-          _pendingHydration: true,
-        }
-        // Mirror renderLazy's guard: mark the nearest Suspense ancestor as
-        // awaiting hydration-resume, so any re-render of that Suspense (e.g.
-        // rehydrateBoundary fired by $RC, or an unrelated state update from a
-        // sibling) doesn't re-enter `tryChildren`, re-throw, and flip Suspense
-        // into its suspended+pending path — which would unmount our deferred
-        // subtree and remount a fallback on top of the SSR content. By
-        // pinning the Suspense to a "hydration-suspended" no-op until our
-        // resume fires, the deferred re-render owns the adoption pass.
-        let sus: Fiber | null = fiber.parent
-        while (sus && sus.tag !== FiberTag.Suspense) sus = sus.parent
-        if (sus && sus.memoizedState) {
-          ;(sus.memoizedState as any)._awaitingLazyHydration = true
-        }
-        const clearAwait = () => {
-          if (sus && sus.memoizedState) {
-            ;(sus.memoizedState as any)._awaitingLazyHydration = false
-          }
-          scheduleUpdate(fiber)
-        }
-        e.then(clearAwait, clearAwait)
+      if (deferHydration(fiber, e)) {
         deferredForHydration = true
       } else {
         CAPABILITIES.handleSuspended(fiber, e)
@@ -909,16 +877,16 @@ function renderFunction(fiber: Fiber, domParent: Node, anchor: Node | null): voi
     }
   } finally {
     ReactSharedInternals.H = prevDispatcher
-    ReactSharedInternals.currentFiber = prevFiber
-    ReactSharedInternals.currentHook = prevHook
-    ReactSharedInternals.hookIndex = prevIndex
+    ReactSharedInternals.F = prevFiber
+    ReactSharedInternals.K = prevHook
+    ReactSharedInternals.I = prevIndex
   }
 
   if (deferredForHydration) return
 
   reconcileChildren(fiber, childrenToArray(rendered), domParent, anchor)
-  fiber.memoizedProps = fiber.pendingProps
-  // dirty cleared at rerender start; leaving true lets mid-render schedule persist
+  fiber.mp = fiber.pp
+  // dy cleared at rerender start; leaving true lets mid-render schedule persist
 }
 
 function hasAncestorHydrationCursor(_fiber: Fiber): boolean {
@@ -927,11 +895,32 @@ function hasAncestorHydrationCursor(_fiber: Fiber): boolean {
   return false
 }
 
+export function deferHydration(fiber: Fiber, thenable: Promise<any>): boolean {
+  if (!currentRoot?.h) return false
+  const hostParent = findHydrationHost(fiber)
+  const inheritedCursor = getHydrationCursor(hostParent)
+  if (inheritedCursor) setHydrationCursor(fiber, inheritedCursor)
+  ;((fiber.ms ??= {}) as any).p = true
+  let sus: Fiber | null = fiber.parent
+  while (sus && sus.tag !== FiberTag.Suspense) sus = sus.parent
+  if (sus && sus.ms) {
+    ;(sus.ms as any).a = true
+  }
+  const clearAwait = () => {
+    if (sus && sus.ms) {
+      ;(sus.ms as any).a = false
+    }
+    scheduleUpdate(fiber)
+  }
+  thenable.then(clearAwait, clearAwait)
+  return true
+}
+
 function renderFragment(fiber: Fiber, domParent: Node, anchor: Node | null): void {
-  const props = fiber.pendingProps ?? {}
+  const props = fiber.pp ?? {}
   reconcileChildren(fiber, childrenToArray(props.children), domParent, anchor)
-  fiber.memoizedProps = props
-  // dirty cleared at rerender start; leaving true lets mid-render schedule persist
+  fiber.mp = props
+  // dy cleared at rerender start; leaving true lets mid-render schedule persist
 }
 
 // ---------------------------------------------------------------------------
@@ -981,12 +970,15 @@ export function handleSuspended(fiber: Fiber, thenable: Promise<any>): void {
 }
 
 export function handleErrorInRender(fiber: Fiber, err: any): void {
+  if (currentRoot?.h) {
+    abortHydration(err, fiber)
+  }
   // Bubble to nearest class boundary with getDerivedStateFromError / componentDidCatch
   let f: Fiber | null = fiber.parent
   while (f) {
     if (f.tag === FiberTag.Class) {
       const Ctor = f.type as any
-      const instance = f.stateNode
+      const instance = f.sn
       if (Ctor.getDerivedStateFromError) {
         const update = Ctor.getDerivedStateFromError(err)
         instance.state = { ...instance.state, ...update }
@@ -1002,12 +994,12 @@ export function handleErrorInRender(fiber: Fiber, err: any): void {
     f = f.parent
   }
   // No boundary — report to root
-  if (currentRoot?.onUncaughtError) currentRoot.onUncaughtError(err)
+  if (currentRoot?.ue) currentRoot.ue(err)
   else throw err
 }
 
 export function isThenable(x: any): x is Promise<any> {
-  return x != null && typeof x.then === 'function'
+  return x != null && typeof x.then == 'function'
 }
 
 // ---------------------------------------------------------------------------
@@ -1015,7 +1007,7 @@ export function isThenable(x: any): x is Promise<any> {
 // ---------------------------------------------------------------------------
 
 export function unmountFiber(fiber: Fiber, domParent: Node): void {
-  fiber.unmounted = true
+  fiber.um = true
   // Recurse first
   let c = fiber.child
   while (c) {
@@ -1025,27 +1017,27 @@ export function unmountFiber(fiber: Fiber, domParent: Node): void {
   }
   fiber.child = null
 
-  // Run cleanups (effects + layout effects)
-  if (fiber.cleanups) {
-    for (const cleanup of fiber.cleanups) {
+  // Run cu (fx + layout fx)
+  if (fiber.cu) {
+    for (const cleanup of fiber.cu) {
       try {
         cleanup()
       } catch (e) {
-        if (currentRoot?.onRecoverableError) currentRoot.onRecoverableError(e)
+        if (currentRoot?.re) currentRoot.re(e)
       }
     }
-    fiber.cleanups = null
+    fiber.cu = null
   }
 
-  if (fiber.tag === FiberTag.Class && fiber.stateNode?.componentWillUnmount) {
+  if (fiber.tag === FiberTag.Class && fiber.sn?.componentWillUnmount) {
     try {
-      fiber.stateNode.componentWillUnmount()
+      fiber.sn.componentWillUnmount()
     } catch (e) {
-      if (currentRoot?.onRecoverableError) currentRoot.onRecoverableError(e)
+      if (currentRoot?.re) currentRoot.re(e)
     }
-    fiber.stateNode._fiber = null
-    fiber.stateNode._enqueueUpdate = null
-    fiber.stateNode._forceUpdate = null
+    fiber.sn._fiber = null
+    fiber.sn._enqueueUpdate = null
+    fiber.sn._forceUpdate = null
   }
 
   // Detach ref
@@ -1105,7 +1097,7 @@ function getHostParent(fiber: Fiber): Node {
   while (p) {
     if (p.tag === FiberTag.Host) return p.dom!
     if (p.tag === FiberTag.Root)
-      return (p.stateNode as Node) || (p.dom as Node) || (p.root?.container as Node)
+      return (p.sn as Node) || (p.dom as Node) || (p.root?.c as Node)
     if (p.tag === FiberTag.Portal) {
       // Portal renders its children into the `container` prop, not into any
       // DOM element the portal fiber "owns". Read the container from the
@@ -1113,12 +1105,15 @@ function getHostParent(fiber: Fiber): Node {
       // (e.g. a Floating-UI-positioned popper in a Radix Portal) finds its
       // host parent — otherwise getHostParent returns undefined and the
       // next renderHost crashes reading `.namespaceURI` on undefined.
-      const props = (p.pendingProps ?? p.memoizedProps) as { container?: Element } | null
-      return (props?.container as Node) || (p.stateNode as Node) || (p.dom as Node) || (p.root?.container as Node)
+      const props = (p.pp ?? p.mp) as { container?: Element } | null
+      return (props?.container as Node) || (p.sn as Node) || (p.dom as Node) || (p.root?.c as Node)
     }
     p = p.parent
   }
-  throw new Error('No host parent found.')
+  if (process.env.NODE_ENV !== 'production') {
+    throw new Error('No host parent found.')
+  }
+  throw new Error()
 }
 
 function getAnchor(fiber: Fiber): Node | null {
@@ -1174,17 +1169,17 @@ function defaultReadContext(_fiber: Fiber, ctx: any): any {
 // ---------------------------------------------------------------------------
 
 function attachRef(fiber: Fiber, value: any): void {
-  const ref = fiber.ref ?? (fiber.pendingProps?.ref ?? null)
+  const ref = fiber.ref ?? (fiber.pp?.ref ?? null)
   if (!ref) return
-  if (typeof ref === 'function') {
+  if (typeof ref == 'function') {
     // Match React's commit-phase semantics: callback refs run after render
     // (during the layout/commit phase), not during render. Calling them
     // synchronously here breaks libraries that assert no event handlers run
     // during render (e.g. base-ui's useStableCallback trampoline).
     scheduleLifecycle(fiber, () => {
       const cleanup = ref(value)
-      fiber.cleanups ||= []
-      fiber.cleanups.push(typeof cleanup === 'function' ? cleanup : () => ref(null))
+      fiber.cu ||= []
+      fiber.cu.push(typeof cleanup == 'function' ? cleanup : () => ref(null))
     })
   } else {
     ref.current = value
@@ -1192,13 +1187,13 @@ function attachRef(fiber: Fiber, value: any): void {
 }
 
 function syncRefIfChanged(fiber: Fiber, value: any): void {
-  const ref = fiber.ref ?? (fiber.pendingProps?.ref ?? null)
+  const ref = fiber.ref ?? (fiber.pp?.ref ?? null)
   if (!ref) return
   if (typeof ref === 'object' && ref.current !== value) ref.current = value
 }
 
 function detachRef(ref: any): void {
-  // Function refs are handled via fiber.cleanups (queued in attachRef during
+  // Function refs are handled via fiber.cu (queued in attachRef during
   // the commit phase): the cleanup either invokes the user-returned cleanup
   // fn or calls ref(null). Calling ref(null) here would double-fire it.
   if (ref && typeof ref === 'object') {
@@ -1210,56 +1205,55 @@ function detachRef(ref: any): void {
 // Effects
 // ---------------------------------------------------------------------------
 
-const pendingEffects: Array<{ fiber: Fiber; effect: Effect }> = []
-const pendingLayoutEffects: Array<{ fiber: Fiber; effect: Effect }> = []
-const pendingLifecycles: Array<{ fiber: Fiber; fn: () => void }> = []
+const pendingEffects: Array<[Fiber, Effect]> = []
+const pendingLayoutEffects: Array<[Fiber, Effect]> = []
+const pendingLifecycles: Array<() => void> = []
 
 export function enqueueEffect(fiber: Fiber, effect: Effect): void {
-  if (effect.tag === 'layout' || effect.tag === 'insertion') {
-    pendingLayoutEffects.push({ fiber, effect })
+  if (effect.t) {
+    pendingLayoutEffects.push([fiber, effect])
   } else {
-    pendingEffects.push({ fiber, effect })
+    pendingEffects.push([fiber, effect])
   }
 }
 
-export function scheduleLifecycle(fiber: Fiber, fn: () => void): void {
-  pendingLifecycles.push({ fiber, fn })
+export function scheduleLifecycle(_fiber: Fiber, fn: () => void): void {
+  pendingLifecycles.push(fn)
 }
 
 export function runEffects(root: FiberRoot): void {
-  // Layout effects synchronously
+  // Layout fx synchronously
   while (pendingLayoutEffects.length) {
-    const { fiber, effect } = pendingLayoutEffects.shift()!
+    const [fiber, effect] = pendingLayoutEffects.shift()!
     runEffect(fiber, effect, root)
   }
   // Then lifecycles
   while (pendingLifecycles.length) {
-    const { fn } = pendingLifecycles.shift()!
+    const fn = pendingLifecycles.shift()!
     try {
       fn()
     } catch (e) {
-      if (root.onCaughtError) root.onCaughtError(e)
+      if (root.ce) root.ce(e)
     }
   }
-  // Passive effects on microtask
+  // Passive fx on microtask
   if (pendingEffects.length) {
     const batch = pendingEffects.splice(0)
     queueMicrotask(() => {
-      for (const { fiber, effect } of batch) runEffect(fiber, effect, root)
+      for (const [fiber, effect] of batch) runEffect(fiber, effect, root)
     })
   }
 }
 
 function runEffect(fiber: Fiber, effect: Effect, root: FiberRoot): void {
   try {
-    const cleanup = effect.create()
-    effect.destroy = typeof cleanup === 'function' ? cleanup : undefined
-    if (effect.destroy) {
-      fiber.cleanups ||= []
-      fiber.cleanups.push(effect.destroy)
+    const cleanup = effect.c()
+    if (typeof cleanup == 'function') {
+      fiber.cu ||= []
+      fiber.cu.push(cleanup)
     }
   } catch (e) {
-    if (root.onCaughtError) root.onCaughtError(e)
+    if (root.ce) root.ce(e)
   }
 }
 

@@ -32,7 +32,10 @@ export function createContext<T>(defaultValue: T): Context<T> {
   } as Context<T>
 
   const Provider: any = function Provider(_props: any): any {
-    throw new Error('Provider components are handled by the renderer.')
+    if (process.env.NODE_ENV !== 'production') {
+      throw new Error('Provider components are handled by the renderer.')
+    }
+    throw new Error()
   }
   Provider.$$typeof = REACT_PROVIDER_TYPE
   Provider._context = context

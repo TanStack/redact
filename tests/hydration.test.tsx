@@ -86,6 +86,66 @@ describe('hydrateRoot', () => {
     expect(container.querySelector('div')?.textContent).toBe('client')
   })
 
+  it('falls back to a clean client render on text mismatch', () => {
+    function App() {
+      return (
+        <button id="choice">
+          <span>Solid</span>
+        </button>
+      )
+    }
+
+    const container = setupWithHTML(
+      '<button id="choice"><span>React</span><i id="server-only">old</i></button>',
+    )
+    const original = container.querySelector('#choice')
+    const errors: unknown[] = []
+
+    hydrateRoot(container, <App />, {
+      onRecoverableError: (e) => errors.push(e),
+    })
+
+    expect(errors.length).toBeGreaterThanOrEqual(1)
+    expect(container.querySelector('#choice')).not.toBe(original)
+    expect(container.querySelectorAll('#choice').length).toBe(1)
+    expect(container.querySelector('#choice')?.textContent).toBe('Solid')
+    expect(container.querySelector('#server-only')).toBeNull()
+  })
+
+  it('falls back to a clean client render on owned attribute mismatch', () => {
+    function App() {
+      return <img id="logo" alt="Solid" src="/solid.svg" />
+    }
+
+    const container = setupWithHTML(
+      '<img id="logo" alt="React" src="/react.svg">',
+    )
+    const original = container.querySelector('#logo')
+    const errors: unknown[] = []
+
+    hydrateRoot(container, <App />, {
+      onRecoverableError: (e) => errors.push(e),
+    })
+
+    const logo = container.querySelector('#logo') as HTMLImageElement
+    expect(errors.length).toBeGreaterThanOrEqual(1)
+    expect(logo).not.toBe(original)
+    expect(container.querySelectorAll('#logo').length).toBe(1)
+    expect(logo.getAttribute('alt')).toBe('Solid')
+    expect(logo.getAttribute('src')).toBe('/solid.svg')
+  })
+
+  it('clears the container if clean client render also throws', () => {
+    function App() {
+      throw new Error('boom')
+    }
+
+    const container = setupWithHTML('<main><h1>server</h1></main>')
+
+    expect(() => hydrateRoot(container, <App />)).toThrow('boom')
+    expect(container.innerHTML).toBe('')
+  })
+
   // Regression: on tanstack.com /stats/npm the chart never renders. SSR
   // rendered a Spinner (isFetching=true server-side); on client after the
   // query settles a Suspense boundary mounts containing a `React.lazy`

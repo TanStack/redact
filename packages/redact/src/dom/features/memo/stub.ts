@@ -14,7 +14,7 @@ function renderMemoStub(fiber: Fiber, domParent: Node, anchor: Node | null): voi
   const { type } = fiber.type as any
 
   let innerTag: FiberTag
-  if (typeof type === 'function') {
+  if (typeof type == 'function') {
     innerTag = type.prototype?.isReactComponent ? FiberTag.Class : FiberTag.Function
   } else if (type && typeof type === 'object') {
     const m = (type as any).$$typeof

@@ -14,6 +14,7 @@ import {
   runEffects,
   getCurrentRoot,
   withCurrentRoot,
+  discardPendingWork,
 } from '../../reconcile'
 import {
   HydrationCursor,
@@ -21,16 +22,13 @@ import {
   clearHydrationCursor,
   advanceCursorPast,
   tryConsumeBoundary,
+  isHydrationBailout,
 } from '../hydration'
 
-const suspendHandlerStack: Array<(t: Promise<any>) => void> = []
+let suspendHandler: ((t: Promise<any>) => void) | null = null
 
 function realHandleSuspended(fiber: Fiber, thenable: Promise<any>): void {
-  const handler = suspendHandlerStack[suspendHandlerStack.length - 1]
-  if (handler) {
-    handler(thenable)
-    return
-  }
+  if (suspendHandler) return suspendHandler(thenable)
   // Fallback: schedule re-render when promise settles
   thenable.then(
     () => scheduleUpdate(fiber),
@@ -44,43 +42,34 @@ function realHandleSuspended(fiber: Fiber, thenable: Promise<any>): void {
 // and component state survive across the suspension. The fallback is mounted
 // alongside the hidden primary until the pending promise resolves.
 //
-// We track the hidden subtree DOM in `state.hiddenDoms` (root host nodes +
+// We track the hidden subtree DOM in `state.d` (root host nodes +
 // their original `display` so we can restore it) and the fallback as a
-// detached Fragment fiber in `state.fallbackFiber` (deliberately kept OUT of
+// detached Fragment fiber in `state.f` (deliberately kept OUT of
 // `fiber.child` so reconciles against `props.children` don't trip on it).
 // First-mount suspensions have no committed DOM worth preserving, so they
 // keep the original unmount-and-render-fallback behavior.
 interface SuspenseState {
-  suspended: boolean
-  pending: Promise<any> | null
-  hydrated?: boolean
-  boundaryId?: number
-  startMark?: Comment
-  endMark?: Comment
-  realChildren?: any
-  _awaitingLazyHydration?: boolean
+  p?: Promise<any> | null
+  b?: Comment
+  e?: Comment
+  r?: any
+  a?: boolean
   // Re-suspend preservation:
-  hiddenDoms: Array<[HTMLElement, string]> | null
-  fallbackFiber: Fiber | null
+  d?: Array<[HTMLElement, string]> | null
+  f?: Fiber | null
 }
 
 function renderSuspense(fiber: Fiber, domParent: Node, anchor: Node | null): void {
-  const props = fiber.pendingProps ?? {}
-  const state = (fiber.memoizedState ??= {
-    suspended: false,
-    pending: null as Promise<any> | null,
-    hiddenDoms: null,
-    fallbackFiber: null,
-  }) as SuspenseState
+  const props = fiber.pp ?? {}
+  const state = (fiber.ms ??= {}) as SuspenseState
 
   // Streaming hydration: if the next DOM node is a server-emitted boundary
   // marker, route through the boundary-aware hydration path.
   const root = getCurrentRoot()
-  if (root?.hydrating && fiber.parent && !state.hydrated) {
-    const boundary = tryConsumeBoundary(fiber.parent)
+  if (root?.h && !state.b) {
+    const boundary = tryConsumeBoundary(fiber.parent!)
     if (boundary) {
       hydrateSuspenseBoundary(fiber, props, boundary, domParent, anchor)
-      state.hydrated = true
       return
     }
   }
@@ -91,8 +80,8 @@ function renderSuspense(fiber: Fiber, domParent: Node, anchor: Node | null): voi
   // yet. Until the Lazy's resume fires, skip our own tryChildren pass so
   // an unrelated re-render can't accidentally flip us into the suspended
   // path and mount a duplicate fallback on top of the SSR content.
-  if (state._awaitingLazyHydration) {
-    fiber.memoizedProps = props
+  if (state.a) {
+    fiber.mp = props
     return
   }
 
@@ -100,78 +89,62 @@ function renderSuspense(fiber: Fiber, domParent: Node, anchor: Node | null): voi
   // re-attempt primary children (would re-throw and churn the tree). Just
   // refresh the fallback in case its JSX changed, and wait for the pending
   // promise to fire scheduleUpdate.
-  if (state.suspended && state.pending && state.fallbackFiber) {
-    state.fallbackFiber.pendingProps = { children: props.fallback }
-    renderFiber(state.fallbackFiber, domParent, anchor)
-    fiber.memoizedProps = props
-    return
-  }
-
-  // Initial-mount suspended path: no committed primary to preserve. Old
-  // behavior — render fallback into fiber.child directly.
-  if (state.suspended && state.pending && !state.fallbackFiber) {
-    reconcileChildren(fiber, childrenToArray(props.fallback), domParent, anchor)
-    fiber.memoizedProps = props
+  if (state.p) {
+    if (state.f) {
+      state.f.pp = { children: props.fallback }
+      renderFiber(state.f, domParent, anchor)
+    } else {
+      // Initial-mount suspended path: no committed primary to preserve.
+      reconcileChildren(fiber, childrenToArray(props.fallback), domParent, anchor)
+    }
+    fiber.mp = props
     return
   }
 
   // Snapshot whether we have an existing committed primary tree before
   // attempting the new render. If the new attempt suspends and we did have a
   // committed primary, we keep it (hidden) rather than destroying it.
-  const hadCommittedPrimary = fiber.memoizedProps !== undefined && fiber.child !== null
+  const hadCommittedPrimary = fiber.mp !== undefined && fiber.child !== null
 
-  const savedHandler = suspendHandlerStack[suspendHandlerStack.length - 1]
-  let suspendedThisRender = false
-  let suspendedThenable: Promise<any> | null = null
-  suspendHandlerStack.push((thenable) => {
-    suspendedThisRender = true
-    suspendedThenable = thenable
-  })
+  const prevHandler = suspendHandler
+  let pendingThenable: any
+  suspendHandler = (thenable) => {
+    pendingThenable = thenable
+  }
   try {
     reconcileChildren(fiber, childrenToArray(props.children), domParent, anchor)
   } finally {
-    suspendHandlerStack.pop()
-    void savedHandler
+    suspendHandler = prevHandler
   }
 
-  if (suspendedThisRender && suspendedThenable) {
-    state.suspended = true
-    state.pending = suspendedThenable
+  if (pendingThenable) {
+    state.p = pendingThenable
     const onSettle = () => {
-      state.suspended = false
-      state.pending = null
+      state.p = null
       scheduleUpdate(fiber)
     }
-    suspendedThenable.then(onSettle, onSettle)
+    pendingThenable.then(onSettle, onSettle)
 
     if (hadCommittedPrimary && fiber.child) {
       // Hide the primary subtree's root host doms so the fallback is the only
       // thing visible, but the underlying nodes (and their scroll/state/focus)
       // survive. Save original `display` for the resume path.
-      const hostDoms: Node[] = []
+      const hidden: Array<[HTMLElement, string]> = []
       let c: Fiber | null = fiber.child
       while (c) {
-        collectRootHostDoms(c, hostDoms)
+        hideRootHostDoms(c, hidden)
         c = c.sibling
       }
-      const hidden: Array<[HTMLElement, string]> = []
-      for (const d of hostDoms) {
-        if (d.nodeType === 1) {
-          const el = d as HTMLElement
-          hidden.push([el, el.style.display])
-          el.style.display = 'none'
-        }
-      }
-      state.hiddenDoms = hidden
+      state.d = hidden
 
       // Mount fallback in a detached Fragment fiber. Kept off `fiber.child`
       // so reconciles of primary don't see it as a stale match candidate.
-      if (!state.fallbackFiber) {
-        state.fallbackFiber = createFiber(FiberTag.Fragment, null, null)
-        state.fallbackFiber.parent = fiber
+      if (!state.f) {
+        state.f = createFiber(FiberTag.Fragment, null, null)
+        state.f.parent = fiber
       }
-      state.fallbackFiber.pendingProps = { children: props.fallback }
-      renderFiber(state.fallbackFiber, domParent, anchor)
+      state.f.pp = { children: props.fallback }
+      renderFiber(state.f, domParent, anchor)
     } else {
       // First-mount suspension — nothing to preserve.
       unmountAllChildren(fiber, domParent)
@@ -180,32 +153,36 @@ function renderSuspense(fiber: Fiber, domParent: Node, anchor: Node | null): voi
   } else {
     // Render succeeded. Clean up any preserved-suspend state from a prior
     // suspension cycle: unhide primary, unmount the orphan fallback fiber.
-    if (state.hiddenDoms) {
-      for (const [el, origDisplay] of state.hiddenDoms) {
+    if (state.d) {
+      for (const [el, origDisplay] of state.d) {
         el.style.display = origDisplay
       }
-      state.hiddenDoms = null
+      state.d = null
     }
-    if (state.fallbackFiber) {
-      unmountFiber(state.fallbackFiber, domParent)
-      state.fallbackFiber = null
+    if (state.f) {
+      unmountFiber(state.f, domParent)
+      state.f = null
     }
   }
-  fiber.memoizedProps = props
+  fiber.mp = props
 }
 
 // Walk a fiber subtree collecting host/text DOM nodes that sit at the root
 // of the subtree (do not descend through their children — display:none on
 // the root hides the whole element). Used by the hide-on-suspend path.
-function collectRootHostDoms(fiber: Fiber, out: Node[]): void {
-  if (fiber.tag === FiberTag.Host || fiber.tag === FiberTag.Text) {
-    if (fiber.dom) out.push(fiber.dom)
+function hideRootHostDoms(fiber: Fiber, out: Array<[HTMLElement, string]>): void {
+  if (fiber.tag === FiberTag.Host) {
+    const el = fiber.dom as HTMLElement | null
+    if (el) {
+      out.push([el, el.style.display])
+      el.style.display = 'none'
+    }
     return
   }
   if (fiber.tag === FiberTag.Portal) return
   let c = fiber.child
   while (c) {
-    collectRootHostDoms(c, out)
+    hideRootHostDoms(c, out)
     c = c.sibling
   }
 }
@@ -213,80 +190,150 @@ function collectRootHostDoms(fiber: Fiber, out: Node[]): void {
 function hydrateSuspenseBoundary(
   fiber: Fiber,
   props: any,
-  boundary: { kind: 'pending' | 'resolved'; id: number; startMark: Comment; endMark: Comment },
+  boundary: [0 | 1, number, Comment, Comment],
   domParent: Node,
   anchor: Node | null,
 ): void {
-  const { kind, id, startMark, endMark } = boundary
+  const [pendingBoundary, id, startMark, endMark] = boundary
   // Record the boundary shape so we can re-hydrate on reveal.
-  fiber.memoizedState = {
-    suspended: false,
-    pending: null,
-    hydrated: true,
-    boundaryId: id,
-    startMark,
-    endMark,
-    realChildren: props.children,
+  fiber.ms = {
+    b: startMark,
+    e: endMark,
+    r: props.children,
   }
 
-  if (kind === 'resolved') {
+  if (!pendingBoundary) {
     // Real DOM is inline between startMark and endMark. Hydrate into it.
-    const cursor = new HydrationCursor(startMark.parentNode!, startMark.nextSibling, endMark)
-    setHydrationCursor(fiber, cursor)
-    reconcileChildren(fiber, childrenToArray(props.children), domParent, anchor)
-    clearHydrationCursor(fiber)
-    advanceCursorPast(fiber.parent!, endMark)
-    fiber.memoizedProps = props
+    const parent = startMark.parentNode!
+    try {
+      setHydrationCursor(fiber, new HydrationCursor(parent, startMark.nextSibling, endMark))
+      reconcileChildren(fiber, childrenToArray(props.children), domParent, anchor)
+      advanceCursorPast(fiber.parent!, endMark)
+    } catch (e) {
+      if (!isHydrationBailout(e)) {
+        clearBoundaryRange(startMark, endMark)
+        unmountAllChildren(fiber, parent)
+        throw e
+      }
+      recoverBoundaryHydration(fiber, props.children, parent, startMark, endMark)
+    } finally {
+      clearHydrationCursor(fiber)
+    }
+    fiber.mp = props
     return
   }
 
   // Pending: fallback DOM lives inside <div id="B:ID">. Hydrate the fallback
   // React subtree against that div's children.
-  const bDiv = (document as Document).getElementById(`B:${id}`)
-  if (bDiv) {
-    const cursor = new HydrationCursor(bDiv)
-    setHydrationCursor(fiber, cursor)
-    reconcileChildren(fiber, childrenToArray(props.fallback), domParent, anchor)
+  const bDiv = document.getElementById(`B:${id}`)
+  try {
+    if (bDiv) {
+      setHydrationCursor(fiber, new HydrationCursor(bDiv))
+      reconcileChildren(fiber, childrenToArray(props.fallback), domParent, anchor)
+    } else {
+      // Couldn't find fallback container — render fresh (non-adopting)
+      reconcileChildren(fiber, childrenToArray(props.fallback), domParent, anchor)
+    }
+  } catch (e) {
+    if (!isHydrationBailout(e) || !bDiv) throw e
+    recoverFallbackHydration(fiber, props.fallback, bDiv)
+  } finally {
     clearHydrationCursor(fiber)
-  } else {
-    // Couldn't find fallback container — render fresh (non-adopting)
-    reconcileChildren(fiber, childrenToArray(props.fallback), domParent, anchor)
   }
   advanceCursorPast(fiber.parent!, endMark)
 
   // Register for server-streamed reveal (HTML chunks + $RC calls).
-  const win = globalThis as any
-  if (typeof win.$RH === 'function') {
-    win.$RH(id, () => rehydrateBoundary(fiber))
-  }
-  // If the inline runtime isn't present, nothing external will mark us dirty.
+  ;(globalThis as any).$RH?.(id, () => rehydrateBoundary(fiber))
+  // If the inline runtime isn't present, nothing external will mark us dy.
 
-  fiber.memoizedProps = props
+  fiber.mp = props
+}
+
+function recoverBoundaryHydration(
+  fiber: Fiber,
+  children: any,
+  parent: Node,
+  startMark: Comment,
+  endMark: Comment,
+): void {
+  const root = findRoot(fiber)!
+  const prevHydrating = root.h
+  discardPendingWork(root)
+  clearBoundaryRange(startMark, endMark)
+  unmountAllChildren(fiber, parent)
+  root.h = false
+  try {
+    reconcileChildren(fiber, childrenToArray(children), parent, endMark)
+    advanceCursorPast(fiber.parent!, endMark)
+  } catch (clientError) {
+    clearBoundaryRange(startMark, endMark)
+    unmountAllChildren(fiber, parent)
+    throw clientError
+  } finally {
+    root.h = prevHydrating
+  }
+}
+
+function recoverFallbackHydration(fiber: Fiber, fallback: any, parent: HTMLElement): void {
+  const root = findRoot(fiber)!
+  const prevHydrating = root.h
+  discardPendingWork(root)
+  parent.textContent = ''
+  unmountAllChildren(fiber, parent)
+  root.h = false
+  try {
+    reconcileChildren(fiber, childrenToArray(fallback), parent, null)
+  } catch (clientError) {
+    parent.textContent = ''
+    unmountAllChildren(fiber, parent)
+    throw clientError
+  } finally {
+    root.h = prevHydrating
+  }
 }
 
 function rehydrateBoundary(fiber: Fiber): void {
-  const state = fiber.memoizedState
-  if (!state || !state.startMark || !state.endMark) return
+  const state = fiber.ms
+  if (!state || !state.b || !state.e) return
 
   const root = findRoot(fiber)
-  if (!root) return
-  const parent = state.startMark.parentNode as Node
-  if (!parent) return
+  const parent = state.b.parentNode as Node
+  if (!root || !parent) return
 
   // Unmount existing fallback subtree. Its DOM has already been removed by $RC
-  // (or at least its container); unmounting here cleans up fibers + effects.
+  // (or at least its container); unmounting here cleans up fibers + fx.
   withCurrentRoot(root, () => {
-    unmountAllChildren(fiber, parent)
+    const prevHydrating = root.h
+    try {
+      unmountAllChildren(fiber, parent)
 
-    // Re-hydrate with real children against the now-real DOM range.
-    root.hydrating = true
-    const cursor = new HydrationCursor(parent, state.startMark.nextSibling, state.endMark)
-    setHydrationCursor(fiber, cursor)
-    reconcileChildren(fiber, childrenToArray(state.realChildren), parent, null)
-    clearHydrationCursor(fiber)
-    root.hydrating = false
+      // Re-hydrate with real children against the now-real DOM range.
+      root.h = true
+      setHydrationCursor(fiber, new HydrationCursor(parent, state.b.nextSibling, state.e))
+      reconcileChildren(fiber, childrenToArray(state.r), parent, null)
+    } catch (e) {
+      if (!isHydrationBailout(e)) {
+        clearBoundaryRange(state.b, state.e)
+        unmountAllChildren(fiber, parent)
+        throw e
+      }
+
+      recoverBoundaryHydration(fiber, state.r, parent, state.b, state.e)
+    } finally {
+      root.h = prevHydrating
+      clearHydrationCursor(fiber)
+    }
     runEffects(root)
   })
+}
+
+function clearBoundaryRange(startMark: Comment, endMark: Comment): void {
+  let node = startMark.nextSibling
+  while (node && node !== endMark) {
+    const next = node.nextSibling
+    node.parentNode?.removeChild(node)
+    node = next
+  }
 }
 
 registerTypeMatcher((type) => (type === REACT_SUSPENSE_TYPE ? FiberTag.Suspense : null))

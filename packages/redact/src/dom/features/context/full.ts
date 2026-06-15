@@ -12,7 +12,7 @@ function realReadContext(fiber: Fiber, ctx: any): any {
   let p: Fiber | null = fiber.parent
   while (p) {
     if (p.tag === FiberTag.Provider && (p.type as any)._context === ctx) {
-      return (p.pendingProps ?? p.memoizedProps)?.value
+      return (p.pp ?? p.mp)?.value
     }
     p = p.parent
   }
@@ -21,7 +21,7 @@ function realReadContext(fiber: Fiber, ctx: any): any {
 
 function renderProvider(fiber: Fiber, domParent: Node, anchor: Node | null): void {
   const ctx = (fiber.type as any)._context
-  const props = fiber.pendingProps ?? {}
+  const props = fiber.pp ?? {}
   const prevValue = ctx._currentValue
   ctx._currentValue = props.value
   try {
@@ -31,18 +31,18 @@ function renderProvider(fiber: Fiber, domParent: Node, anchor: Node | null): voi
   }
   // Also store the value on the fiber so descendants rendering later (via updates)
   // can read through by walking up.
-  fiber.memoizedState = props.value
-  fiber.memoizedProps = props
+  fiber.ms = props.value
+  fiber.mp = props
 }
 
 function renderConsumer(fiber: Fiber, domParent: Node, anchor: Node | null): void {
   const ctx = (fiber.type as any)._context
-  const props = fiber.pendingProps ?? {}
+  const props = fiber.pp ?? {}
   const children = props.children
   const value = realReadContext(fiber, ctx)
-  const rendered = typeof children === 'function' ? children(value) : null
+  const rendered = typeof children == 'function' ? children(value) : null
   reconcileChildren(fiber, childrenToArray(rendered), domParent, anchor)
-  fiber.memoizedProps = props
+  fiber.mp = props
 }
 
 registerTypeMatcher((_type, marker) =>

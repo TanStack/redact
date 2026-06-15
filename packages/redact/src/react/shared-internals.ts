@@ -1,4 +1,4 @@
-import type { Fiber, FiberRoot, Hook } from '../core'
+import type { Fiber, Hook } from '../core'
 
 export interface Dispatcher {
   useState<S>(initial: S | (() => S)): [S, (s: S | ((p: S) => S)) => void]
@@ -29,12 +29,9 @@ export interface Dispatcher {
 
 interface SharedInternals {
   H: Dispatcher | null
-  T: any
-  S: ((fn: () => void) => void) | null
-  currentFiber: Fiber | null
-  currentRoot: FiberRoot | null
-  currentHook: Hook | null
-  hookIndex: number
+  F: Fiber | null
+  K: Hook | null
+  I: number
 }
 
 // Stash the singleton on `globalThis` under a registered symbol. Module-scoped
@@ -54,12 +51,9 @@ export const ReactSharedInternals: SharedInternals =
   g[KEY] ??
   (g[KEY] = {
     H: null,
-    T: null,
-    S: null,
-    currentFiber: null,
-    currentRoot: null,
-    currentHook: null,
-    hookIndex: 0,
+    F: null,
+    K: null,
+    I: 0,
   })
 
 export function getDispatcher(): Dispatcher {
@@ -73,7 +67,7 @@ export function getDispatcher(): Dispatcher {
           '"use client" directive at the top of its file.',
       )
     }
-    throw new Error('Hooks can only be called inside a function component.')
+    throw new Error()
   }
   return d
 }

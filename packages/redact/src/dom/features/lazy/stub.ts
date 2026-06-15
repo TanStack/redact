@@ -28,7 +28,7 @@ function renderLazyStub(fiber: Fiber, domParent: Node, anchor: Node | null): voi
   const savedType = fiber.type
   fiber.type = resolved
   fiber.tag =
-    typeof resolved === 'function'
+    typeof resolved == 'function'
       ? resolved.prototype?.isReactComponent
         ? FiberTag.Class
         : FiberTag.Function

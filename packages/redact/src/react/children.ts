@@ -78,7 +78,10 @@ export const Children = {
   },
   only(children: ReactNode): ReactElement {
     if (!isValidElement(children)) {
-      throw new Error('Children.only expected a single React element.')
+      if (process.env.NODE_ENV !== 'production') {
+        throw new Error('Children.only expected a single React element.')
+      }
+      throw new Error()
     }
     return children
   },

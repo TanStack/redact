@@ -15,11 +15,11 @@ import {
 // walking, which matches the no-Provider-fibers-in-tree reality.
 function renderConsumerStub(fiber: Fiber, domParent: Node, anchor: Node | null): void {
   const ctx = (fiber.type as any)._context
-  const props = fiber.pendingProps ?? {}
+  const props = fiber.pp ?? {}
   const value = ctx._currentValue
-  const rendered = typeof props.children === 'function' ? props.children(value) : null
+  const rendered = typeof props.children == 'function' ? props.children(value) : null
   reconcileChildren(fiber, childrenToArray(rendered), domParent, anchor)
-  fiber.memoizedProps = props
+  fiber.mp = props
 }
 
 registerTypeMatcher((_type, marker) =>

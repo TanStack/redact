@@ -8,16 +8,22 @@ import { ExternalStoreDemo } from './sections/ExternalStoreDemo'
 import { ContextDemo } from './sections/ContextDemo'
 import { ErrorBoundaryDemo } from './sections/ErrorBoundaryDemo'
 import { StrictModeDemo } from './sections/StrictModeDemo'
+import { HydrationLab } from './sections/HydrationLab'
+import { getHydrationLabCase, getRuntimeSide } from './hydrationLab'
 
-export default function App() {
+export default function App({ url }: { url?: string }) {
+  const labCase = getHydrationLabCase(url)
+
   return (
     <html>
       <head>
         <meta charset="utf-8" />
         <title>tanstack-react · playground</title>
-        <style>{BASE_CSS}</style>
+        <style data-lab-watch="critical-style">{BASE_CSS}</style>
       </head>
-      <body>
+      <body data-lab-watch="document-body">
+        {labCase.id === 'document' ? <DocumentRouteProbe /> : null}
+
         <header>
           <h1>tanstack-react playground</h1>
           <p class="sub">
@@ -28,6 +34,10 @@ export default function App() {
         </header>
 
         <main>
+          <Section label="watch" title="Hydration mismatch lab">
+            <HydrationLab activeCase={labCase} />
+          </Section>
+
           <Section label="good" title="Streaming SSR with Suspense">
             <StreamingDemo />
           </Section>
@@ -76,6 +86,20 @@ export default function App() {
         <script type="module" src="/src/entry-client.tsx" />
       </body>
     </html>
+  )
+}
+
+function DocumentRouteProbe() {
+  const side = getRuntimeSide()
+
+  return (
+    <div
+      class="lab-sentinel"
+      data-lab-watch="document-route-probe"
+      data-route-side={side === 'server' ? 'server-route' : 'client-route'}
+    >
+      Document route probe rendered on the {side}
+    </div>
   )
 }
 
@@ -189,6 +213,86 @@ const BASE_CSS = `
   .pill {
     display: inline-block; padding: 0.15rem 0.55rem; border-radius: 999px;
     background: #1c2128; font-size: 0.8rem;
+  }
+  .lab-tabs {
+    display: flex;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+  }
+  .lab-tabs a {
+    color: #cbd2da;
+    text-decoration: none;
+    border: 1px solid #2b313a;
+    border-radius: 6px;
+    padding: 0.35rem 0.6rem;
+    font-size: 0.82rem;
+    background: #101419;
+  }
+  .lab-tabs a.active {
+    background: #2a5fe8;
+    border-color: #2a5fe8;
+    color: white;
+  }
+  .lab-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 0.9fr);
+    gap: 1rem;
+    align-items: start;
+  }
+  .lab-shell,
+  .lab-report,
+  .lab-panel {
+    border: 1px solid #2b313a;
+    border-radius: 8px;
+    background: #101419;
+  }
+  .lab-shell,
+  .lab-report {
+    padding: 0.8rem;
+  }
+  .lab-panel {
+    padding: 0.75rem;
+    display: grid;
+    gap: 0.55rem;
+  }
+  .lab-sentinel {
+    padding: 0.45rem 0.6rem;
+    border-radius: 6px;
+    background: #151b22;
+    color: #98a2ad;
+    font-size: 0.86rem;
+  }
+  .lab-target {
+    color: #e6e8eb;
+    font-weight: 600;
+  }
+  .lab-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.78rem;
+  }
+  .lab-table th,
+  .lab-table td {
+    text-align: left;
+    border-bottom: 1px solid #222830;
+    padding: 0.35rem 0.25rem;
+    vertical-align: top;
+  }
+  .lab-table th {
+    color: #98a2ad;
+    font-weight: 500;
+  }
+  .lab-code {
+    max-height: 9rem;
+    overflow: auto;
+    white-space: pre-wrap;
+    background: #0b0d10;
+    border: 1px solid #222830;
+    border-radius: 6px;
+    padding: 0.6rem;
+  }
+  @media (max-width: 760px) {
+    .lab-grid { grid-template-columns: 1fr; }
   }
   footer {
     padding: 2rem;

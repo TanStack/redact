@@ -29,7 +29,10 @@ export class Component<P = {}, S = {}> {
 
   setState(updater: SetStateCallback<S, P>, callback?: () => void): void {
     if (!this._enqueueUpdate) {
-      throw new Error('Cannot call setState on an unmounted component.')
+      if (process.env.NODE_ENV !== 'production') {
+        throw new Error('Cannot call setState on an um component.')
+      }
+      throw new Error()
     }
     this._enqueueUpdate(updater, callback)
   }
@@ -40,7 +43,10 @@ export class Component<P = {}, S = {}> {
   }
 
   render(): ReactNode {
-    throw new Error('Component subclass must implement render().')
+    if (process.env.NODE_ENV !== 'production') {
+      throw new Error('Component subclass must implement render().')
+    }
+    throw new Error()
   }
 
   componentDidMount?(): void

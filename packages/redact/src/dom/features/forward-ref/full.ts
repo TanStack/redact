@@ -12,18 +12,18 @@ import {
 import { makeDispatcher } from '../../dispatcher'
 
 function renderForwardRef(fiber: Fiber, domParent: Node, anchor: Node | null): void {
-  const props = fiber.pendingProps ?? {}
+  const props = fiber.pp ?? {}
   const render = (fiber.type as any).render
   const ref = fiber.ref ?? (props.ref ?? null)
 
   const prevDispatcher = ReactSharedInternals.H
-  const prevFiber = ReactSharedInternals.currentFiber
-  const prevHook = ReactSharedInternals.currentHook
-  const prevIndex = ReactSharedInternals.hookIndex
+  const prevFiber = ReactSharedInternals.F
+  const prevHook = ReactSharedInternals.K
+  const prevIndex = ReactSharedInternals.I
   ReactSharedInternals.H = makeDispatcher()
-  ReactSharedInternals.currentFiber = fiber
-  ReactSharedInternals.currentHook = null
-  ReactSharedInternals.hookIndex = 0
+  ReactSharedInternals.F = fiber
+  ReactSharedInternals.K = null
+  ReactSharedInternals.I = 0
 
   let rendered: ReactNode
   try {
@@ -39,13 +39,13 @@ function renderForwardRef(fiber: Fiber, domParent: Node, anchor: Node | null): v
     }
   } finally {
     ReactSharedInternals.H = prevDispatcher
-    ReactSharedInternals.currentFiber = prevFiber
-    ReactSharedInternals.currentHook = prevHook
-    ReactSharedInternals.hookIndex = prevIndex
+    ReactSharedInternals.F = prevFiber
+    ReactSharedInternals.K = prevHook
+    ReactSharedInternals.I = prevIndex
   }
 
   reconcileChildren(fiber, childrenToArray(rendered), domParent, anchor)
-  fiber.memoizedProps = props
+  fiber.mp = props
 }
 
 registerTypeMatcher((_type, marker) =>

@@ -23,24 +23,24 @@ import {
 // still work, and save ~400 B min / ~200 B gz.
 function renderClassStub(fiber: Fiber, domParent: Node, anchor: Node | null): void {
   const Ctor = fiber.type as any
-  let instance = fiber.stateNode
-  const props = fiber.pendingProps ?? {}
+  let instance = fiber.sn
+  const props = fiber.pp ?? {}
 
   if (!instance) {
     instance = new Ctor(props, undefined)
     instance.props = props
     instance._fiber = fiber
     instance._enqueueUpdate = (updater: any, cb?: () => void) => {
-      const next = typeof updater === 'function' ? updater(instance.state, instance.props) : updater
+      const next = typeof updater == 'function' ? updater(instance.state, instance.props) : updater
       if (next != null) instance.state = { ...instance.state, ...next }
       if (cb) {
-        fiber.cleanups ||= []
-        fiber.cleanups.push(cb)
+        fiber.cu ||= []
+        fiber.cu.push(cb)
       }
       scheduleUpdate(fiber)
     }
     instance._forceUpdate = instance._enqueueUpdate
-    fiber.stateNode = instance
+    fiber.sn = instance
   } else {
     instance.props = props
   }
@@ -59,7 +59,7 @@ function renderClassStub(fiber: Fiber, domParent: Node, anchor: Node | null): vo
   }
 
   reconcileChildren(fiber, childrenToArray(rendered), domParent, anchor)
-  fiber.memoizedProps = props
+  fiber.mp = props
 }
 
 registerRenderer(FiberTag.Class, renderClassStub)

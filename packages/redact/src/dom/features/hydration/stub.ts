@@ -7,29 +7,24 @@ import type { Fiber, FiberRoot } from '../../../core'
 // element matching, and the WeakMap of cursors per fiber are all stripped.
 
 export class HydrationCursor {
-  next: ChildNode | null = null
-  parent: Node
-  endBefore: ChildNode | null = null
+  n: ChildNode | null = null
+  p: Node
+  e: ChildNode | null = null
   constructor(parent?: Node, _s?: ChildNode | null, _e?: ChildNode | null) {
-    this.parent = parent as Node
+    this.p = parent as Node
   }
-  takeHostNode(): ChildNode | null {
+  take(): ChildNode | null {
     return null
   }
-  takeMatchingHeadElement(): ChildNode | null {
+  head(): ChildNode | null {
     return null
   }
-  remaining(): ChildNode[] {
-    return []
+  has(): boolean {
+    return false
   }
 }
 
-export interface BoundaryInfo {
-  kind: 'pending' | 'resolved'
-  id: number
-  startMark: Comment
-  endMark: Comment
-}
+export type BoundaryInfo = [0 | 1, number, Comment, Comment]
 
 export function beginHydration(_root: FiberRoot): void {
   throw new Error(
@@ -70,3 +65,22 @@ export function findHostParent(fiber: Fiber): Fiber {
 export function installHydrationScrollGuard(): void {}
 
 export function drainReplayQueue(): void {}
+
+export interface HydrationBailoutError extends Error {
+  f: Fiber | null
+}
+
+export function isHydrationBailout(_error: unknown): _error is HydrationBailoutError {
+  return false
+}
+
+export function abortHydration(cause: unknown, fiber: Fiber | null = null): never {
+  const error = (cause instanceof Error ? cause : new Error('Hydration mismatch.')) as HydrationBailoutError
+  ;(error as any).f = fiber
+  throw error
+}
+
+export function hydrateRootImpl(): never {
+  beginHydration(null as any)
+  throw new Error('`hydrateRoot` requires the `hydration` feature.')
+}

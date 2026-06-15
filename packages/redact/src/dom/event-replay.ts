@@ -13,43 +13,27 @@
 export function drainReplayQueue(): void {
   const g = globalThis as any
   const q = g.$RE_q as Array<[string, EventTarget, number]> | undefined
+
   if (!q) return
-
   // Stop capturing before replaying so we don't re-capture what we dispatch.
-  if (typeof g.$RE_stop === 'function') {
-    try {
-      g.$RE_stop()
-    } catch {}
-  }
+  try {
+    g.$RE_stop?.()
+  } catch {}
 
-  const events = q.splice(0)
-  for (const [type, target] of events) {
+  for (const [type, target] of q.splice(0)) {
     try {
-      const ev = createEvent(type)
-      target.dispatchEvent(ev)
+      target.dispatchEvent(createEvent(type))
     } catch {}
   }
 }
 
 function createEvent(type: string): Event {
-  switch (type) {
-    case 'click':
-    case 'dblclick':
-    case 'mousedown':
-    case 'mouseup':
-    case 'contextmenu':
-      return new MouseEvent(type, { bubbles: true, cancelable: true })
-    case 'keydown':
-    case 'keyup':
-    case 'keypress':
-      return new KeyboardEvent(type, { bubbles: true, cancelable: true })
-    case 'input':
-      return new InputEvent(type, { bubbles: true, cancelable: true })
-    case 'submit':
-    case 'change':
-    case 'focus':
-    case 'blur':
-    default:
-      return new Event(type, { bubbles: true, cancelable: true })
-  }
+  const options = { bubbles: true, cancelable: true }
+  return type === 'click'
+    ? new MouseEvent(type, options)
+    : type === 'keydown'
+      ? new KeyboardEvent(type, options)
+      : type === 'input'
+        ? new InputEvent(type, options)
+        : new Event(type, options)
 }

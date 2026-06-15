@@ -70,7 +70,7 @@ export { ReactSharedInternals } from './shared-internals'
 export const cache = <T extends Function>(fn: T): T => fn
 export const act = async (fn: () => any) => {
   const r = fn()
-  if (r && typeof r.then === 'function') await r
+  if (r && typeof r.then == 'function') await r
 }
 export function taintUniqueValue(_msg: string, _lifetime: any, _value: any): void {}
 export function taintObjectReference(_msg: string, _object: any): void {}

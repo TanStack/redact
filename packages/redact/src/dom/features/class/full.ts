@@ -12,8 +12,8 @@ import {
 
 function renderClass(fiber: Fiber, domParent: Node, anchor: Node | null): void {
   const Ctor = fiber.type as any
-  let instance = fiber.stateNode
-  const props = fiber.pendingProps ?? {}
+  let instance = fiber.sn
+  const props = fiber.pp ?? {}
   const isNew = !instance
 
   // Class contextType: read the current value of the subscribed context so
@@ -26,22 +26,22 @@ function renderClass(fiber: Fiber, domParent: Node, anchor: Node | null): void {
     instance.context = ctxValue
     instance._fiber = fiber
     instance._enqueueUpdate = (updater: any, cb?: () => void) => {
-      const next = typeof updater === 'function' ? updater(instance.state, instance.props) : updater
+      const next = typeof updater == 'function' ? updater(instance.state, instance.props) : updater
       if (next != null) instance.state = { ...instance.state, ...next }
       if (cb) {
-        fiber.cleanups ||= []
-        fiber.cleanups.push(cb)
+        fiber.cu ||= []
+        fiber.cu.push(cb)
       }
       scheduleUpdate(fiber)
     }
     instance._forceUpdate = (cb?: () => void) => {
       if (cb) {
-        fiber.cleanups ||= []
-        fiber.cleanups.push(cb)
+        fiber.cu ||= []
+        fiber.cu.push(cb)
       }
       scheduleUpdate(fiber)
     }
-    fiber.stateNode = instance
+    fiber.sn = instance
     if (Ctor.getDerivedStateFromProps) {
       const d = Ctor.getDerivedStateFromProps(props, instance.state)
       if (d) instance.state = { ...instance.state, ...d }
@@ -58,10 +58,10 @@ function renderClass(fiber: Fiber, domParent: Node, anchor: Node | null): void {
     if (instance.shouldComponentUpdate) {
       if (!instance.shouldComponentUpdate(props, instance.state, instance.context)) {
         instance.props = props
-        fiber.memoizedProps = props
+        fiber.mp = props
         // Still need to render children with previous output
-        if (fiber.memoizedState?.rendered) {
-          reconcileChildren(fiber, childrenToArray(fiber.memoizedState.rendered), domParent, anchor)
+        if (fiber.ms?.r) {
+          reconcileChildren(fiber, childrenToArray(fiber.ms.r), domParent, anchor)
         }
         return
       }
@@ -70,7 +70,7 @@ function renderClass(fiber: Fiber, domParent: Node, anchor: Node | null): void {
     // New snapshot must win over any stale one from a previous render —
     // otherwise componentDidUpdate keeps seeing the original props and can
     // ping-pong setState forever.
-    fiber.memoizedState = { ...(fiber.memoizedState ?? {}), prevProps, prevState }
+    fiber.ms = { ...(fiber.ms ?? {}), p: prevProps, s: prevState }
   }
 
   let rendered: ReactNode
@@ -85,10 +85,10 @@ function renderClass(fiber: Fiber, domParent: Node, anchor: Node | null): void {
       return
     }
   }
-  fiber.memoizedState = { ...(fiber.memoizedState ?? {}), rendered }
+  fiber.ms = { ...(fiber.ms ?? {}), r: rendered }
 
   reconcileChildren(fiber, childrenToArray(rendered), domParent, anchor)
-  fiber.memoizedProps = props
+  fiber.mp = props
 
   // Schedule lifecycle
   if (isNew) {
@@ -96,8 +96,8 @@ function renderClass(fiber: Fiber, domParent: Node, anchor: Node | null): void {
       scheduleLifecycle(fiber, () => instance.componentDidMount())
     }
   } else if (instance.componentDidUpdate) {
-    const { prevProps, prevState } = fiber.memoizedState ?? {}
-    scheduleLifecycle(fiber, () => instance.componentDidUpdate(prevProps, prevState))
+    const { p, s } = fiber.ms ?? {}
+    scheduleLifecycle(fiber, () => instance.componentDidUpdate(p, s))
   }
 }
 

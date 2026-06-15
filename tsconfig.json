@@ -27,6 +27,7 @@
     "paths": {
       "@tanstack/redact/jsx-runtime": ["./packages/redact/src/react/jsx-runtime.ts"],
       "@tanstack/redact/jsx-dev-runtime": ["./packages/redact/src/react/jsx-runtime.ts"],
+      "@tanstack/redact/compiler-runtime": ["./packages/redact/src/react/compiler-runtime.ts"],
       "@tanstack/redact/dom-client": ["./packages/redact/src/dom/client.ts"],
       "@tanstack/redact/dom-test-utils": ["./packages/redact/src/dom/test-utils.ts"],
       "@tanstack/redact/dom": ["./packages/redact/src/dom/index.ts"],
@@ -36,6 +37,7 @@
       "@tanstack/redact": ["./packages/redact/src/react/index.ts"],
       "react/jsx-runtime": ["./packages/redact/src/react/jsx-runtime.ts"],
       "react/jsx-dev-runtime": ["./packages/redact/src/react/jsx-runtime.ts"],
+      "react/compiler-runtime": ["./packages/redact/src/react/compiler-runtime.ts"],
       "react": ["./packages/redact/src/react/index.ts"],
       "react-dom/client": ["./packages/redact/src/dom/client.ts"],
       "react-dom/server": ["./packages/redact/src/server/index.ts"],

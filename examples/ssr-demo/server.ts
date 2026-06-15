@@ -13,8 +13,8 @@ const server = createHttpServer((req, res) => {
   vite.middlewares(req, res, async () => {
     try {
       const mod = await vite.ssrLoadModule('/src/entry-server.tsx')
-      const render = mod.render as () => Promise<ReadableStream<Uint8Array>>
-      const stream = await render()
+      const render = mod.render as (url?: string) => Promise<ReadableStream<Uint8Array>>
+      const stream = await render(req.url)
       res.statusCode = 200
       res.setHeader('Content-Type', 'text/html; charset=utf-8')
       res.write('<!doctype html>')

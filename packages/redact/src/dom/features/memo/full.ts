@@ -25,8 +25,8 @@ function shallowEqual(a: any, b: any): boolean {
 
 function renderMemo(fiber: Fiber, domParent: Node, anchor: Node | null): void {
   const { type, compare } = fiber.type as any
-  const props = fiber.pendingProps ?? {}
-  const prev = fiber.memoizedProps
+  const props = fiber.pp ?? {}
+  const prev = fiber.mp
 
   // Memo's prop-equality gate guards PARENT-triggered rerenders. If this
   // render is a STATE-triggered rerender of this exact fiber (hook update,
@@ -45,7 +45,7 @@ function renderMemo(fiber: Fiber, domParent: Node, anchor: Node | null): void {
   // `forwardRef`. Without the marker-based branch we'd mistreat
   // `memo(forwardRef(...))` as a Fragment and render nothing.
   let innerTag: FiberTag
-  if (typeof type === 'function') {
+  if (typeof type == 'function') {
     innerTag = type.prototype?.isReactComponent ? FiberTag.Class : FiberTag.Function
   } else if (type && typeof type === 'object') {
     const m = (type as any).$$typeof

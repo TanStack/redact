@@ -185,4 +185,86 @@ describe('hydrateRoot(document, <html/>)', () => {
     )
     expect(htmlEls.length).toBe(1)
   })
+
+  it('falls back to body-only client render on document body text mismatch', () => {
+    function App() {
+      return (
+        <html>
+          <head>
+            <title>client</title>
+            <style id="critical">{'body{color:red}'}</style>
+          </head>
+          <body>
+            <nav id="nav">nav</nav>
+            <h1 id="title">Solid</h1>
+          </body>
+        </html>
+      )
+    }
+
+    const doc = buildDocumentFrom(
+      '<!doctype html><html><head><title>client</title><style id="critical">body{color:red}</style></head><body><nav id="nav">nav</nav><h1 id="title">React</h1><p id="old">old</p></body></html>',
+    )
+    const origHtml = doc.documentElement
+    const origHead = doc.head
+    const origStyle = doc.querySelector('#critical')
+    const errors: unknown[] = []
+
+    hydrateRoot(doc as any, <App />, {
+      onRecoverableError: (e) => errors.push(e),
+    })
+
+    const htmlEls = Array.from(doc.childNodes).filter(
+      (n) => n.nodeType === 1 && (n as Element).tagName.toLowerCase() === 'html',
+    )
+    expect(errors.length).toBeGreaterThanOrEqual(1)
+    expect(htmlEls.length).toBe(1)
+    expect(doc.documentElement).toBe(origHtml)
+    expect(doc.head).toBe(origHead)
+    expect(doc.querySelector('#critical')).toBe(origStyle)
+    expect(doc.querySelector('#title')?.textContent).toBe('Solid')
+    expect(doc.querySelector('#old')).toBeNull()
+  })
+
+  it('recovers a Suspense mismatch inside document body without replacing head or outer body siblings', () => {
+    function App({ label }: { label: string }) {
+      return (
+        <html>
+          <head>
+            <title>client</title>
+            <style id="critical">{'body{color:red}'}</style>
+          </head>
+          <body>
+            <header id="shell">shell</header>
+            <React.Suspense fallback={<i>loading</i>}>
+              <main id="route">{label}</main>
+            </React.Suspense>
+            <footer id="foot">foot</footer>
+          </body>
+        </html>
+      )
+    }
+
+    const html = renderToString(<App label="React" />)
+    const doc = buildDocumentFrom(html)
+    const origHtml = doc.documentElement
+    const origHead = doc.head
+    const origStyle = doc.querySelector('#critical')
+    const shell = doc.querySelector('#shell')
+    const foot = doc.querySelector('#foot')
+    const errors: unknown[] = []
+
+    hydrateRoot(doc as any, <App label="Solid" />, {
+      onRecoverableError: (e) => errors.push(e),
+    })
+
+    expect(errors.length).toBeGreaterThanOrEqual(1)
+    expect(doc.documentElement).toBe(origHtml)
+    expect(doc.head).toBe(origHead)
+    expect(doc.querySelector('#critical')).toBe(origStyle)
+    expect(doc.querySelector('#shell')).toBe(shell)
+    expect(doc.querySelector('#foot')).toBe(foot)
+    expect(doc.querySelectorAll('#route').length).toBe(1)
+    expect(doc.querySelector('#route')?.textContent).toBe('Solid')
+  })
 })

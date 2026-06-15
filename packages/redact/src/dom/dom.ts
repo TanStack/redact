@@ -240,7 +240,7 @@ function setEventHandler(el: Element, name: string, next: any, prev: any): void 
   // legacy `onclick="..."` HTML attribute (string handler) is a known XSS
   // vector if a parent spreads untrusted props onto a host element. React
   // also ignores non-function handlers.
-  if (next != null && typeof next !== 'function') next = null
+  if (next != null && typeof next != 'function') next = null
 
   const capture = name.endsWith('Capture')
   const reactEventName = name.slice(2, capture ? -7 : undefined)

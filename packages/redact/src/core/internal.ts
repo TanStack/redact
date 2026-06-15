@@ -16,31 +16,17 @@ export const enum FiberTag {
   Root = 12,
 }
 
-export const enum FiberFlag {
-  None = 0,
-  Placement = 1 << 0,
-  Update = 1 << 1,
-  Deletion = 1 << 2,
-  Ref = 1 << 3,
-  Effect = 1 << 4,
-  LayoutEffect = 1 << 5,
-  ContentReset = 1 << 6,
-  DidCapture = 1 << 7,
-}
-
 export interface Hook {
-  state: any
-  queue: any
-  deps: any
-  cleanup: any
-  next: Hook | null
+  s: any
+  q: any
+  d: any
+  c: any
+  n: Hook | null
 }
 
 export interface Effect {
-  tag: 'effect' | 'layout' | 'insertion'
-  create: () => any
-  destroy: (() => void) | void
-  deps: ReadonlyArray<unknown> | undefined
+  t: 0 | 1
+  c: () => any
 }
 
 export interface Fiber {
@@ -48,34 +34,31 @@ export interface Fiber {
   type: any
   key: string | null
   ref: Ref<any> | null
-  pendingProps: any
-  memoizedProps: any
-  memoizedState: any
-  stateNode: any
+  pp: any
+  mp: any
+  ms: any
+  sn: any
   dom: Node | null
   parent: Fiber | null
   child: Fiber | null
   sibling: Fiber | null
   hooks: Hook | null
-  effects: Effect[] | null
-  layoutEffects: Effect[] | null
-  cleanups: Array<() => void> | null
-  flags: FiberFlag
-  dirty: boolean
-  unmounted: boolean
+  cu: Array<() => void> | null
+  dy: boolean
+  um: boolean
   root: FiberRoot | null
 }
 
 export interface FiberRoot {
-  container: Element | DocumentFragment
-  current: Fiber
-  pending: Set<Fiber>
-  scheduled: boolean
-  onRecoverableError?: ((err: unknown) => void) | undefined
-  onCaughtError?: ((err: unknown) => void) | undefined
-  onUncaughtError?: ((err: unknown) => void) | undefined
-  identifierPrefix: string
-  hydrating: boolean
+  c: Element | DocumentFragment
+  r: Fiber
+  p: Set<Fiber>
+  s: boolean
+  re?: ((err: unknown) => void) | undefined
+  ce?: ((err: unknown) => void) | undefined
+  ue?: ((err: unknown) => void) | undefined
+  i: string
+  h: boolean
 }
 
 export function createFiber(tag: FiberTag, type: any, key: string | null): Fiber {
@@ -84,21 +67,18 @@ export function createFiber(tag: FiberTag, type: any, key: string | null): Fiber
     type,
     key,
     ref: null,
-    pendingProps: null,
-    memoizedProps: null,
-    memoizedState: null,
-    stateNode: null,
+    pp: null,
+    mp: null,
+    ms: null,
+    sn: null,
     dom: null,
     parent: null,
     child: null,
     sibling: null,
     hooks: null,
-    effects: null,
-    layoutEffects: null,
-    cleanups: null,
-    flags: FiberFlag.None,
-    dirty: false,
-    unmounted: false,
+    cu: null,
+    dy: false,
+    um: false,
     root: null,
   }
 }

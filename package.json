@@ -12,6 +12,8 @@
     "size": "node scripts/size.mjs",
     "size:check": "node scripts/size-check.mjs",
     "example:playground": "pnpm --filter dom-jsx-playground dev",
+    "example:ssr": "pnpm --filter ssr-demo dev",
+    "example:hydration-lab": "pnpm --filter ssr-demo dev",
     "bench": "node scripts/run-bench.mjs"
   },
   "devDependencies": {
