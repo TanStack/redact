@@ -102,16 +102,34 @@ async function buildPackage() {
       jsx: 'react-jsx',
       jsxImportSource: '@tanstack/redact',
     },
-    include: [resolve(pkgDir, 'src/**/*')],
+    include: [
+      resolve(pkgDir, 'src/**/*'),
+      resolve(pkgDir, 'tsconfig.build-globals.d.ts'),
+    ],
   }
   const tsconfigPath = resolve(pkgDir, 'tsconfig.build.json')
+  const globalsPath = resolve(pkgDir, 'tsconfig.build-globals.d.ts')
   writeFileSync(tsconfigPath, JSON.stringify(tsconfig, null, 2))
+  writeFileSync(globalsPath, `
+declare const process: { env: { NODE_ENV?: string } }
+declare module 'node:fs' {
+  export const existsSync: any
+  export const readFileSync: any
+  export const realpathSync: any
+}
+declare module 'node:path' {
+  export const dirname: any
+  export const resolve: any
+}
+declare module 'node:url' {
+  export const fileURLToPath: any
+}
+`)
   try {
     execSync(`npx tsc -p ${tsconfigPath}`, { cwd: root, stdio: 'inherit' })
-  } catch {
-    // Non-fatal: declarations may be incomplete, but JS still builds.
   } finally {
     rmSync(tsconfigPath, { force: true })
+    rmSync(globalsPath, { force: true })
   }
 
   console.log(`\n  ✓ @tanstack/redact`)

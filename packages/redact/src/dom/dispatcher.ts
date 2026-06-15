@@ -55,6 +55,8 @@ function depsEqual(
   return true
 }
 
+type BasicStateAction<S> = S | ((p: S) => S)
+
 // Singleton — every method reads render context via ReactSharedInternals,
 // and per-hook closures live on the hook itself, so nothing is render-local
 // to capture. Allocating a fresh wrapper + 17 method closures per function-
@@ -67,9 +69,9 @@ export function makeDispatcher() {
 
 function makeDispatcherImpl() {
   return {
-    useState<S>(initial: S | (() => S)) {
-      return this.useReducer<S, S | ((p: S) => S)>(
-        basicReducer as any,
+    useState<S>(initial: S | (() => S)): [S, (a: BasicStateAction<S>) => void] {
+      return this.useReducer(
+        basicReducer as (state: S, action: BasicStateAction<S>) => S,
         typeof initial == 'function' ? (initial as () => S)() : initial,
       )
     },
@@ -359,7 +361,7 @@ function makeDispatcherImpl() {
   }
 }
 
-function basicReducer<S>(state: S, action: S | ((p: S) => S)): S {
+function basicReducer<S>(state: S, action: BasicStateAction<S>): S {
   return typeof action == 'function' ? (action as (p: S) => S)(state) : action
 }
 

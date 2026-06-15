@@ -25,6 +25,11 @@ export interface ReadableStreamResult extends ReadableStream<Uint8Array> {
   allReady: Promise<void>
 }
 
+export interface PipeableWritable {
+  write(chunk: string): unknown
+  end(): unknown
+}
+
 export interface OrchestratorState {
   nextId: number
   pending: Set<Promise<void>>
@@ -302,7 +307,7 @@ export function renderToReadableStream(
 // ---------------------------------------------------------------------------
 
 export interface PipeableHandle {
-  pipe<T extends NodeJS.WritableStream>(dest: T): T
+  pipe<T extends PipeableWritable>(dest: T): T
   abort(reason?: unknown): void
 }
 
@@ -324,12 +329,12 @@ export function renderToPipeableStream(
   }
 
   const buffers: string[] = []
-  let dest: NodeJS.WritableStream | null = null
+  let dest: PipeableWritable | null = null
   let shellReady = false
   let finished = false
   let aborted = false
 
-  const flushTo = (w: NodeJS.WritableStream) => {
+  const flushTo = (w: PipeableWritable) => {
     if (!buffers.length) return
     for (const b of buffers) w.write(b)
     buffers.length = 0
@@ -368,7 +373,7 @@ export function renderToPipeableStream(
   })
 
   return {
-    pipe<T extends NodeJS.WritableStream>(target: T): T {
+    pipe<T extends PipeableWritable>(target: T): T {
       dest = target
       flushTo(target)
       if (finished) target.end()
