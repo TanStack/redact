@@ -44,6 +44,7 @@ export interface WalkOptions {
   nextBoundaryId: () => number
   bootstrapped?: boolean | undefined
   isBoundaryResolution?: boolean | undefined
+  isSvg?: boolean | undefined
   /**
    * Tracks whether the most recent emission within the *current text flow*
    * ended with a text node. When the next emission is also text, we emit a
@@ -232,6 +233,7 @@ function walkHost(
   props: Record<string, any>,
   opts: WalkOptions,
 ): void {
+  const isSvg = opts.isSvg || tag === 'svg'
   // <textarea value="..."> serializes its value as a TEXT CHILD, not an
   // attribute. `defaultValue` is the fallback when `value` is absent. This
   // matches React and the HTML spec — `<textarea value="x">` is not valid
@@ -282,13 +284,13 @@ function walkHost(
     if (isInput && (k === 'defaultValue' || k === 'defaultChecked')) continue
     if (isSelect && (k === 'value' || k === 'defaultValue')) continue
     if (isOption && k === 'selected') continue
-    opts.emit(attrToHtml(k, props[k]))
+    opts.emit(attrToHtml(k, props[k], isSvg))
   }
   if (inputValueAttr !== undefined) {
-    opts.emit(attrToHtml('value', inputValueAttr))
+    opts.emit(attrToHtml('value', inputValueAttr, isSvg))
   }
   if (inputCheckedAttr !== undefined) {
-    opts.emit(attrToHtml('checked', inputCheckedAttr))
+    opts.emit(attrToHtml('checked', inputCheckedAttr, isSvg))
   }
   if (isOption) {
     const selectVal = currentSelectValue()
@@ -313,7 +315,11 @@ function walkHost(
   // Opening a host element starts a fresh text flow context for its children.
   // Children's text separator tracking is independent of the outer context.
   const parentTextState = opts.textState
-  const childOpts: WalkOptions = { ...opts, textState: { lastWasText: false } }
+  const childOpts: WalkOptions = {
+    ...opts,
+    isSvg: isSvg && tag !== 'foreignObject',
+    textState: { lastWasText: false },
+  }
 
   if (tag === 'html' && !hasHeadChild(props.children)) {
     opts.emit('<head></head>')

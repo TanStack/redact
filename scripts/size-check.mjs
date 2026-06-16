@@ -49,9 +49,13 @@ const BUDGETS = {
   // 0.0.16 hotfix (+~13 B): hydration mismatch recovery now widens normal
   // component-root failures so sibling client content cannot stay stale after
   // the first nested mismatch aborts the hydration pass.
-  'redact/dom-client': 10360,
+  // 0.0.17 hotfix (+~240 B on hydration-bearing dom-client variants): SVG
+  // camelCase attribute normalization for SSR/hydration, generated id drift
+  // tolerance, and SSR/dev body script tolerance for Start/Vite document
+  // hydration. Nano and hydration=stub do not grow.
+  'redact/dom-client': 10640,
   'redact/dom-client (nano)': 7700,
-  'redact/dom-client (suspense=stub)': 9460,
+  'redact/dom-client (suspense=stub)': 9760,
   'redact/dom-client (hydration=stub)': 9030,
 }
 

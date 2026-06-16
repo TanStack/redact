@@ -21,6 +21,7 @@ export function createFiberRoot(
     ce: options.onCaughtError,
     ue: options.onUncaughtError,
     i: options.identifierPrefix ?? ':r',
+    ic: 0,
     h: false,
   }
   rootFiber.root = root
@@ -34,6 +35,7 @@ export function attachRootFiber(
 ): void {
   const rootFiber = createFiber(FiberTag.Root, null, null)
   root.c = container as any
+  root.ic = 0
   rootFiber.root = root
   rootFiber.sn = container
   root.r = rootFiber

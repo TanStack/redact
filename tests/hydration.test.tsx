@@ -33,6 +33,101 @@ describe('hydrateRoot', () => {
     expect(container.querySelector('span')).toBe(originalSpan)
   })
 
+  it('hydrates SVG camelCase attributes using SVG attribute names', () => {
+    function App() {
+      return (
+        <svg viewBox="0 0 10 10">
+          <path
+            d="M0 0h10"
+            fillRule="evenodd"
+            strokeLinecap="round"
+            strokeWidth={2}
+          />
+        </svg>
+      )
+    }
+
+    const html = renderToString(<App />)
+    expect(html).toContain('viewBox="0 0 10 10"')
+    expect(html).toContain('fill-rule="evenodd"')
+    expect(html).toContain('stroke-linecap="round"')
+    expect(html).toContain('stroke-width="2"')
+    expect(html).not.toContain('strokewidth')
+
+    const container = setupWithHTML(html)
+    const originalPath = container.querySelector('path')
+    const errors: unknown[] = []
+
+    hydrateRoot(container, <App />, {
+      onRecoverableError: (e) => errors.push(e),
+    })
+
+    const path = container.querySelector('path') as SVGPathElement
+    expect(errors).toEqual([])
+    expect(path).toBe(originalPath)
+    expect(path.getAttribute('fill-rule')).toBe('evenodd')
+    expect(path.getAttribute('stroke-linecap')).toBe('round')
+    expect(path.getAttribute('stroke-width')).toBe('2')
+  })
+
+  it('hydrates useId attributes with the server prefix', () => {
+    function WithId({ label }: { label: string }) {
+      const id = React.useId()
+      return <button id={`radix-${id}`}>{label}</button>
+    }
+
+    function App() {
+      return (
+        <div>
+          <WithId label="one" />
+          <WithId label="two" />
+        </div>
+      )
+    }
+
+    const html = renderToString(<App />)
+    expect(html).toContain('id="radix-:R0"')
+    expect(html).toContain('id="radix-:R1"')
+
+    const container = setupWithHTML(html)
+    const originalSecond = container.querySelectorAll('button')[1]
+    const errors: unknown[] = []
+
+    hydrateRoot(container, <App />, {
+      onRecoverableError: (e) => errors.push(e),
+    })
+
+    const second = container.querySelectorAll('button')[1]!
+    expect(errors).toEqual([])
+    expect(second).toBe(originalSecond)
+    expect(second.getAttribute('id')).toBe('radix-:R1')
+  })
+
+  it('does not recover solely for generated id attribute drift', () => {
+    function App() {
+      return (
+        <button id="radix-:R9">
+          menu
+        </button>
+      )
+    }
+
+    const container = setupWithHTML(
+      '<button id="radix-:R7">menu</button>',
+    )
+    const original = container.querySelector('button')
+    const errors: unknown[] = []
+
+    hydrateRoot(container, <App />, {
+      onRecoverableError: (e) => errors.push(e),
+    })
+
+    const button = container.querySelector('button') as HTMLButtonElement
+    expect(errors).toEqual([])
+    expect(button).toBe(original)
+    expect(button.getAttribute('id')).toBe('radix-:R7')
+  })
+
   it('attaches event handlers to adopted DOM', () => {
     function App() {
       const [n, setN] = React.useState(0)

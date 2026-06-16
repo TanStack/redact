@@ -1,3 +1,5 @@
+import { attributeName } from '../core/attributes'
+
 const SVG_NS = 'http://www.w3.org/2000/svg'
 
 const BOOLEAN_ATTRS = new Set([
@@ -60,6 +62,7 @@ export function setProp(
   isSvg: boolean,
 ): void {
   if (name === 'children' || name === 'key' || name === 'ref') return
+  const attr = attributeName(name, isSvg)
 
   // defaultValue / defaultChecked are IDL-property-only — they seed the
   // initial value/checked of a form control on first mount and must NOT be
@@ -123,8 +126,8 @@ export function setProp(
   }
 
   if (BOOLEAN_ATTRS.has(name.toLowerCase())) {
-    if (next) el.setAttribute(name, '')
-    else el.removeAttribute(name)
+    if (next) el.setAttribute(attr, '')
+    else el.removeAttribute(attr)
     return
   }
 
@@ -134,20 +137,20 @@ export function setProp(
   if (name.length > 5 && (name.charCodeAt(0) === 97 /* a */ || name.charCodeAt(0) === 100 /* d */)) {
     if (name.startsWith('aria-') || name.startsWith('data-')) {
       if (next == null) {
-        el.removeAttribute(name)
+        el.removeAttribute(attr)
       } else {
-        el.setAttribute(name, '' + next)
+        el.setAttribute(attr, '' + next)
       }
       return
     }
   }
 
   if (next == null || next === false) {
-    el.removeAttribute(name)
+    el.removeAttribute(attr)
   } else if (next === true) {
-    el.setAttribute(name, '')
+    el.setAttribute(attr, '')
   } else {
-    el.setAttribute(name, '' + next)
+    el.setAttribute(attr, '' + next)
   }
 }
 

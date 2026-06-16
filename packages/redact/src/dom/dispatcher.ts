@@ -209,7 +209,9 @@ function makeDispatcherImpl() {
       if (hook.s === undefined) {
         const fiber = getCurrentFiber()
         const root = findRootFromFiber(fiber)
-        hook.s = (root?.i ?? ':r') + (idCounter++).toString(36)
+        hook.s = root
+          ? root.i + (root.ic++).toString(36)
+          : ':r' + (idCounter++).toString(36)
       }
       return hook.s as string
     },

@@ -6,6 +6,7 @@ import {
   type ReactElement,
   type ReactNode,
 } from '../../../core'
+import { attributeName } from '../../../core/attributes'
 import { createHostNode, setProp } from '../../dom'
 import { drainReplayQueue } from '../../event-replay'
 import { discardPendingWork, findRoot, flushSyncWork, renderRoot } from '../../reconcile'
@@ -119,7 +120,14 @@ export class HydrationCursor {
   has(): boolean {
     let n = this.n
     while (n && n !== this.e) {
-      if (n.nodeType === 1 || n.nodeType === 3) return true
+      if (n.nodeType === 1) {
+        if ((n as Element).tagName === 'SCRIPT') {
+          n = n.nextSibling
+          continue
+        }
+        return true
+      }
+      if (n.nodeType === 3 && (n as Text).data.trim() !== '') return true
       n = n.nextSibling
     }
     return false
@@ -163,7 +171,10 @@ export function hydrateRootImpl(
   const target = container as any as Element | Document
   const isDocument = (container as Node).nodeType === 9
   const body = isDocument ? (target as Document).body : null
-  const root = createFiberRoot(target, options)
+  const root = createFiberRoot(target, {
+    ...options,
+    identifierPrefix: options.identifierPrefix ?? ':R',
+  })
 
   installHydrationScrollGuard()
 
@@ -202,6 +213,8 @@ export function hydrateRootImpl(
     }
     resetAfterHydrationFailure(root, recoveryContainer)
     try {
+      root.i = options.identifierPrefix ?? ':r'
+      root.ic = 0
       flushSyncWork(() => {
         renderRoot(root, recoveryChildren)
       })
@@ -746,7 +759,7 @@ function validateHydrationProps(
     }
 
     const stringifiedBoolean = k.startsWith('aria-') || k.startsWith('data-')
-    const attr = k === 'className' ? 'class' : k === 'htmlFor' ? 'for' : stringifiedBoolean ? k : k.toLowerCase()
+    const attr = attributeName(k, isSvg)
 
     let expectedValue: string | null
     if (value == null || (value === false && !stringifiedBoolean)) {
@@ -758,6 +771,9 @@ function validateHydrationProps(
     }
     const actualValue = el.getAttribute(attr)
     if (expectedValue !== actualValue) {
+      if (attr === 'id' && expectedValue != null && actualValue != null) {
+        continue
+      }
       if (process.env.NODE_ENV !== 'production') {
         failHydration(
           fiber,

@@ -245,6 +245,18 @@ describe('ReactDOMServerIntegration / elements', () => {
       expect(e.getAttribute('viewBox')).toBe('0 0 0 0')
     })
 
+    itRenders('svg child element with presentation attributes', async (render) => {
+      const e = (await render(
+        <svg viewBox="0 0 10 10">
+          <path fillRule="evenodd" strokeLinecap="round" strokeWidth={2} />
+        </svg>,
+      )) as SVGElement
+      const path = e.firstChild as SVGPathElement
+      expect(path.getAttribute('fill-rule')).toBe('evenodd')
+      expect(path.getAttribute('stroke-linecap')).toBe('round')
+      expect(path.getAttribute('stroke-width')).toBe('2')
+    })
+
     itRenders('svg element with a mixed case name', async (render) => {
       const e = (await render(
         <svg>

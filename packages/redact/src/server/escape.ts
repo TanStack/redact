@@ -1,3 +1,5 @@
+import { attributeName } from '../core/attributes'
+
 const ATTR_MAP: Record<string, string> = {
   '&': '&amp;',
   '"': '&quot;',
@@ -48,17 +50,6 @@ export const VOID_ELEMENTS = new Set([
 
 export const RAW_TEXT_ELEMENTS = new Set(['script', 'style'])
 
-// Map JSX prop names to HTML attribute names where they differ
-export const ATTR_ALIASES: Record<string, string> = {
-  className: 'class',
-  htmlFor: 'for',
-  httpEquiv: 'http-equiv',
-  acceptCharset: 'accept-charset',
-  crossOrigin: 'crossorigin',
-  viewBox: 'viewBox', // SVG keeps camelCase
-  noModule: 'nomodule',
-}
-
 const BOOLEAN_ATTRS = new Set([
   'allowfullscreen',
   'async',
@@ -87,7 +78,7 @@ const BOOLEAN_ATTRS = new Set([
   'selected',
 ])
 
-export function attrToHtml(name: string, value: unknown): string {
+export function attrToHtml(name: string, value: unknown, isSvg = false): string {
   if (
     name === 'children' ||
     name === 'key' ||
@@ -103,7 +94,7 @@ export function attrToHtml(name: string, value: unknown): string {
   if (name[0] === 'o' && name[1] === 'n' && typeof value === 'function') return ''
   if (value == null) return ''
 
-  const htmlName = ATTR_ALIASES[name] ?? name.toLowerCase()
+  const htmlName = attributeName(name, isSvg)
 
   // aria-* and data-* stringify booleans to `"true"`/`"false"` rather than
   // using boolean-attribute presence semantics — matches React and the ARIA

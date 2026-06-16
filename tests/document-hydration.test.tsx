@@ -84,6 +84,35 @@ describe('hydrateRoot(document, <html/>)', () => {
     expect(errors).toEqual([])
   })
 
+  it('tolerates SSR-only scripts after document body app children', () => {
+    function App() {
+      return (
+        <html>
+          <head>
+            <title>test</title>
+          </head>
+          <body>
+            <h1>hi</h1>
+          </body>
+        </html>
+      )
+    }
+
+    const doc = buildDocumentFrom(
+      '<!doctype html><html><head><title>test</title></head><body><h1>hi</h1><script type="module" async>window.__vite=1</script></body></html>',
+    )
+    const script = doc.body.querySelector('script')
+    const errors: unknown[] = []
+
+    hydrateRoot(doc as any, <App />, {
+      onRecoverableError: (e) => errors.push(e),
+    })
+
+    expect(errors).toEqual([])
+    expect(doc.body.querySelector('h1')?.textContent).toBe('hi')
+    expect(doc.body.querySelector('script')).toBe(script)
+  })
+
   it('a root-level component suspending during hydration does not append a second <html>', async () => {
     // Mirrors Start's <StartClient/> → <Await promise={...}> pattern: the
     // root-most component throws a promise synchronously during hydrateRoot.
