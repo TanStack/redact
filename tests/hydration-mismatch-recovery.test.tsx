@@ -321,6 +321,62 @@ describe('hydration mismatch recovery', () => {
     expect(button.textContent).toBe('1')
   })
 
+  it('localStorage-driven framework mismatch regenerates sibling client content', () => {
+    const reactLogo = 'data:image/svg+xml,react'
+    const solidLogo = 'data:image/svg+xml,solid'
+    let serverRendering = true
+    localStorage.removeItem('framework')
+
+    function App() {
+      const framework =
+        typeof window !== 'undefined' && !serverRendering
+          ? localStorage.getItem('framework') || 'react'
+          : 'react'
+      const isSolid = framework === 'solid'
+
+      return (
+        <div id="app">
+          <button id="framework">
+            <img
+              src={isSolid ? solidLogo : reactLogo}
+              alt={isSolid ? 'Solid' : 'React'}
+            />
+            <span>{isSolid ? 'Solid' : 'React'}</span>
+          </button>
+          <pre>
+            {isSolid
+              ? 'npm install @tanstack/solid-router'
+              : 'npm install @tanstack/react-router'}
+          </pre>
+        </div>
+      )
+    }
+
+    const html = renderToString(<App />)
+    expect(html).toContain('React')
+    expect(html).toContain('@tanstack/react-router')
+
+    const container = install(html)
+    const errors: unknown[] = []
+    serverRendering = false
+    localStorage.setItem('framework', 'solid')
+
+    hydrateRoot(container, <App />, {
+      onRecoverableError: (e) => errors.push(e),
+    })
+
+    const button = container.querySelector('#framework') as HTMLButtonElement
+    const img = container.querySelector('img') as HTMLImageElement
+    const pre = container.querySelector('pre') as HTMLPreElement
+
+    expect(errors.length).toBeGreaterThanOrEqual(1)
+    expect(button.textContent).toContain('Solid')
+    expect(img.getAttribute('alt')).toBe('Solid')
+    expect(img.getAttribute('src')).toBe(solidLogo)
+    expect(pre.textContent).toContain('@tanstack/solid-router')
+    localStorage.removeItem('framework')
+  })
+
   it('error boundary checkpoint recovery preserves siblings outside the boundary', () => {
     class Boundary extends React.Component<{ children: React.ReactNode }> {
       static getDerivedStateFromError() {

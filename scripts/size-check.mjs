@@ -46,7 +46,10 @@ const BUDGETS = {
   // on resolve. Hits `redact/dom-client` (full) and the `hydration=stub`
   // variant (which still ships Suspense). `suspense=stub` and `nano` don't
   // grow. See PR #16.
-  'redact/dom-client': 10340,
+  // 0.0.16 hotfix (+~13 B): hydration mismatch recovery now widens normal
+  // component-root failures so sibling client content cannot stay stale after
+  // the first nested mismatch aborts the hydration pass.
+  'redact/dom-client': 10360,
   'redact/dom-client (nano)': 7700,
   'redact/dom-client (suspense=stub)': 9460,
   'redact/dom-client (hydration=stub)': 9030,

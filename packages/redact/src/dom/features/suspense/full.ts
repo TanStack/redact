@@ -104,7 +104,7 @@ function renderSuspense(fiber: Fiber, domParent: Node, anchor: Node | null): voi
   // Snapshot whether we have an existing committed primary tree before
   // attempting the new render. If the new attempt suspends and we did have a
   // committed primary, we keep it (hidden) rather than destroying it.
-  const hadCommittedPrimary = fiber.mp !== undefined && fiber.child !== null
+  const hadCommittedPrimary = fiber.mp && fiber.child
 
   const prevHandler = suspendHandler
   let pendingThenable: any
@@ -125,12 +125,12 @@ function renderSuspense(fiber: Fiber, domParent: Node, anchor: Node | null): voi
     }
     pendingThenable.then(onSettle, onSettle)
 
-    if (hadCommittedPrimary && fiber.child) {
+    if (hadCommittedPrimary) {
       // Hide the primary subtree's root host doms so the fallback is the only
       // thing visible, but the underlying nodes (and their scroll/state/focus)
       // survive. Save original `display` for the resume path.
       const hidden: Array<[HTMLElement, string]> = []
-      let c: Fiber | null = fiber.child
+      let c: Fiber | null = hadCommittedPrimary
       while (c) {
         hideRootHostDoms(c, hidden)
         c = c.sibling
@@ -172,11 +172,9 @@ function renderSuspense(fiber: Fiber, domParent: Node, anchor: Node | null): voi
 // the root hides the whole element). Used by the hide-on-suspend path.
 function hideRootHostDoms(fiber: Fiber, out: Array<[HTMLElement, string]>): void {
   if (fiber.tag === FiberTag.Host) {
-    const el = fiber.dom as HTMLElement | null
-    if (el) {
-      out.push([el, el.style.display])
-      el.style.display = 'none'
-    }
+    const el = fiber.dom as HTMLElement
+    out.push([el, el.style.display])
+    el.style.display = 'none'
     return
   }
   if (fiber.tag === FiberTag.Portal) return
@@ -294,11 +292,11 @@ function recoverFallbackHydration(fiber: Fiber, fallback: any, parent: HTMLEleme
 
 function rehydrateBoundary(fiber: Fiber): void {
   const state = fiber.ms
-  if (!state || !state.b || !state.e) return
+  if (!state?.b || !state.e) return
 
   const root = findRoot(fiber)
   const parent = state.b.parentNode as Node
-  if (!root || !parent) return
+  if (!(root && parent)) return
 
   // Unmount existing fallback subtree. Its DOM has already been removed by $RC
   // (or at least its container); unmounting here cleans up fibers + fx.

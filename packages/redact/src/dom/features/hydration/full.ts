@@ -490,14 +490,19 @@ function findHostRecoveryParent(fiber: Fiber): Fiber | null {
 }
 
 function findNearestSafeHostAboveComposite(fiber: Fiber | null): Fiber | null {
+  let host: Fiber | null = null
   let f = fiber
   while (f) {
     if (f.tag === FiberTag.Host && f.dom) {
-      return isSafeHostRecoveryElement(f) ? f : null
+      if (!isSafeHostRecoveryElement(f)) return null
+      const parentTag = f.parent?.tag as number
+      if (!host || (parentTag > FiberTag.Text && parentTag < FiberTag.Suspense)) {
+        host = f
+      }
     }
     f = f.parent
   }
-  return null
+  return host
 }
 
 function isSafeHostRecoveryElement(fiber: Fiber): boolean {
@@ -535,10 +540,8 @@ function getRecoverableHostChildren(
 ): [Element, ReactNode] | null {
   const host = error.f
   if (
-    !host ||
-    host.tag !== FiberTag.Host ||
+    host?.tag !== FiberTag.Host ||
     !host.dom ||
-    !isSafeHostRecoveryElement(host) ||
     !findNearestSafeHostAboveComposite(host.parent)
   ) {
     return null
