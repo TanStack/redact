@@ -74,6 +74,10 @@ export function isHydrationBailout(_error: unknown): _error is HydrationBailoutE
   return false
 }
 
+export function recoverHydration(_root: FiberRoot, _error: unknown): boolean {
+  return false
+}
+
 export function abortHydration(cause: unknown, fiber: Fiber | null = null): never {
   const error = (cause instanceof Error ? cause : new Error('Hydration mismatch.')) as HydrationBailoutError
   ;(error as any).f = fiber

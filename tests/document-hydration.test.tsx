@@ -84,7 +84,7 @@ describe('hydrateRoot(document, <html/>)', () => {
     expect(errors).toEqual([])
   })
 
-  it('tolerates SSR-only scripts after document body app children', () => {
+  it('preserves foreign nodes after expected document body children', () => {
     function App() {
       return (
         <html>
@@ -92,25 +92,134 @@ describe('hydrateRoot(document, <html/>)', () => {
             <title>test</title>
           </head>
           <body>
-            <h1>hi</h1>
+            <main id="app">app</main>
           </body>
         </html>
       )
     }
 
     const doc = buildDocumentFrom(
-      '<!doctype html><html><head><title>test</title></head><body><h1>hi</h1><script type="module" async>window.__vite=1</script></body></html>',
+      '<!doctype html><html><head><title>test</title></head><body><main id="app">app</main><script>window.__stream=1</script><iframe hidden title="edge"></iframe><div hidden id="S:3"><span>late</span></div></body></html>',
     )
-    const script = doc.body.querySelector('script')
+    const originalMain = doc.querySelector('main')
+    const originalIframe = doc.querySelector('iframe')
     const errors: unknown[] = []
 
+    hydrateRoot(doc as any, <App />, {
+      onRecoverableError: (e) => errors.push(e),
+      onUncaughtError: (e) => errors.push(e),
+    })
+
+    expect(errors).toEqual([])
+    expect(doc.querySelector('main')).toBe(originalMain)
+    expect(doc.querySelector('script')?.textContent).toBe('window.__stream=1')
+    expect(doc.querySelector('iframe')).toBe(originalIframe)
+    expect(doc.getElementById('S:3')).not.toBeNull()
+  })
+
+  it('recovers a mismatch when lazy hydration resumes inside Suspense', async () => {
+    let resolve!: (value: { default: () => React.ReactElement }) => void
+    const pending = new Promise<{ default: () => React.ReactElement }>(
+      (r) => (resolve = r),
+    )
+    const LazyHead = React.lazy(() => pending)
+
+    function HeadContent() {
+      return <meta name="color-scheme" content="dark" />
+    }
+    function Counter() {
+      const [count, setCount] = React.useState(0)
+      return <button onClick={() => setCount(count + 1)}>{count}</button>
+    }
+    function App() {
+      return (
+        <html>
+          <head>
+            <React.Suspense fallback={null}>
+              <LazyHead />
+            </React.Suspense>
+          </head>
+          <body>
+            <Counter />
+          </body>
+        </html>
+      )
+    }
+
+    const doc = buildDocumentFrom(
+      '<!doctype html><html><head><meta name="color-scheme" content="light"></head><body><button>0</button></body></html>',
+    )
+    const recoverable: unknown[] = []
+    const uncaught: unknown[] = []
+    hydrateRoot(doc as any, <App />, {
+      onRecoverableError: (e) => recoverable.push(e),
+      onUncaughtError: (e) => uncaught.push(e),
+    })
+
+    resolve({ default: HeadContent })
+    await new Promise((r) => setTimeout(r, 0))
+    await Promise.resolve()
+
+    expect(recoverable).toHaveLength(1)
+    expect(uncaught).toEqual([])
+    expect(doc.head.querySelector('meta')?.getAttribute('content')).toBe('dark')
+    const button = doc.querySelector('button') as HTMLButtonElement
+    flushSync(() => button.click())
+    expect(button.textContent).toBe('1')
+  })
+
+  it('claims typeless and typed head scripts in document order', () => {
+    const content = '{"verification":true}'
+    let adopted: HTMLScriptElement | null = null
+
+    function App() {
+      return (
+        <html>
+          <head>
+            <script
+              ref={(node: HTMLScriptElement | null) => {
+                adopted = node
+              }}
+              dangerouslySetInnerHTML={{ __html: content }}
+            />
+            <script
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{ __html: content }}
+            />
+          </head>
+          <body />
+        </html>
+      )
+    }
+
+    const doc = buildDocumentFrom(
+      `<!doctype html><html><head><script>${content}</script><script type="application/ld+json">${content}</script></head><body></body></html>`,
+    )
+    const first = doc.head.querySelector('script')
+    const errors: unknown[] = []
     hydrateRoot(doc as any, <App />, {
       onRecoverableError: (e) => errors.push(e),
     })
 
     expect(errors).toEqual([])
-    expect(doc.body.querySelector('h1')?.textContent).toBe('hi')
-    expect(doc.body.querySelector('script')).toBe(script)
+    expect(adopted).toBe(first)
+  })
+
+  it('hydrates matching raw script content without HTML normalization', () => {
+    const source = 'if (window.a && window.b) window.c = 1'
+    const container = document.createElement('div')
+    container.innerHTML = `<script>${source}</script>`
+    const original = container.firstElementChild
+    const errors: unknown[] = []
+
+    hydrateRoot(
+      container,
+      <script dangerouslySetInnerHTML={{ __html: source }} />,
+      { onRecoverableError: (e) => errors.push(e) },
+    )
+
+    expect(errors).toEqual([])
+    expect(container.firstElementChild).toBe(original)
   })
 
   it('a root-level component suspending during hydration does not append a second <html>', async () => {

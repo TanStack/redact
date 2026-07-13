@@ -103,31 +103,6 @@ describe('hydrateRoot', () => {
     expect(second.getAttribute('id')).toBe('radix-:R1')
   })
 
-  it('does not recover solely for generated id attribute drift', () => {
-    function App() {
-      return (
-        <button id="radix-:R9">
-          menu
-        </button>
-      )
-    }
-
-    const container = setupWithHTML(
-      '<button id="radix-:R7">menu</button>',
-    )
-    const original = container.querySelector('button')
-    const errors: unknown[] = []
-
-    hydrateRoot(container, <App />, {
-      onRecoverableError: (e) => errors.push(e),
-    })
-
-    const button = container.querySelector('button') as HTMLButtonElement
-    expect(errors).toEqual([])
-    expect(button).toBe(original)
-    expect(button.getAttribute('id')).toBe('radix-:R7')
-  })
-
   it('attaches event handlers to adopted DOM', () => {
     function App() {
       const [n, setN] = React.useState(0)
@@ -228,6 +203,121 @@ describe('hydrateRoot', () => {
     expect(container.querySelectorAll('#logo').length).toBe(1)
     expect(logo.getAttribute('alt')).toBe('Solid')
     expect(logo.getAttribute('src')).toBe('/solid.svg')
+  })
+
+  it('hydrates useId values emitted by SSR', () => {
+    function App() {
+      const id = React.useId()
+      return <button id={`radix-${id}`}>Open</button>
+    }
+
+    const html = renderToString(<App />, { identifierPrefix: 'app-' })
+    const container = setupWithHTML(html)
+    const originalButton = container.querySelector('button')
+    const serverId = originalButton?.id
+    const errors: unknown[] = []
+
+    hydrateRoot(container, <App />, {
+      identifierPrefix: 'app-',
+      onRecoverableError: (e) => errors.push(e),
+    })
+
+    const button = container.querySelector('button')
+    expect(errors).toEqual([])
+    expect(button).toBe(originalButton)
+    expect(button?.id).toBe(serverId)
+    expect(button?.id).toBe('radix-app-0')
+  })
+
+  it('starts hydrated useId sequences from each server-rendered root', () => {
+    function App({ label }: { label: string }) {
+      const triggerId = React.useId()
+      const contentId = React.useId()
+      return (
+        <div>
+          <button id={`radix-${triggerId}`}>{label}</button>
+          <div id={`radix-${contentId}`}>{label} content</div>
+        </div>
+      )
+    }
+
+    const warmContainer = setupWithHTML(renderToString(<App label="warm" />))
+    hydrateRoot(warmContainer, <App label="warm" />)
+
+    const html = renderToString(<App label="real" />)
+    const container = setupWithHTML(html)
+    const originalButton = container.querySelector('button')
+    const originalContent = originalButton?.nextElementSibling
+    const errors: unknown[] = []
+
+    hydrateRoot(container, <App label="real" />, {
+      onRecoverableError: (e) => errors.push(e),
+    })
+
+    expect(errors).toEqual([])
+    expect(container.querySelector('button')).toBe(originalButton)
+    expect(container.querySelector('button')?.id).toBe('radix-:R0')
+    expect(container.querySelector('button')?.nextElementSibling).toBe(
+      originalContent,
+    )
+    expect(container.querySelector('button')?.nextElementSibling?.id).toBe(
+      'radix-:R1',
+    )
+  })
+
+  it('hydrates useId siblings around a resolved suspense boundary', () => {
+    function IdButton({ label }: { label: string }) {
+      const id = React.useId()
+      return <button id={`radix-${id}`}>{label}</button>
+    }
+
+    function App() {
+      return (
+        <div>
+          <React.Suspense fallback={<span>loading</span>}>
+            <IdButton label="inside" />
+          </React.Suspense>
+          <IdButton label="outside" />
+        </div>
+      )
+    }
+
+    const html = renderToString(<App />)
+    expect(html).toContain('<!--$0-->')
+    const container = setupWithHTML(html)
+    const originalButtons = Array.from(container.querySelectorAll('button'))
+    const errors: unknown[] = []
+
+    hydrateRoot(container, <App />, {
+      onRecoverableError: (e) => errors.push(e),
+    })
+
+    const buttons = Array.from(container.querySelectorAll('button'))
+    expect(errors).toEqual([])
+    expect(buttons).toEqual(originalButtons)
+    expect(buttons.map((button) => button.id)).toEqual([
+      'radix-:R0',
+      'radix-:R1',
+    ])
+  })
+
+  it('recovers when a generated useId attribute differs from the server', () => {
+    function App() {
+      const id = React.useId()
+      return <button id={`radix-${id}`}>Open</button>
+    }
+
+    const container = setupWithHTML('<button id="radix-:R2">Open</button>')
+    const originalButton = container.querySelector('button')
+    const errors: unknown[] = []
+
+    hydrateRoot(container, <App />, {
+      onRecoverableError: (e) => errors.push(e),
+    })
+
+    expect(errors).toHaveLength(1)
+    expect(container.querySelector('button')).not.toBe(originalButton)
+    expect(container.querySelector('button')?.id).toMatch(/^radix-:r[0-9a-z]+$/)
   })
 
   it('clears the container if clean client render also throws', () => {

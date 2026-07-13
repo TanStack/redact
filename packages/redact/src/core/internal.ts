@@ -57,7 +57,7 @@ export interface FiberRoot {
   re?: ((err: unknown) => void) | undefined
   ce?: ((err: unknown) => void) | undefined
   ue?: ((err: unknown) => void) | undefined
-  i: string
+  i: string | undefined
   ic: number
   h: boolean
 }

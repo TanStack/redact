@@ -27,6 +27,7 @@ import {
   clearHydrationCursor,
   findHostParent as findHydrationHost,
   abortHydration,
+  recoverHydration,
 } from './features/hydration'
 
 // ---------------------------------------------------------------------------
@@ -117,7 +118,12 @@ function flushPending(): void {
         root.p.clear()
         pending.sort((a, b) => fiberDepth(a) - fiberDepth(b))
         for (const fiber of pending) {
-          rerenderFiber(fiber, root)
+          try {
+            rerenderFiber(fiber, root)
+          } catch (error) {
+            if (!recoverHydration(root, error)) throw error
+            break
+          }
         }
         runEffects(root)
       }
@@ -815,7 +821,12 @@ function renderHost(fiber: Fiber, domParent: Node, anchor: Node | null): void {
     const hasOpaqueHydrationChildren =
       props.dangerouslySetInnerHTML != null ||
       (parentTag === 'textarea' && (props.value != null || props.defaultValue != null))
-    if (parentTag !== 'head' && parentTag !== 'html' && !hasOpaqueHydrationChildren) {
+    if (
+      parentTag !== 'head' &&
+      parentTag !== 'html' &&
+      parentTag !== 'body' &&
+      !hasOpaqueHydrationChildren
+    ) {
       const cursor = getHydrationCursor(fiber)
       if (cursor) {
         if (cursor.has()) {

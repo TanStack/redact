@@ -120,14 +120,7 @@ export class HydrationCursor {
   has(): boolean {
     let n = this.n
     while (n && n !== this.e) {
-      if (n.nodeType === 1) {
-        if ((n as Element).tagName === 'SCRIPT') {
-          n = n.nextSibling
-          continue
-        }
-        return true
-      }
-      if (n.nodeType === 3 && (n as Text).data.trim() !== '') return true
+      if (n.nodeType === 1 || n.nodeType === 3) return true
       n = n.nextSibling
     }
     return false
@@ -171,17 +164,12 @@ export function hydrateRootImpl(
   const target = container as any as Element | Document
   const isDocument = (container as Node).nodeType === 9
   const body = isDocument ? (target as Document).body : null
-  const root = createFiberRoot(target, {
-    ...options,
-    identifierPrefix: options.identifierPrefix ?? ':R',
-  })
+  const root = createFiberRoot(target, options)
 
   installHydrationScrollGuard()
 
   const normalizedInitialChildren =
     isDocument ? normalizeDocumentChildren(initialChildren) : initialChildren
-  let documentBodyFallback = false
-
   let hydrationError: unknown = null
   beginHydration(root)
   try {
@@ -193,36 +181,7 @@ export function hydrateRootImpl(
   }
   endHydration(root)
 
-  if (hydrationError) {
-    if (!isHydrationBailout(hydrationError)) {
-      throw hydrationError
-    }
-    let recoveryContainer: Element | Document = target
-    let recoveryChildren = normalizedInitialChildren
-    const hostRecovery = getRecoverableHostChildren(hydrationError)
-    if (hostRecovery) {
-      recoveryContainer = hostRecovery[0]
-      recoveryChildren = hostRecovery[1]
-    } else if (body) {
-      const bodyChildren = getRecoverableDocumentBodyChildren(hydrationError)
-      if (bodyChildren != null) {
-        documentBodyFallback = true
-        recoveryContainer = body
-        recoveryChildren = bodyChildren
-      }
-    }
-    resetAfterHydrationFailure(root, recoveryContainer)
-    try {
-      root.i = options.identifierPrefix ?? ':r'
-      root.ic = 0
-      flushSyncWork(() => {
-        renderRoot(root, recoveryChildren)
-      })
-    } catch (clientError) {
-      resetAfterHydrationFailure(root, recoveryContainer)
-      throw clientError
-    }
-  }
+  if (hydrationError && !recoverHydration(root, hydrationError)) throw hydrationError
   drainReplayQueue()
 
   return {
@@ -231,7 +190,7 @@ export function hydrateRootImpl(
         const normalized = isDocument ? normalizeDocumentChildren(children) : children
         renderRoot(
           root,
-          documentBodyFallback ? getStaticDocumentBodyChildren(normalized) ?? normalized : normalized,
+          root.c === body ? getStaticDocumentBodyChildren(normalized) ?? normalized : normalized,
         )
       })
     },
@@ -246,7 +205,7 @@ export function hydrateRootImpl(
 // Head elements that we match against server DOM by attribute signature.
 const HEAD_KEY_ATTRS: Record<string, ReadonlyArray<string>> = {
   link: ['rel', 'href', 'sizes', 'type'],
-  meta: ['name', 'property', 'charset', 'http-equiv'],
+  meta: ['name', 'property', 'charSet', 'httpEquiv'],
   script: ['src', 'type'],
 }
 
@@ -262,21 +221,17 @@ function headAttrsMatch(
 ): boolean {
   if (CLAIMED.has(el)) return false
   if (!keys) return true
-  let matched = false
   for (const k of keys) {
-    const propVal = props[k] ?? (k === 'http-equiv' ? props.httpEquiv : undefined)
-    const elVal = el.getAttribute(k)
-    // If neither defines it, skip this key; if one defines it, they must match.
+    const propVal = props[k]
+    const elVal = el.getAttribute(attributeName(k))
     if (propVal == null && elVal == null) continue
-    matched = true
-    if (propVal == null || elVal == null) continue // tolerate missing on either side
-    if (String(propVal) !== elVal) return false
+    if (propVal == null || elVal == null || String(propVal) !== elVal) return false
   }
-  // At least one matching signal must be present.
-  return matched
+  return true
 }
 
 export function beginHydration(root: FiberRoot): void {
+  root.ic = 0
   root.h = true
   hydrationCursors.set(root.r, new HydrationCursor(root.c))
 }
@@ -523,6 +478,33 @@ function isSafeHostRecoveryElement(fiber: Fiber): boolean {
   return tag !== 'html' && tag !== 'head' && tag !== 'body'
 }
 
+export function recoverHydration(root: FiberRoot, error: unknown): boolean {
+  if (!isHydrationBailout(error)) return false
+
+  let container = root.c as Element | Document
+  let children = root.r.pp?.children ?? null
+  const hostRecovery = getRecoverableHostChildren(error)
+  if (hostRecovery) {
+    container = hostRecovery[0]
+    children = hostRecovery[1]
+  } else if (container.nodeType === 9) {
+    const bodyChildren = getRecoverableDocumentBodyChildren(error)
+    if (bodyChildren != null) {
+      container = (container as Document).body
+      children = bodyChildren
+    }
+  }
+
+  resetAfterHydrationFailure(root, container)
+  try {
+    flushSyncWork(() => renderRoot(root, children))
+  } catch (clientError) {
+    resetAfterHydrationFailure(root, container)
+    throw clientError
+  }
+  return true
+}
+
 function resetAfterHydrationFailure(
   root: FiberRoot,
   container: Element | Document,
@@ -692,9 +674,13 @@ function validateHydrationProps(
     ) continue
 
     if (k === 'dangerouslySetInnerHTML') {
-      const probe = document.createElement('div')
-      probe.innerHTML = value?.__html ?? ''
-      if ((el as HTMLElement).innerHTML !== probe.innerHTML) {
+      let html = '' + (value?.__html ?? '')
+      if (tag !== 'script' && tag !== 'style') {
+        const probe = document.createElement('div')
+        probe.innerHTML = html
+        html = probe.innerHTML
+      }
+      if ((el as HTMLElement).innerHTML !== html) {
         if (process.env.NODE_ENV !== 'production') {
           failHydration(
             fiber,
@@ -771,9 +757,6 @@ function validateHydrationProps(
     }
     const actualValue = el.getAttribute(attr)
     if (expectedValue !== actualValue) {
-      if (attr === 'id' && expectedValue != null && actualValue != null) {
-        continue
-      }
       if (process.env.NODE_ENV !== 'production') {
         failHydration(
           fiber,

@@ -20,7 +20,7 @@ export function createFiberRoot(
     re: options.onRecoverableError,
     ce: options.onCaughtError,
     ue: options.onUncaughtError,
-    i: options.identifierPrefix ?? ':r',
+    i: options.identifierPrefix,
     ic: 0,
     h: false,
   }

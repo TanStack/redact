@@ -109,6 +109,20 @@ describe('hooks', () => {
     expect(btn.textContent).toBe('3')
   })
 
+  it('generates unique useId values across client roots', () => {
+    function App() {
+      const id = React.useId()
+      return <div id={id} />
+    }
+
+    const first = setup()
+    const second = setup()
+    createRoot(first).render(<App />)
+    createRoot(second).render(<App />)
+
+    expect(first.firstElementChild?.id).not.toBe(second.firstElementChild?.id)
+  })
+
   it('forwardRef', () => {
     const container = setup()
     let capturedNode: Element | null = null

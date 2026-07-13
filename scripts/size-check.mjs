@@ -14,7 +14,7 @@ const root = resolve(__dirname, '..')
 
 // gzip-byte budgets per named configuration. Update intentionally — size
 // regressions should require a conscious choice, not slip through CI.
-// Current sizes (May 2026): 2715 / 10274 / 7671 / 9426 / 8963. Budgets
+// Current sizes (July 2026): 2570 / 10559 / 7195 / 9686 / 8456. Budgets
 // include a small cushion (~60 B) to absorb minor noise. Shrink budgets
 // when you intentionally make the bundle smaller.
 //
@@ -25,7 +25,7 @@ const root = resolve(__dirname, '..')
 // domParent. Fixes a sibling-order regression hit by t3code's Sidebar
 // portal→div swap on mobile→desktop.
 const BUDGETS = {
-  'redact': 2780,
+  'redact': 2635,
   // dom-client + variants ~150 B above their earlier budgets to accommodate
   // the stable-list reconciler fast path, renderHost single-pass diff,
   // singleton dispatcher, and text-wrapper-elimination changes (PR #7).
@@ -49,14 +49,12 @@ const BUDGETS = {
   // 0.0.16 hotfix (+~13 B): hydration mismatch recovery now widens normal
   // component-root failures so sibling client content cannot stay stale after
   // the first nested mismatch aborts the hydration pass.
-  // 0.0.17 hotfix (+~240 B on hydration-bearing dom-client variants): SVG
-  // camelCase attribute normalization for SSR/hydration, generated id drift
-  // tolerance, and SSR/dev body script tolerance for Start/Vite document
-  // hydration. Nano and hydration=stub do not grow.
-  'redact/dom-client': 10640,
-  'redact/dom-client (nano)': 7700,
-  'redact/dom-client (suspense=stub)': 9760,
-  'redact/dom-client (hydration=stub)': 9030,
+  // 0.0.17 hotfix: shared SVG attribute normalization plus document
+  // hydration drift handling.
+  'redact/dom-client': 10630,
+  'redact/dom-client (nano)': 7260,
+  'redact/dom-client (suspense=stub)': 9750,
+  'redact/dom-client (hydration=stub)': 8520,
 }
 
 const alias = {

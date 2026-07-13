@@ -30,6 +30,25 @@ function suspenseShell(child: React.ReactNode, stableText = 'stable') {
   )
 }
 
+type TestStorage = Pick<Storage, 'getItem' | 'removeItem' | 'setItem'>
+
+function getTestStorage(): TestStorage {
+  try {
+    if (window.localStorage) return window.localStorage
+  } catch {}
+
+  const values = new Map<string, string>()
+  return {
+    getItem: (key) => values.get(key) ?? null,
+    removeItem: (key) => {
+      values.delete(key)
+    },
+    setItem: (key, value) => {
+      values.set(key, String(value))
+    },
+  }
+}
+
 describe('hydration mismatch recovery', () => {
   it('root fallback produces one clean client tree for wrong element type', () => {
     const { container, errors } = hydratePair(
@@ -325,12 +344,13 @@ describe('hydration mismatch recovery', () => {
     const reactLogo = 'data:image/svg+xml,react'
     const solidLogo = 'data:image/svg+xml,solid'
     let serverRendering = true
-    localStorage.removeItem('framework')
+    const storage = getTestStorage()
+    storage.removeItem('framework')
 
     function App() {
       const framework =
         typeof window !== 'undefined' && !serverRendering
-          ? localStorage.getItem('framework') || 'react'
+          ? storage.getItem('framework') || 'react'
           : 'react'
       const isSolid = framework === 'solid'
 
@@ -359,7 +379,7 @@ describe('hydration mismatch recovery', () => {
     const container = install(html)
     const errors: unknown[] = []
     serverRendering = false
-    localStorage.setItem('framework', 'solid')
+    storage.setItem('framework', 'solid')
 
     hydrateRoot(container, <App />, {
       onRecoverableError: (e) => errors.push(e),
@@ -374,7 +394,7 @@ describe('hydration mismatch recovery', () => {
     expect(img.getAttribute('alt')).toBe('Solid')
     expect(img.getAttribute('src')).toBe(solidLogo)
     expect(pre.textContent).toContain('@tanstack/solid-router')
-    localStorage.removeItem('framework')
+    storage.removeItem('framework')
   })
 
   it('error boundary checkpoint recovery preserves siblings outside the boundary', () => {
