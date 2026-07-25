@@ -324,6 +324,88 @@ describe('hydrateRoot(document, <html/>)', () => {
     expect(htmlEls.length).toBe(1)
   })
 
+  it('ignores extension-injected styles before an identified app style', () => {
+    let doc!: Document
+
+    function App() {
+      const htmlClass = doc.documentElement.className
+      return (
+        <html className={htmlClass}>
+          <head>
+            <style id="critical">{'body{color:red}'}</style>
+          </head>
+          <body>
+            <h1 style={{ color: 'red' }}>app</h1>
+          </body>
+        </html>
+      )
+    }
+
+    doc = buildDocumentFrom(
+      '<!doctype html><html class="dark"><head><style class="darkreader">html{background:black}</style><style id="critical">body{color:red}</style></head><body><h1 style="color:red;--darkreader-inline-color:#ff1a1a" data-darkreader-inline-color="">app</h1></body></html>',
+    )
+    const originalHtml = doc.documentElement
+    const originalHead = doc.head
+    const originalCriticalStyle = doc.querySelector('#critical')
+    const injectedStyle = doc.querySelector('.darkreader')
+    const originalHeading = doc.querySelector<HTMLHeadingElement>('h1')
+    const errors: unknown[] = []
+
+    hydrateRoot(doc as any, <App />, {
+      onRecoverableError: (error) => errors.push(error),
+    })
+
+    expect(errors).toEqual([])
+    expect(doc.documentElement).toBe(originalHtml)
+    expect(doc.head).toBe(originalHead)
+    expect(doc.querySelector('#critical')).toBe(originalCriticalStyle)
+    expect(doc.querySelector('.darkreader')).toBe(injectedStyle)
+    expect(doc.querySelector('h1')).toBe(originalHeading)
+    expect(originalHeading?.style.getPropertyValue('--darkreader-inline-color')).toBe(
+      '#ff1a1a',
+    )
+  })
+
+  it('repairs document shell and head mismatches in place', () => {
+    let doc!: Document
+    const documentClassesSeenDuringRender: string[] = []
+
+    function App() {
+      documentClassesSeenDuringRender.push(doc.documentElement.className)
+      return (
+        <html className="client">
+          <head>
+            <style id="critical">{'body{color:red}'}</style>
+          </head>
+          <body>
+            <h1 id="title">client</h1>
+          </body>
+        </html>
+      )
+    }
+
+    doc = buildDocumentFrom(
+      '<!doctype html><html class="server"><head><style id="critical">body{color:blue}</style></head><body><h1 id="title">client</h1></body></html>',
+    )
+    const originalHtml = doc.documentElement
+    const originalHead = doc.head
+    const errors: unknown[] = []
+
+    expect(() => {
+      hydrateRoot(doc as any, <App />, {
+        onRecoverableError: (error) => errors.push(error),
+      })
+    }).not.toThrow()
+
+    expect(errors).toHaveLength(2)
+    expect(documentClassesSeenDuringRender).toEqual(['server'])
+    expect(doc.documentElement).toBe(originalHtml)
+    expect(doc.documentElement.className).toBe('client')
+    expect(doc.head).toBe(originalHead)
+    expect(doc.querySelector('#title')?.textContent).toBe('client')
+    expect(doc.querySelector('#critical')?.textContent).toBe('body{color:red}')
+  })
+
   it('falls back to body-only client render on document body text mismatch', () => {
     function App() {
       return (

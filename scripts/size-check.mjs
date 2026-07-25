@@ -14,7 +14,7 @@ const root = resolve(__dirname, '..')
 
 // gzip-byte budgets per named configuration. Update intentionally — size
 // regressions should require a conscious choice, not slip through CI.
-// Current sizes (July 2026): 2570 / 10559 / 7195 / 9686 / 8456. Budgets
+// Current sizes (July 2026): 2572 / 10732 / 7198 / 9862 / 8466. Budgets
 // include a small cushion (~60 B) to absorb minor noise. Shrink budgets
 // when you intentionally make the bundle smaller.
 //
@@ -51,9 +51,12 @@ const BUDGETS = {
   // the first nested mismatch aborts the hydration pass.
   // 0.0.17 hotfix: shared SVG attribute normalization plus document
   // hydration drift handling.
-  'redact/dom-client': 10630,
+  // Dark Reader hydration hardening (+~175 B on hydration-bearing builds):
+  // extension-injected head/inline styles no longer trigger destructive
+  // recovery, and genuine document-shell mismatches are repaired in place.
+  'redact/dom-client': 10800,
   'redact/dom-client (nano)': 7260,
-  'redact/dom-client (suspense=stub)': 9750,
+  'redact/dom-client (suspense=stub)': 9930,
   'redact/dom-client (hydration=stub)': 8520,
 }
 
