@@ -18,6 +18,47 @@ import * as React from 'react'
 import { itRenders } from './harness'
 
 describe('ReactDOMServerIntegration / attributes', () => {
+  itRenders('explicit false enumerated attributes', async (render) => {
+    const element = await render(
+      <div draggable={false} contentEditable={false} spellCheck={false} />,
+    )
+    expect(element).toHaveProperty(
+      'outerHTML',
+      '<div draggable="false" contenteditable="false" spellcheck="false"></div>',
+    )
+  })
+
+  describe.each([
+    { prop: 'draggable', attr: 'draggable' },
+    { prop: 'contentEditable', attr: 'contenteditable' },
+    { prop: 'spellCheck', attr: 'spellcheck' },
+  ])('$prop', ({ prop, attr }) => {
+    for (const { value, expected } of [
+      { value: true, expected: 'true' },
+      { value: false, expected: 'false' },
+      { value: 'true', expected: 'true' },
+      { value: 'false', expected: 'false' },
+      { value: '', expected: '' },
+      { value: null, expected: null },
+      { value: undefined, expected: null },
+    ]) {
+      itRenders(`${prop}=${JSON.stringify(value)}`, async (render) => {
+        const element = await render(React.createElement('div', { [prop]: value }))
+        expect(element).toHaveProperty(
+          'outerHTML',
+          expected === null ? '<div></div>' : `<div ${attr}="${expected}"></div>`,
+        )
+      })
+    }
+  })
+
+  for (const value of ['plaintext-only', 'inherit', 'TRUE']) {
+    itRenders(`contentEditable="${value}" without normalization`, async (render) => {
+      const element = await render(<div contentEditable={value} />)
+      expect(element).toHaveProperty('outerHTML', `<div contenteditable="${value}"></div>`)
+    })
+  }
+
   describe('string properties', () => {
     itRenders('simple numbers', async (render) => {
       const e = (await render(<div width={30} />)) as HTMLElement

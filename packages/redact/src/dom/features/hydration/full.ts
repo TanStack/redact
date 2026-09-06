@@ -6,7 +6,7 @@ import {
   type ReactElement,
   type ReactNode,
 } from '../../../core'
-import { attributeName } from '../../../core/attributes'
+import { attributeName, STRING_BOOLEAN_ATTRS } from '../../../core/attributes'
 import { createHostNode, setProp } from '../../dom'
 import { drainReplayQueue } from '../../event-replay'
 import { discardPendingWork, findRoot, flushSyncWork, renderRoot } from '../../reconcile'
@@ -792,8 +792,9 @@ function validateHydrationProps(
       continue
     }
 
-    const stringifiedBoolean = k.startsWith('aria-') || k.startsWith('data-')
     const attr = attributeName(k, isSvg)
+    const stringifiedBoolean =
+      STRING_BOOLEAN_ATTRS.has(attr) || k.startsWith('aria-') || k.startsWith('data-')
 
     let expectedValue: string | null
     if (value == null || (value === false && !stringifiedBoolean)) {

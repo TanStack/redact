@@ -107,6 +107,66 @@ describe('hydrateRoot', () => {
     }
   })
 
+  describe.each([
+    { prop: 'draggable', attr: 'draggable' },
+    { prop: 'contentEditable', attr: 'contenteditable' },
+    { prop: 'spellCheck', attr: 'spellcheck' },
+  ])('$prop', ({ prop, attr }) => {
+    it.each([true, false])('preserves matching DOM with %s and applies updates', (value) => {
+      const app = React.createElement('div', { [prop]: value })
+      const container = setupWithHTML(renderToString(app))
+      const original = container.querySelector('div')!
+      const errors: unknown[] = []
+      const root = hydrateRoot(container, app, {
+        onRecoverableError: (error) => errors.push(error),
+      })
+
+      try {
+        expect(errors).toEqual([])
+        expect(container.firstChild).toBe(original)
+        for (const { next, expected } of [
+          { next: 'false', expected: 'false' },
+          { next: true, expected: 'true' },
+          { next: false, expected: 'false' },
+          { next: 'true', expected: 'true' },
+          { next: '', expected: '' },
+          { next: null, expected: null },
+          { next: true, expected: 'true' },
+          { next: undefined, expected: null },
+        ]) {
+          root.render(React.createElement('div', { [prop]: next }))
+          expect(container.firstChild).toBe(original)
+          expect(original.getAttribute(attr)).toBe(expected)
+        }
+      } finally {
+        root.unmount()
+        container.remove()
+      }
+    })
+
+    it.each([
+      { serverValue: true, clientValue: false, expected: 'false' },
+      { serverValue: false, clientValue: true, expected: 'true' },
+      { serverValue: null, clientValue: false, expected: 'false' },
+    ])('reports a genuine mismatch from $serverValue to $clientValue', ({ serverValue, clientValue, expected }) => {
+      const container = setupWithHTML(renderToString(
+        React.createElement('div', { [prop]: serverValue }),
+      ))
+      const errors: unknown[] = []
+      const root = hydrateRoot(container, React.createElement('div', { [prop]: clientValue }), {
+        onRecoverableError: (error) => errors.push(error),
+      })
+
+      try {
+        expect(errors.length).toBeGreaterThan(0)
+        expect(container.querySelector('div')?.getAttribute(attr)).toBe(expected)
+      } finally {
+        root.unmount()
+        container.remove()
+      }
+    })
+  })
+
   it('hydrates SVG camelCase attributes using SVG attribute names', () => {
     function App() {
       return (

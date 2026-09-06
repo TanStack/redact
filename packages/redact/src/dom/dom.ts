@@ -1,4 +1,4 @@
-import { attributeName } from '../core/attributes'
+import { attributeName, STRING_BOOLEAN_ATTRS } from '../core/attributes'
 
 const SVG_NS = 'http://www.w3.org/2000/svg'
 
@@ -38,9 +38,6 @@ const IDL_ATTRS = new Set([
   'multiple',
   'muted',
   'readonly',
-  'contentEditable',
-  'spellcheck',
-  'draggable',
 ])
 
 export function createHostNode(type: string, isSvg: boolean): Element {
@@ -115,6 +112,12 @@ export function setProp(
   if (name === 'htmlFor') {
     if (next == null) el.removeAttribute('for')
     else el.setAttribute('for', '' + next)
+    return
+  }
+
+  if (STRING_BOOLEAN_ATTRS.has(attr)) {
+    if (next == null) el.removeAttribute(attr)
+    else el.setAttribute(attr, '' + next)
     return
   }
 
