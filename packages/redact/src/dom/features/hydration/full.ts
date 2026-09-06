@@ -798,6 +798,9 @@ function validateHydrationProps(
     let expectedValue: string | null
     if (value == null || (value === false && !stringifiedBoolean)) {
       expectedValue = null
+    } else if (k === 'muted' && !isSvg && (tag === 'video' || tag === 'audio')) {
+      // The muted property controls playback; defaultMuted reflects the SSR attribute.
+      expectedValue = value ? '' : null
     } else {
       expected ??= createHostNode(tag, isSvg)
       setProp(expected, k, value, undefined, isSvg)

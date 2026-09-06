@@ -33,6 +33,80 @@ describe('hydrateRoot', () => {
     expect(container.querySelector('span')).toBe(originalSpan)
   })
 
+  it.each([
+    { tag: 'video', muted: true },
+    { tag: 'video', muted: false },
+    { tag: 'audio', muted: true },
+    { tag: 'audio', muted: false },
+  ])('preserves $tag and source nodes with muted=$muted during hydration', ({ tag, muted }) => {
+    const props = { autoPlay: true, loop: true, muted, playsInline: true }
+    const app = React.createElement(
+      tag,
+      props,
+      <source src="/hero.mp4" type="video/mp4" />,
+    )
+    const container = setupWithHTML(renderToString(app))
+    const media = container.querySelector<HTMLMediaElement>(tag)!
+    const source = container.querySelector('source')!
+    const errors: unknown[] = []
+
+    expect(media.hasAttribute('muted')).toBe(muted)
+    // Playback state may change after parsing without changing the SSR attribute.
+    media.muted = !muted
+
+    const root = hydrateRoot(container, app, {
+      onRecoverableError: (error) => errors.push(error),
+    })
+
+    try {
+      expect(errors).toEqual([])
+      expect(container.querySelector(tag)).toBe(media)
+      expect(container.querySelector('source')).toBe(source)
+      expect(media.defaultMuted).toBe(muted)
+      expect(media.muted).toBe(!muted)
+
+      root.render(React.createElement(
+        tag,
+        { ...props, muted: !muted },
+        <source src="/next.mp4" type="video/mp4" />,
+      ))
+      expect(container.querySelector(tag)).toBe(media)
+      expect(container.querySelector('source')).toBe(source)
+      expect(source.getAttribute('src')).toBe('/next.mp4')
+      expect(media.muted).toBe(!muted)
+
+      root.render(app)
+      expect(media.muted).toBe(muted)
+      expect(media.defaultMuted).toBe(muted)
+    } finally {
+      root.unmount()
+      container.remove()
+    }
+  })
+
+  it.each([
+    { tag: 'video', serverMuted: true },
+    { tag: 'video', serverMuted: false },
+    { tag: 'audio', serverMuted: true },
+    { tag: 'audio', serverMuted: false },
+  ])('reports a genuine $tag muted mismatch from $serverMuted', ({ tag, serverMuted }) => {
+    const container = setupWithHTML(renderToString(
+      React.createElement(tag, { muted: serverMuted }),
+    ))
+    const errors: unknown[] = []
+    const root = hydrateRoot(container, React.createElement(tag, { muted: !serverMuted }), {
+      onRecoverableError: (error) => errors.push(error),
+    })
+
+    try {
+      expect(errors.length).toBeGreaterThan(0)
+      expect(container.querySelector<HTMLMediaElement>(tag)?.muted).toBe(!serverMuted)
+    } finally {
+      root.unmount()
+      container.remove()
+    }
+  })
+
   it('hydrates SVG camelCase attributes using SVG attribute names', () => {
     function App() {
       return (
