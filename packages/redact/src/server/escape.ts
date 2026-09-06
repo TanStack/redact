@@ -1,4 +1,4 @@
-import { attributeName } from '../core/attributes'
+import { attributeName, STRING_BOOLEAN_ATTRS } from '../core/attributes'
 
 const ATTR_MAP: Record<string, string> = {
   '&': '&amp;',
@@ -96,11 +96,12 @@ export function attrToHtml(name: string, value: unknown, isSvg = false): string 
 
   const htmlName = attributeName(name, isSvg)
 
-  // aria-* and data-* stringify booleans to `"true"`/`"false"` rather than
-  // using boolean-attribute presence semantics — matches React and the ARIA
-  // spec. Must branch before the general `value === false` / BOOLEAN_ATTRS
-  // path, which would drop them.
-  if (name.startsWith('aria-') || name.startsWith('data-')) {
+  // These attributes need explicit "false", not boolean-attribute absence.
+  if (
+    STRING_BOOLEAN_ATTRS.has(htmlName) ||
+    name.startsWith('aria-') ||
+    name.startsWith('data-')
+  ) {
     return ` ${htmlName}="${escapeAttr(String(value))}"`
   }
 
