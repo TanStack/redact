@@ -9,7 +9,7 @@ import {
 import { attributeName, STRING_BOOLEAN_ATTRS } from '../../../core/attributes'
 import { createHostNode, setProp } from '../../dom'
 import { drainReplayQueue } from '../../event-replay'
-import { discardPendingWork, findRoot, flushSyncWork, renderRoot } from '../../reconcile'
+import { discardPendingWork, findRoot, flushSyncWork, renderRoot, unmountFiber } from '../../reconcile'
 import { attachRootFiber, createFiberRoot } from '../../root-internal'
 
 // Re-export from event-replay so all hydration concerns live behind one
@@ -542,6 +542,9 @@ function resetAfterHydrationFailure(
   root: FiberRoot,
   container: Element | Document,
 ): void {
+  // Retire subscriptions and queued effects without removing the document shell
+  // or host ancestors retained by the recovery container.
+  unmountFiber(root.r, false)
   discardPendingWork(root)
   clearHydrationContainer(container)
   attachRootFiber(root, container)
