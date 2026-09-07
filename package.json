@@ -14,14 +14,21 @@
     "example:playground": "pnpm --filter dom-jsx-playground dev",
     "example:ssr": "pnpm --filter ssr-demo dev",
     "example:hydration-lab": "pnpm --filter ssr-demo dev",
-    "bench": "node scripts/run-bench.mjs"
+    "bench": "node scripts/run-bench.mjs",
+    "changeset": "changeset",
+    "changeset:version": "changeset version && pnpm install --no-frozen-lockfile",
+    "changeset:publish": "changeset publish",
+    "test:ci": "pnpm test && pnpm test:types && pnpm build && pnpm size:check",
+    "test:pr": "pnpm test:ci"
   },
   "devDependencies": {
     "esbuild": "^0.28.0",
     "playwright": "^1.59.1",
     "typescript": "~5.9.3",
     "vite": "^5.4.11",
-    "vitest": "^2.1.8"
+    "vitest": "^2.1.8",
+    "@changesets/cli": "^2.31.0",
+    "@svitejs/changesets-changelog-github-compact": "^1.2.0"
   },
   "packageManager": "pnpm@9.15.0"
 }
