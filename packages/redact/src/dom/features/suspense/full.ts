@@ -147,7 +147,7 @@ function renderSuspense(fiber: Fiber, domParent: Node, anchor: Node | null): voi
       renderFiber(state.f, domParent, anchor)
     } else {
       // First-mount suspension — nothing to preserve.
-      unmountAllChildren(fiber, domParent)
+      unmountAllChildren(fiber)
       reconcileChildren(fiber, childrenToArray(props.fallback), domParent, anchor)
     }
   } else {
@@ -160,7 +160,7 @@ function renderSuspense(fiber: Fiber, domParent: Node, anchor: Node | null): voi
       state.d = null
     }
     if (state.f) {
-      unmountFiber(state.f, domParent)
+      unmountFiber(state.f)
       state.f = null
     }
   }
@@ -210,7 +210,7 @@ function hydrateSuspenseBoundary(
     } catch (e) {
       if (!isHydrationBailout(e)) {
         clearBoundaryRange(startMark, endMark)
-        unmountAllChildren(fiber, parent)
+        unmountAllChildren(fiber)
         throw e
       }
       recoverBoundaryHydration(fiber, props.children, parent, startMark, endMark)
@@ -258,14 +258,14 @@ function recoverBoundaryHydration(
   const prevHydrating = root.h
   discardPendingWork(root)
   clearBoundaryRange(startMark, endMark)
-  unmountAllChildren(fiber, parent)
+  unmountAllChildren(fiber)
   root.h = false
   try {
     reconcileChildren(fiber, childrenToArray(children), parent, endMark)
     advanceCursorPast(fiber.parent!, endMark)
   } catch (clientError) {
     clearBoundaryRange(startMark, endMark)
-    unmountAllChildren(fiber, parent)
+    unmountAllChildren(fiber)
     throw clientError
   } finally {
     root.h = prevHydrating
@@ -277,13 +277,13 @@ function recoverFallbackHydration(fiber: Fiber, fallback: any, parent: HTMLEleme
   const prevHydrating = root.h
   discardPendingWork(root)
   parent.textContent = ''
-  unmountAllChildren(fiber, parent)
+  unmountAllChildren(fiber)
   root.h = false
   try {
     reconcileChildren(fiber, childrenToArray(fallback), parent, null)
   } catch (clientError) {
     parent.textContent = ''
-    unmountAllChildren(fiber, parent)
+    unmountAllChildren(fiber)
     throw clientError
   } finally {
     root.h = prevHydrating
@@ -303,7 +303,7 @@ function rehydrateBoundary(fiber: Fiber): void {
   withCurrentRoot(root, () => {
     const prevHydrating = root.h
     try {
-      unmountAllChildren(fiber, parent)
+      unmountAllChildren(fiber)
 
       // Re-hydrate with real children against the now-real DOM range.
       root.h = true
@@ -312,7 +312,7 @@ function rehydrateBoundary(fiber: Fiber): void {
     } catch (e) {
       if (!isHydrationBailout(e)) {
         clearBoundaryRange(state.b, state.e)
-        unmountAllChildren(fiber, parent)
+        unmountAllChildren(fiber)
         throw e
       }
 

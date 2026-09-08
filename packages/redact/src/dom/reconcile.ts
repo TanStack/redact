@@ -531,14 +531,14 @@ export function reconcileChildren(
     // Unmount unclaimed
     for (const f of existing) {
       if (!claimed.has(f)) {
-        unmountFiber(f, domParent)
+        unmountFiber(f)
         structurallyChanged = true
       }
     }
     // Leftover keyed
     for (const f of keyed.values()) {
       if (!claimed.has(f)) {
-        unmountFiber(f, domParent)
+        unmountFiber(f)
         structurallyChanged = true
       }
     }
@@ -1017,13 +1017,13 @@ export function isThenable(x: any): x is Promise<any> {
 // Unmount
 // ---------------------------------------------------------------------------
 
-export function unmountFiber(fiber: Fiber, domParent: Node): void {
+export function unmountFiber(fiber: Fiber, removeDom = true): void {
   fiber.um = true
   // Recurse first
   let c = fiber.child
   while (c) {
     const next = c.sibling
-    unmountFiber(c, fiber.tag === FiberTag.Host ? fiber.dom! : domParent)
+    unmountFiber(c, removeDom || fiber.tag === FiberTag.Portal)
     c = next
   }
   fiber.child = null
@@ -1040,12 +1040,7 @@ export function unmountFiber(fiber: Fiber, domParent: Node): void {
     fiber.cu = null
   }
 
-  if (fiber.tag === FiberTag.Class && fiber.sn?.componentWillUnmount) {
-    try {
-      fiber.sn.componentWillUnmount()
-    } catch (e) {
-      if (currentRoot?.re) currentRoot.re(e)
-    }
+  if (fiber.tag === FiberTag.Class && fiber.sn) {
     fiber.sn._fiber = null
     fiber.sn._enqueueUpdate = null
     fiber.sn._forceUpdate = null
@@ -1054,19 +1049,17 @@ export function unmountFiber(fiber: Fiber, domParent: Node): void {
   // Detach ref
   if (fiber.ref) detachRef(fiber.ref)
 
-  // Remove DOM if host
-  if (fiber.tag === FiberTag.Host && fiber.dom && fiber.dom.parentNode) {
-    fiber.dom.parentNode.removeChild(fiber.dom)
-  } else if (fiber.tag === FiberTag.Text && fiber.dom && fiber.dom.parentNode) {
-    fiber.dom.parentNode.removeChild(fiber.dom)
+  // Only host and text fibers own DOM nodes.
+  if (removeDom) {
+    fiber.dom?.parentNode?.removeChild(fiber.dom)
   }
 }
 
-export function unmountAllChildren(parent: Fiber, domParent: Node): void {
+export function unmountAllChildren(parent: Fiber): void {
   let c = parent.child
   while (c) {
     const next = c.sibling
-    unmountFiber(c, domParent)
+    unmountFiber(c)
     c = next
   }
   parent.child = null
@@ -1228,8 +1221,8 @@ export function enqueueEffect(fiber: Fiber, effect: Effect): void {
   }
 }
 
-export function scheduleLifecycle(_fiber: Fiber, fn: () => void): void {
-  pendingLifecycles.push(fn)
+export function scheduleLifecycle(fiber: Fiber, fn: () => void): void {
+  pendingLifecycles.push(() => { if (!fiber.um) fn() })
 }
 
 export function runEffects(root: FiberRoot): void {
@@ -1257,6 +1250,7 @@ export function runEffects(root: FiberRoot): void {
 }
 
 function runEffect(fiber: Fiber, effect: Effect, root: FiberRoot): void {
+  if (fiber.um) return
   try {
     const cleanup = effect.c()
     if (typeof cleanup == 'function') {

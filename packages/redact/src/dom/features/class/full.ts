@@ -92,8 +92,15 @@ function renderClass(fiber: Fiber, domParent: Node, anchor: Node | null): void {
 
   // Schedule lifecycle
   if (isNew) {
-    if (instance.componentDidMount) {
-      scheduleLifecycle(fiber, () => instance.componentDidMount())
+    if (instance.componentDidMount || instance.componentWillUnmount) {
+      scheduleLifecycle(fiber, () => {
+        // An abandoned render never mounted, so it has no unmount lifecycle.
+        if (instance.componentWillUnmount) {
+          fiber.cu ||= []
+          fiber.cu.push(() => instance.componentWillUnmount())
+        }
+        instance.componentDidMount?.()
+      })
     }
   } else if (instance.componentDidUpdate) {
     const { p, s } = fiber.ms ?? {}
