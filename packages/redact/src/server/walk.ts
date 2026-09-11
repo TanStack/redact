@@ -7,6 +7,7 @@ import {
 } from '../core'
 import {
   REACT_SUSPENSE_TYPE,
+  REACT_CONTEXT_TYPE,
   REACT_PROVIDER_TYPE,
   REACT_CONSUMER_TYPE,
   REACT_FORWARD_REF_TYPE,
@@ -169,6 +170,11 @@ function walkElement(el: ReactElement, opts: WalkOptions): void {
   const type = el.type
   const props = el.props ?? {}
 
+  if (typeof type === 'string') {
+    walkHost(type, props, opts)
+    return
+  }
+
   if (type === REACT_FRAGMENT_TYPE || type === REACT_STRICT_MODE_TYPE || type === REACT_PROFILER_TYPE) {
     walkNode(props.children, opts)
     return
@@ -188,11 +194,6 @@ function walkElement(el: ReactElement, opts: WalkOptions): void {
     return
   }
 
-  if (typeof type === 'string') {
-    walkHost(type, props, opts)
-    return
-  }
-
   const marker = (type as any)?.$$typeof
 
   if (marker === REACT_PORTAL_TYPE) {
@@ -200,7 +201,7 @@ function walkElement(el: ReactElement, opts: WalkOptions): void {
     return
   }
 
-  if (marker === REACT_PROVIDER_TYPE) {
+  if (marker === REACT_CONTEXT_TYPE || marker === REACT_PROVIDER_TYPE) {
     const ctx = (type as any)._context
     pushContext(ctx, props.value)
     try {
@@ -212,10 +213,9 @@ function walkElement(el: ReactElement, opts: WalkOptions): void {
   }
 
   if (marker === REACT_CONSUMER_TYPE) {
-    const ctx = (type as any)._context
     const render = props.children
     if (typeof render === 'function') {
-      walkNode(render(ctx._currentValue), opts)
+      walkNode(render((type as any)._context._currentValue), opts)
     }
     return
   }
@@ -236,16 +236,8 @@ function walkElement(el: ReactElement, opts: WalkOptions): void {
 
   if (marker === REACT_LAZY_TYPE) {
     const { _payload, _init } = type as any
-    try {
-      const resolved = _init(_payload)
-      walkElement({ ...el, type: resolved } as ReactElement, opts)
-    } catch (thenable: any) {
-      if (isThenable(thenable)) {
-        // Suspend this point
-        throw thenable
-      }
-      throw thenable
-    }
+    const resolved = _init(_payload)
+    walkElement({ ...el, type: resolved } as ReactElement, opts)
     return
   }
 

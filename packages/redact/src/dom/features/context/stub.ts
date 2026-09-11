@@ -1,5 +1,5 @@
 import { FiberTag, type Fiber } from '../../../core'
-import { REACT_PROVIDER_TYPE, REACT_CONSUMER_TYPE } from '../../../react'
+import { REACT_CONTEXT_TYPE, REACT_PROVIDER_TYPE, REACT_CONSUMER_TYPE } from '../../../react'
 import {
   registerRenderer,
   registerTypeMatcher,
@@ -20,16 +20,15 @@ export function renderContextConsumers(_fiber: Fiber): void {}
 // The default `readContext` capability returns `ctx._currentValue` without
 // walking, which matches the no-Provider-fibers-in-tree reality.
 function renderConsumerStub(fiber: Fiber, domParent: Node, anchor: Node | null): void {
-  const ctx = (fiber.type as any)._context
   const props = fiber.pp ?? {}
-  const value = ctx._currentValue
-  const rendered = typeof props.children == 'function' ? props.children(value) : null
+  const rendered = typeof props.children == 'function'
+    ? props.children((fiber.type as any)._context._currentValue) : null
   reconcileChildren(fiber, childrenToArray(rendered), domParent, anchor)
   fiber.mp = props
 }
 
 registerTypeMatcher((_type, marker) =>
-  marker === REACT_PROVIDER_TYPE
+  marker === REACT_CONTEXT_TYPE || marker === REACT_PROVIDER_TYPE
     ? FiberTag.Fragment
     : marker === REACT_CONSUMER_TYPE
       ? FiberTag.Consumer

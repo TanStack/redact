@@ -7,14 +7,16 @@ export const REACT_CONSUMER_TYPE = Symbol.for('react.consumer')
 
 export interface Context<T> {
   $$typeof: typeof REACT_CONTEXT_TYPE
+  _context: Context<T>
   _currentValue: T
   Provider: ProviderExoticComponent<{ value: T; children?: ReactNode }>
   Consumer: ConsumerExoticComponent<T>
   displayName?: string
+  (props: { value: T; children?: ReactNode }): ReactElement
 }
 
 export interface ProviderExoticComponent<P> {
-  $$typeof: typeof REACT_PROVIDER_TYPE
+  $$typeof: typeof REACT_CONTEXT_TYPE | typeof REACT_PROVIDER_TYPE
   _context: Context<any>
   (props: P): ReactElement
 }
@@ -31,22 +33,13 @@ export function createContext<T>(defaultValue: T): Context<T> {
     _currentValue: defaultValue,
   } as Context<T>
 
-  const Provider: any = function Provider(_props: any): any {
-    if (process.env.NODE_ENV !== 'production') {
-      throw new Error('Provider components are handled by the renderer.')
-    }
-    throw new Error()
-  }
-  Provider.$$typeof = REACT_PROVIDER_TYPE
-  Provider._context = context
-
   const Consumer: any = function Consumer(props: { children: (v: T) => any }): any {
     return props.children(useContext(context))
   }
   Consumer.$$typeof = REACT_CONSUMER_TYPE
   Consumer._context = context
 
-  context.Provider = Provider
+  context.Provider = context._context = context
   context.Consumer = Consumer
 
   return context

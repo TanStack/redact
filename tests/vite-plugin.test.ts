@@ -307,11 +307,15 @@ describe('redact vite plugin', () => {
               import { createElement, createContext, memo, Suspense, useContext } from ${JSON.stringify(source + '/react/index.ts')};
               import { createRoot } from ${JSON.stringify(source + '/dom/client.ts')};
               const Context = createContext('default');
+              const LegacyProvider = { $$typeof: Symbol.for('react.provider'), _context: Context };
               const Reader = memo(() => createElement('span', null, useContext(Context)));
               export function mount(container) {
                 const root = createRoot(container);
                 root.render(createElement(Context.Provider, { value: 'provided' },
-                  createElement(Suspense, { fallback: 'loading' }, createElement(Reader))));
+                  createElement(Suspense, { fallback: 'loading' }, createElement(Reader)),
+                  createElement(Context, { value: 'nested' },
+                    createElement(Context.Consumer, null, value => createElement('i', null, value))),
+                  createElement(LegacyProvider, { value: 'legacy' }, createElement(Reader))));
                 return () => root.unmount();
               }
             `
@@ -349,7 +353,7 @@ describe('redact vite plugin', () => {
     const container = document.createElement('div')
     const unmount = api.mount(container)
     try {
-      expect(container.textContent).toBe(context ? 'provided' : 'default')
+      expect(container.textContent).toBe(context ? 'providednestedlegacy' : 'defaultdefaultdefault')
     } finally {
       unmount()
       dom.window.close()

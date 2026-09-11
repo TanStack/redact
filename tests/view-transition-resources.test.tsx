@@ -11,12 +11,12 @@ const transitions: globalThis.ViewTransition[] = []
 const cleanups: Array<() => void> = []
 const releases: Array<() => Promise<void>> = []
 afterEach(async () => {
+  for (const cleanup of cleanups.splice(0)) cleanup()
   await Promise.all(releases.splice(0).map(release => release()))
   for (const transition of transitions.splice(0)) {
     transition.skipTransition()
     await transition.finished.catch(() => {})
   }
-  for (const cleanup of cleanups.splice(0)) cleanup()
   vi.restoreAllMocks()
 })
 

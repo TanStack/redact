@@ -8,8 +8,8 @@ const native = typeof document.startViewTransition === 'function' ? document.sta
 const transitions: ViewTransition[] = []
 const cleanups: Array<() => void> = []
 afterEach(async () => {
-  for (const transition of transitions.splice(0)) { transition.skipTransition(); await transition.finished.catch(() => {}) }
   for (const cleanup of cleanups.splice(0)) cleanup()
+  for (const transition of transitions.splice(0)) { transition.skipTransition(); await transition.finished.catch(() => {}) }
   vi.restoreAllMocks()
 })
 function setup() {

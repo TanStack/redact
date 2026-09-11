@@ -4,6 +4,7 @@ import { createRoot, hydrateRoot } from 'react-dom/client'
 import { flushSync } from 'react-dom'
 import { renderToString } from 'react-dom/server'
 import { reducerWorkloads } from './reducer-workloads'
+import { elementWorkloads } from './element-workloads'
 
 const h = React.createElement
 type Mode = 'sync' | 'async'
@@ -309,6 +310,7 @@ async function hydration(iterations: number) {
 
 const workloads: Workload[] = [
   ...reducerWorkloads,
+  ...elementWorkloads,
   { name: 'context-through-memo', mode: 'sync', defaultIterations: 60, optIn: true, execute: contextPropagation },
   { name: 'stable-keyed-rows', mode: 'sync', defaultIterations: 100, execute: n => renderedUpdates(n, tick => h(Rows, { tick }), checkRows, true) },
   { name: 'jsx-stable-keyed-rows', mode: 'sync', defaultIterations: 100, execute: n => renderedUpdates(n, tick => jsx(JsxRows, { tick }), checkRows, true) },
