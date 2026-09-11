@@ -1,5 +1,5 @@
 import { FiberTag, type Fiber } from '../../../core'
-import { REACT_PROVIDER_TYPE, REACT_CONSUMER_TYPE } from '../../../react'
+import { REACT_CONSUMER_TYPE, REACT_CONTEXT_TYPE, REACT_PROVIDER_TYPE } from '../../../react'
 import {
   registerRenderer,
   registerTypeMatcher,
@@ -29,7 +29,7 @@ function renderConsumerStub(fiber: Fiber, domParent: Node, anchor: Node | null):
 }
 
 registerTypeMatcher((_type, marker) =>
-  marker === REACT_PROVIDER_TYPE
+  marker === REACT_PROVIDER_TYPE || marker === REACT_CONTEXT_TYPE
     ? FiberTag.Fragment
     : marker === REACT_CONSUMER_TYPE
       ? FiberTag.Consumer

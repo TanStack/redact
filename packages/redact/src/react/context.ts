@@ -7,10 +7,13 @@ export const REACT_CONSUMER_TYPE = Symbol.for('react.consumer')
 
 export interface Context<T> {
   $$typeof: typeof REACT_CONTEXT_TYPE
+  _context: Context<T>
   _currentValue: T
   Provider: ProviderExoticComponent<{ value: T; children?: ReactNode }>
   Consumer: ConsumerExoticComponent<T>
   displayName?: string
+  // React 19 renders the context itself as the provider: `<Ctx value={v}>`.
+  (props: { value: T; children?: ReactNode }): ReactElement
 }
 
 export interface ProviderExoticComponent<P> {
@@ -30,6 +33,7 @@ export function createContext<T>(defaultValue: T): Context<T> {
     $$typeof: REACT_CONTEXT_TYPE,
     _currentValue: defaultValue,
   } as Context<T>
+  context._context = context
 
   const Provider: any = function Provider(_props: any): any {
     if (process.env.NODE_ENV !== 'production') {

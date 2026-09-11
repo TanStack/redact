@@ -8,6 +8,7 @@ import {
 import {
   REACT_SUSPENSE_TYPE,
   REACT_PROVIDER_TYPE,
+  REACT_CONTEXT_TYPE,
   REACT_CONSUMER_TYPE,
   REACT_FORWARD_REF_TYPE,
   REACT_MEMO_TYPE,
@@ -200,7 +201,7 @@ function walkElement(el: ReactElement, opts: WalkOptions): void {
     return
   }
 
-  if (marker === REACT_PROVIDER_TYPE) {
+  if (marker === REACT_PROVIDER_TYPE || marker === REACT_CONTEXT_TYPE) {
     const ctx = (type as any)._context
     pushContext(ctx, props.value)
     try {
