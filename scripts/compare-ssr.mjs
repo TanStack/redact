@@ -2,6 +2,7 @@
 // node scripts/compare-ssr.mjs
 // BLOCKS=5 ROUNDS=5 TARGET_MS=80 OUTPUT=/tmp/node-ssr.json node scripts/compare-ssr.mjs
 // EXTRA_SOURCE=/path/to/pre-performance/src adds an independent source baseline.
+// CURRENT_SOURCE=/path/to/candidate/src measures a frozen candidate without editing the checkout.
 import { build, version as esbuildVersion } from 'esbuild'
 import { fork, execFileSync } from 'node:child_process'
 import { createRequire } from 'node:module'
@@ -59,7 +60,7 @@ async function main() {
     ...(process.env.REACT_CONTROL === '1' ? [{ name: 'react-control', version: pkg('react').version, kind: 'react' }] : []),
     { name: 'published', version: pkg('@tanstack/redact').version, source: resolve(dirname(pkgPath('@tanstack/redact')), 'src') },
     ...(process.env.EXTRA_SOURCE ? [{ name: extraName, source: resolve(process.env.EXTRA_SOURCE) }] : []),
-    { name: 'current', version: JSON.parse(readFileSync(resolve(root, 'packages/redact/package.json'), 'utf8')).version, source: resolve(root, 'packages/redact/src') },
+    { name: 'current', version: process.env.CURRENT_SOURCE ? undefined : JSON.parse(readFileSync(resolve(root, 'packages/redact/package.json'), 'utf8')).version, source: resolve(process.env.CURRENT_SOURCE || resolve(root, 'packages/redact/src')) },
   ]
   const temp = mkdtempSync(join(tmpdir(), 'redact-node-ssr-'))
   const result = {

@@ -170,6 +170,11 @@ function walkElement(el: ReactElement, opts: WalkOptions): void {
   const type = el.type
   const props = el.props ?? {}
 
+  if (typeof type === 'string') {
+    walkHost(type, props, opts)
+    return
+  }
+
   if (type === REACT_FRAGMENT_TYPE || type === REACT_STRICT_MODE_TYPE || type === REACT_PROFILER_TYPE) {
     walkNode(props.children, opts)
     return
@@ -186,11 +191,6 @@ function walkElement(el: ReactElement, opts: WalkOptions): void {
   }
   if (type === REACT_VIEW_TRANSITION_TYPE) {
     walkNode(props.children, opts)
-    return
-  }
-
-  if (typeof type === 'string') {
-    walkHost(type, props, opts)
     return
   }
 
