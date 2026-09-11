@@ -67,13 +67,17 @@ These measure renderer work in fresh Node processes, not request latency or serv
 
 ## Correctness
 
-- `pnpm test:pr`: 1,604 passed, 91 existing skips; types, build, published-entry verification, and size budgets pass.
+- `pnpm test:pr`: 1,607 passed, 91 existing skips; types, build, published-entry verification, and size budgets pass.
 - Chrome core: 356 passed, 3 existing skips. All 29 new direct-provider, ref-prop, and own-prop cases also pass against React 19.3.
 - Chrome native transitions: 80 passed on the baseline and twice on the final implementation; the shared React reference cases pass all 77 tests.
 - Chrome retained content: 61 passed. Chrome resources: 75 passed. These suites overlap, so their counts are not a unique-test total.
 - Vite tests exercise direct, `.Provider`, and legacy provider forms in full and nano builds, including disabled context behavior.
 
 One native test run reported a browser cancellation after its assertions had passed. This also reproduced on the unchanged baseline. Test teardown now unmounts owning roots before skipping or draining browser transitions, allowing the runtime to cancel pending captures itself. No animation-runtime error handling was changed.
+
+Three additional anchor tests were added while reviewing the separately submitted PR #30. That optimization is not included here. At `c85cb147b0d14b5d268461b1dbbc12b5b8c4cd1f`, it reverses two newly visible siblings after portal DOM moves inline beyond the adjacent sibling. The new test expects `one, two, tail` and receives `two, one, tail`; the unchanged renderer passes. The other two cases cover a DOM-owning sibling revealing later content and replacement of a later node without changing the parent child count. Run them with `pnpm exec vitest run --config scripts/child-chain-cache.config.mjs`; `REDACT_TEST_SOURCE` selects an isolated candidate.
+
+The same PR revision adds 52, 55, and 64 gzip bytes to the nano, default, and full combined clients when applied to this branch. Instrumenting `firstDomNode` also finds the same 20,100, 80,200, and 2,001,000 calls as the unchanged renderer when adding 200, 400, and 2,000 rows after a retained header, with no trailing sibling. `scanned` becomes `null` at the end, then `scanned ?? sibling.sibling` restarts the exhausted scan. Those are call counts, not instrumented timing claims.
 
 ## Measurement method
 
