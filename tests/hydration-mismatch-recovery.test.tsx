@@ -106,14 +106,14 @@ describe('hydration mismatch recovery', () => {
     expect(container.querySelector('#root')?.innerHTML).toBe('<span>client</span>')
   })
 
-  it('root fallback handles form control value mismatch', () => {
+  it('updates a clean input value without treating it as a hydration mismatch', () => {
     const { container, errors } = hydratePair(
       <input id="field" value="server" readOnly />,
       <input id="field" value="client" readOnly />,
     )
 
     const input = container.querySelector('#field') as HTMLInputElement
-    expect(errors.length).toBeGreaterThanOrEqual(1)
+    expect(errors).toEqual([])
     expect(container.querySelectorAll('#field').length).toBe(1)
     expect(input.value).toBe('client')
   })

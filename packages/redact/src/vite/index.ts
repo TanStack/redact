@@ -12,6 +12,12 @@ export type RedactPreset = 'nano' | 'full'
  * configs as autocompleted options.
  */
 export interface RedactFeatures {
+  /** Activity visibility, retained state and disconnected effects. */
+  activity?: boolean
+  /** DOM instances, events, focus, layout and observers for Fragment refs. */
+  fragmentRefs?: boolean
+  /** Experimental native ViewTransition animations. Opt-in until snapshot parity is complete. */
+  viewTransitions?: boolean
   /**
    * `createPortal`. When `false`, portal elements render in place as a
    * Fragment (the `container` prop is ignored). `renderPortal` and its
@@ -72,6 +78,9 @@ export interface RedactFeatures {
 }
 
 interface ResolvedFeatures {
+  activity: boolean
+  fragmentRefs: boolean
+  viewTransitions: boolean
   portal: boolean
   context: boolean
   suspense: boolean
@@ -85,11 +94,13 @@ interface ResolvedFeatures {
 const PRESET_DEFAULTS: Record<RedactPreset, ResolvedFeatures> = {
   // Opt-in: everything off. Turn individual features on via `features`.
   nano: {
+    activity: false, fragmentRefs: false, viewTransitions: false,
     portal: false, context: false, suspense: false, memo: false,
     forwardRef: false, lazy: false, classComponents: false, hydration: false,
   },
   // Opt-out: everything on (drop-in React parity). Turn features off via `features`.
   full: {
+    activity: true, fragmentRefs: true, viewTransitions: false,
     portal: true, context: true, suspense: true, memo: true,
     forwardRef: true, lazy: true, classComponents: true, hydration: true,
   },
@@ -101,6 +112,9 @@ function resolveFeatures(
 ): ResolvedFeatures {
   const p = PRESET_DEFAULTS[preset]
   return {
+    activity: overrides.activity ?? p.activity,
+    fragmentRefs: overrides.fragmentRefs ?? p.fragmentRefs,
+    viewTransitions: overrides.viewTransitions ?? p.viewTransitions,
     portal: overrides.portal ?? p.portal,
     context: overrides.context ?? p.context,
     suspense: overrides.suspense ?? p.suspense,
@@ -166,7 +180,10 @@ const ALIASES: Record<string, string> = {
   'react/jsx-dev-runtime': '@tanstack/redact/jsx-dev-runtime',
   'react/compiler-runtime': '@tanstack/redact/compiler-runtime',
   'react-dom/client': '@tanstack/redact/dom-client',
+  'react-dom/server.browser': '@tanstack/redact/server',
+  'react-dom/server.bun': '@tanstack/redact/server',
   'react-dom/server.edge': '@tanstack/redact/server',
+  'react-dom/server.node': '@tanstack/redact/server',
   'react-dom/static.edge': '@tanstack/redact/server',
   'react-dom/server': '@tanstack/redact/server',
   'react-dom/test-utils': '@tanstack/redact/dom-test-utils',
@@ -225,10 +242,8 @@ function resolveExport(packageDir: string, sub: string): string | null {
   }
   const key = sub ? './' + sub : '.'
   const exp = pkg.exports?.[key]
-  // Prefer published `import` (dist/.js) over `source` — dist is a single
-  // transformed bundle so Vite's dep optimizer doesn't thrash on dozens of
-  // individual source files. The package keeps cross-subpath imports
-  // external, so there's still only one runtime instance.
+  // Prefer published JavaScript over TypeScript sources. Dist preserves one
+  // file per module, so subpath imports share state and feature boundaries.
   const pick = (v: any): string | null => {
     if (typeof v === 'string') return v
     if (v && typeof v === 'object') {
@@ -388,11 +403,12 @@ export function redact(options: RedactOptions = {}): any {
       // if the flag is off. The stub registers a graceful-degradation
       // matcher (e.g. Portal → Fragment) so user code keeps working.
       if (importer && /[\\/]features[\\/]index\.[jt]sx?$/.test(importer)) {
-        const m = id.match(/^\.\/([a-z-]+)$/)
+        const m = id.match(/^\.\/([a-z-]+)(\/index\.js)?$/)
         if (m) {
-          const name = m[1] as keyof ResolvedFeatures
+          const dir = m[1]!
+          const name = (dir === 'forward-ref' ? 'forwardRef' : dir === 'fragment-refs' ? 'fragmentRefs' : dir === 'view-transition' ? 'viewTransitions' : dir === 'class' ? 'classComponents' : dir) as keyof ResolvedFeatures
           if (name in features && !features[name]) {
-            const r = await this.resolve(`./${name}/stub`, importer, {
+            const r = await this.resolve(`./${dir}/stub${m[2] ? '.js' : ''}`, importer, {
               ...opts,
               skipSelf: true,
             })
@@ -401,13 +417,14 @@ export function redact(options: RedactOptions = {}): any {
         }
       }
 
-      // Hydration swap: hydration isn't self-registering, so it's imported
-      // from reconcile.ts, root.ts, and the Suspense/Lazy feature modules.
-      // Any specifier ending in `/hydration` that resolves to our feature
-      // module gets redirected to the stub when the flag is off.
-      if (!features.hydration && importer && /[\\/]hydration$/.test(id)) {
+      // Peer imports must use the same feature selection as the registration
+      // entrypoint, or an enabled feature can bring a disabled one back in.
+      const peer = id.match(/[\\/](context|hydration|fragment-refs|view-transition)(?:[\\/]index\.js)?$/)
+      const peerKey = peer?.[1] === 'fragment-refs' ? 'fragmentRefs' : peer?.[1] === 'view-transition' ? 'viewTransitions' : peer?.[1] as 'context' | 'hydration' | undefined
+      if (importer && peer && peerKey && !features[peerKey]) {
         const r = await this.resolve(id, importer, { ...opts, skipSelf: true })
-        if (r && /features[\\/]hydration[\\/]index\.(ts|js)$/.test(r.id)) {
+        const resolvedFeature = r?.id.match(/features[\\/](context|hydration|fragment-refs|view-transition)[\\/]index\.(ts|js)$/)
+        if (resolvedFeature?.[1] === peer[1]) {
           return r.id.replace(/index\.(ts|js)$/, 'stub.$1')
         }
       }

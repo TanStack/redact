@@ -14,6 +14,7 @@ export function attributeName(name: string, isSvg = false): string {
   if (name === 'acceptCharset') return 'accept-charset'
   if (name === 'crossOrigin') return 'crossorigin'
   if (name === 'noModule') return 'nomodule'
+  if (name === 'maskType') return 'mask-type'
   if (name === 'viewBox') return 'viewBox'
   return name.startsWith('aria-') || name.startsWith('data-')
     ? name

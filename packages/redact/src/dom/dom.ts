@@ -9,6 +9,7 @@ const BOOLEAN_ATTRS = new Set([
   'autoplay',
   'checked',
   'controls',
+  'credentialless',
   'default',
   'defer',
   'disabled',
@@ -51,6 +52,54 @@ export function isSvgElement(el: Element): boolean {
   return (el as any).ownerSVGElement !== undefined || el.tagName === 'svg'
 }
 
+export function syncInputValue(el: HTMLInputElement, props: any, prev?: any): void {
+  if (!prev) {
+    el.checked = el.defaultChecked = !!(props.checked ?? props.defaultChecked)
+  } else if (props.checked != null) {
+    el.checked = !!props.checked
+  } else if (props.defaultChecked != null) {
+    el.defaultChecked = !!props.defaultChecked
+  }
+  const value = props.value
+  const fallback = props.defaultValue
+  if (!prev) {
+    if (value == null && (el.type === 'submit' || el.type === 'reset')) return
+    if (value != null || fallback != null) {
+      const initial = '' + (value ?? fallback)
+      if (el.value !== initial) el.value = initial
+      el.defaultValue = initial
+    }
+    return
+  }
+  if (value != null) {
+    // Number inputs keep equivalent user spelling, including trailing zeroes.
+    if (el.type === 'number' ? (value === 0 && el.value === '') || el.value != value : el.value !== '' + value) {
+      el.value = '' + value
+    }
+    const nextDefault = el.type === 'number' && el.value == value ? el.value : '' + value
+    if (el.defaultValue !== nextDefault) el.defaultValue = nextDefault
+  } else if (fallback != null) {
+    if (el.defaultValue !== '' + fallback) el.defaultValue = '' + fallback
+  } else if (prev.defaultValue != null || el.type === 'submit' || el.type === 'reset') {
+    el.removeAttribute('value')
+  }
+}
+
+export function syncTextareaValue(el: HTMLTextAreaElement, props: any, mounting = false): void {
+  if (mounting) {
+    const children = props.children
+    const initial = props.value ?? props.defaultValue ?? (Array.isArray(children) ? children[0] : children) ?? ''
+    el.defaultValue = initial
+    // The strict check also preserves React's clean numeric-default state.
+    if (initial !== '' && el.textContent === initial) el.value = initial
+    return
+  }
+  const value = props.value
+  if (value != null && el.value !== '' + value) el.value = '' + value
+  const fallback = props.defaultValue ?? value ?? ''
+  if (el.defaultValue !== '' + fallback) el.defaultValue = '' + fallback
+}
+
 export function setProp(
   el: Element,
   name: string,
@@ -59,6 +108,14 @@ export function setProp(
   isSvg: boolean,
 ): void {
   if (name === 'children' || name === 'key' || name === 'ref') return
+  // These names need no alias or boolean-attribute normalization.
+  if (name.length > 5 && (name.charCodeAt(0) === 97 || name.charCodeAt(0) === 100)) {
+    if (name.startsWith('aria-') || name.startsWith('data-')) {
+      if (next == null) el.removeAttribute(name)
+      else el.setAttribute(name, '' + next)
+      return
+    }
+  }
   const attr = attributeName(name, isSvg)
 
   // defaultValue / defaultChecked are IDL-property-only — they seed the
@@ -76,19 +133,8 @@ export function setProp(
     return
   }
 
-  if (name === 'className') {
-    if (isSvg) {
-      if (next == null) el.removeAttribute('class')
-      else el.setAttribute('class', '' + next)
-    } else {
-      ;(el as HTMLElement).className = next == null ? '' : '' + next
-    }
-    return
-  }
-
-  if (name === 'class') {
-    if (next == null) el.removeAttribute('class')
-    else el.setAttribute('class', '' + next)
+  if (name === 'className' && !isSvg) {
+    ;(el as HTMLElement).className = next == null ? '' : '' + next
     return
   }
 
@@ -105,17 +151,11 @@ export function setProp(
   }
 
   if (name[0] === 'o' && name[1] === 'n') {
-    setEventHandler(el, name, next, prev)
+    setEventHandler(el, name, next)
     return
   }
 
-  if (name === 'htmlFor') {
-    if (next == null) el.removeAttribute('for')
-    else el.setAttribute('for', '' + next)
-    return
-  }
-
-  if (STRING_BOOLEAN_ATTRS.has(attr)) {
+  if (name === 'className' || name === 'class' || name === 'htmlFor' || STRING_BOOLEAN_ATTRS.has(attr)) {
     if (next == null) el.removeAttribute(attr)
     else el.setAttribute(attr, '' + next)
     return
@@ -128,32 +168,12 @@ export function setProp(
     } catch {}
   }
 
-  if (BOOLEAN_ATTRS.has(name.toLowerCase())) {
-    if (next) el.setAttribute(attr, '')
-    else el.removeAttribute(attr)
-    return
-  }
-
-  // aria-* and data-* attributes stringify booleans to `"true"`/`"false"`
-  // rather than using the HTML boolean-attribute presence/absence semantics.
-  // This matches React and the ARIA spec (aria-hidden="false" is meaningful).
-  if (name.length > 5 && (name.charCodeAt(0) === 97 /* a */ || name.charCodeAt(0) === 100 /* d */)) {
-    if (name.startsWith('aria-') || name.startsWith('data-')) {
-      if (next == null) {
-        el.removeAttribute(attr)
-      } else {
-        el.setAttribute(attr, '' + next)
-      }
-      return
-    }
-  }
+  if (BOOLEAN_ATTRS.has(attr)) next = !!next
 
   if (next == null || next === false) {
     el.removeAttribute(attr)
-  } else if (next === true) {
-    el.setAttribute(attr, '')
   } else {
-    el.setAttribute(attr, '' + next)
+    el.setAttribute(attr, next === true ? '' : next)
   }
 }
 
@@ -241,7 +261,7 @@ export interface SyntheticEvent extends Event {
   currentTarget: EventTarget & Element
 }
 
-function setEventHandler(el: Element, name: string, next: any, prev: any): void {
+function setEventHandler(el: Element, name: string, next: any): void {
   // Only function handlers are accepted. Reject strings/objects/etc — the
   // legacy `onclick="..."` HTML attribute (string handler) is a known XSS
   // vector if a parent spreads untrusted props onto a host element. React
@@ -256,13 +276,11 @@ function setEventHandler(el: Element, name: string, next: any, prev: any): void 
   // `onInput` on the same text input — which both dispatch from the native
   // `input` event — can coexist without clobbering each other's handlers.
   const handlers = ((el as any).__handlers ||= Object.create(null))
-  const key = name
-
-  const existing = handlers[key]
+  const existing = handlers[name]
 
   if (existing && !next) {
-    el.removeEventListener(existing.event, existing.listener, existing.capture)
-    handlers[key] = null
+    el.removeEventListener(existing.event, existing.listener, capture)
+    handlers[name] = null
     return
   }
 
@@ -271,7 +289,6 @@ function setEventHandler(el: Element, name: string, next: any, prev: any): void 
       current: next as Function,
       listener: null as any,
       event: eventName,
-      capture,
     }
     entry.listener = (e: Event) => {
       // React hands handlers a SyntheticEvent that carries `.nativeEvent`.
@@ -282,7 +299,7 @@ function setEventHandler(el: Element, name: string, next: any, prev: any): void 
       if ((e as any).nativeEvent === undefined) (e as any).nativeEvent = e
       entry.current(e)
     }
-    handlers[key] = entry
+    handlers[name] = entry
     el.addEventListener(eventName, entry.listener, capture)
     return
   }
@@ -291,10 +308,9 @@ function setEventHandler(el: Element, name: string, next: any, prev: any): void 
     // Re-bind if the effective DOM event changed (e.g. <input> whose `type`
     // flipped from "text" to "checkbox" — onChange should now follow `change`
     // instead of `input`). This is rare but keeps semantics correct.
-    if (existing.event !== eventName || existing.capture !== capture) {
-      el.removeEventListener(existing.event, existing.listener, existing.capture)
+    if (existing.event !== eventName) {
+      el.removeEventListener(existing.event, existing.listener, capture)
       existing.event = eventName
-      existing.capture = capture
       el.addEventListener(eventName, existing.listener, capture)
     }
     existing.current = next

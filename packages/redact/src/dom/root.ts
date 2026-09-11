@@ -1,13 +1,14 @@
-import type { ReactNode } from '../core'
-import { renderRoot, flushSyncWork, batchedUpdates } from './reconcile'
+import type { ReactNode, RecoverableErrorHandler } from '../core'
+import { renderRoot, scheduleRootRender, flushSyncWork, batchedUpdates } from './reconcile'
 import { hydrateRootImpl } from './features/hydration'
 import { createFiberRoot } from './root-internal'
+import { queueMutation } from './commit'
 
 export interface RootOptions {
   identifierPrefix?: string
-  onRecoverableError?: (error: unknown) => void
-  onCaughtError?: (error: unknown) => void
-  onUncaughtError?: (error: unknown) => void
+  onRecoverableError?: RecoverableErrorHandler
+  onCaughtError?: RecoverableErrorHandler
+  onUncaughtError?: RecoverableErrorHandler
 }
 
 export interface Root {
@@ -21,16 +22,13 @@ export function createRoot(container: Element | DocumentFragment, options: RootO
   let firstRender = true
   return {
     render(children) {
-      if (firstRender) {
-        firstRender = false
-        // Match real React's `clearContainer` semantics: blow away any pre-render
-        // markup (server-rendered placeholder, splash shells, etc.) on the
-        // initial commit so it doesn't stack with the React tree.
-        if ((container as Node).nodeType === 1 /* ELEMENT_NODE */) {
-          ;(container as Element).textContent = ''
+      scheduleRootRender(root, () => {
+        if (firstRender) {
+          queueMutation(() => {
+            firstRender = false
+            if ((container as Node).nodeType === 1) container.textContent = ''
+          })
         }
-      }
-      flushSyncWork(() => {
         renderRoot(root, children)
       })
     },

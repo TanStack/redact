@@ -14,6 +14,8 @@ export const enum FiberTag {
   Lazy = 10,
   Suspense = 11,
   Root = 12,
+  Activity = 13,
+  Resource = 14,
 }
 
 export interface Hook {
@@ -21,12 +23,13 @@ export interface Hook {
   q: any
   d: any
   c: any
-  n: Hook | null
 }
 
 export interface Effect {
-  t: 0 | 1
+  t: 0 | 1 | 2
   c: () => any
+  d?: () => void
+  s?: boolean // Store subscriptions run in layout but stay connected in Suspense.
 }
 
 export interface Fiber {
@@ -42,24 +45,39 @@ export interface Fiber {
   parent: Fiber | null
   child: Fiber | null
   sibling: Fiber | null
-  hooks: Hook | null
+  hooks: Hook[] | null
   cu: Array<() => void> | null
   dy: boolean
   um: boolean
+  pd?: boolean
+  su?: Fiber | null // Retained Suspense primary update target.
+  ld?: boolean // Layout effects and refs are disconnected, not passive effects.
   root: FiberRoot | null
+  depth?: number
+  cx?: Map<any, any> | null
+  cr?: Ref<any> | null
+  rc?: (() => void) | null
 }
+
+export type RecoverableErrorHandler = (error: unknown, info: { componentStack: string | null; errorBoundary?: unknown }) => void
 
 export interface FiberRoot {
   c: Element | DocumentFragment
   r: Fiber
   p: Set<Fiber>
   s: boolean
-  re?: ((err: unknown) => void) | undefined
-  ce?: ((err: unknown) => void) | undefined
-  ue?: ((err: unknown) => void) | undefined
+  u?: (() => void) | undefined
+  er?: Array<{ error: unknown; stack: string }> | undefined
+  eb?: boolean
+  sp?: boolean
+  re?: RecoverableErrorHandler | undefined
+  ce?: RecoverableErrorHandler | undefined
+  ue?: RecoverableErrorHandler | undefined
   i: string | undefined
   ic: number
   h: boolean
+  a?: boolean
+  fr?: boolean
 }
 
 export function createFiber(tag: FiberTag, type: any, key: string | null): Fiber {

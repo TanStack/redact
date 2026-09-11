@@ -1,0 +1,1334 @@
+{
+  "schemaVersion": 1,
+  "originalRepositoryChecks": {
+    "checkedUtc": "2026-09-11 02:15:19 UTC",
+    "contentOfEnvAndLocalSettingsRead": false,
+    "scope": "Read-only git status and HEAD inspection. This is a final-state check, not a recorded before/after comparison. Ignored files are not listed by these commands.",
+    "repositories": [
+      {
+        "path": "/Users/tannerlinsley/GitHub/tanstack.com",
+        "head": "84f0b9c453ea741787a6162c13896c9492d97194",
+        "commands": [
+          "git status --short --untracked-files=normal",
+          "git rev-parse HEAD"
+        ],
+        "statusOutput": "",
+        "trackedChanges": false,
+        "untrackedFiles": [],
+        "clean": true
+      },
+      {
+        "path": "/Users/tannerlinsley/GitHub/tannerlinsley.com",
+        "head": "dcbc8ec50f3d86fdcb7b363dcd1ac13bc99e59e6",
+        "commands": [
+          "git status --short --untracked-files=normal",
+          "git rev-parse HEAD"
+        ],
+        "statusOutput": "?? .claude/settings.local.json",
+        "trackedChanges": false,
+        "untrackedFiles": [
+          ".claude/settings.local.json"
+        ],
+        "clean": false,
+        "note": "The local settings file was not read or copied. The harness excludes the .claude directory."
+      }
+    ],
+    "recheckedAfterFinalPackagedBuildsUtc": "2026-09-11T02:25:07.911Z",
+    "recheckResultUnchanged": true
+  },
+  "completedUtc": "2026-09-11T02:25:07.911Z",
+  "purpose": "Real-application integration correctness, not performance measurement or exhaustive React parity.",
+  "source": {
+    "repository": "/Users/tannerlinsley/GitHub/redact",
+    "head": "2e3c75c483365d26ae326ec0fdae96fa5c690451",
+    "includesUncommittedChanges": true,
+    "finalDistSha256": "f92b0ce0d529588d4fe7963a886b7ac9dd13073afb87d6d44e3d358eaf1dff50",
+    "vitePlugin": "packages/redact/dist/vite/index.js",
+    "vitePluginSha256": "f0665834805725c71c6415e3d1a6a5409707e990082281487df8af1c09e12d3f",
+    "vitePluginSource": "packages/redact/src/vite/index.ts",
+    "vitePluginSourceSha256": "f44eac90e74409931405434fabffe831fe49015061a5f90bda516a0beb2a016f",
+    "treeHashMethod": "Visit directories recursively with each directory sorted by entry.name.localeCompare. Map relative file paths to SHA-256(file bytes) in insertion order. Hash JSON.stringify(map) with SHA-256. Used for frozen dist and emitted client/server trees."
+  },
+  "environment": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "node": "v24.15.0",
+    "chrome": "152.0.7977.83",
+    "playwright": "1.59.1",
+    "headless": true,
+    "browserRunsSerialized": true,
+    "exclusiveBrowserSlot": true,
+    "otherBuildAndUnitWorkAllowed": true,
+    "sites": {
+      "tanstack.com": {
+        "vite": "8.0.16",
+        "cloudflareVite": "1.42.1",
+        "miniflare": "4.20260617.1",
+        "wrangler": "4.103.0",
+        "desktopViewport": [
+          1440,
+          1000
+        ],
+        "mobileViewport": [
+          390,
+          844
+        ]
+      },
+      "tannerlinsley.com": {
+        "vite": "8.0.8",
+        "cloudflareVite": "1.32.3",
+        "miniflare": "4.20260415.0",
+        "wrangler": "4.83.0",
+        "desktopViewport": [
+          1280,
+          900
+        ],
+        "mobileViewport": [
+          390,
+          844
+        ]
+      }
+    }
+  },
+  "isolation": {
+    "originalAppRepositoriesModified": false,
+    "appBehaviorPatched": false,
+    "runtimePatchedByHarness": false,
+    "dependenciesInstalled": false,
+    "secretFilesReadOrCopied": false,
+    "envDir": false,
+    "originalTanStackEnvFallbackRemoved": true,
+    "dependencyLinksToExistingInstalls": true,
+    "frozenRedactPackageRoots": true,
+    "tempCachesAndOutputs": true,
+    "workerOutbound": "All outbound requests return HTTP 503 at the Miniflare boundary.",
+    "browserOutbound": "External requests, analytics paths and edge-image paths are intercepted with empty HTTP 204 responses. No image replacements or app import stubs.",
+    "productionWritesOrDeployments": false
+  },
+  "harnesses": [
+    {
+      "path": "scripts/verify-tanstack-site.mjs",
+      "sha256": "b1b82a48f93b5220f651a14b6b4c38216d47a45980d06723f771e1a4c3900d47"
+    },
+    {
+      "path": "scripts/verify-tanner-site.mjs",
+      "sha256": "640ef97a144fa77a36f88cfdb16002979c931d1dd102360a9ac38108b3250c92"
+    }
+  ],
+  "runs": [
+    {
+      "site": "tanstack.com",
+      "role": "final",
+      "stage": "/tmp/redact-tanstack-site-jDt7Sh",
+      "renderer": "local-redact",
+      "rendererVersion": "0.0.20",
+      "createdUtc": "2026-09-11T02:10:53.322Z",
+      "smokeCompletedUtc": "2026-09-11T02:11:43.380Z",
+      "commands": [
+        "node scripts/verify-tanstack-site.mjs prepare",
+        "node scripts/verify-tanstack-site.mjs build /tmp/redact-tanstack-site-jDt7Sh",
+        "node scripts/verify-tanstack-site.mjs smoke /tmp/redact-tanstack-site-jDt7Sh"
+      ],
+      "config": {
+        "preset": "default",
+        "features": null,
+        "originalConfigSha256": "daa3eac794626e226a0132b32c3f0c74da897c391c27f75f35e204c6196d3f24",
+        "isolatedConfigSha256": "82c26e3f2ac23c3a3848d6d118077aa5a98997e3ec5b2c5d08729788f9d3e0ee",
+        "reactControl": null
+      },
+      "rendererSnapshot": {
+        "redactEnabled": true,
+        "redactDistSha256": "eec96ceeffdaec9a250956d3aea146d728ee45fe1117b55cadc83219db9e9d20",
+        "vitePluginSha256": "9fb343b7775fc05d7f42174a1f56f3be1b55ea9d05401cc93ec4af85b0e38bc5",
+        "vitePluginSourceSha256": "0deb3fa2a8ec206c8d5e411fdc884d7b14ec8fc18fd426fb68825904b2420b2d",
+        "emittedServerMainSha256": "c3af40ab5aedcc9542356c291df4f4dbad1165e686a632d9e18c4b9f3f1f719b",
+        "emittedClient": {
+          "sha256": "39c80549f3b34be57a39dbcc659485b7ad520f8cd67c7d7f3b8c93567b123e6b",
+          "fileCount": 464
+        },
+        "emittedServer": {
+          "sha256": "16d7d608a13dd11df14fd99bb9e88c069b26806c4a34db2034c542433b35eb06",
+          "fileCount": 349
+        }
+      },
+      "build": {
+        "exitCode": 0,
+        "passed": true,
+        "clientAndServerCompilationPassed": true,
+        "transformedModules": [
+          9088,
+          10858
+        ],
+        "prerenderFailure": null,
+        "log": {
+          "path": "/tmp/redact-tanstack-site-jDt7Sh/artifacts/build.log",
+          "sha256": "a89856bb1fb75f40a0141b33ba903bdc84bb0efe7dff3420693effe777b9341c"
+        }
+      },
+      "worker": {
+        "adapter": "Installed Miniflare using the unchanged emitted Worker and a complete ESModule/CompiledWasm module list.",
+        "started": true,
+        "ssrPassed": true,
+        "routes": [
+          {
+            "path": "/privacy",
+            "status": 200,
+            "expectedStatus": 200,
+            "passed": true
+          },
+          {
+            "path": "/terms",
+            "status": 200,
+            "expectedStatus": 200,
+            "passed": true
+          },
+          {
+            "path": "/blog",
+            "status": 200,
+            "expectedStatus": 200,
+            "passed": true
+          },
+          {
+            "path": "/",
+            "status": 200,
+            "expectedStatus": 200,
+            "passed": true
+          },
+          {
+            "path": "/__redact_smoke_missing__",
+            "status": 404,
+            "expectedStatus": 404,
+            "passed": true
+          }
+        ],
+        "blockedOutbound": [
+          {
+            "method": "GET",
+            "origin": "https://eurosky.social",
+            "pathname": "/xrpc/com.atproto.repo.listRecords"
+          }
+        ]
+      },
+      "browser": {
+        "strictSmokePassed": true,
+        "exitCode": 0,
+        "completed": [
+          "hydration and theme context updates",
+          "client navigation and history without document reload",
+          "stateful blog pagination",
+          "controlled search input and URL-backed filter reset",
+          "Radix portal menu and route search updates",
+          "mobile navigation menu and overflow check"
+        ],
+        "pageErrorCount": 0,
+        "consoleErrorCount": 0,
+        "mobileWidths": null,
+        "failure": null,
+        "blockedRequestCount": 35
+      },
+      "artifacts": {
+        "manifest": {
+          "path": "/tmp/redact-tanstack-site-jDt7Sh/manifest.json",
+          "sha256": "a85cc30a3bf7767e66bffcad8b79521796e0ad8f61e0768a1965f6bb6175e291"
+        },
+        "smoke": {
+          "path": "/tmp/redact-tanstack-site-jDt7Sh/artifacts/ssr-result.json",
+          "sha256": "514b397d48b42986a85780f14a365b05cdcd053975bb6270a2c3e93d1fd790ad"
+        },
+        "screenshots": [
+          {
+            "path": "/tmp/redact-tanstack-site-jDt7Sh/artifacts/blog-desktop.png",
+            "sha256": "713c7508d082a8045ecc7dea95eb8878f6de0bb3ae165687d9de0a0ccb5d50ae"
+          },
+          {
+            "path": "/tmp/redact-tanstack-site-jDt7Sh/artifacts/blog-mobile.png",
+            "sha256": "2c05cf936baf247612f7891d7700e31e6b0fb50dd7b688275afb90d78aa1fcb3"
+          }
+        ]
+      }
+    },
+    {
+      "site": "tanstack.com",
+      "role": "published-control",
+      "stage": "/tmp/redact-tanstack-site-kAmzVg",
+      "renderer": "published-redact",
+      "rendererVersion": "0.0.19",
+      "createdUtc": "2026-09-11T02:00:12.896Z",
+      "smokeCompletedUtc": "2026-09-11T02:03:40.758Z",
+      "commands": [
+        "node scripts/verify-tanstack-site.mjs prepare-published",
+        "node scripts/verify-tanstack-site.mjs build /tmp/redact-tanstack-site-kAmzVg",
+        "node scripts/verify-tanstack-site.mjs smoke /tmp/redact-tanstack-site-kAmzVg"
+      ],
+      "config": {
+        "preset": "default",
+        "features": null,
+        "originalConfigSha256": "daa3eac794626e226a0132b32c3f0c74da897c391c27f75f35e204c6196d3f24",
+        "isolatedConfigSha256": "81393c883e87489b016c960c9be10d93e0618f4d7a40bc44d5ced037edb91121",
+        "reactControl": null
+      },
+      "rendererSnapshot": {
+        "redactEnabled": true,
+        "redactDistSha256": "037f0ec462eb691322009b6d3ba255ab7bde662e422288d918f9864833457557",
+        "vitePluginSha256": "70d2d398749dd73d7a3a9c1f2d7943718e0d5862dafd5ec88318f2036adcc45c",
+        "vitePluginSourceSha256": null,
+        "emittedServerMainSha256": "6fc7dd3a08fb593e1a14e4bbc21fe0d6b1ff5abf1519c22a2b1c82e77ca1a9a9",
+        "emittedClient": {
+          "sha256": "da5ce9e6809e8a134be78f17be5dec4c54cf23a4be776c096549aef41aa3b4bf",
+          "fileCount": 464
+        },
+        "emittedServer": {
+          "sha256": "3ccdd21afac90388eca19aedec4c988714e4f035621b57615764a0ab3246e584",
+          "fileCount": 349
+        }
+      },
+      "build": {
+        "exitCode": 0,
+        "passed": true,
+        "clientAndServerCompilationPassed": true,
+        "transformedModules": [
+          9073,
+          10842
+        ],
+        "prerenderFailure": null,
+        "log": {
+          "path": "/tmp/redact-tanstack-site-kAmzVg/artifacts/build.log",
+          "sha256": "5c4660505904043da72da051f6496cef5f48f4826d93d86b27dced5b467e2d52"
+        }
+      },
+      "worker": {
+        "adapter": "Installed Miniflare using the unchanged emitted Worker and a complete ESModule/CompiledWasm module list.",
+        "started": true,
+        "ssrPassed": true,
+        "routes": [
+          {
+            "path": "/privacy",
+            "status": 200,
+            "expectedStatus": 200,
+            "passed": true
+          },
+          {
+            "path": "/terms",
+            "status": 200,
+            "expectedStatus": 200,
+            "passed": true
+          },
+          {
+            "path": "/blog",
+            "status": 200,
+            "expectedStatus": 200,
+            "passed": true
+          },
+          {
+            "path": "/",
+            "status": 200,
+            "expectedStatus": 200,
+            "passed": true
+          },
+          {
+            "path": "/__redact_smoke_missing__",
+            "status": 404,
+            "expectedStatus": 404,
+            "passed": true
+          }
+        ],
+        "blockedOutbound": [
+          {
+            "method": "GET",
+            "origin": "https://eurosky.social",
+            "pathname": "/xrpc/com.atproto.repo.listRecords"
+          }
+        ]
+      },
+      "browser": {
+        "strictSmokePassed": true,
+        "exitCode": 0,
+        "completed": [
+          "hydration and theme context updates",
+          "client navigation and history without document reload",
+          "stateful blog pagination",
+          "controlled search input and URL-backed filter reset",
+          "Radix portal menu and route search updates",
+          "mobile navigation menu and overflow check"
+        ],
+        "pageErrorCount": 0,
+        "consoleErrorCount": 0,
+        "mobileWidths": null,
+        "failure": null,
+        "blockedRequestCount": 41
+      },
+      "artifacts": {
+        "manifest": {
+          "path": "/tmp/redact-tanstack-site-kAmzVg/manifest.json",
+          "sha256": "3f7ae29e1d4a0b9cfa68b5a35ec7f6295fdb968db6e06892019aef0dcb6666d8"
+        },
+        "smoke": {
+          "path": "/tmp/redact-tanstack-site-kAmzVg/artifacts/ssr-result.json",
+          "sha256": "a39a297e7f2eb0f7364a5d565820e85122ae0a7f619346f5f2c6ea63c353b66a"
+        },
+        "screenshots": [
+          {
+            "path": "/tmp/redact-tanstack-site-kAmzVg/artifacts/blog-desktop.png",
+            "sha256": "097ee3a6137e144e4cd66cff6a7ce7b542583d7c13741ba3195d0f9da029f551"
+          },
+          {
+            "path": "/tmp/redact-tanstack-site-kAmzVg/artifacts/blog-mobile.png",
+            "sha256": "2c05cf936baf247612f7891d7700e31e6b0fb50dd7b688275afb90d78aa1fcb3"
+          }
+        ]
+      }
+    },
+    {
+      "site": "tanstack.com",
+      "role": "react-control",
+      "stage": "/tmp/redact-tanstack-site-BVQx4a",
+      "renderer": "react",
+      "rendererVersion": "19.2.3",
+      "createdUtc": "2026-09-11T02:00:13.322Z",
+      "smokeCompletedUtc": "2026-09-11T02:03:59.073Z",
+      "commands": [
+        "node scripts/verify-tanstack-site.mjs prepare-react",
+        "node scripts/verify-tanstack-site.mjs build /tmp/redact-tanstack-site-BVQx4a",
+        "node scripts/verify-tanstack-site.mjs smoke /tmp/redact-tanstack-site-BVQx4a"
+      ],
+      "config": {
+        "preset": "default",
+        "features": null,
+        "originalConfigSha256": "daa3eac794626e226a0132b32c3f0c74da897c391c27f75f35e204c6196d3f24",
+        "isolatedConfigSha256": "5ec3142b3ede9391a976eb64d5a35739fcd33971066159aa115e15a5ffce0bee",
+        "reactControl": "The existing DISABLE_REDACT=true branch disables the plugin and Redact aliases."
+      },
+      "rendererSnapshot": {
+        "redactEnabled": false,
+        "redactDistSha256": null,
+        "vitePluginSha256": null,
+        "vitePluginSourceSha256": null,
+        "emittedServerMainSha256": "280806e04089ab4f5ada5e2821835603f6e8b2d357f6bac00a28b15696d24e50",
+        "emittedClient": {
+          "sha256": "66a64c98f80709261b919c8d15ee2f5066cc0deb79687279d609ffb04bab01bd",
+          "fileCount": 465
+        },
+        "emittedServer": {
+          "sha256": "14cb9358516e63dd3a54b44be632fed3726fa281a97cb27ffa92d35a83327c2a",
+          "fileCount": 350
+        }
+      },
+      "build": {
+        "exitCode": 0,
+        "passed": true,
+        "clientAndServerCompilationPassed": true,
+        "transformedModules": [
+          9045,
+          10808
+        ],
+        "prerenderFailure": null,
+        "log": {
+          "path": "/tmp/redact-tanstack-site-BVQx4a/artifacts/build.log",
+          "sha256": "baf5f240c9e01bb077ec66f5d09b70508ddbe72d59bbb27c246de8a8eab0af37"
+        }
+      },
+      "worker": {
+        "adapter": "Installed Miniflare using the unchanged emitted Worker and a complete ESModule/CompiledWasm module list.",
+        "started": true,
+        "ssrPassed": true,
+        "routes": [
+          {
+            "path": "/privacy",
+            "status": 200,
+            "expectedStatus": 200,
+            "passed": true
+          },
+          {
+            "path": "/terms",
+            "status": 200,
+            "expectedStatus": 200,
+            "passed": true
+          },
+          {
+            "path": "/blog",
+            "status": 200,
+            "expectedStatus": 200,
+            "passed": true
+          },
+          {
+            "path": "/",
+            "status": 200,
+            "expectedStatus": 200,
+            "passed": true
+          },
+          {
+            "path": "/__redact_smoke_missing__",
+            "status": 404,
+            "expectedStatus": 404,
+            "passed": true
+          }
+        ],
+        "blockedOutbound": [
+          {
+            "method": "GET",
+            "origin": "https://eurosky.social",
+            "pathname": "/xrpc/com.atproto.repo.listRecords"
+          }
+        ]
+      },
+      "browser": {
+        "strictSmokePassed": true,
+        "exitCode": 0,
+        "completed": [
+          "hydration and theme context updates",
+          "client navigation and history without document reload",
+          "stateful blog pagination",
+          "controlled search input and URL-backed filter reset",
+          "Radix portal menu and route search updates",
+          "mobile navigation menu and overflow check"
+        ],
+        "pageErrorCount": 0,
+        "consoleErrorCount": 0,
+        "mobileWidths": null,
+        "failure": null,
+        "blockedRequestCount": 25
+      },
+      "artifacts": {
+        "manifest": {
+          "path": "/tmp/redact-tanstack-site-BVQx4a/manifest.json",
+          "sha256": "a34d931570daf99ffc0a4b27b6404a948268a36d04248841b0f2ffaa634b0be7"
+        },
+        "smoke": {
+          "path": "/tmp/redact-tanstack-site-BVQx4a/artifacts/ssr-result.json",
+          "sha256": "f8afb335bd42f3f9521c54474bd756264c52f9d6cd13a6812bfd88260491716b"
+        },
+        "screenshots": [
+          {
+            "path": "/tmp/redact-tanstack-site-BVQx4a/artifacts/blog-desktop.png",
+            "sha256": "487932871b0c80bb1580d057e3ead59692ef78f1c7b825d3e946e724be935f3c"
+          },
+          {
+            "path": "/tmp/redact-tanstack-site-BVQx4a/artifacts/blog-mobile.png",
+            "sha256": "755399d931d176bcc5ab8d46b4cde6ff43bcbcf623136ac07950260481d87b94"
+          }
+        ]
+      }
+    },
+    {
+      "site": "tannerlinsley.com",
+      "role": "final",
+      "stage": "/tmp/redact-tanner-site-GWSKNH",
+      "renderer": "local-redact",
+      "rendererVersion": "0.0.20",
+      "createdUtc": "2026-09-11T02:10:53.597Z",
+      "smokeCompletedUtc": "2026-09-11T02:12:11.392Z",
+      "commands": [
+        "node scripts/verify-tanner-site.mjs prepare",
+        "node scripts/verify-tanner-site.mjs build /tmp/redact-tanner-site-GWSKNH",
+        "node scripts/verify-tanner-site.mjs worker-smoke /tmp/redact-tanner-site-GWSKNH"
+      ],
+      "config": {
+        "preset": "nano",
+        "features": [
+          "hydration",
+          "context",
+          "suspense",
+          "classComponents",
+          "memo",
+          "forwardRef"
+        ],
+        "originalConfigSha256": "d8b0852270b743919a05c7819b22f4f19241680386b6fca0757b37eac7958ba8",
+        "isolatedConfigSha256": "bb65f66bc99481c97d473d9be644d570de5daaf2985097b7cafce986cd7eea56",
+        "reactControl": null
+      },
+      "rendererSnapshot": {
+        "redactEnabled": true,
+        "redactDistSha256": "eec96ceeffdaec9a250956d3aea146d728ee45fe1117b55cadc83219db9e9d20",
+        "vitePluginSha256": "9fb343b7775fc05d7f42174a1f56f3be1b55ea9d05401cc93ec4af85b0e38bc5",
+        "vitePluginSourceSha256": "0deb3fa2a8ec206c8d5e411fdc884d7b14ec8fc18fd426fb68825904b2420b2d",
+        "emittedServerMainSha256": "99ccbeea352455f02f4db6ac1ab05366d206093d08ee55d23e71c306986d0ed5",
+        "emittedClient": {
+          "sha256": "560d99ee382b0d8304192457afa0e047d6d3235868777d43abaa7438a01bccd3",
+          "fileCount": 29
+        },
+        "emittedServer": {
+          "sha256": "a4e6a683ee607107049f5ddd937e5b38c8bb6e996018a014b8651275b0423846",
+          "fileCount": 20
+        }
+      },
+      "build": {
+        "exitCode": 1,
+        "passed": false,
+        "clientAndServerCompilationPassed": true,
+        "transformedModules": [
+          182,
+          275
+        ],
+        "prerenderFailure": "Vite preview Worker startup reports an internal error, then prerender fails fetching / with HTTP 500.",
+        "log": {
+          "path": "/tmp/redact-tanner-site-GWSKNH/artifacts/build.log",
+          "sha256": "ebc5183334197b521f03288785e3bb51dcdcf92e84b60f05fc05f5b7d0341bc3"
+        }
+      },
+      "worker": {
+        "adapter": "Installed Miniflare using the unchanged emitted Worker and a complete ESModule/CompiledWasm module list.",
+        "started": true,
+        "ssrPassed": true,
+        "routes": [
+          {
+            "path": "/",
+            "status": 200,
+            "expectedStatus": 200,
+            "passed": true
+          },
+          {
+            "path": "/posts",
+            "status": 200,
+            "expectedStatus": 200,
+            "passed": true
+          },
+          {
+            "path": "/posts/projecting-react",
+            "status": 200,
+            "expectedStatus": 200,
+            "passed": true
+          },
+          {
+            "path": "/about",
+            "status": 200,
+            "expectedStatus": 200,
+            "passed": true
+          },
+          {
+            "path": "/appearances",
+            "status": 200,
+            "expectedStatus": 200,
+            "passed": true
+          },
+          {
+            "path": "/appearances?type=talk",
+            "status": 200,
+            "expectedStatus": 200,
+            "passed": true
+          },
+          {
+            "path": "/feed.xml",
+            "status": 200,
+            "expectedStatus": 200,
+            "passed": true
+          },
+          {
+            "path": "/__redact_smoke_missing__",
+            "status": 404,
+            "expectedStatus": 404,
+            "passed": true
+          }
+        ],
+        "blockedOutbound": []
+      },
+      "browser": {
+        "strictSmokePassed": false,
+        "exitCode": 1,
+        "completed": [
+          "hydration, client post navigation, canonical and structured data",
+          "URL-backed appearance filters and browser history without document reload",
+          "theme context updates",
+          "About navigation and desktop/mobile rendering"
+        ],
+        "pageErrorCount": 0,
+        "consoleErrorCount": 0,
+        "mobileWidths": {
+          "viewport": 390,
+          "document": 454,
+          "body": 454,
+          "header": 454
+        },
+        "failure": "AssertionError [ERR_ASSERTION]: Mobile page overflows horizontally.",
+        "blockedRequestCount": 38
+      },
+      "artifacts": {
+        "manifest": {
+          "path": "/tmp/redact-tanner-site-GWSKNH/manifest.json",
+          "sha256": "0cdbe12b3da7bc15a9b0aed31b1a055b29889d153468e5745dd764721204d2cd"
+        },
+        "smoke": {
+          "path": "/tmp/redact-tanner-site-GWSKNH/artifacts/worker-smoke.json",
+          "sha256": "6631db3e50ad15e0215231c0a98f18ee4e3c3fe275d05325db4da8fde9e5e895"
+        },
+        "screenshots": [
+          {
+            "path": "/tmp/redact-tanner-site-GWSKNH/artifacts/about-desktop.png",
+            "sha256": "1acad6e1528f3e97836a952b5e3d57108300375402fa1831f9d30892fbe7ffc2"
+          },
+          {
+            "path": "/tmp/redact-tanner-site-GWSKNH/artifacts/about-mobile.png",
+            "sha256": "df33becce5489fed8758b48389ff2fd282ed6fbd1cf01ee0ae8c5baaf0f9528f"
+          }
+        ]
+      }
+    },
+    {
+      "site": "tannerlinsley.com",
+      "role": "published-control",
+      "stage": "/tmp/redact-tanner-site-ta00tF",
+      "renderer": "published-redact",
+      "rendererVersion": "0.0.12",
+      "createdUtc": "2026-09-11T01:43:54.094Z",
+      "smokeCompletedUtc": "2026-09-11T02:07:54.898Z",
+      "commands": [
+        "node scripts/verify-tanner-site.mjs prepare-published",
+        "node scripts/verify-tanner-site.mjs build /tmp/redact-tanner-site-ta00tF",
+        "node scripts/verify-tanner-site.mjs worker-smoke /tmp/redact-tanner-site-ta00tF"
+      ],
+      "config": {
+        "preset": "nano",
+        "features": [
+          "hydration",
+          "context",
+          "suspense",
+          "classComponents",
+          "memo",
+          "forwardRef"
+        ],
+        "originalConfigSha256": "d8b0852270b743919a05c7819b22f4f19241680386b6fca0757b37eac7958ba8",
+        "isolatedConfigSha256": "6496199075a0b98e0befd7ac04b8370acae7fcb9d685d7afe309390c58587743",
+        "reactControl": null
+      },
+      "rendererSnapshot": {
+        "redactEnabled": true,
+        "redactDistSha256": "5e5b703f7ee7fa55e04ab19584d3a6ea76f4a2d32fb926f6081d79e0bdd9b4fc",
+        "vitePluginSha256": "e4bca401db5fba7df58ad10b53bd3c1cd7e3a5cf6cf88750ab3dbccbacc38d6d",
+        "vitePluginSourceSha256": null,
+        "emittedServerMainSha256": "2e29110f2a0782efe82bea0ea3a65d9586a629bd189c5439bb0f75440e8e6bd7",
+        "emittedClient": {
+          "sha256": "7fb6d564172599c3ca79974537b5d0dc98967e84e5fd3f602e13a28336b58202",
+          "fileCount": 29
+        },
+        "emittedServer": {
+          "sha256": "d7035839a56e9e35f2f9123cf9211a57a21f007049de92e2f2600813716b67ac",
+          "fileCount": 19
+        }
+      },
+      "build": {
+        "exitCode": 1,
+        "passed": false,
+        "clientAndServerCompilationPassed": true,
+        "transformedModules": [
+          167,
+          259
+        ],
+        "prerenderFailure": "Vite preview Worker startup reports an internal error, then prerender fails fetching / with HTTP 500.",
+        "log": {
+          "path": "/tmp/redact-tanner-site-ta00tF/artifacts/build.log",
+          "sha256": "fe7d5233fe1a170b80e390d820aa092ee9dfb3367bdda08ef56f7f945be74ea2"
+        }
+      },
+      "worker": {
+        "adapter": "Installed Miniflare using the unchanged emitted Worker and a complete ESModule/CompiledWasm module list.",
+        "started": true,
+        "ssrPassed": true,
+        "routes": [
+          {
+            "path": "/",
+            "status": 200,
+            "expectedStatus": 200,
+            "passed": true
+          },
+          {
+            "path": "/posts",
+            "status": 200,
+            "expectedStatus": 200,
+            "passed": true
+          },
+          {
+            "path": "/posts/projecting-react",
+            "status": 200,
+            "expectedStatus": 200,
+            "passed": true
+          },
+          {
+            "path": "/about",
+            "status": 200,
+            "expectedStatus": 200,
+            "passed": true
+          },
+          {
+            "path": "/appearances",
+            "status": 200,
+            "expectedStatus": 200,
+            "passed": true
+          },
+          {
+            "path": "/appearances?type=talk",
+            "status": 200,
+            "expectedStatus": 200,
+            "passed": true
+          },
+          {
+            "path": "/feed.xml",
+            "status": 200,
+            "expectedStatus": 200,
+            "passed": true
+          },
+          {
+            "path": "/__redact_smoke_missing__",
+            "status": 404,
+            "expectedStatus": 404,
+            "passed": true
+          }
+        ],
+        "blockedOutbound": []
+      },
+      "browser": {
+        "strictSmokePassed": false,
+        "exitCode": 1,
+        "completed": [
+          "hydration, client post navigation, canonical and structured data",
+          "URL-backed appearance filters and browser history without document reload",
+          "theme context updates",
+          "About navigation and desktop/mobile rendering"
+        ],
+        "pageErrorCount": 0,
+        "consoleErrorCount": 0,
+        "mobileWidths": {
+          "viewport": 390,
+          "document": 454,
+          "body": 454,
+          "header": 454
+        },
+        "failure": "AssertionError [ERR_ASSERTION]: Mobile page overflows horizontally.",
+        "blockedRequestCount": 35
+      },
+      "artifacts": {
+        "manifest": {
+          "path": "/tmp/redact-tanner-site-ta00tF/manifest.json",
+          "sha256": "7b8927be2cb3281d9a10ce86f33cc511547c540788e0ef753dd703762105e4b6"
+        },
+        "smoke": {
+          "path": "/tmp/redact-tanner-site-ta00tF/artifacts/worker-smoke.json",
+          "sha256": "0c2a5d376fe3c3b127cb58108b028df30c761259cc33b33e56aeb74404b9954a"
+        },
+        "screenshots": [
+          {
+            "path": "/tmp/redact-tanner-site-ta00tF/artifacts/about-desktop.png",
+            "sha256": "0e7cd727717d62c9bf57b4a63e555f2500e43bb6c5360a125302e98fdfa62b12"
+          },
+          {
+            "path": "/tmp/redact-tanner-site-ta00tF/artifacts/about-mobile.png",
+            "sha256": "df33becce5489fed8758b48389ff2fd282ed6fbd1cf01ee0ae8c5baaf0f9528f"
+          }
+        ]
+      }
+    },
+    {
+      "site": "tannerlinsley.com",
+      "role": "react-control",
+      "stage": "/tmp/redact-tanner-site-nsX8uM",
+      "renderer": "react",
+      "rendererVersion": "19.2.5",
+      "createdUtc": "2026-09-11T01:44:48.562Z",
+      "smokeCompletedUtc": "2026-09-11T02:12:43.957Z",
+      "commands": [
+        "node scripts/verify-tanner-site.mjs prepare-react",
+        "node scripts/verify-tanner-site.mjs build /tmp/redact-tanner-site-nsX8uM",
+        "node scripts/verify-tanner-site.mjs worker-smoke /tmp/redact-tanner-site-nsX8uM"
+      ],
+      "config": {
+        "preset": "nano",
+        "features": [
+          "hydration",
+          "context",
+          "suspense",
+          "classComponents",
+          "memo",
+          "forwardRef"
+        ],
+        "originalConfigSha256": "d8b0852270b743919a05c7819b22f4f19241680386b6fca0757b37eac7958ba8",
+        "isolatedConfigSha256": "9b3c51734753447aa17f7c562d4e38b71e8b2b7f168f996b96429b9743f2b15d",
+        "reactControl": "Only the Redact plugin is removed from the isolated config."
+      },
+      "rendererSnapshot": {
+        "redactEnabled": false,
+        "redactDistSha256": null,
+        "vitePluginSha256": null,
+        "vitePluginSourceSha256": null,
+        "emittedServerMainSha256": "53acec9acea5c27d6835921f092c95b6a4be9963b188988b1f106c9bfbadd0e2",
+        "emittedClient": {
+          "sha256": "23eefb2fa526ae595530dfd6f8ead9a7fd83972a42b73204a3542ac0af190e0a",
+          "fileCount": 29
+        },
+        "emittedServer": {
+          "sha256": "c1736147f73bd65293b09af440432e1e08099584c8285d5ba5439f809c933b3f",
+          "fileCount": 20
+        }
+      },
+      "build": {
+        "exitCode": 1,
+        "passed": false,
+        "clientAndServerCompilationPassed": true,
+        "transformedModules": [
+          144,
+          229
+        ],
+        "prerenderFailure": "Vite preview Worker startup reports an internal error, then prerender fails fetching / with HTTP 500.",
+        "log": {
+          "path": "/tmp/redact-tanner-site-nsX8uM/artifacts/build.log",
+          "sha256": "b8e8e7731fa44a2ea5d1f6905ce29daca6a4b54b72b9d5ea1803dfc5f5d1e5ff"
+        }
+      },
+      "worker": {
+        "adapter": "Installed Miniflare using the unchanged emitted Worker and a complete ESModule/CompiledWasm module list.",
+        "started": true,
+        "ssrPassed": true,
+        "routes": [
+          {
+            "path": "/",
+            "status": 200,
+            "expectedStatus": 200,
+            "passed": true
+          },
+          {
+            "path": "/posts",
+            "status": 200,
+            "expectedStatus": 200,
+            "passed": true
+          },
+          {
+            "path": "/posts/projecting-react",
+            "status": 200,
+            "expectedStatus": 200,
+            "passed": true
+          },
+          {
+            "path": "/about",
+            "status": 200,
+            "expectedStatus": 200,
+            "passed": true
+          },
+          {
+            "path": "/appearances",
+            "status": 200,
+            "expectedStatus": 200,
+            "passed": true
+          },
+          {
+            "path": "/appearances?type=talk",
+            "status": 200,
+            "expectedStatus": 200,
+            "passed": true
+          },
+          {
+            "path": "/feed.xml",
+            "status": 200,
+            "expectedStatus": 200,
+            "passed": true
+          },
+          {
+            "path": "/__redact_smoke_missing__",
+            "status": 404,
+            "expectedStatus": 404,
+            "passed": true
+          }
+        ],
+        "blockedOutbound": []
+      },
+      "browser": {
+        "strictSmokePassed": false,
+        "exitCode": 1,
+        "completed": [
+          "hydration, client post navigation, canonical and structured data",
+          "URL-backed appearance filters and browser history without document reload",
+          "theme context updates",
+          "About navigation and desktop/mobile rendering"
+        ],
+        "pageErrorCount": 0,
+        "consoleErrorCount": 0,
+        "mobileWidths": {
+          "viewport": 390,
+          "document": 454,
+          "body": 454,
+          "header": 454
+        },
+        "failure": "AssertionError [ERR_ASSERTION]: Mobile page overflows horizontally.",
+        "blockedRequestCount": 32
+      },
+      "artifacts": {
+        "manifest": {
+          "path": "/tmp/redact-tanner-site-nsX8uM/manifest.json",
+          "sha256": "2bd75f91f84b11a13df560583df69b05b909a03ad9cc82778d1bf015b467ae98"
+        },
+        "smoke": {
+          "path": "/tmp/redact-tanner-site-nsX8uM/artifacts/worker-smoke.json",
+          "sha256": "9855a25a717c3c5351e79c162c676780599411840f37f075ccbf2e813cc9bf3b"
+        },
+        "screenshots": [
+          {
+            "path": "/tmp/redact-tanner-site-nsX8uM/artifacts/about-desktop.png",
+            "sha256": "512bc33430ab975f766a84c1d096290375afce8f2fffc9ffa20e33075bb06710"
+          },
+          {
+            "path": "/tmp/redact-tanner-site-nsX8uM/artifacts/about-mobile.png",
+            "sha256": "df33becce5489fed8758b48389ff2fd282ed6fbd1cf01ee0ae8c5baaf0f9528f"
+          }
+        ]
+      }
+    },
+    {
+      "site": "tanstack.com",
+      "role": "final-packaged",
+      "stage": "/tmp/redact-tanstack-site-3CGilU",
+      "renderer": "local-redact",
+      "rendererVersion": "0.0.20",
+      "createdUtc": "2026-09-11T02:23:02.231Z",
+      "smokeCompletedUtc": "2026-09-11T02:23:45.525Z",
+      "commands": [
+        "node scripts/verify-tanstack-site.mjs prepare",
+        "node scripts/verify-tanstack-site.mjs build /tmp/redact-tanstack-site-3CGilU",
+        "node scripts/verify-tanstack-site.mjs smoke /tmp/redact-tanstack-site-3CGilU"
+      ],
+      "config": {
+        "preset": "default",
+        "features": null,
+        "originalConfigSha256": "daa3eac794626e226a0132b32c3f0c74da897c391c27f75f35e204c6196d3f24",
+        "isolatedConfigSha256": "2a38109a3d442ef9273e3efb7d07375f91fe3e31b708e6d642ee9e019fb08cbb",
+        "reactControl": null
+      },
+      "rendererSnapshot": {
+        "redactEnabled": true,
+        "redactDistSha256": "f92b0ce0d529588d4fe7963a886b7ac9dd13073afb87d6d44e3d358eaf1dff50",
+        "vitePluginSha256": "f0665834805725c71c6415e3d1a6a5409707e990082281487df8af1c09e12d3f",
+        "vitePluginSourceSha256": "f44eac90e74409931405434fabffe831fe49015061a5f90bda516a0beb2a016f",
+        "emittedServerMainSha256": "8a287ce8ead01eaafa09b9b5cd16b3d002a91d46b1bcb9594d10815356864349",
+        "emittedClient": {
+          "sha256": "baf70cfb8a0492fa7856abf82420cb03621070a18ee6762b4a99d7ecd970c341",
+          "fileCount": 464
+        },
+        "emittedServer": {
+          "sha256": "e6920bd87c1077b7c86ba77d95f784c894ee69b40228b8f5f719412cd29c1b7c",
+          "fileCount": 349
+        }
+      },
+      "build": {
+        "exitCode": 0,
+        "passed": true,
+        "clientAndServerCompilationPassed": true,
+        "transformedModules": [
+          9088,
+          10858
+        ],
+        "prerenderFailure": null,
+        "log": {
+          "path": "/tmp/redact-tanstack-site-3CGilU/artifacts/build.log",
+          "sha256": "765ec87a6acfe5cf96b6dc08e986b0b4771a6d1a4d1cc47f6e9f7ed13de3ad6e"
+        }
+      },
+      "worker": {
+        "adapter": "Installed Miniflare using the unchanged emitted Worker and a complete ESModule/CompiledWasm module list.",
+        "started": true,
+        "ssrPassed": true,
+        "routes": [
+          {
+            "path": "/privacy",
+            "status": 200,
+            "expectedStatus": 200,
+            "passed": true
+          },
+          {
+            "path": "/terms",
+            "status": 200,
+            "expectedStatus": 200,
+            "passed": true
+          },
+          {
+            "path": "/blog",
+            "status": 200,
+            "expectedStatus": 200,
+            "passed": true
+          },
+          {
+            "path": "/",
+            "status": 200,
+            "expectedStatus": 200,
+            "passed": true
+          },
+          {
+            "path": "/__redact_smoke_missing__",
+            "status": 404,
+            "expectedStatus": 404,
+            "passed": true
+          }
+        ],
+        "blockedOutbound": [
+          {
+            "method": "GET",
+            "origin": "https://eurosky.social",
+            "pathname": "/xrpc/com.atproto.repo.listRecords"
+          }
+        ]
+      },
+      "browser": {
+        "strictSmokePassed": true,
+        "exitCode": 0,
+        "completed": [
+          "hydration and theme context updates",
+          "client navigation and history without document reload",
+          "stateful blog pagination",
+          "controlled search input and URL-backed filter reset",
+          "Radix portal menu and route search updates",
+          "mobile navigation menu and overflow check"
+        ],
+        "pageErrorCount": 0,
+        "consoleErrorCount": 0,
+        "mobileWidths": null,
+        "failure": null,
+        "blockedRequestCount": 35
+      },
+      "artifacts": {
+        "manifest": {
+          "path": "/tmp/redact-tanstack-site-3CGilU/manifest.json",
+          "sha256": "acda7dfdab0dd17864f96fd5d2860376994ed128cdb06caacb15bab5c67445b1"
+        },
+        "smoke": {
+          "path": "/tmp/redact-tanstack-site-3CGilU/artifacts/ssr-result.json",
+          "sha256": "6f5fcd8ea0684d3a514d9648585cd4da14c575e7dcb6979e794ae5e9fa5ad135"
+        },
+        "screenshots": [
+          {
+            "path": "/tmp/redact-tanstack-site-3CGilU/artifacts/blog-desktop.png",
+            "sha256": "713c7508d082a8045ecc7dea95eb8878f6de0bb3ae165687d9de0a0ccb5d50ae"
+          },
+          {
+            "path": "/tmp/redact-tanstack-site-3CGilU/artifacts/blog-mobile.png",
+            "sha256": "2c05cf936baf247612f7891d7700e31e6b0fb50dd7b688275afb90d78aa1fcb3"
+          }
+        ]
+      }
+    },
+    {
+      "site": "tannerlinsley.com",
+      "role": "final-packaged",
+      "stage": "/tmp/redact-tanner-site-o4PN22",
+      "renderer": "local-redact",
+      "rendererVersion": "0.0.20",
+      "createdUtc": "2026-09-11T02:23:02.492Z",
+      "smokeCompletedUtc": "2026-09-11T02:24:03.589Z",
+      "commands": [
+        "node scripts/verify-tanner-site.mjs prepare",
+        "node scripts/verify-tanner-site.mjs build /tmp/redact-tanner-site-o4PN22",
+        "node scripts/verify-tanner-site.mjs worker-smoke /tmp/redact-tanner-site-o4PN22"
+      ],
+      "config": {
+        "preset": "nano",
+        "features": [
+          "hydration",
+          "context",
+          "suspense",
+          "classComponents",
+          "memo",
+          "forwardRef"
+        ],
+        "originalConfigSha256": "d8b0852270b743919a05c7819b22f4f19241680386b6fca0757b37eac7958ba8",
+        "isolatedConfigSha256": "9bb1026379c4833c18d1a4506f36e7ddb433572805b7a8c99a30148b56c54753",
+        "reactControl": null
+      },
+      "rendererSnapshot": {
+        "redactEnabled": true,
+        "redactDistSha256": "f92b0ce0d529588d4fe7963a886b7ac9dd13073afb87d6d44e3d358eaf1dff50",
+        "vitePluginSha256": "f0665834805725c71c6415e3d1a6a5409707e990082281487df8af1c09e12d3f",
+        "vitePluginSourceSha256": "f44eac90e74409931405434fabffe831fe49015061a5f90bda516a0beb2a016f",
+        "emittedServerMainSha256": "d7ba398131a95920f6300bac380476fab9e0049638153ed850d9b9509192d8d8",
+        "emittedClient": {
+          "sha256": "560d99ee382b0d8304192457afa0e047d6d3235868777d43abaa7438a01bccd3",
+          "fileCount": 29
+        },
+        "emittedServer": {
+          "sha256": "632f7490d06f85324e7740f3c70098ce060fc675a1902ad87b0f65c41fb85244",
+          "fileCount": 20
+        }
+      },
+      "build": {
+        "exitCode": 1,
+        "passed": false,
+        "clientAndServerCompilationPassed": true,
+        "transformedModules": [
+          182,
+          275
+        ],
+        "prerenderFailure": "Vite preview Worker startup reports an internal error, then prerender fails fetching / with HTTP 500.",
+        "log": {
+          "path": "/tmp/redact-tanner-site-o4PN22/artifacts/build.log",
+          "sha256": "c9ebf91c3005fe6d1d4e136499c28e06798d87c0515cb0b5ab18d384234832e3"
+        }
+      },
+      "worker": {
+        "adapter": "Installed Miniflare using the unchanged emitted Worker and a complete ESModule/CompiledWasm module list.",
+        "started": true,
+        "ssrPassed": true,
+        "routes": [
+          {
+            "path": "/",
+            "status": 200,
+            "expectedStatus": 200,
+            "passed": true
+          },
+          {
+            "path": "/posts",
+            "status": 200,
+            "expectedStatus": 200,
+            "passed": true
+          },
+          {
+            "path": "/posts/projecting-react",
+            "status": 200,
+            "expectedStatus": 200,
+            "passed": true
+          },
+          {
+            "path": "/about",
+            "status": 200,
+            "expectedStatus": 200,
+            "passed": true
+          },
+          {
+            "path": "/appearances",
+            "status": 200,
+            "expectedStatus": 200,
+            "passed": true
+          },
+          {
+            "path": "/appearances?type=talk",
+            "status": 200,
+            "expectedStatus": 200,
+            "passed": true
+          },
+          {
+            "path": "/feed.xml",
+            "status": 200,
+            "expectedStatus": 200,
+            "passed": true
+          },
+          {
+            "path": "/__redact_smoke_missing__",
+            "status": 404,
+            "expectedStatus": 404,
+            "passed": true
+          }
+        ],
+        "blockedOutbound": []
+      },
+      "browser": {
+        "strictSmokePassed": false,
+        "exitCode": 1,
+        "completed": [
+          "hydration, client post navigation, canonical and structured data",
+          "URL-backed appearance filters and browser history without document reload",
+          "theme context updates",
+          "About navigation and desktop/mobile rendering"
+        ],
+        "pageErrorCount": 0,
+        "consoleErrorCount": 0,
+        "mobileWidths": {
+          "viewport": 390,
+          "document": 454,
+          "body": 454,
+          "header": 454
+        },
+        "failure": "AssertionError [ERR_ASSERTION]: Mobile page overflows horizontally.",
+        "blockedRequestCount": 38
+      },
+      "artifacts": {
+        "manifest": {
+          "path": "/tmp/redact-tanner-site-o4PN22/manifest.json",
+          "sha256": "e185374350f44513cf26071b57d31d407a0aab77e8836396a3da3a49b8194b13"
+        },
+        "smoke": {
+          "path": "/tmp/redact-tanner-site-o4PN22/artifacts/worker-smoke.json",
+          "sha256": "03b9b4ea9c2101dc0bcede6dc36d75d5a3398c919ad35f0df006af86b2c92fd1"
+        },
+        "screenshots": [
+          {
+            "path": "/tmp/redact-tanner-site-o4PN22/artifacts/about-desktop.png",
+            "sha256": "a73a1617c88c42d2f6e8a77a40b4e5c38d353942429215a116ec2c53888b1e35"
+          },
+          {
+            "path": "/tmp/redact-tanner-site-o4PN22/artifacts/about-mobile.png",
+            "sha256": "df33becce5489fed8758b48389ff2fd282ed6fbd1cf01ee0ae8c5baaf0f9528f"
+          }
+        ]
+      }
+    }
+  ],
+  "resolvedRegression": {
+    "site": "tanstack.com",
+    "originalStage": "/tmp/redact-tanstack-site-qcLKdB",
+    "originalDistSha256": "60d71c57f8236b5865ac3ac929ccc4b9dfbbbc165aaad8509939b6dbb632ec55",
+    "originalSmokePassed": false,
+    "originalPageErrorCount": 16058,
+    "failure": "Repeated flushPending loop guards during initial /privacy hydration, before user interactions.",
+    "originalArtifact": {
+      "path": "/tmp/redact-tanstack-site-qcLKdB/artifacts/browser-result.json",
+      "sha256": "9401c74c90415fe2b94bd7709becec836c122816737ac106c28bceb9164ae298"
+    },
+    "publishedAndReactControlsPassed": true,
+    "postRefStateFixStage": "/tmp/redact-tanstack-site-2h95ew",
+    "postRefStateFixDistSha256": "e7877d8b9d2992d67046400dfd9f3cb90ac41ac0f78d33add5c95980692ccb76",
+    "postRefStateFixSmokePassed": true,
+    "regressionTest": "tests/state-ref-bailout.test.tsx",
+    "finalSmokePassed": true
+  },
+  "remainingFailures": [
+    {
+      "site": "tannerlinsley.com",
+      "kind": "Vite prerender adapter startup",
+      "reproducedOn": [
+        "final Redact 0.0.20",
+        "published Redact 0.0.12",
+        "React 19.2.5"
+      ],
+      "rootCauseUnresolved": true,
+      "emittedWorkerSmokeWorks": true,
+      "prerenderRequirementUnchanged": true
+    },
+    {
+      "site": "tannerlinsley.com",
+      "kind": "Mobile header overflow",
+      "reproducedOn": [
+        "final Redact 0.0.20",
+        "published Redact 0.0.12",
+        "React 19.2.5"
+      ],
+      "viewportWidth": 390,
+      "documentWidth": 454,
+      "bodyWidth": 454,
+      "headerWidth": 454,
+      "assertionRetained": true,
+      "appCssUnchanged": true
+    }
+  ],
+  "limits": [
+    "Only the listed public routes and anonymous interactions were tested. No authenticated flows, production database, OAuth, checkout, or write workflows.",
+    "External fonts, transformed images, remote blog data, analytics, and telemetry are outside this offline smoke. TanStack falls back to its local posts after the blocked external blog request.",
+    "Cloudflare production edge behavior and Tanner prerender completion are not established by direct local Worker execution.",
+    "Chrome only. No Safari, Firefox, real mobile devices, pixel-perfect visual comparison, or application performance claims.",
+    "React controls are the installed application versions, not the separate pinned React 19.3 parity fixture.",
+    "Detailed logs and screenshots remain in temporary directories. This ledger retains the key results, commands, and hashes if those directories are removed."
+  ],
+  "currentRunRole": "final-packaged",
+  "currentRunStages": [
+    "/tmp/redact-tanstack-site-3CGilU",
+    "/tmp/redact-tanner-site-o4PN22"
+  ],
+  "revisionHistory": [
+    {
+      "completedUtc": "2026-09-11T02:14:23.890Z",
+      "source": {
+        "repository": "/Users/tannerlinsley/GitHub/redact",
+        "head": "2e3c75c483365d26ae326ec0fdae96fa5c690451",
+        "includesUncommittedChanges": true,
+        "finalDistSha256": "eec96ceeffdaec9a250956d3aea146d728ee45fe1117b55cadc83219db9e9d20",
+        "vitePlugin": "packages/redact/dist/vite/index.js",
+        "vitePluginSha256": "9fb343b7775fc05d7f42174a1f56f3be1b55ea9d05401cc93ec4af85b0e38bc5",
+        "vitePluginSource": "packages/redact/src/vite/index.ts",
+        "vitePluginSourceSha256": "0deb3fa2a8ec206c8d5e411fdc884d7b14ec8fc18fd426fb68825904b2420b2d",
+        "treeHashMethod": "Visit directories recursively with each directory sorted by entry.name.localeCompare. Map relative file paths to SHA-256(file bytes) in insertion order. Hash JSON.stringify(map) with SHA-256. Used for frozen dist and emitted client/server trees."
+      },
+      "runCount": 6,
+      "note": "Pre-explicit-import packaged snapshot. All six original run records, controls, and failure evidence remain unchanged in runs and resolvedRegression."
+    }
+  ]
+}

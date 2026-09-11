@@ -4,17 +4,21 @@ import {
   REACT_FRAGMENT_TYPE,
   type ReactElement,
   type ReactNode,
+  type Ref,
 } from '../core'
+import type { FragmentInstance } from '../dom/fragment-instance'
 
 export const Fragment = REACT_FRAGMENT_TYPE as unknown as (props: {
   children?: ReactNode
+  key?: string | number
+  ref?: Ref<FragmentInstance>
 }) => ReactElement
 
 const RESERVED_PROPS: Record<string, 1> = { key: 1, ref: 1, __self: 1, __source: 1 }
 
 export function createElement(
   type: any,
-  config: Record<string, any> | null,
+  config?: Record<string, any> | null,
   ...children: ReactNode[]
 ): ReactElement {
   let key: string | null = null
@@ -46,7 +50,7 @@ export function createElement(
 
 export function cloneElement(
   element: ReactElement,
-  config: Record<string, any> | null,
+  config?: Record<string, any> | null,
   ...children: ReactNode[]
 ): ReactElement {
   let key = element.key

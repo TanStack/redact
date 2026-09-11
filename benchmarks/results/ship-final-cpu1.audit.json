@@ -1,0 +1,611 @@
+{
+  "result": "/Users/tannerlinsley/GitHub/redact/benchmarks/results/ship-final-cpu1.json",
+  "resultSHA256": "2795b77d717fce09259f731956469aa0ebd5dd671e449041a2e91d516d527043",
+  "verified": true,
+  "rebuilt": true,
+  "variants": [
+    "react",
+    "react-control",
+    "before-expansion",
+    "current",
+    "expanded",
+    "default-package"
+  ],
+  "sourceOverrides": {},
+  "blocks": 5,
+  "rounds": 5,
+  "workloads": 16,
+  "totals": {
+    "throughputSamples": 2400,
+    "throughputChecks": 348150,
+    "completedOperations": 192558450,
+    "interactionSamples": 720,
+    "interactionChecks": 1440,
+    "observedClickEntries": 719,
+    "memoryCycles": 90
+  },
+  "reconstructed": {
+    "current": {
+      "tree": "src",
+      "sourceSHA256": "8b5494985547768942ff775fc027afa6e1a131b014598f312730491dd07676fc",
+      "files": 83,
+      "patchSHA256": "a9a9f3db9633635743e75a9d562b6433527a2bdddc180212963ee8fbd6c85bce",
+      "sourcePackageSHA256": "f445c60555e60ebdf03e2d9f0220e65bd71a7095084bdd7979e6678f22c9ccca",
+      "reconstructedPackageSHA256": "52ed9f994784c6d3cf505322748a6e9b27a7b2cca2c54df037992bfb1218a353",
+      "packageByteIdentical": false
+    },
+    "expanded": {
+      "tree": "src",
+      "sourceSHA256": "3a6a684608a0a1c05bb7038200341beb3355374cf23a7bea3c9f701314d31ba8",
+      "files": 83,
+      "patchSHA256": "5484157173fc71e19e7d21713ab33337fab0610c049327c3e3d22515071a674b",
+      "sourcePackageSHA256": "52ed9f994784c6d3cf505322748a6e9b27a7b2cca2c54df037992bfb1218a353",
+      "reconstructedPackageSHA256": "52ed9f994784c6d3cf505322748a6e9b27a7b2cca2c54df037992bfb1218a353",
+      "packageByteIdentical": true
+    },
+    "default-package": {
+      "tree": "dist",
+      "sourceSHA256": "90dfba272930321461854b2ae943b594ee5ea1bc16e5c3566202023936743cac",
+      "files": 249,
+      "patchSHA256": "c92afbb94c2d046a6a0423a474719b512ff857d0ac5c8cf39f8dc43aaca6ae35",
+      "sourcePackageSHA256": "f445c60555e60ebdf03e2d9f0220e65bd71a7095084bdd7979e6678f22c9ccca",
+      "reconstructedPackageSHA256": "52ed9f994784c6d3cf505322748a6e9b27a7b2cca2c54df037992bfb1218a353",
+      "packageByteIdentical": false
+    },
+    "before-expansion": {
+      "tree": "src",
+      "sourceSHA256": "03fa225789e6f7f54a72978fc3b0205b62fd304a2d7874e60bfda51d8ba8ea43",
+      "files": 75,
+      "patchSHA256": "291b859d4c005fb6f96c65e76bc22e3954aa612c750593fb19b2a4e1289bda64",
+      "sourcePackageSHA256": "52ed9f994784c6d3cf505322748a6e9b27a7b2cca2c54df037992bfb1218a353",
+      "reconstructedPackageSHA256": "52ed9f994784c6d3cf505322748a6e9b27a7b2cca2c54df037992bfb1218a353",
+      "packageByteIdentical": true
+    }
+  },
+  "comparisons": {
+    "passive-effects": {
+      "react": {
+        "pairedTimeChangePercent": 27.80373785962016,
+        "blockBootstrap95CI": [
+          22.93814460387935,
+          29.72350226554097
+        ],
+        "independentBlocks": 5
+      },
+      "before-expansion": {
+        "pairedTimeChangePercent": 7.942973471006898,
+        "blockBootstrap95CI": [
+          7.572815487685713,
+          13.052208847838909
+        ],
+        "independentBlocks": 5
+      },
+      "expanded": {
+        "pairedTimeChangePercent": -12.933754375027927,
+        "blockBootstrap95CI": [
+          -13.122923366005146,
+          -12.658228003296824
+        ],
+        "independentBlocks": 5
+      },
+      "default-package": {
+        "pairedTimeChangePercent": 0.9225092242806543,
+        "blockBootstrap95CI": [
+          -1.5065910255061987,
+          1.838235294923285
+        ],
+        "independentBlocks": 5
+      }
+    },
+    "controlled-selects": {
+      "react": {
+        "pairedTimeChangePercent": -7.3053892501100055,
+        "blockBootstrap95CI": [
+          -9.851694993511018,
+          -5.166846021042149
+        ],
+        "independentBlocks": 5
+      },
+      "before-expansion": {
+        "pairedTimeChangePercent": 2.3809523171278046,
+        "blockBootstrap95CI": [
+          0.7863696254480024,
+          3.567181925266971
+        ],
+        "independentBlocks": 5
+      },
+      "expanded": {
+        "pairedTimeChangePercent": -0.33821879522468734,
+        "blockBootstrap95CI": [
+          -0.7882882081647669,
+          0.130208364458273
+        ],
+        "independentBlocks": 5
+      },
+      "default-package": {
+        "pairedTimeChangePercent": 0.12953355514353504,
+        "blockBootstrap95CI": [
+          -0.12987016083357839,
+          0.7990866761231841
+        ],
+        "independentBlocks": 5
+      }
+    },
+    "deep-tree-props": {
+      "react": {
+        "pairedTimeChangePercent": -21.814254804835986,
+        "blockBootstrap95CI": [
+          -23.541887528844196,
+          -8.020698631237854
+        ],
+        "independentBlocks": 5
+      },
+      "before-expansion": {
+        "pairedTimeChangePercent": 5.646359507099108,
+        "blockBootstrap95CI": [
+          3.443328514370503,
+          13.685847314647148
+        ],
+        "independentBlocks": 5
+      },
+      "expanded": {
+        "pairedTimeChangePercent": -25.65997894328399,
+        "blockBootstrap95CI": [
+          -27.060133591558532,
+          -24.922118361551725
+        ],
+        "independentBlocks": 5
+      },
+      "default-package": {
+        "pairedTimeChangePercent": 0,
+        "blockBootstrap95CI": [
+          -0.416088700018169,
+          0.3081664834471365
+        ],
+        "independentBlocks": 5
+      }
+    },
+    "mount-unmount": {
+      "react": {
+        "pairedTimeChangePercent": 7.53512145461106,
+        "blockBootstrap95CI": [
+          5.680473457426705,
+          9.102244486329191
+        ],
+        "independentBlocks": 5
+      },
+      "before-expansion": {
+        "pairedTimeChangePercent": 2.5851940885528,
+        "blockBootstrap95CI": [
+          -0.4550625441031131,
+          4.06504064928086
+        ],
+        "independentBlocks": 5
+      },
+      "expanded": {
+        "pairedTimeChangePercent": -0.5694759465401544,
+        "blockBootstrap95CI": [
+          -1.3143483552140678,
+          0.4459308538968809
+        ],
+        "independentBlocks": 5
+      },
+      "default-package": {
+        "pairedTimeChangePercent": -0.2214839953370129,
+        "blockBootstrap95CI": [
+          -0.6674081254635089,
+          0.3325943145936483
+        ],
+        "independentBlocks": 5
+      }
+    },
+    "stable-keyed-rows": {
+      "react": {
+        "pairedTimeChangePercent": -0.3567179945864307,
+        "blockBootstrap95CI": [
+          -5.683060161402964,
+          1.6686532726642112
+        ],
+        "independentBlocks": 5
+      },
+      "before-expansion": {
+        "pairedTimeChangePercent": 2.319902437021426,
+        "blockBootstrap95CI": [
+          0.4711426330739288,
+          2.7912622235328532
+        ],
+        "independentBlocks": 5
+      },
+      "expanded": {
+        "pairedTimeChangePercent": -0.44893375598908936,
+        "blockBootstrap95CI": [
+          -0.8225617479290293,
+          -0.11574076836742275
+        ],
+        "independentBlocks": 5
+      },
+      "default-package": {
+        "pairedTimeChangePercent": -0.11086463937013402,
+        "blockBootstrap95CI": [
+          -0.46029916716672226,
+          0.356294479983843
+        ],
+        "independentBlocks": 5
+      }
+    },
+    "mixed-depth-setters": {
+      "react": {
+        "pairedTimeChangePercent": -59.97566915197925,
+        "blockBootstrap95CI": [
+          -62.5358577336887,
+          -55.512572540687714
+        ],
+        "independentBlocks": 5
+      },
+      "before-expansion": {
+        "pairedTimeChangePercent": 1.7211703951628854,
+        "blockBootstrap95CI": [
+          0.450450557684956,
+          2.9585798806133434
+        ],
+        "independentBlocks": 5
+      },
+      "expanded": {
+        "pairedTimeChangePercent": -9.179415891558273,
+        "blockBootstrap95CI": [
+          -9.345794539781638,
+          -8.900523500573732
+        ],
+        "independentBlocks": 5
+      },
+      "default-package": {
+        "pairedTimeChangePercent": -0.3039512592999394,
+        "blockBootstrap95CI": [
+          -6.041335557653593,
+          0
+        ],
+        "independentBlocks": 5
+      }
+    },
+    "jsx-props-updates": {
+      "react": {
+        "pairedTimeChangePercent": -3.5799521270856394,
+        "blockBootstrap95CI": [
+          -5.363528145523522,
+          -3.0674846625766916
+        ],
+        "independentBlocks": 5
+      },
+      "before-expansion": {
+        "pairedTimeChangePercent": -0.24813901690391438,
+        "blockBootstrap95CI": [
+          -0.7434946006153909,
+          0.9020619168410349
+        ],
+        "independentBlocks": 5
+      },
+      "expanded": {
+        "pairedTimeChangePercent": 0.253807015600116,
+        "blockBootstrap95CI": [
+          -0.8985879947342235,
+          1.756587021469569
+        ],
+        "independentBlocks": 5
+      },
+      "default-package": {
+        "pairedTimeChangePercent": 0.24813901690390328,
+        "blockBootstrap95CI": [
+          -0.8663368394472237,
+          0.620347395274945
+        ],
+        "independentBlocks": 5
+      }
+    },
+    "context-through-memo": {
+      "react": {
+        "pairedTimeChangePercent": -30.000000000000004,
+        "blockBootstrap95CI": [
+          -31.64794004438877,
+          -28.112840540135764
+        ],
+        "independentBlocks": 5
+      },
+      "before-expansion": {
+        "pairedTimeChangePercent": 2.341597696854203,
+        "blockBootstrap95CI": [
+          1.3850413852219745,
+          5.120910243200294
+        ],
+        "independentBlocks": 5
+      },
+      "expanded": {
+        "pairedTimeChangePercent": -13.814181004455872,
+        "blockBootstrap95CI": [
+          -16.009280816579764,
+          -12.65356259868935
+        ],
+        "independentBlocks": 5
+      },
+      "default-package": {
+        "pairedTimeChangePercent": -1.2211670214180903,
+        "blockBootstrap95CI": [
+          -2.083333333333337,
+          0.5398111955225771
+        ],
+        "independentBlocks": 5
+      }
+    },
+    "jsx-stable-keyed-rows": {
+      "react": {
+        "pairedTimeChangePercent": -13.047808791785553,
+        "blockBootstrap95CI": [
+          -16.110019728727554,
+          -4.714912232114754
+        ],
+        "independentBlocks": 5
+      },
+      "before-expansion": {
+        "pairedTimeChangePercent": 2.8402366581753213,
+        "blockBootstrap95CI": [
+          1.4251782051105444,
+          3.187721283299183
+        ],
+        "independentBlocks": 5
+      },
+      "expanded": {
+        "pairedTimeChangePercent": -0.7972665684663593,
+        "blockBootstrap95CI": [
+          -2.7522935528976333,
+          0.11507482608663633
+        ],
+        "independentBlocks": 5
+      },
+      "default-package": {
+        "pairedTimeChangePercent": -0.3412968741725364,
+        "blockBootstrap95CI": [
+          -1.8497110102217995,
+          0.2306805626859365
+        ],
+        "independentBlocks": 5
+      }
+    },
+    "browser-ssr": {
+      "react": {
+        "pairedTimeChangePercent": 10.775295566235732,
+        "blockBootstrap95CI": [
+          9.247027735258495,
+          20.703653528081766
+        ],
+        "independentBlocks": 5
+      },
+      "before-expansion": {
+        "pairedTimeChangePercent": 2.0807834139192183,
+        "blockBootstrap95CI": [
+          1.8427518432915901,
+          2.3945269609622066
+        ],
+        "independentBlocks": 5
+      },
+      "expanded": {
+        "pairedTimeChangePercent": 0.3571428003765309,
+        "blockBootstrap95CI": [
+          -0.23228795435069616,
+          0.9523810375304365
+        ],
+        "independentBlocks": 5
+      },
+      "default-package": {
+        "pairedTimeChangePercent": -0.11933162850772394,
+        "blockBootstrap95CI": [
+          -1.6759776536312887,
+          0.12210015124660689
+        ],
+        "independentBlocks": 5
+      }
+    },
+    "props-updates": {
+      "react": {
+        "pairedTimeChangePercent": -2.063106709910567,
+        "blockBootstrap95CI": [
+          -2.351485116926022,
+          -0.9815950335169132
+        ],
+        "independentBlocks": 5
+      },
+      "before-expansion": {
+        "pairedTimeChangePercent": 0.37313441743100917,
+        "blockBootstrap95CI": [
+          -2.0706454694873866,
+          2.2900764261826634
+        ],
+        "independentBlocks": 5
+      },
+      "expanded": {
+        "pairedTimeChangePercent": 0.12886585644567017,
+        "blockBootstrap95CI": [
+          -0.49566306707692354,
+          1.5151515744459942
+        ],
+        "independentBlocks": 5
+      },
+      "default-package": {
+        "pairedTimeChangePercent": 0.2503128016697165,
+        "blockBootstrap95CI": [
+          -1.107011186439899,
+          1.254705294989611
+        ],
+        "independentBlocks": 5
+      }
+    },
+    "keyed-reverse": {
+      "react": {
+        "pairedTimeChangePercent": -30.3797468677678,
+        "blockBootstrap95CI": [
+          -31.226053634159356,
+          -30.048780441284183
+        ],
+        "independentBlocks": 5
+      },
+      "before-expansion": {
+        "pairedTimeChangePercent": 0.9817670796244293,
+        "blockBootstrap95CI": [
+          0.2873565620216345,
+          1.2658227508528075
+        ],
+        "independentBlocks": 5
+      },
+      "expanded": {
+        "pairedTimeChangePercent": -0.554784987553214,
+        "blockBootstrap95CI": [
+          -0.8287291503178862,
+          -0.27700821145784094
+        ],
+        "independentBlocks": 5
+      },
+      "default-package": {
+        "pairedTimeChangePercent": -0.1402524879505429,
+        "blockBootstrap95CI": [
+          -0.7112375526191816,
+          0.27816418324067005
+        ],
+        "independentBlocks": 5
+      }
+    },
+    "null-siblings": {
+      "react": {
+        "pairedTimeChangePercent": -14.093959761971053,
+        "blockBootstrap95CI": [
+          -15.911485803620074,
+          -11.148272144808669
+        ],
+        "independentBlocks": 5
+      },
+      "before-expansion": {
+        "pairedTimeChangePercent": 3.7889040222312875,
+        "blockBootstrap95CI": [
+          2.8350517649442297,
+          4.862023714224062
+        ],
+        "independentBlocks": 5
+      },
+      "expanded": {
+        "pairedTimeChangePercent": -15.435501645688843,
+        "blockBootstrap95CI": [
+          -15.772870658506266,
+          -14.834578536065901
+        ],
+        "independentBlocks": 5
+      },
+      "default-package": {
+        "pairedTimeChangePercent": 0.1254703946960367,
+        "blockBootstrap95CI": [
+          -0.6265664154785022,
+          0.7537688739474246
+        ],
+        "independentBlocks": 5
+      }
+    },
+    "hydration": {
+      "react": {
+        "pairedTimeChangePercent": 24.90788572130147,
+        "blockBootstrap95CI": [
+          22.015183757242053,
+          26.055313735470587
+        ],
+        "independentBlocks": 5
+      },
+      "before-expansion": {
+        "pairedTimeChangePercent": 5.266344027732983,
+        "blockBootstrap95CI": [
+          4.3373509374995844,
+          6.928264419647623
+        ],
+        "independentBlocks": 5
+      },
+      "expanded": {
+        "pairedTimeChangePercent": -0.3914985084347622,
+        "blockBootstrap95CI": [
+          -1.6250722405352969,
+          2.7729637108391048
+        ],
+        "independentBlocks": 5
+      },
+      "default-package": {
+        "pairedTimeChangePercent": -0.7692303661562483,
+        "blockBootstrap95CI": [
+          -1.3053356259187465,
+          2.5448233134925946
+        ],
+        "independentBlocks": 5
+      }
+    },
+    "batched-setters": {
+      "react": {
+        "pairedTimeChangePercent": -18.212290582710132,
+        "blockBootstrap95CI": [
+          -18.48225218734565,
+          -17.13286719796422
+        ],
+        "independentBlocks": 5
+      },
+      "before-expansion": {
+        "pairedTimeChangePercent": 6.756756575345002,
+        "blockBootstrap95CI": [
+          5.660377206419853,
+          7.636887713755547
+        ],
+        "independentBlocks": 5
+      },
+      "expanded": {
+        "pairedTimeChangePercent": -16.666666572727117,
+        "blockBootstrap95CI": [
+          -17.79975275698632,
+          -15.593220285103149
+        ],
+        "independentBlocks": 5
+      },
+      "default-package": {
+        "pairedTimeChangePercent": 1.6620497613322627,
+        "blockBootstrap95CI": [
+          1.1461319084127286,
+          2.188782521641608
+        ],
+        "independentBlocks": 5
+      }
+    },
+    "sparse-setters": {
+      "react": {
+        "pairedTimeChangePercent": -71.48106275021,
+        "blockBootstrap95CI": [
+          -72.40476883316738,
+          -70.34790935515565
+        ],
+        "independentBlocks": 5
+      },
+      "before-expansion": {
+        "pairedTimeChangePercent": 6.6027689555462565,
+        "blockBootstrap95CI": [
+          6.050605062093051,
+          7.249466903809276
+        ],
+        "independentBlocks": 5
+      },
+      "expanded": {
+        "pairedTimeChangePercent": -16.756272440581277,
+        "blockBootstrap95CI": [
+          -17.34527684086902,
+          -15.812337136328203
+        ],
+        "independentBlocks": 5
+      },
+      "default-package": {
+        "pairedTimeChangePercent": 0.3198295007228902,
+        "blockBootstrap95CI": [
+          -1.0000000000000009,
+          1.4613777201498923
+        ],
+        "independentBlocks": 5
+      }
+    }
+  }
+}

@@ -24,7 +24,7 @@ export class HydrationCursor {
   }
 }
 
-export type BoundaryInfo = [0 | 1, number, Comment, Comment]
+export type BoundaryInfo = [0 | 1 | 2 | 3, number, Comment, Comment]
 
 export function beginHydration(_root: FiberRoot): void {
   throw new Error(

@@ -1,4 +1,4 @@
-import type { Fiber, Hook } from '../core'
+import type { Fiber } from '../core'
 
 export interface Dispatcher {
   useState<S>(initial: S | (() => S)): [S, (s: S | ((p: S) => S)) => void]
@@ -25,13 +25,14 @@ export interface Dispatcher {
     getServerSnapshot?: () => T,
   ): T
   use<T>(promiseOrContext: any): T
+  useCacheRefresh(): () => void
 }
 
 interface SharedInternals {
   H: Dispatcher | null
   F: Fiber | null
-  K: Hook | null
   I: number
+  T?: Set<string> | null | undefined
 }
 
 // Stash the singleton on `globalThis` under a registered symbol. Module-scoped
@@ -52,7 +53,6 @@ export const ReactSharedInternals: SharedInternals =
   (g[KEY] = {
     H: null,
     F: null,
-    K: null,
     I: 0,
   })
 

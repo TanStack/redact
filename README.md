@@ -1,20 +1,15 @@
 # redact
 
-**React, redacted.** A minimal React-19-API-compatible drop-in replacement, **~4× smaller** than canonical React. Shipped as a single `@tanstack/redact` package with subpath exports for the `react` / `react-dom` / `react-dom/server` / `scheduler` / `react/jsx-runtime` shapes. User code keeps its canonical `import { useState } from 'react'` — the swap happens at the bundler level.
+**React, redacted.** A small React-compatible runtime with synchronous rendering. One Vite plugin replaces the React, DOM, server, scheduler, and JSX entrypoints. Your application's imports stay unchanged.
 
-- **10.03 KB** gzip at full drop-in parity (vs ~45 KB for React 19)
-- **7.49 KB** gzip with every opt-in feature stubbed (`nano` preset)
-- **731/731** unit + integration tests passing, SSR + streaming Suspense + hydration included
-- Running in production on [tanstack.com](https://tanstack.com) as of 2026-04-20
+The goal is React's APIs and everyday behavior without concurrent scheduling, not a different component model. The intentional differences are in the [compatibility table](#compatibility).
 
-For background on the motivation, the "projection" framing, the architectural approach, and the production performance results, see the blog post: [Projecting React](https://tannerlinsley.com/posts/projecting-react).
-
----
+These APIs are included in Redact 0.1.0. Comparisons use pinned React 19.3.0 and were recorded September 11, 2026. The benchmark reports retain the exact measured source snapshots and build inputs.
 
 ## Quick start
 
 ```bash
-pnpm add @tanstack/redact@next
+pnpm add @tanstack/redact
 ```
 
 ```ts
@@ -27,434 +22,180 @@ export default defineConfig({
 })
 ```
 
-That's it. The plugin aliases `react` / `react-dom` / `scheduler` across Vite's client + ssr environments. The RSC environment is skipped so `@vitejs/plugin-rsc` keeps using real React for Flight serialization. User-facing imports are unchanged:
+Keep importing from React:
 
 ```ts
 import { useState, Suspense } from 'react'
 import { createRoot, hydrateRoot } from 'react-dom/client'
 ```
 
-### Shrink further with feature flags
+The plugin handles client and SSR builds. It leaves the RSC environment on real React so `@vitejs/plugin-rsc` can keep owning Server Component serialization.
 
-Two presets — pick a starting point, flip flags from there:
+## Bundle size
 
-```ts
-redact({ preset: 'full' })        // 10.03 KB — everything on, opt OUT individual features
-redact({ preset: 'nano' })        // 7.49 KB — everything off, opt IN what you need
-```
+Production ESM bundles retaining all exports from the React, JSX, DOM, and DOM-client entries:
 
-Opt out from `full`:
+| Runtime | Gzip bytes | Compared with React |
+|---|---:|---:|
+| React 19.3.0 | 69,162 | Reference |
+| Redact, default Vite configuration | 23,311 | 66.3% smaller |
+| Redact, native animation enabled | 28,159 | 59.3% smaller |
 
-```ts
-redact({
-  preset: 'full',
-  features: {
-    hydration: false,                  // SPA only — no SSR
-    classComponents: false,            // function components only
-  },
-})
-```
+These are runtime bundles, not whole applications. Redact is measured from the [0.1.0 release build](./benchmarks/results/release-0.1.0-sizes.json). Real apps tree-shake differently, and the runtimes have different scheduling capabilities.
 
-Opt in from `nano`:
+Standalone Redact entries, measured separately:
 
-```ts
-redact({
-  preset: 'nano',
-  features: {
-    context: true,                     // bring back just what you need
-    suspense: true,
-  },
-})
-```
+| Entry / configuration | Gzip bytes |
+|---|---:|
+| DOM client, default Vite features | 20,139 |
+| DOM client, native animation enabled | 24,991 |
+| DOM client, `nano` preset | 12,466 |
+| React API entry | 2,764 |
+| Server entry | 8,964 |
 
-Full feature matrix and alternative configuration paths below.
+These entries overlap, so their sizes are not additive. `nano` removes behavior and is not a full-compatibility preset. The expanded API surface is larger than earlier Redact, not a size reduction over previous releases. [Exact configurations, inputs, and historical comparisons](./benchmarks/SHIP_RESULTS.md#size).
 
----
+## Performance
+
+Production microbenchmarks on an Apple M5 Pro, Chrome 152, without CPU throttling: five fresh-browser blocks, five rounds each. Redact uses the built package with default Vite features. Synchronous flushes ensure updates complete before timing stops.
+
+These timings use the frozen pre-release snapshot, before the final hydration-recovery cleanup was merged from 0.0.21. That cleanup passed the release tests; the timing experiments were not repeated.
+
+Times are median averages per completed workload batch in **milliseconds**, not per component. Negative percentages mean less time. Percentages use paired measurements, not division of the rounded medians.
+
+| Browser workload | React ms | Redact ms | Redact time vs React |
+|---|---:|---:|---:|
+| Sparse state updates | 0.009 | 0.002 | -71.9% |
+| Mixed-depth state updates | 0.227 | 0.093 | -59.1% |
+| Keyed list reversal | 0.161 | 0.112 | -30.3% |
+| Context through memo | 0.073 | 0.052 | -29.1% |
+| Deep-tree prop updates | 0.012 | 0.010 | -22.4% |
+| Batched state updates | 0.050 | 0.041 | -19.7% |
+| Null-heavy child lists | 0.094 | 0.083 | -14.2% |
+| Stable keyed rows, automatic JSX | 0.050 | 0.043 | -11.6% |
+| Controlled selects | 0.142 | 0.132 | -7.6% |
+| Prop updates, automatic JSX | 0.237 | 0.226 | -3.8% |
+| Prop updates, classic JSX | 0.249 | 0.243 | -2.3% |
+| Stable keyed rows, classic JSX | 0.045 | 0.046 | No clear difference |
+| Mount and unmount | 0.149 | 0.162 | +7.5% |
+| Reducer batches | 0.051 | 0.055 | +7.9% |
+| String SSR in the browser | 0.038 | 0.043 | +10.4% |
+| Hydration | 0.182 | 0.227 | +21.4% |
+| Passive effects | 0.024 | 0.032 | +27.0% |
+| Reducer updates under Suspense | 0.051 | 0.076 | +49.6% |
+| Suspense retry cycles | 0.117 | 0.268 | +124.8% |
+
+The largest ratio, Suspense retries, is about **0.15 ms of extra work per cycle** here. A cycle covers 96 components, 192 reducer actions, hiding, retrying, revealing, and shared correctness checks. It does not mean interactions feel 2.25 times slower. Larger trees, repeated retries, and slower devices can make the difference matter.
+
+### Server rendering
+
+Separate Node 24 measurements use production source bundles, five fresh-process blocks, and the same checked output. They exclude package startup, network latency, and streaming waterfalls.
+
+| Server workload | React ms | Redact ms | Redact time vs React |
+|---|---:|---:|---:|
+| Fully-ready readable stream | 0.175 | 0.088 | -49.4% |
+| String SSR with hooks/context | 0.076 | 0.053 | -30.5% |
+| String SSR, clean text | 0.057 | 0.053 | -6.9% |
+| String SSR, escaped text | 0.126 | 0.124 | No clear difference |
+
+### Interactions and memory
+
+Separate 2,400-row fixtures use normal scheduling for clicks and forced garbage collection for retained heap:
+
+| Measurement | React | Redact, default |
+|---|---:|---:|
+| Click handler to committed DOM, median / p95 | 1.5 / 1.6 ms | 1.2 / 1.3 ms |
+| Mounted retained JS heap, median | 666.4 KiB | 762.5 KiB |
+| Extra DOM nodes after final unmount | 0 | 0 |
+
+Handler-to-commit is not paint latency or field INP; retained heap is not allocation rate or proof of no leaks. Observed click durations were browser-rounded to 16 ms for both; one Redact event entry was absent, not zero.
+
+An identical-React control measured 0.5% median absolute variation across browser workloads, with wider uncertainty in some cases. Small differences need caution. These results do not establish whole-app speedups, behavior under concurrent input, or mobile/Safari/Firefox performance. [All intervals and measurements](./benchmarks/SHIP_MEASUREMENTS.md), [independent audit](./benchmarks/SHIP_AUDIT.md).
+
+## Compatibility
+
+This is the default Vite configuration. API availability is not a promise of every React behavior, especially concurrent behavior.
+
+| Area | Redact behavior |
+|---|---|
+| Core rendering | JSX, hooks (including `use`, `useEffectEvent`, `useId`, and `useSyncExternalStore`), context, refs, memo, lazy, portals, error boundaries, and modern class lifecycles. Legacy class lifecycles are no-ops. |
+| DOM and forms | Controlled inputs, reset defaults, event handling, and preservation of edits during hydration have shared React tests. |
+| Suspense and hydration | Fallbacks, retained primary DOM, retries, streaming boundaries, and event replay. No priority scheduling. |
+| `Activity` | Retains hidden DOM/state and disconnects effects, refs, and subscriptions. Insertion effects stay connected. Hidden work is synchronous, not background priority. |
+| Fragment refs | Stable DOM instances with events, focus, geometry, observers, scrolling, and portal/visibility tracking. |
+| Transitions | `useTransition` / `startTransition` run work synchronously. Pending stays false; `useDeferredValue` returns its input. No time slicing or interruptible renders. |
+| `useActionState` | Returns the initial state, a no-op dispatch, and `false`. It does not run the action. |
+| `useOptimistic`, `useFormStatus` | No optimistic overlay; the optimistic setter is a no-op. Form status stays idle. |
+| View transitions | `ViewTransition` preserves state; `addTransitionType` does not animate by default. Native snapshots/styles/callbacks are experimental and opt-in. Animated commits wait for the browser snapshot callback, without a concurrent scheduler. |
+| Browser-only rendering | `browser()` requests a server-to-client Suspense fallback; `onBrowserBailout` reports it separately from errors. `use(browser())` returns `undefined` on the client. |
+| Resource APIs | Preload/preinit/preconnect/DNS hints and declarative styles/scripts, with document/ShadowRoot ownership and streamed stylesheet coverage. |
+| SSR | `renderToString`, `renderToStaticMarkup`, readable and pipeable streams. Full Fizz prerender/resume APIs are not implemented. |
+| Caching | `cache` returns its function, `cacheSignal` returns `null`, and `unstable_useCacheRefresh` is a stable client no-op. Invoking a server refresh throws. Client/DOM-server rendering is uncached. |
+| React Compiler | The `react/compiler-runtime` memo-cache entrypoint is implemented and aliased. This is not validation of every compiler output pattern. |
+| Server Components / Flight | Kept on upstream React in the RSC environment, not reimplemented by Redact. |
+| Debugging | `StrictMode` / `Profiler` render children without double invocation or profiling. `useDebugValue` is a no-op. React DevTools and Fast Refresh internals are not implemented. |
+
+Native animation is not exhaustive visual parity. Production animation, hidden-tab behavior, broader resource/navigation races, and Safari/Firefox remain unverified. [API details](./docs/REACT_19_3_SUPPORT.md), [upstream audit](./docs/REACT_19_3_AUDIT.md), [native animation limits](./docs/VIEW_TRANSITION_EXPERIMENT.md).
 
 ## Feature flags
 
-### Feature matrix
-
-| Flag | Full behavior | Stub behavior (when `false`) | Savings (gzip) |
-|---|---|---|---:|
-| `portal` | `createPortal` into alt container | Children render in place, `container` ignored | ~30 B |
-| `context` | Provider push/pop + consumer walk | Provider → Fragment; `useContext` returns default | ~80 B |
-| `suspense` | Boundary + fallback + streaming hydration, DOM-preserving re-suspension | Suspense → Fragment; thenables retry on settle | **~820 B** |
-| `memo` | `shallowEqual` prop-equality gate | Passes through every parent render | ~80 B |
-| `forwardRef` | Ref forwarded to inner fn | Ref dropped (React 19 "refs as props" still works) | ~70 B |
-| `lazy` | Full hydration coordination | Sync-resolvable payloads work; async retries on settle | ~20 B |
-| `classComponents` | Full lifecycle + `contextType` + error boundaries | `constructor` + `render` + `setState` only | ~200 B |
-| `hydration` | SSR DOM adoption, streaming boundaries, scroll guard, event replay | `hydrateRoot` throws; use `createRoot` for SPA | **~1310 B** |
-
-**Always on** (irreducible core, ~7.5 KB gzip): fiber reconciler with keyed child diffing, host DOM mount/update, `useState` / `useReducer` / `useEffect` / `useLayoutEffect` / `useInsertionEffect` / `useRef` / `useMemo` / `useCallback` / `useId` / `useSyncExternalStore` / `use` (for thenables), native event binding, Fragments, StrictMode/Profiler (aliased to Fragment), element creation + JSX runtime.
-
-### Presets
-
-| Preset | What's on | `react-dom/client` gzip | Intent |
-|---|---|---:|---|
-| `full` (default) | all 8 features | **10.03 KB** | Drop-in React — opt OUT individual features you don't need |
-| **`nano`** | none | **7.49 KB** | Start minimal — opt IN individual features you need |
-
-Two presets, not a spectrum: every app either wants most of React (start from `full`, opt out) or a tight bundle (start from `nano`, opt in). Per-feature overrides merge on top of preset defaults either way.
-
----
-
-## Configuration
-
-Four ways to configure, depending on your bundler and ergonomics preference.
-
-### 1. Vite plugin (recommended)
-
-`@tanstack/redact/vite`'s `redact()` plugin. Covered in [Quick start](#quick-start) above. Full options:
+`redact()` uses the `full` preset: all optional features enabled **except native animation**. Turn off only behavior your app does not need:
 
 ```ts
-interface RedactOptions {
-  preset?: 'nano' | 'full'                         // default: 'full'
-  features?: {
-    portal?: boolean
-    context?: boolean
-    suspense?: boolean
-    memo?: boolean
-    forwardRef?: boolean
-    lazy?: boolean
-    classComponents?: boolean
-    hydration?: boolean
-  }
-  skip?: ReadonlyArray<string>                     // don't alias these specifiers
-  resolveFrom?: string                             // override package resolution root
-  packageRoots?: Record<string, string>            // explicit package paths
-}
+redact({ features: { hydration: false, classComponents: false } })
+redact({ features: { viewTransitions: true } }) // experimental animation
+redact({ preset: 'nano', features: { context: true } })
 ```
 
-The plugin also handles Vite-specific wiring: `optimizeDeps.exclude` for the shim packages, `ssr.noExternal` so SSR bundles inline them, and an `enforce: 'pre'` hook ordering so the alias wins over other resolvers.
+`nano` starts with every optional feature off. Overrides merge with the preset. Feature savings overlap and are not additive.
 
-### 2. Bundler aliases (Webpack / Rollup / esbuild / …)
+<details>
+<summary>What each disabled feature removes</summary>
 
-The package exposes every feature module as a `./features/*` subpath export. Any bundler with a path-alias feature can redirect a feature's `index` to its `stub` to opt the feature out of the bundle.
+| Flag | Behavior when `false` |
+|---|---|
+| `activity` | Hidden children unmount and lose state. |
+| `fragmentRefs` | No Fragment DOM instance. |
+| `viewTransitions` | No native snapshots or animation callbacks; the boundary retains state. |
+| `portal` | Children render in place, not into the target container. |
+| `context` | Providers do not propagate values; reads return the default. |
+| `suspense` | No fallback UI; thrown thenables still retry on settlement. |
+| `memo` | No prop-equality bailout. |
+| `forwardRef` | No wrapper forwarding; ordinary ref props still work. |
+| `lazy` | Only already-synchronous payloads resolve. |
+| `classComponents` | Constructor, render, and setState only; no lifecycles or error boundaries. |
+| `hydration` | `hydrateRoot` throws; use `createRoot`. |
 
-**Subpath layout:**
+</details>
 
-```
-@tanstack/redact/features/
-  portal/ context/ suspense/ memo/ forward-ref/ lazy/ class/ hydration/
-    index    ← re-exports from ./full by default
-    full     ← real implementation
-    stub     ← graceful degradation
-```
+## Verification
 
-**Webpack example (stubs hydration + suspense):**
+`pnpm test:ci` passes 1,564 tests, type checking, the built-package verifier, and all 19 source/dist size budgets. The 91 ordinary-suite skips are not passes. Native Node import order, NodeNext declarations, development/production behavior, and actual Vite feature selection are checked.
 
-```js
-// webpack.config.js
-module.exports = {
-  resolve: {
-    alias: {
-      '@tanstack/redact/features/hydration/index':
-        '@tanstack/redact/features/hydration/stub',
-      '@tanstack/redact/features/suspense/index':
-        '@tanstack/redact/features/suspense/stub',
-    },
-  },
-}
-```
+The separate Chrome gate passes 1,266 case executions across Redact and React, including repeated suites/motion modes, not 1,266 unique behaviors. Seven declared exclusions remain: six Node-only stream executions and one known React Activity hydration failure. [Chrome ledger](./benchmarks/SHIP_CHROME_FINAL.md).
 
-**Rollup:**
+| Real app | Final packaged Redact result |
+|---|---|
+| tanstack.com | Production build, 5 Worker SSR routes, navigation/history, controls, portals, and narrow-screen interactions pass with no browser errors. |
+| tannerlinsley.com | 8 Worker SSR routes and browser interactions pass with no browser errors. Prerender startup and mobile overflow still fail, also with published Redact and React controls. |
 
-```js
-import alias from '@rollup/plugin-alias'
+These are local integration checks, not deployed production or site-speed measurements. [Site evidence and remaining failures](./benchmarks/SHIP_SITE_INTEGRATION.md).
 
-export default {
-  plugins: [
-    alias({
-      entries: [
-        {
-          find: '@tanstack/redact/features/hydration/index',
-          replacement: '@tanstack/redact/features/hydration/stub',
-        },
-      ],
-    }),
-  ],
-}
-```
+## Releases
 
-**esbuild:**
+1. Run `pnpm changeset` for a package change and commit the release note with your PR.
+2. Merge the PR into `main`. The Release workflow opens or updates `ci: Version Packages` with the new version and changelog.
+3. Review that version PR, approve its checks if GitHub requests it, and merge after they pass. The workflow tests, builds, publishes to npm's `latest` tag, and creates a GitHub release.
 
-```js
-import { build } from 'esbuild'
-
-await build({
-  entryPoints: ['src/app.tsx'],
-  bundle: true,
-  alias: {
-    '@tanstack/redact/features/hydration/index':
-      '@tanstack/redact/features/hydration/stub',
-  },
-})
-```
-
-**Gotchas:**
-
-- **On-disk folder names vs. config keys**: `forward-ref/` ↔ `forwardRef`, `class/` ↔ `classComponents`. When configuring aliases manually, match the on-disk folder.
-- **Single-instance requirement**: `@tanstack/redact` (and any subpath of it) must resolve to **one** installed copy in your app. Mixing source + dist, or two different tarballs, duplicates `ReactSharedInternals` and breaks hooks. The package's `ReactSharedInternals` is stashed on `globalThis` under a registered symbol as a defense-in-depth, but you should still aim for a single copy.
-- **Feature interdependencies**: Suspense's full implementation imports hydration helpers. If hydration is stubbed but Suspense is full, the Suspense feature uses hydration's no-op stubs (fine — you're not hydrating). Suspense stubbed + hydration full is also fine (streaming boundaries just won't render fallback UI because `Suspense` maps to Fragment).
-
-### 3. Prebuilt bundle presets (planned)
-
-Not yet shipped. The planned shape:
-
-```ts
-import { createRoot } from '@tanstack/redact/dom/nano/client'
-```
-
-Zero bundler configuration; useful for script-tag usage, non-bundler Node tools, or users who just want the smallest install without thinking about it.
-
-**Why not yet:** the preset bundle would need its own self-contained `_all.js` built with the right stubs compiled in — stubs can't reliably overlay a module that registers full variants first (registration order matters, last-write-wins). We want to gather real Vite-plugin usage data before deciding which prebuilt configurations are worth publishing. Open an issue with your use case if this unblocks you.
-
-### 4. npm aliases (limited)
-
-`npm:` package aliases in `package.json` work for the top-level `react` mapping but **not** for subpaths — there's no spec-level way to point `react-dom` at a subpath like `@tanstack/redact/dom` purely via `package.json`. So this path only gets you partway:
-
-```jsonc
-// package.json — works, but only swaps `react` itself
-{
-  "dependencies": {
-    "react": "npm:@tanstack/redact@next"
-  }
-}
-```
-
-Anything that imports `react-dom`, `react-dom/client`, `react-dom/server`, or `scheduler` will still resolve to the real React in `node_modules` unless your bundler can rewrite those specifiers — at which point you may as well use Path 1 (Vite plugin) or Path 2 (bundler aliases). This is a real trade-off of the single-package layout: the install side is simpler but the no-bundler workflow loses some flexibility versus a multi-package shim. If you need a no-bundler full swap, open an issue with your toolchain and we can publish individual `@tanstack/redact-dom`, `@tanstack/redact-server`, etc. compatibility re-export packages.
-
----
-
-## Advanced: authoring custom features & bundler plugins
-
-If you're extending the system, writing a bundler plugin for a tool without one, or just curious how the swap works — the internal API surface is exported from `@tanstack/redact/_all`.
-
-### Registration primitives
-
-Feature modules self-register by calling these at module load:
-
-```ts
-import {
-  registerRenderer,
-  registerTypeMatcher,
-  registerElementMarker,
-  type RenderFn,
-  type TypeMatcher,
-} from '@tanstack/redact/_all'
-
-// Install a renderer for a FiberTag. Later calls overwrite earlier ones —
-// stubs exploit this order-dependence.
-function registerRenderer(tag: FiberTag, fn: RenderFn): void
-
-// Add a type matcher. Iterated in registration order during fiber creation,
-// after core checks (string → Host, REACT_FRAGMENT_TYPE → Fragment) and
-// before the function-vs-class fallback.
-type TypeMatcher = (type: any, marker: any) => FiberTag | null
-function registerTypeMatcher(m: TypeMatcher): void
-
-// Extend the accepted $$typeof set for child normalization. Default:
-// REACT_ELEMENT_TYPE, REACT_LEGACY_ELEMENT_TYPE. Portal adds REACT_PORTAL_TYPE.
-function registerElementMarker(sym: symbol): void
-```
-
-### Capability hooks
-
-Cross-cutting concerns (thrown-thenable handling, context reads) install via `installCapability`:
-
-```ts
-import { installCapability, type Capabilities } from '@tanstack/redact/_all'
-
-interface Capabilities {
-  handleSuspended: (fiber: Fiber, thenable: Promise<any>) => void
-  readContext: (fiber: Fiber, ctx: any) => any
-}
-
-function installCapability<K extends keyof Capabilities>(
-  name: K,
-  fn: Capabilities[K],
-): void
-```
-
-Defaults when no feature installs an override:
-- `handleSuspended`: retry-on-settle (no boundary stack, no fallback)
-- `readContext`: returns `ctx._currentValue` with no provider-tree walk
-
-The full Suspense feature installs a boundary-stack-based `handleSuspended`. The full Context feature installs a walking `readContext`.
-
-### Authoring a custom feature
-
-```ts
-// my-feature/full.ts
-import {
-  FiberTag,
-  registerRenderer,
-  registerTypeMatcher,
-  reconcileChildren,
-  childrenToArray,
-  type Fiber,
-} from '@tanstack/redact/_all'
-import { SOME_SYMBOL } from '@tanstack/redact'
-
-function renderMyThing(fiber: Fiber, domParent: Node, anchor: Node | null): void {
-  // your render logic
-}
-
-registerTypeMatcher((_type, marker) =>
-  marker === SOME_SYMBOL ? FiberTag.SomeTag : null,
-)
-registerRenderer(FiberTag.SomeTag, renderMyThing)
-```
-
-```ts
-// my-feature/stub.ts
-import { FiberTag, registerTypeMatcher } from '@tanstack/redact/_all'
-import { SOME_SYMBOL } from '@tanstack/redact'
-
-// Stub: treat my-thing elements as Fragments (children render normally).
-registerTypeMatcher((_type, marker) =>
-  marker === SOME_SYMBOL ? FiberTag.Fragment : null,
-)
-```
-
-Pair with an `index.ts` (`export * from './full'`) and let your bundler pick which to import.
-
-### Authoring a bundler plugin
-
-The Vite plugin's core is two `resolveId` cases. Port this pattern to any bundler's resolve hook:
-
-```ts
-// Case 1: short specifier from features/index.ts
-// Matches `./portal`, `./context`, etc.
-if (importer matches /features[/\\]index\.(ts|js)$/) {
-  const name = id.match(/^\.\/([a-z-]+)$/)?.[1]
-  if (name && flags[name] === false) {
-    return resolveFrom(`./${name}/stub`, importer)
-  }
-}
-
-// Case 2: resolved-path match for hydration
-// (imported from reconcile, root, suspense/full, lazy/full)
-if (flags.hydration === false && /\/hydration$/.test(id)) {
-  const resolved = await resolve(id, importer)
-  if (/features[/\\]hydration[/\\]index\.(ts|js)$/.test(resolved)) {
-    return resolved.replace(/index\.(ts|js)$/, 'stub.$1')
-  }
-}
-```
-
-Real implementation: [packages/redact/src/vite/index.ts](packages/redact/src/vite/index.ts).
-
-### Verifying your setup
-
-Whichever path you choose, check that stubbed features' full code isn't in your output. Use your bundler's analyzer (rollup-plugin-visualizer, Webpack's bundle-analyzer, etc.) and search for `features/<name>/full.js`. With `hydration: false`, you should NOT see `features/hydration/full.js` or its imports (cursor machinery, event-replay, scroll-guard).
-
----
-
-## Scope
-
-### Supported
-
-- React 19 element model, JSX (classic + automatic), Fragment, Suspense, Portal, Error boundaries, forwardRef, memo, lazy
-- Full hook surface: `useState`, `useReducer`, `useEffect`, `useLayoutEffect`, `useInsertionEffect`, `useMemo`, `useCallback`, `useRef`, `useContext`, `useSyncExternalStore`, `useId`, `useDeferredValue`, `useTransition`, `use` (Context + Promise), `useEffectEvent`
-- Class components with full lifecycle (`componentDidMount`/`componentDidUpdate`/`componentWillUnmount`, `contextType`, `shouldComponentUpdate`, `getDerivedStateFromError`, `componentDidCatch`, legacy lifecycles as no-ops)
-- SSR via `renderToString` / `renderToReadableStream` / `renderToPipeableStream` — including Suspense boundary streaming with `$RC` reveal + event replay
-- Hydration: SSR DOM adoption, deferred hydration for `use(promise)` / lazy, cursor preservation across the synchronous `endHydration`
-- Cohabitation with `@vitejs/plugin-rsc`: the Vite plugin deliberately skips the RSC environment so Flight serialization stays on real `react-server-dom`
-
-### Best-effort / subset behavior
-
-- `useTransition` / `useDeferredValue` run synchronously — no priority scheduling
-- Scheduler shim is a no-op wrapper around microtasks
-- No time slicing, no lane-based work interruption
-
-### Out of scope
-
-- `react-server-dom-*/client` Flight deserializer (TanStack Start uses its own seroval-based codec + `@vitejs/plugin-rsc`)
-- React DevTools protocol
-- Behavioral 1:1 parity with React under concurrent-mode stress
-
-See [docs/SURFACE.md](./docs/SURFACE.md) for the full React-19 export-by-export audit.
-
----
+Publishing uses npm trusted publishing, not a stored npm token. No local publish or hand-edited version bump is needed. [Release configuration](./.github/workflows/release.yml), [contributor details](./.changeset/README.md).
 
 ## Development
 
-### Layout
-
-One package, one tree, internal subdirectories per concern:
-
-```
-packages/redact/src/
-  core/                     VDOM types + symbols (FiberTag, Hook, ReactNode, …)
-  react/                    'react' entry: createElement, hooks, context, class,
-                            memo, suspense, jsx-runtime, ReactSharedInternals
-  dom/                      'react-dom' entry: reconciler, host DOM, root,
-                            createPortal, flushSync
-    features/               opt-in features (each is an index/full/stub triple)
-      portal/  context/  suspense/  memo/
-      forward-ref/  lazy/  class/  hydration/
-  server/                   'react-dom/server' entry: renderToString,
-                            renderToReadableStream, renderToPipeableStream
-  scheduler/                'scheduler' shim (no-op microtask wrapper)
-  vite/                     redact() Vite plugin: aliases + feature-flag swaps
-tests/                      vitest suite — 707 tests
-examples/
-  ssr-demo/                 full SSR + Suspense streaming smoke app
-docs/
-  SURFACE.md                React 19 export audit
-  SAVINGS_ANALYSIS.md       per-export size savings vs React 19
-scripts/
-  build.mjs                 per-entry esbuild build (every TS module emitted)
-  size.mjs                  per-preset / per-flag gzip report
-  size-check.mjs            CI size-budget assertions
-  size-analyze.mjs          per-module byte breakdown for a given preset
-```
-
-Cross-subdir imports inside `packages/redact/src/` use relative paths
-(`../core`, `../react`, etc.). The build emits each TS module as its own
-dist file with all relative imports kept literal — that's what preserves the
-import-graph boundaries the Vite plugin needs to swap features at consumer
-build time.
-
-### Commands
-
 ```bash
 pnpm install
-pnpm build                    # esbuild dist/ + tsc declaration emit
-pnpm test                     # vitest suite (707 tests)
-pnpm test:types               # tsc --noEmit
-pnpm size                     # gzip/brotli per entry + per feature-stub
-pnpm size:check               # CI budget assertions (fails on regression)
-pnpm --filter ssr-demo dev    # serve http://localhost:5173
+pnpm test:ci                 # tests, types, build/import checks, size budgets
+pnpm size                    # built-package sizes per entry and feature
+pnpm --filter ssr-demo dev
 ```
 
-### Current sizes
-
-Subpath sizes from `pnpm size`. The `react` / `react-dom/client` / `react-dom/server` column names are the user-facing aliases the Vite plugin sets up; under the hood they all resolve into `@tanstack/redact/*`.
-
-| Entry | min | gzip | brotli |
-|---|---:|---:|---:|
-| `react`              (= `@tanstack/redact`)             | 6.59 KB | 2.65 KB | 2.42 KB |
-| `react/jsx-runtime`  (= `@tanstack/redact/jsx-runtime`) | 247 B | 189 B | 187 B |
-| `react-dom/client`   (= `@tanstack/redact/dom-client`, `full`) | 29.65 KB | **10.03 KB** | 9.11 KB |
-| `react-dom/client`   (= `@tanstack/redact/dom-client`, `nano`) | 20.86 KB | **7.49 KB** | 6.79 KB |
-| `react-dom/server`   (= `@tanstack/redact/server`)      | 12.90 KB | 5.09 KB | 4.61 KB |
-| **Client total** (`full`: react + react-dom/client + jsx-runtime) | 35.81 KB | **12.24 KB** | 11.07 KB |
-
-Regenerate with `pnpm size`.
-
----
-
-## Changelog
-
-The project's first 9 alpha versions shipped as separate `@tanstack/react`, `@tanstack/react-dom`, `@tanstack/react-dom-server`, `@tanstack/dom-core`, `@tanstack/scheduler`, and `@tanstack/dom-vite` packages (`0.1.0-alpha.0` … `0.1.0-alpha.9`). Those packages are now deprecated. The project starts fresh as a single `@tanstack/redact` (`0.0.1`+) with subpath exports — the fixes below predate the rename and the package names refer to the previous multi-package layout.
-
-- `@tanstack/redact@0.0.1` — **first release of `@tanstack/redact`**. Consolidates the 6 previously-separate alpha packages into a single package with subpath exports (`./jsx-runtime`, `./dom`, `./dom-client`, `./dom-test-utils`, `./server`, `./scheduler`, `./vite`, `./features/*`, `./_all`). Vite plugin renamed `tanstackDom()` → `redact()`, types `TanStackDom*` → `Redact*`. `ReactSharedInternals` made a `globalThis`-stashed singleton via `Symbol.for` to defend against duplicate package copies under bundlers like Cloudflare's `vite-plugin` that mix `noExternal: true` worker bundling with separate pre-bundled dep copies. New `tests/public-exports.test.ts` snapshot guards every subpath's named-export set against silent link-time drift.
-- `react@0.1.0-alpha.8` — added `useEffectEvent` hook (stable callback over a `useInsertionEffect`-refreshed ref). Fixes missing-export errors in consumers using React 19 event handlers.
-- `react-dom@0.1.0-alpha.8` — **feature-flag system landed**: 8 opt-in features with stub/full pairs, typed Vite plugin config, `pnpm size:check` CI budget enforcement. `nano` preset ships **6.75 KB gzip** — a 26% reduction from `full`.
-- `react-dom@0.1.0-alpha.5` — `useEffect` / `useLayoutEffect` cleanup now runs at effect-run time (in the passive drain) instead of dispatch time. Coalesced renders landing back-to-back before the drain (common with router/store state updates triggered by one user action) no longer leak side-effects into the DOM.
-- `react-dom@0.1.0-alpha.4` — `renderFunction`'s deferred-hydration branch now matches `renderLazy`'s ancestor-Suspense guard (`_awaitingLazyHydration`). Fixes duplicate markup on RSC-hydrated subtrees.
-- `react-dom-server@0.1.0-alpha.4` — shell + bootstrap emits are buffered into one `TextEncoder.encode` + `ReadableStream.enqueue` instead of per-chunk, cutting Node stream overhead in the SSR CPU profile.
-</content>
+[Advanced configuration and internals](./docs/DEVELOPMENT.md), [benchmark reproduction](./benchmarks/README.md), [full ship review](./benchmarks/SHIP_RESULTS.md), [Projecting React](https://tannerlinsley.com/posts/projecting-react).

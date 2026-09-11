@@ -1,0 +1,4513 @@
+{
+  "schema": 1,
+  "environment": {
+    "date": "2026-09-11T01:35:47.898Z",
+    "node": "v24.15.0",
+    "esbuild": "0.28.0",
+    "os": "darwin 25.6.0",
+    "architecture": "arm64",
+    "cpu": "Apple M5 Pro",
+    "cpuRate": 1,
+    "headless": true,
+    "blocks": 3,
+    "rounds": 3,
+    "interactionRounds": 12,
+    "interactionRows": [
+      240,
+      2400
+    ],
+    "targetMs": 80,
+    "seed": 20260909,
+    "fixtureSHA256": "006a5c1640833d561f01c34bf22a8421bc2fae9efea63acd80de8c0560afa1f1",
+    "runnerSHA256": "fa7ab2445c8a9ec53ff0f9e0947bb8d116e8759dcd133c67365a30df5cf56897",
+    "statsSHA256": "037386579674b16f449aa9853b6db2b759c7d8c79b525a27d59f00d98629ceb1",
+    "referenceLockSHA256": "1190290f58b3354f51d525b09d8661696b9d4a2c5cad2c99c5b00f1ccdff5ce1",
+    "browser": "152.0.7977.83"
+  },
+  "method": {
+    "timing": "Production bundles, identical fixture and iteration counts, completed work checked after timing. GC remains enabled naturally in timing samples.",
+    "order": "Fresh browser per block. Seeded permutation with rotating renderer order each round.",
+    "intervals": "95% percentile bootstrap of paired log-time ratios, resampling entire fresh-browser blocks. Not a guarantee of cross-device or whole-app performance.",
+    "interaction": "Trusted Playwright clicks with normal scheduling. Handler-to-commit and next-rAF are not paint. Event Timing duration is quantized and entries below the browser threshold can be absent. This is not field INP.",
+    "memory": "Separate mount/unmount-only forced-GC retained JS heap and DOM counters, not allocation rate or process RSS. No Playwright click injection in these pages.",
+    "units": "Throughput summaries are milliseconds per iteration/batch, including p95 of batch averages, not individual-update tail latency. observedTaskDurationMs includes Playwright instrumentation and is diagnostic only.",
+    "multiplicity": "Intervals are exploratory, not adjusted for testing multiple workloads. Assess repeatability and identical-React control noise, not only whether an interval crosses zero."
+  },
+  "variants": [
+    {
+      "name": "react",
+      "version": "19.3.0",
+      "kind": "react",
+      "bundleSHA256": "a8e3d2ac830e11f6105b50488851e32b8323be2b328325c5ba429e557e6244dd",
+      "inputSHA256": "95e9ae3c9c8a29dd8d44a3f1cd872dc8a5b308689c65a567d425d64beb848161",
+      "inputs": [
+        {
+          "path": "benchmarks/reducer-workloads.ts",
+          "sha256": "23ccc85dd1864ae1f9541623e08107594a64bf7094c26923c3edfd4391a24b06"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/react-dom/cjs/react-dom-client.production.js",
+          "sha256": "8a8147c1cebdb19d82fd11bdb76391be9b20d00edf67cc8e8b30f44e850ce693"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/react-dom/cjs/react-dom-server-legacy.browser.production.js",
+          "sha256": "5528f58d28f5e035dccbf0ebec7e593ed0b97cebae830b838756c27c100a8caa"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/react-dom/cjs/react-dom-server.browser.production.js",
+          "sha256": "3e201e0287f8b51028ce52684551b32ef8fa970766a51095e6a46bdbdb55a605"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/react-dom/cjs/react-dom.production.js",
+          "sha256": "fd016e2c887f97b82f466ca435ae259d08cf7d4e7fef37e087963336d4770c01"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/react-dom/client.js",
+          "sha256": "00e348ab3d6bc2eef908345d0bc4e008c95bcfecec060dfda5c4967953761396"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/react-dom/index.js",
+          "sha256": "ba1a3e33489f868371561777607e3ee5091df0f7ea3f1a10f789d6b86e4c1505"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/react-dom/server.browser.js",
+          "sha256": "f759460eb3571d5bf1e1a9e5ef7cb033ec5c67f25d64a6bbf5a9ac43bd25831a"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/react/cjs/react-jsx-runtime.production.js",
+          "sha256": "1e46f15002696985e80c61d47aaa30dabb03c954270a690f5f7dfbbacfa9002b"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/react/cjs/react.production.js",
+          "sha256": "6b28feb9dbe9781ab1e1b64dea7b29a7c70f03d2dc10eaa966363053d8a9b4e5"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/react/index.js",
+          "sha256": "60caffdecbdc5db3bc4ec4e83df9488345ccb271d07533b9210bf5750918d97e"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/react/jsx-runtime.js",
+          "sha256": "b392951a77d0a2e6a6bd017e49d768481ae5b63c4109c6c31f622cf7b2433edc"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/scheduler/cjs/scheduler.production.js",
+          "sha256": "679adff761d31e9426604f80c0e99be44a3e6f4c6834b0218ecf0312a67c171f"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/scheduler/index.js",
+          "sha256": "145965504d60007bc25486ab930b0367867dcd5d579ccd343c148d69349a7cfb"
+        },
+        {
+          "path": "benchmarks/runtime-workloads.ts",
+          "sha256": "006a5c1640833d561f01c34bf22a8421bc2fae9efea63acd80de8c0560afa1f1"
+        }
+      ],
+      "fixtureBundle": {
+        "raw": 444773,
+        "gzip": 136763,
+        "brotli": 94049
+      }
+    },
+    {
+      "name": "react-control",
+      "version": "19.3.0",
+      "kind": "react",
+      "bundleSHA256": "a8e3d2ac830e11f6105b50488851e32b8323be2b328325c5ba429e557e6244dd",
+      "inputSHA256": "95e9ae3c9c8a29dd8d44a3f1cd872dc8a5b308689c65a567d425d64beb848161",
+      "inputs": [
+        {
+          "path": "benchmarks/reducer-workloads.ts",
+          "sha256": "23ccc85dd1864ae1f9541623e08107594a64bf7094c26923c3edfd4391a24b06"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/react-dom/cjs/react-dom-client.production.js",
+          "sha256": "8a8147c1cebdb19d82fd11bdb76391be9b20d00edf67cc8e8b30f44e850ce693"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/react-dom/cjs/react-dom-server-legacy.browser.production.js",
+          "sha256": "5528f58d28f5e035dccbf0ebec7e593ed0b97cebae830b838756c27c100a8caa"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/react-dom/cjs/react-dom-server.browser.production.js",
+          "sha256": "3e201e0287f8b51028ce52684551b32ef8fa970766a51095e6a46bdbdb55a605"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/react-dom/cjs/react-dom.production.js",
+          "sha256": "fd016e2c887f97b82f466ca435ae259d08cf7d4e7fef37e087963336d4770c01"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/react-dom/client.js",
+          "sha256": "00e348ab3d6bc2eef908345d0bc4e008c95bcfecec060dfda5c4967953761396"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/react-dom/index.js",
+          "sha256": "ba1a3e33489f868371561777607e3ee5091df0f7ea3f1a10f789d6b86e4c1505"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/react-dom/server.browser.js",
+          "sha256": "f759460eb3571d5bf1e1a9e5ef7cb033ec5c67f25d64a6bbf5a9ac43bd25831a"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/react/cjs/react-jsx-runtime.production.js",
+          "sha256": "1e46f15002696985e80c61d47aaa30dabb03c954270a690f5f7dfbbacfa9002b"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/react/cjs/react.production.js",
+          "sha256": "6b28feb9dbe9781ab1e1b64dea7b29a7c70f03d2dc10eaa966363053d8a9b4e5"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/react/index.js",
+          "sha256": "60caffdecbdc5db3bc4ec4e83df9488345ccb271d07533b9210bf5750918d97e"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/react/jsx-runtime.js",
+          "sha256": "b392951a77d0a2e6a6bd017e49d768481ae5b63c4109c6c31f622cf7b2433edc"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/scheduler/cjs/scheduler.production.js",
+          "sha256": "679adff761d31e9426604f80c0e99be44a3e6f4c6834b0218ecf0312a67c171f"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/scheduler/index.js",
+          "sha256": "145965504d60007bc25486ab930b0367867dcd5d579ccd343c148d69349a7cfb"
+        },
+        {
+          "path": "benchmarks/runtime-workloads.ts",
+          "sha256": "006a5c1640833d561f01c34bf22a8421bc2fae9efea63acd80de8c0560afa1f1"
+        }
+      ],
+      "fixtureBundle": {
+        "raw": 444773,
+        "gzip": 136763,
+        "brotli": 94049
+      }
+    },
+    {
+      "name": "journal",
+      "source": "/tmp/redact-queue-journal/src",
+      "bundleSHA256": "2e4b698144b6854fc363be6aa3709b303ff5027ca9854823dce4bafbca4d7086",
+      "inputSHA256": "6b94b645cb6c2ea8ac4494b570550aea8e0298801f3356a1abcd3b39cfe72a0d",
+      "inputs": [
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/core/attributes.ts",
+          "sha256": "af40ac45359c9de6c3ad1290a5d6af51c705b147e9e42a5841914dd786a427e4"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/core/browser.ts",
+          "sha256": "b4c9757a8689ccd2981079ee9af2c3b0da9ef1172ddfb8aa841089426e8181eb"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/core/index.ts",
+          "sha256": "9afcb4a85c06b45f125f109d9af0cc75ea0f536b05c930a8c066dd553b58386b"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/core/internal.ts",
+          "sha256": "8ccc9b726b8a560d39dc97af8b8cd789470fb0d4077b9f0d0b83153111d6666e"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/core/resource-hints.ts",
+          "sha256": "a02e7c335551b5a2a39c1eb7af677339cfe8565e4914093ad9353243f3474ed0"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/core/types.ts",
+          "sha256": "843aaf9d0b3bf996212545fef86fe3f77436c88e86b32eee5094c904c9775213"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/dom/commit.ts",
+          "sha256": "60a71a08c7dd8d4654b2058884be89f1e1c41a09a8fe8f68af4efdd84ebf2a94"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/dom/dispatcher.ts",
+          "sha256": "8d6bbace5fbdcf570d2eb8c4b07460ba4e1a9c06c03d7a04cdbaaf6add02fd4a"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/dom/dom.ts",
+          "sha256": "2cedafefaf84bd9647c58b9ed364b414d496385ddc2a5253fd5232cf718a969a"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/dom/error-info.ts",
+          "sha256": "4ce0211dda7568a89465776853d8ac503de4a42f11f44de1996cc86b71ec1c18"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/dom/event-replay.ts",
+          "sha256": "e31a638c5d6296f9e8a6c777a682f3be86cd6a4e70342ba5661f0a34af47e4c5"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/dom/features/activity/full.ts",
+          "sha256": "9a3bfb0462f9db8a8be532eff08418dc418b8d6c55989c2ff2e945aabbc2a3f6"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/dom/features/activity/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/dom/features/class/full.ts",
+          "sha256": "37543d6d736c59d32f3c1d0eae7374a5a0cf7858011eb37befd46dd03344d335"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/dom/features/class/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/dom/features/context/full.ts",
+          "sha256": "e65aa8e9b680668143c40dfe2e39b7e9be0583156978c775667b3976d43ca286"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/dom/features/context/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/dom/features/forward-ref/full.ts",
+          "sha256": "7afa547e69830ddebc3ba8d3acfe245807c62657687779b2779b98b2fc93fbd7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/dom/features/forward-ref/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/dom/features/fragment-refs/index.ts",
+          "sha256": "88e29a82f36597d5e4a94c047f9258b8f2a079041d5037f333bf8b429c933f50"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/dom/features/hydration/full.ts",
+          "sha256": "184bfc6f2541d69d07ecbddb25445d01e834a9d47f6d7f14ee793d62de00e248"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/dom/features/hydration/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/dom/features/index.ts",
+          "sha256": "17652a22c2de7dd6e1a7c8251c3c6c0559b7a0100dddb122458423ceaec19e9c"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/dom/features/lazy/full.ts",
+          "sha256": "21349d7a8be9d9eacdffcfd044909b8b67de5822a1a3717e992354318b97c347"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/dom/features/lazy/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/dom/features/memo/full.ts",
+          "sha256": "6ebad09d48015e6e3467041278e58246995ad74e7beaf0ea84ede03e151a5c5d"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/dom/features/memo/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/dom/features/portal/full.ts",
+          "sha256": "ff77c98c976e215cc94c64b46a6cac7ce649f7ec51e22a9b686c5c2d4b0cfbf6"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/dom/features/portal/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/dom/features/suspense/full.ts",
+          "sha256": "0da2ef71fc2854a4ea55a57c7f46d3e68e419abfa2c0c781a106c50b117f2084"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/dom/features/suspense/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/dom/features/view-transition/full.ts",
+          "sha256": "ad3459e1457715b03d7043d57c007832f8d86d2cc5595d11a166f61cda9b40ba"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/dom/features/view-transition/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/dom/features/view-transition/resources.ts",
+          "sha256": "a0f4d9c08a939c74c8b3ae161735e11b7f839a289ae4447771f18f53b774b12a"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/dom/features/view-transition/visual.ts",
+          "sha256": "66dbdb5830d054456d0ab699e286d29639218605566c33a5a6975871ab140649"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/dom/fragment-instance.ts",
+          "sha256": "7a3f13fa0ef7cf1cedf66923788e8eb4d43bf1cec74911fd13d53396b9eb6b90"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/dom/portal.ts",
+          "sha256": "1358070e547c2d6c030bb73afc0a999d5b59f65e8dfb9db337077f2ec2a1798a"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/dom/reconcile.ts",
+          "sha256": "3c112332ceae9d7b59a8ba82a661e69c5fdda67b61cbbca44344a44fdb7e9279"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/dom/resource-hints.ts",
+          "sha256": "4ee9d454e82b0cb128e0daa703c88a8ce8b212e94c5417eb2ffd17034f160219"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/dom/resource-store.ts",
+          "sha256": "87c33dff41f57004e631d458170cfe4daa36e2795437ec9a2b9b5d298f8a087e"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/dom/resources.ts",
+          "sha256": "3d07f8d9ba061880559af4e755bc8b29b5cc8d830a46fd9d497e54755b42e505"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/dom/retained-effects.ts",
+          "sha256": "4e2b7e6e98bd2c02c9492ee400265df11ddd7142ddc14ea91d2725c3eb0cf1e5"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/dom/root-internal.ts",
+          "sha256": "db26a57dcffc037ea65573cb459e06247b5ecdc7507dc17284347336b59bac14"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/dom/root.ts",
+          "sha256": "085ba35553a87299f562549d713cc8f92a8fe865b24f0ee0a242917be3e73253"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/react/activity.ts",
+          "sha256": "dac42f0847c53ea6233dd5c04491379f305547acbfbe7d6491728505e66fdf77"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/react/children.ts",
+          "sha256": "ab214cdab258cfc71a90e0633569dd6c4558b0b9c76271d077224cad933f82d4"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/react/class.ts",
+          "sha256": "64911643dbc4c029fdc7a499b3406e18bb8569df3e8c34d7aef332e5319516b8"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/react/context.ts",
+          "sha256": "a3808f65aed8a6afcbaed55398e31186403f8db0b33ffa422ce2888dddc2dcaf"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/react/element.ts",
+          "sha256": "3e3a22cb9325bea8cb4cd1936af06f3f532fbf70a64c183d3775904aa2617aa0"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/react/hooks.ts",
+          "sha256": "16db79f42be3bbd340980eb17ccfb47c61ba4facfa444db522b717f1f37a9e3a"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/react/index.ts",
+          "sha256": "e68b17b4a2da13a0105d72aef9012cfd9928e1b0f2eed32edb13768194797525"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/react/memo.ts",
+          "sha256": "5aadf27b6dd989c23f06550511414cd4ae053ab2bb7250d82355bb59e8aff56d"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/react/portal.ts",
+          "sha256": "0e0e28608e1dc5ef5e18649e1d8d122206468d4b9b4d1fdbebc36535612d4958"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/react/shared-internals.ts",
+          "sha256": "afc354a40b9302397a8fbe238ba8295b54f6165ba6401d025d68d5063feb687b"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/react/suspense.ts",
+          "sha256": "487b236e813138ce54a0931a580254100fa790d429d4423ef09e370176565678"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/react/view-transition.ts",
+          "sha256": "deae1edf4bc2b1025b1e63e12f052435a415db3163b86cfb1c9135a3bebfe09b"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/server/bootstrap-script.ts",
+          "sha256": "cbe958554ff1df966a7f2de585311bd8ba72bf84e8f95f78a16743b0ab0da243"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/server/dispatcher.ts",
+          "sha256": "4ee59e2941dc68ef279ad1448bcd85e74a1bb0743b16d8e8f55efbca4e0f9ff6"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/server/escape.ts",
+          "sha256": "0a338961be7f12a7a34f453a48a1d24d876fd1352defd2a2ba078991824f1cd7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/server/renderToString.ts",
+          "sha256": "df6eb5070bde0b1b6d690c1cc053be52b3880733190ff76b87e06d8fd045e107"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/server/resource-hints.ts",
+          "sha256": "485226d95446eb00a3e973561ed6f8ec40a1a416bff4e267adb3893d5a770135"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/server/stream.ts",
+          "sha256": "f4caaacc91f0cec1787d81039e9ae39d14343dfbc75294fba61d7c26d3090e3e"
+        },
+        {
+          "path": "../../../../private/tmp/redact-queue-journal/src/server/walk.ts",
+          "sha256": "ea900203c8207d998f0a40b6b724f6a12a37296a2b8ac7ba26e6849c257df4f3"
+        },
+        {
+          "path": "../../../../tmp/redact-queue-journal/src/dom/client.ts",
+          "sha256": "787e1f0517d0fe7c6df938b09e755436e3259d1698d6a53c971fef4e4884e924"
+        },
+        {
+          "path": "../../../../tmp/redact-queue-journal/src/dom/index.ts",
+          "sha256": "97273bbef8e214cb6d4d826854dc61891d0ef3640b3a1ddb2ea056358f80ed76"
+        },
+        {
+          "path": "../../../../tmp/redact-queue-journal/src/react/index.ts",
+          "sha256": "e68b17b4a2da13a0105d72aef9012cfd9928e1b0f2eed32edb13768194797525"
+        },
+        {
+          "path": "../../../../tmp/redact-queue-journal/src/react/jsx-runtime.ts",
+          "sha256": "842a08086f193d641f99611d2214c484a2f2a97f6807364ba5f194ed972e62e3"
+        },
+        {
+          "path": "../../../../tmp/redact-queue-journal/src/server/index.ts",
+          "sha256": "1b5fa6eb9b09f4a68c0b46cbf20eec8e5f910283230a8ece6513e79ddc2d4410"
+        },
+        {
+          "path": "benchmarks/reducer-workloads.ts",
+          "sha256": "23ccc85dd1864ae1f9541623e08107594a64bf7094c26923c3edfd4391a24b06"
+        },
+        {
+          "path": "benchmarks/runtime-workloads.ts",
+          "sha256": "006a5c1640833d561f01c34bf22a8421bc2fae9efea63acd80de8c0560afa1f1"
+        }
+      ],
+      "fixtureBundle": {
+        "raw": 98980,
+        "gzip": 35514,
+        "brotli": 31257
+      }
+    },
+    {
+      "name": "current",
+      "source": "/tmp/redact-own-key-restore/src",
+      "bundleSHA256": "ca0d735d6de26e47b23403c055a55719e15b062644cd8c7d0bbe6d59f8c0a6f5",
+      "inputSHA256": "cab2a0fcc8ecc298b3d5e0b70b85854ef89e69e0b953a1003d92e12a64046348",
+      "inputs": [
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/core/attributes.ts",
+          "sha256": "af40ac45359c9de6c3ad1290a5d6af51c705b147e9e42a5841914dd786a427e4"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/core/browser.ts",
+          "sha256": "b4c9757a8689ccd2981079ee9af2c3b0da9ef1172ddfb8aa841089426e8181eb"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/core/index.ts",
+          "sha256": "9afcb4a85c06b45f125f109d9af0cc75ea0f536b05c930a8c066dd553b58386b"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/core/internal.ts",
+          "sha256": "8ccc9b726b8a560d39dc97af8b8cd789470fb0d4077b9f0d0b83153111d6666e"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/core/resource-hints.ts",
+          "sha256": "a02e7c335551b5a2a39c1eb7af677339cfe8565e4914093ad9353243f3474ed0"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/core/types.ts",
+          "sha256": "843aaf9d0b3bf996212545fef86fe3f77436c88e86b32eee5094c904c9775213"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/dom/commit.ts",
+          "sha256": "a233abd6112948f9f01aac52912f547e14a6da905493ab7fdb57e4e8acdf6d2f"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/dom/dispatcher.ts",
+          "sha256": "8d6bbace5fbdcf570d2eb8c4b07460ba4e1a9c06c03d7a04cdbaaf6add02fd4a"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/dom/dom.ts",
+          "sha256": "2cedafefaf84bd9647c58b9ed364b414d496385ddc2a5253fd5232cf718a969a"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/dom/error-info.ts",
+          "sha256": "4ce0211dda7568a89465776853d8ac503de4a42f11f44de1996cc86b71ec1c18"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/dom/event-replay.ts",
+          "sha256": "e31a638c5d6296f9e8a6c777a682f3be86cd6a4e70342ba5661f0a34af47e4c5"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/dom/features/activity/full.ts",
+          "sha256": "9a3bfb0462f9db8a8be532eff08418dc418b8d6c55989c2ff2e945aabbc2a3f6"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/dom/features/activity/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/dom/features/class/full.ts",
+          "sha256": "37543d6d736c59d32f3c1d0eae7374a5a0cf7858011eb37befd46dd03344d335"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/dom/features/class/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/dom/features/context/full.ts",
+          "sha256": "e65aa8e9b680668143c40dfe2e39b7e9be0583156978c775667b3976d43ca286"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/dom/features/context/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/dom/features/forward-ref/full.ts",
+          "sha256": "7afa547e69830ddebc3ba8d3acfe245807c62657687779b2779b98b2fc93fbd7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/dom/features/forward-ref/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/dom/features/fragment-refs/index.ts",
+          "sha256": "88e29a82f36597d5e4a94c047f9258b8f2a079041d5037f333bf8b429c933f50"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/dom/features/hydration/full.ts",
+          "sha256": "184bfc6f2541d69d07ecbddb25445d01e834a9d47f6d7f14ee793d62de00e248"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/dom/features/hydration/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/dom/features/index.ts",
+          "sha256": "17652a22c2de7dd6e1a7c8251c3c6c0559b7a0100dddb122458423ceaec19e9c"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/dom/features/lazy/full.ts",
+          "sha256": "21349d7a8be9d9eacdffcfd044909b8b67de5822a1a3717e992354318b97c347"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/dom/features/lazy/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/dom/features/memo/full.ts",
+          "sha256": "6ebad09d48015e6e3467041278e58246995ad74e7beaf0ea84ede03e151a5c5d"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/dom/features/memo/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/dom/features/portal/full.ts",
+          "sha256": "ff77c98c976e215cc94c64b46a6cac7ce649f7ec51e22a9b686c5c2d4b0cfbf6"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/dom/features/portal/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/dom/features/suspense/full.ts",
+          "sha256": "0da2ef71fc2854a4ea55a57c7f46d3e68e419abfa2c0c781a106c50b117f2084"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/dom/features/suspense/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/dom/features/view-transition/full.ts",
+          "sha256": "ad3459e1457715b03d7043d57c007832f8d86d2cc5595d11a166f61cda9b40ba"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/dom/features/view-transition/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/dom/features/view-transition/resources.ts",
+          "sha256": "a0f4d9c08a939c74c8b3ae161735e11b7f839a289ae4447771f18f53b774b12a"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/dom/features/view-transition/visual.ts",
+          "sha256": "66dbdb5830d054456d0ab699e286d29639218605566c33a5a6975871ab140649"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/dom/fragment-instance.ts",
+          "sha256": "7a3f13fa0ef7cf1cedf66923788e8eb4d43bf1cec74911fd13d53396b9eb6b90"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/dom/portal.ts",
+          "sha256": "1358070e547c2d6c030bb73afc0a999d5b59f65e8dfb9db337077f2ec2a1798a"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/dom/reconcile.ts",
+          "sha256": "3c112332ceae9d7b59a8ba82a661e69c5fdda67b61cbbca44344a44fdb7e9279"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/dom/resource-hints.ts",
+          "sha256": "4ee9d454e82b0cb128e0daa703c88a8ce8b212e94c5417eb2ffd17034f160219"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/dom/resource-store.ts",
+          "sha256": "87c33dff41f57004e631d458170cfe4daa36e2795437ec9a2b9b5d298f8a087e"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/dom/resources.ts",
+          "sha256": "3d07f8d9ba061880559af4e755bc8b29b5cc8d830a46fd9d497e54755b42e505"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/dom/retained-effects.ts",
+          "sha256": "4e2b7e6e98bd2c02c9492ee400265df11ddd7142ddc14ea91d2725c3eb0cf1e5"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/dom/root-internal.ts",
+          "sha256": "db26a57dcffc037ea65573cb459e06247b5ecdc7507dc17284347336b59bac14"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/dom/root.ts",
+          "sha256": "085ba35553a87299f562549d713cc8f92a8fe865b24f0ee0a242917be3e73253"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/react/activity.ts",
+          "sha256": "dac42f0847c53ea6233dd5c04491379f305547acbfbe7d6491728505e66fdf77"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/react/children.ts",
+          "sha256": "ab214cdab258cfc71a90e0633569dd6c4558b0b9c76271d077224cad933f82d4"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/react/class.ts",
+          "sha256": "64911643dbc4c029fdc7a499b3406e18bb8569df3e8c34d7aef332e5319516b8"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/react/context.ts",
+          "sha256": "a3808f65aed8a6afcbaed55398e31186403f8db0b33ffa422ce2888dddc2dcaf"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/react/element.ts",
+          "sha256": "3e3a22cb9325bea8cb4cd1936af06f3f532fbf70a64c183d3775904aa2617aa0"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/react/hooks.ts",
+          "sha256": "16db79f42be3bbd340980eb17ccfb47c61ba4facfa444db522b717f1f37a9e3a"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/react/index.ts",
+          "sha256": "e68b17b4a2da13a0105d72aef9012cfd9928e1b0f2eed32edb13768194797525"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/react/memo.ts",
+          "sha256": "5aadf27b6dd989c23f06550511414cd4ae053ab2bb7250d82355bb59e8aff56d"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/react/portal.ts",
+          "sha256": "0e0e28608e1dc5ef5e18649e1d8d122206468d4b9b4d1fdbebc36535612d4958"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/react/shared-internals.ts",
+          "sha256": "afc354a40b9302397a8fbe238ba8295b54f6165ba6401d025d68d5063feb687b"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/react/suspense.ts",
+          "sha256": "487b236e813138ce54a0931a580254100fa790d429d4423ef09e370176565678"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/react/view-transition.ts",
+          "sha256": "deae1edf4bc2b1025b1e63e12f052435a415db3163b86cfb1c9135a3bebfe09b"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/server/bootstrap-script.ts",
+          "sha256": "cbe958554ff1df966a7f2de585311bd8ba72bf84e8f95f78a16743b0ab0da243"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/server/dispatcher.ts",
+          "sha256": "4ee59e2941dc68ef279ad1448bcd85e74a1bb0743b16d8e8f55efbca4e0f9ff6"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/server/escape.ts",
+          "sha256": "0a338961be7f12a7a34f453a48a1d24d876fd1352defd2a2ba078991824f1cd7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/server/renderToString.ts",
+          "sha256": "df6eb5070bde0b1b6d690c1cc053be52b3880733190ff76b87e06d8fd045e107"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/server/resource-hints.ts",
+          "sha256": "485226d95446eb00a3e973561ed6f8ec40a1a416bff4e267adb3893d5a770135"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/server/stream.ts",
+          "sha256": "f4caaacc91f0cec1787d81039e9ae39d14343dfbc75294fba61d7c26d3090e3e"
+        },
+        {
+          "path": "../../../../private/tmp/redact-own-key-restore/src/server/walk.ts",
+          "sha256": "ea900203c8207d998f0a40b6b724f6a12a37296a2b8ac7ba26e6849c257df4f3"
+        },
+        {
+          "path": "../../../../tmp/redact-own-key-restore/src/dom/client.ts",
+          "sha256": "787e1f0517d0fe7c6df938b09e755436e3259d1698d6a53c971fef4e4884e924"
+        },
+        {
+          "path": "../../../../tmp/redact-own-key-restore/src/dom/index.ts",
+          "sha256": "97273bbef8e214cb6d4d826854dc61891d0ef3640b3a1ddb2ea056358f80ed76"
+        },
+        {
+          "path": "../../../../tmp/redact-own-key-restore/src/react/index.ts",
+          "sha256": "e68b17b4a2da13a0105d72aef9012cfd9928e1b0f2eed32edb13768194797525"
+        },
+        {
+          "path": "../../../../tmp/redact-own-key-restore/src/react/jsx-runtime.ts",
+          "sha256": "842a08086f193d641f99611d2214c484a2f2a97f6807364ba5f194ed972e62e3"
+        },
+        {
+          "path": "../../../../tmp/redact-own-key-restore/src/server/index.ts",
+          "sha256": "1b5fa6eb9b09f4a68c0b46cbf20eec8e5f910283230a8ece6513e79ddc2d4410"
+        },
+        {
+          "path": "benchmarks/reducer-workloads.ts",
+          "sha256": "23ccc85dd1864ae1f9541623e08107594a64bf7094c26923c3edfd4391a24b06"
+        },
+        {
+          "path": "benchmarks/runtime-workloads.ts",
+          "sha256": "006a5c1640833d561f01c34bf22a8421bc2fae9efea63acd80de8c0560afa1f1"
+        }
+      ],
+      "fixtureBundle": {
+        "raw": 99121,
+        "gzip": 35571,
+        "brotli": 31279
+      }
+    },
+    {
+      "name": "flat-hooks",
+      "source": "/tmp/redact-flat-hooks/src",
+      "bundleSHA256": "db16a617613f4dedcf845f66fafaf7ea2d917143df2ae43cae7df4e4b8207dbb",
+      "inputSHA256": "aa673f8d4d425de16e9dde5f20cbcd04b5531d587c2f5130ee67fd938c4ff236",
+      "inputs": [
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/core/attributes.ts",
+          "sha256": "af40ac45359c9de6c3ad1290a5d6af51c705b147e9e42a5841914dd786a427e4"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/core/browser.ts",
+          "sha256": "b4c9757a8689ccd2981079ee9af2c3b0da9ef1172ddfb8aa841089426e8181eb"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/core/index.ts",
+          "sha256": "9afcb4a85c06b45f125f109d9af0cc75ea0f536b05c930a8c066dd553b58386b"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/core/internal.ts",
+          "sha256": "8ccc9b726b8a560d39dc97af8b8cd789470fb0d4077b9f0d0b83153111d6666e"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/core/resource-hints.ts",
+          "sha256": "a02e7c335551b5a2a39c1eb7af677339cfe8565e4914093ad9353243f3474ed0"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/core/types.ts",
+          "sha256": "843aaf9d0b3bf996212545fef86fe3f77436c88e86b32eee5094c904c9775213"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/dom/commit.ts",
+          "sha256": "23729308ea4e8a578672d302d4a6da2c419baae6655b8fe9711d15f2a18435c9"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/dom/dispatcher.ts",
+          "sha256": "8d6bbace5fbdcf570d2eb8c4b07460ba4e1a9c06c03d7a04cdbaaf6add02fd4a"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/dom/dom.ts",
+          "sha256": "2cedafefaf84bd9647c58b9ed364b414d496385ddc2a5253fd5232cf718a969a"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/dom/error-info.ts",
+          "sha256": "4ce0211dda7568a89465776853d8ac503de4a42f11f44de1996cc86b71ec1c18"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/dom/event-replay.ts",
+          "sha256": "e31a638c5d6296f9e8a6c777a682f3be86cd6a4e70342ba5661f0a34af47e4c5"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/dom/features/activity/full.ts",
+          "sha256": "9a3bfb0462f9db8a8be532eff08418dc418b8d6c55989c2ff2e945aabbc2a3f6"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/dom/features/activity/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/dom/features/class/full.ts",
+          "sha256": "37543d6d736c59d32f3c1d0eae7374a5a0cf7858011eb37befd46dd03344d335"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/dom/features/class/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/dom/features/context/full.ts",
+          "sha256": "e65aa8e9b680668143c40dfe2e39b7e9be0583156978c775667b3976d43ca286"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/dom/features/context/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/dom/features/forward-ref/full.ts",
+          "sha256": "7afa547e69830ddebc3ba8d3acfe245807c62657687779b2779b98b2fc93fbd7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/dom/features/forward-ref/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/dom/features/fragment-refs/index.ts",
+          "sha256": "88e29a82f36597d5e4a94c047f9258b8f2a079041d5037f333bf8b429c933f50"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/dom/features/hydration/full.ts",
+          "sha256": "184bfc6f2541d69d07ecbddb25445d01e834a9d47f6d7f14ee793d62de00e248"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/dom/features/hydration/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/dom/features/index.ts",
+          "sha256": "17652a22c2de7dd6e1a7c8251c3c6c0559b7a0100dddb122458423ceaec19e9c"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/dom/features/lazy/full.ts",
+          "sha256": "21349d7a8be9d9eacdffcfd044909b8b67de5822a1a3717e992354318b97c347"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/dom/features/lazy/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/dom/features/memo/full.ts",
+          "sha256": "6ebad09d48015e6e3467041278e58246995ad74e7beaf0ea84ede03e151a5c5d"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/dom/features/memo/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/dom/features/portal/full.ts",
+          "sha256": "ff77c98c976e215cc94c64b46a6cac7ce649f7ec51e22a9b686c5c2d4b0cfbf6"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/dom/features/portal/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/dom/features/suspense/full.ts",
+          "sha256": "0da2ef71fc2854a4ea55a57c7f46d3e68e419abfa2c0c781a106c50b117f2084"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/dom/features/suspense/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/dom/features/view-transition/full.ts",
+          "sha256": "ad3459e1457715b03d7043d57c007832f8d86d2cc5595d11a166f61cda9b40ba"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/dom/features/view-transition/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/dom/features/view-transition/resources.ts",
+          "sha256": "a0f4d9c08a939c74c8b3ae161735e11b7f839a289ae4447771f18f53b774b12a"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/dom/features/view-transition/visual.ts",
+          "sha256": "66dbdb5830d054456d0ab699e286d29639218605566c33a5a6975871ab140649"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/dom/fragment-instance.ts",
+          "sha256": "7a3f13fa0ef7cf1cedf66923788e8eb4d43bf1cec74911fd13d53396b9eb6b90"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/dom/portal.ts",
+          "sha256": "1358070e547c2d6c030bb73afc0a999d5b59f65e8dfb9db337077f2ec2a1798a"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/dom/reconcile.ts",
+          "sha256": "3c112332ceae9d7b59a8ba82a661e69c5fdda67b61cbbca44344a44fdb7e9279"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/dom/resource-hints.ts",
+          "sha256": "4ee9d454e82b0cb128e0daa703c88a8ce8b212e94c5417eb2ffd17034f160219"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/dom/resource-store.ts",
+          "sha256": "87c33dff41f57004e631d458170cfe4daa36e2795437ec9a2b9b5d298f8a087e"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/dom/resources.ts",
+          "sha256": "3d07f8d9ba061880559af4e755bc8b29b5cc8d830a46fd9d497e54755b42e505"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/dom/retained-effects.ts",
+          "sha256": "4e2b7e6e98bd2c02c9492ee400265df11ddd7142ddc14ea91d2725c3eb0cf1e5"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/dom/root-internal.ts",
+          "sha256": "db26a57dcffc037ea65573cb459e06247b5ecdc7507dc17284347336b59bac14"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/dom/root.ts",
+          "sha256": "085ba35553a87299f562549d713cc8f92a8fe865b24f0ee0a242917be3e73253"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/react/activity.ts",
+          "sha256": "dac42f0847c53ea6233dd5c04491379f305547acbfbe7d6491728505e66fdf77"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/react/children.ts",
+          "sha256": "ab214cdab258cfc71a90e0633569dd6c4558b0b9c76271d077224cad933f82d4"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/react/class.ts",
+          "sha256": "64911643dbc4c029fdc7a499b3406e18bb8569df3e8c34d7aef332e5319516b8"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/react/context.ts",
+          "sha256": "a3808f65aed8a6afcbaed55398e31186403f8db0b33ffa422ce2888dddc2dcaf"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/react/element.ts",
+          "sha256": "3e3a22cb9325bea8cb4cd1936af06f3f532fbf70a64c183d3775904aa2617aa0"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/react/hooks.ts",
+          "sha256": "16db79f42be3bbd340980eb17ccfb47c61ba4facfa444db522b717f1f37a9e3a"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/react/index.ts",
+          "sha256": "e68b17b4a2da13a0105d72aef9012cfd9928e1b0f2eed32edb13768194797525"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/react/memo.ts",
+          "sha256": "5aadf27b6dd989c23f06550511414cd4ae053ab2bb7250d82355bb59e8aff56d"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/react/portal.ts",
+          "sha256": "0e0e28608e1dc5ef5e18649e1d8d122206468d4b9b4d1fdbebc36535612d4958"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/react/shared-internals.ts",
+          "sha256": "afc354a40b9302397a8fbe238ba8295b54f6165ba6401d025d68d5063feb687b"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/react/suspense.ts",
+          "sha256": "487b236e813138ce54a0931a580254100fa790d429d4423ef09e370176565678"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/react/view-transition.ts",
+          "sha256": "deae1edf4bc2b1025b1e63e12f052435a415db3163b86cfb1c9135a3bebfe09b"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/server/bootstrap-script.ts",
+          "sha256": "cbe958554ff1df966a7f2de585311bd8ba72bf84e8f95f78a16743b0ab0da243"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/server/dispatcher.ts",
+          "sha256": "4ee59e2941dc68ef279ad1448bcd85e74a1bb0743b16d8e8f55efbca4e0f9ff6"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/server/escape.ts",
+          "sha256": "0a338961be7f12a7a34f453a48a1d24d876fd1352defd2a2ba078991824f1cd7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/server/renderToString.ts",
+          "sha256": "df6eb5070bde0b1b6d690c1cc053be52b3880733190ff76b87e06d8fd045e107"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/server/resource-hints.ts",
+          "sha256": "485226d95446eb00a3e973561ed6f8ec40a1a416bff4e267adb3893d5a770135"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/server/stream.ts",
+          "sha256": "f4caaacc91f0cec1787d81039e9ae39d14343dfbc75294fba61d7c26d3090e3e"
+        },
+        {
+          "path": "../../../../private/tmp/redact-flat-hooks/src/server/walk.ts",
+          "sha256": "ea900203c8207d998f0a40b6b724f6a12a37296a2b8ac7ba26e6849c257df4f3"
+        },
+        {
+          "path": "../../../../tmp/redact-flat-hooks/src/dom/client.ts",
+          "sha256": "787e1f0517d0fe7c6df938b09e755436e3259d1698d6a53c971fef4e4884e924"
+        },
+        {
+          "path": "../../../../tmp/redact-flat-hooks/src/dom/index.ts",
+          "sha256": "97273bbef8e214cb6d4d826854dc61891d0ef3640b3a1ddb2ea056358f80ed76"
+        },
+        {
+          "path": "../../../../tmp/redact-flat-hooks/src/react/index.ts",
+          "sha256": "e68b17b4a2da13a0105d72aef9012cfd9928e1b0f2eed32edb13768194797525"
+        },
+        {
+          "path": "../../../../tmp/redact-flat-hooks/src/react/jsx-runtime.ts",
+          "sha256": "842a08086f193d641f99611d2214c484a2f2a97f6807364ba5f194ed972e62e3"
+        },
+        {
+          "path": "../../../../tmp/redact-flat-hooks/src/server/index.ts",
+          "sha256": "1b5fa6eb9b09f4a68c0b46cbf20eec8e5f910283230a8ece6513e79ddc2d4410"
+        },
+        {
+          "path": "benchmarks/reducer-workloads.ts",
+          "sha256": "23ccc85dd1864ae1f9541623e08107594a64bf7094c26923c3edfd4391a24b06"
+        },
+        {
+          "path": "benchmarks/runtime-workloads.ts",
+          "sha256": "006a5c1640833d561f01c34bf22a8421bc2fae9efea63acd80de8c0560afa1f1"
+        }
+      ],
+      "fixtureBundle": {
+        "raw": 99098,
+        "gzip": 35556,
+        "brotli": 31217
+      }
+    }
+  ],
+  "calibration": {
+    "reducer-suspense-retries": {
+      "name": "reducer-suspense-retries",
+      "mode": "sync",
+      "defaultIterations": 20,
+      "optIn": true,
+      "iterations": 391,
+      "durationsMs": {
+        "flat-hooks": 8.600000023841858,
+        "react": 4.199999928474426,
+        "current": 11.899999976158142,
+        "react-control": 4.100000023841858,
+        "journal": 8.899999976158142
+      }
+    },
+    "reducer-batches": {
+      "name": "reducer-batches",
+      "mode": "sync",
+      "defaultIterations": 80,
+      "optIn": true,
+      "iterations": 1423,
+      "durationsMs": {
+        "react-control": 4.5,
+        "journal": 6.799999952316284,
+        "react": 4.699999928474426,
+        "current": 6.299999952316284,
+        "flat-hooks": 6.600000023841858
+      }
+    },
+    "reducer-suspense-updates": {
+      "name": "reducer-suspense-updates",
+      "mode": "sync",
+      "defaultIterations": 60,
+      "optIn": true,
+      "iterations": 1455,
+      "durationsMs": {
+        "current": 5,
+        "journal": 5.600000023841858,
+        "flat-hooks": 5.700000047683716,
+        "react-control": 3.3000000715255737,
+        "react": 3.5
+      }
+    }
+  },
+  "throughput": {
+    "reducer-suspense-retries": {
+      "mode": "sync",
+      "iterations": 391,
+      "samples": {
+        "react": [
+          [
+            {
+              "name": "reducer-suspense-retries",
+              "mode": "sync",
+              "iterations": 391,
+              "durationMs": 51.299999952316284,
+              "operations": 75072,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 37632,
+                "layoutCleanups": 37536,
+                "minRowCommits": 392,
+                "maxRowCommits": 392,
+                "layoutDomChecks": 37632,
+                "fallbackMounts": 391,
+                "fallbackUnmounts": 391,
+                "hiddenChecks": 782,
+                "independentSuspensions": 1,
+                "firstRowValue": 891760,
+                "lastRowValue": 712776
+              }
+            },
+            {
+              "name": "reducer-suspense-retries",
+              "mode": "sync",
+              "iterations": 391,
+              "durationMs": 50,
+              "operations": 75072,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 37632,
+                "layoutCleanups": 37536,
+                "minRowCommits": 392,
+                "maxRowCommits": 392,
+                "layoutDomChecks": 37632,
+                "fallbackMounts": 391,
+                "fallbackUnmounts": 391,
+                "hiddenChecks": 782,
+                "independentSuspensions": 1,
+                "firstRowValue": 891760,
+                "lastRowValue": 712776
+              }
+            },
+            {
+              "name": "reducer-suspense-retries",
+              "mode": "sync",
+              "iterations": 391,
+              "durationMs": 52.199999928474426,
+              "operations": 75072,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 37632,
+                "layoutCleanups": 37536,
+                "minRowCommits": 392,
+                "maxRowCommits": 392,
+                "layoutDomChecks": 37632,
+                "fallbackMounts": 391,
+                "fallbackUnmounts": 391,
+                "hiddenChecks": 782,
+                "independentSuspensions": 1,
+                "firstRowValue": 891760,
+                "lastRowValue": 712776
+              }
+            }
+          ],
+          [
+            {
+              "name": "reducer-suspense-retries",
+              "mode": "sync",
+              "iterations": 391,
+              "durationMs": 52.5,
+              "operations": 75072,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 37632,
+                "layoutCleanups": 37536,
+                "minRowCommits": 392,
+                "maxRowCommits": 392,
+                "layoutDomChecks": 37632,
+                "fallbackMounts": 391,
+                "fallbackUnmounts": 391,
+                "hiddenChecks": 782,
+                "independentSuspensions": 1,
+                "firstRowValue": 891760,
+                "lastRowValue": 712776
+              }
+            },
+            {
+              "name": "reducer-suspense-retries",
+              "mode": "sync",
+              "iterations": 391,
+              "durationMs": 52,
+              "operations": 75072,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 37632,
+                "layoutCleanups": 37536,
+                "minRowCommits": 392,
+                "maxRowCommits": 392,
+                "layoutDomChecks": 37632,
+                "fallbackMounts": 391,
+                "fallbackUnmounts": 391,
+                "hiddenChecks": 782,
+                "independentSuspensions": 1,
+                "firstRowValue": 891760,
+                "lastRowValue": 712776
+              }
+            },
+            {
+              "name": "reducer-suspense-retries",
+              "mode": "sync",
+              "iterations": 391,
+              "durationMs": 52.199999928474426,
+              "operations": 75072,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 37632,
+                "layoutCleanups": 37536,
+                "minRowCommits": 392,
+                "maxRowCommits": 392,
+                "layoutDomChecks": 37632,
+                "fallbackMounts": 391,
+                "fallbackUnmounts": 391,
+                "hiddenChecks": 782,
+                "independentSuspensions": 1,
+                "firstRowValue": 891760,
+                "lastRowValue": 712776
+              }
+            }
+          ],
+          [
+            {
+              "name": "reducer-suspense-retries",
+              "mode": "sync",
+              "iterations": 391,
+              "durationMs": 52.200000047683716,
+              "operations": 75072,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 37632,
+                "layoutCleanups": 37536,
+                "minRowCommits": 392,
+                "maxRowCommits": 392,
+                "layoutDomChecks": 37632,
+                "fallbackMounts": 391,
+                "fallbackUnmounts": 391,
+                "hiddenChecks": 782,
+                "independentSuspensions": 1,
+                "firstRowValue": 891760,
+                "lastRowValue": 712776
+              }
+            },
+            {
+              "name": "reducer-suspense-retries",
+              "mode": "sync",
+              "iterations": 391,
+              "durationMs": 52,
+              "operations": 75072,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 37632,
+                "layoutCleanups": 37536,
+                "minRowCommits": 392,
+                "maxRowCommits": 392,
+                "layoutDomChecks": 37632,
+                "fallbackMounts": 391,
+                "fallbackUnmounts": 391,
+                "hiddenChecks": 782,
+                "independentSuspensions": 1,
+                "firstRowValue": 891760,
+                "lastRowValue": 712776
+              }
+            },
+            {
+              "name": "reducer-suspense-retries",
+              "mode": "sync",
+              "iterations": 391,
+              "durationMs": 52.5,
+              "operations": 75072,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 37632,
+                "layoutCleanups": 37536,
+                "minRowCommits": 392,
+                "maxRowCommits": 392,
+                "layoutDomChecks": 37632,
+                "fallbackMounts": 391,
+                "fallbackUnmounts": 391,
+                "hiddenChecks": 782,
+                "independentSuspensions": 1,
+                "firstRowValue": 891760,
+                "lastRowValue": 712776
+              }
+            }
+          ]
+        ],
+        "react-control": [
+          [
+            {
+              "name": "reducer-suspense-retries",
+              "mode": "sync",
+              "iterations": 391,
+              "durationMs": 50.10000002384186,
+              "operations": 75072,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 37632,
+                "layoutCleanups": 37536,
+                "minRowCommits": 392,
+                "maxRowCommits": 392,
+                "layoutDomChecks": 37632,
+                "fallbackMounts": 391,
+                "fallbackUnmounts": 391,
+                "hiddenChecks": 782,
+                "independentSuspensions": 1,
+                "firstRowValue": 891760,
+                "lastRowValue": 712776
+              }
+            },
+            {
+              "name": "reducer-suspense-retries",
+              "mode": "sync",
+              "iterations": 391,
+              "durationMs": 50.5,
+              "operations": 75072,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 37632,
+                "layoutCleanups": 37536,
+                "minRowCommits": 392,
+                "maxRowCommits": 392,
+                "layoutDomChecks": 37632,
+                "fallbackMounts": 391,
+                "fallbackUnmounts": 391,
+                "hiddenChecks": 782,
+                "independentSuspensions": 1,
+                "firstRowValue": 891760,
+                "lastRowValue": 712776
+              }
+            },
+            {
+              "name": "reducer-suspense-retries",
+              "mode": "sync",
+              "iterations": 391,
+              "durationMs": 50.60000002384186,
+              "operations": 75072,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 37632,
+                "layoutCleanups": 37536,
+                "minRowCommits": 392,
+                "maxRowCommits": 392,
+                "layoutDomChecks": 37632,
+                "fallbackMounts": 391,
+                "fallbackUnmounts": 391,
+                "hiddenChecks": 782,
+                "independentSuspensions": 1,
+                "firstRowValue": 891760,
+                "lastRowValue": 712776
+              }
+            }
+          ],
+          [
+            {
+              "name": "reducer-suspense-retries",
+              "mode": "sync",
+              "iterations": 391,
+              "durationMs": 51.89999997615814,
+              "operations": 75072,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 37632,
+                "layoutCleanups": 37536,
+                "minRowCommits": 392,
+                "maxRowCommits": 392,
+                "layoutDomChecks": 37632,
+                "fallbackMounts": 391,
+                "fallbackUnmounts": 391,
+                "hiddenChecks": 782,
+                "independentSuspensions": 1,
+                "firstRowValue": 891760,
+                "lastRowValue": 712776
+              }
+            },
+            {
+              "name": "reducer-suspense-retries",
+              "mode": "sync",
+              "iterations": 391,
+              "durationMs": 52.300000071525574,
+              "operations": 75072,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 37632,
+                "layoutCleanups": 37536,
+                "minRowCommits": 392,
+                "maxRowCommits": 392,
+                "layoutDomChecks": 37632,
+                "fallbackMounts": 391,
+                "fallbackUnmounts": 391,
+                "hiddenChecks": 782,
+                "independentSuspensions": 1,
+                "firstRowValue": 891760,
+                "lastRowValue": 712776
+              }
+            },
+            {
+              "name": "reducer-suspense-retries",
+              "mode": "sync",
+              "iterations": 391,
+              "durationMs": 52.200000047683716,
+              "operations": 75072,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 37632,
+                "layoutCleanups": 37536,
+                "minRowCommits": 392,
+                "maxRowCommits": 392,
+                "layoutDomChecks": 37632,
+                "fallbackMounts": 391,
+                "fallbackUnmounts": 391,
+                "hiddenChecks": 782,
+                "independentSuspensions": 1,
+                "firstRowValue": 891760,
+                "lastRowValue": 712776
+              }
+            }
+          ],
+          [
+            {
+              "name": "reducer-suspense-retries",
+              "mode": "sync",
+              "iterations": 391,
+              "durationMs": 51.60000002384186,
+              "operations": 75072,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 37632,
+                "layoutCleanups": 37536,
+                "minRowCommits": 392,
+                "maxRowCommits": 392,
+                "layoutDomChecks": 37632,
+                "fallbackMounts": 391,
+                "fallbackUnmounts": 391,
+                "hiddenChecks": 782,
+                "independentSuspensions": 1,
+                "firstRowValue": 891760,
+                "lastRowValue": 712776
+              }
+            },
+            {
+              "name": "reducer-suspense-retries",
+              "mode": "sync",
+              "iterations": 391,
+              "durationMs": 50.40000009536743,
+              "operations": 75072,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 37632,
+                "layoutCleanups": 37536,
+                "minRowCommits": 392,
+                "maxRowCommits": 392,
+                "layoutDomChecks": 37632,
+                "fallbackMounts": 391,
+                "fallbackUnmounts": 391,
+                "hiddenChecks": 782,
+                "independentSuspensions": 1,
+                "firstRowValue": 891760,
+                "lastRowValue": 712776
+              }
+            },
+            {
+              "name": "reducer-suspense-retries",
+              "mode": "sync",
+              "iterations": 391,
+              "durationMs": 51.699999928474426,
+              "operations": 75072,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 37632,
+                "layoutCleanups": 37536,
+                "minRowCommits": 392,
+                "maxRowCommits": 392,
+                "layoutDomChecks": 37632,
+                "fallbackMounts": 391,
+                "fallbackUnmounts": 391,
+                "hiddenChecks": 782,
+                "independentSuspensions": 1,
+                "firstRowValue": 891760,
+                "lastRowValue": 712776
+              }
+            }
+          ]
+        ],
+        "journal": [
+          [
+            {
+              "name": "reducer-suspense-retries",
+              "mode": "sync",
+              "iterations": 391,
+              "durationMs": 114.70000004768372,
+              "operations": 75072,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 37632,
+                "layoutCleanups": 37536,
+                "minRowCommits": 392,
+                "maxRowCommits": 392,
+                "layoutDomChecks": 37632,
+                "fallbackMounts": 391,
+                "fallbackUnmounts": 391,
+                "hiddenChecks": 782,
+                "independentSuspensions": 1,
+                "firstRowValue": 891760,
+                "lastRowValue": 712776
+              }
+            },
+            {
+              "name": "reducer-suspense-retries",
+              "mode": "sync",
+              "iterations": 391,
+              "durationMs": 114.29999995231628,
+              "operations": 75072,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 37632,
+                "layoutCleanups": 37536,
+                "minRowCommits": 392,
+                "maxRowCommits": 392,
+                "layoutDomChecks": 37632,
+                "fallbackMounts": 391,
+                "fallbackUnmounts": 391,
+                "hiddenChecks": 782,
+                "independentSuspensions": 1,
+                "firstRowValue": 891760,
+                "lastRowValue": 712776
+              }
+            },
+            {
+              "name": "reducer-suspense-retries",
+              "mode": "sync",
+              "iterations": 391,
+              "durationMs": 112.89999997615814,
+              "operations": 75072,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 37632,
+                "layoutCleanups": 37536,
+                "minRowCommits": 392,
+                "maxRowCommits": 392,
+                "layoutDomChecks": 37632,
+                "fallbackMounts": 391,
+                "fallbackUnmounts": 391,
+                "hiddenChecks": 782,
+                "independentSuspensions": 1,
+                "firstRowValue": 891760,
+                "lastRowValue": 712776
+              }
+            }
+          ],
+          [
+            {
+              "name": "reducer-suspense-retries",
+              "mode": "sync",
+              "iterations": 391,
+              "durationMs": 126.30000007152557,
+              "operations": 75072,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 37632,
+                "layoutCleanups": 37536,
+                "minRowCommits": 392,
+                "maxRowCommits": 392,
+                "layoutDomChecks": 37632,
+                "fallbackMounts": 391,
+                "fallbackUnmounts": 391,
+                "hiddenChecks": 782,
+                "independentSuspensions": 1,
+                "firstRowValue": 891760,
+                "lastRowValue": 712776
+              }
+            },
+            {
+              "name": "reducer-suspense-retries",
+              "mode": "sync",
+              "iterations": 391,
+              "durationMs": 116,
+              "operations": 75072,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 37632,
+                "layoutCleanups": 37536,
+                "minRowCommits": 392,
+                "maxRowCommits": 392,
+                "layoutDomChecks": 37632,
+                "fallbackMounts": 391,
+                "fallbackUnmounts": 391,
+                "hiddenChecks": 782,
+                "independentSuspensions": 1,
+                "firstRowValue": 891760,
+                "lastRowValue": 712776
+              }
+            },
+            {
+              "name": "reducer-suspense-retries",
+              "mode": "sync",
+              "iterations": 391,
+              "durationMs": 126.10000002384186,
+              "operations": 75072,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 37632,
+                "layoutCleanups": 37536,
+                "minRowCommits": 392,
+                "maxRowCommits": 392,
+                "layoutDomChecks": 37632,
+                "fallbackMounts": 391,
+                "fallbackUnmounts": 391,
+                "hiddenChecks": 782,
+                "independentSuspensions": 1,
+                "firstRowValue": 891760,
+                "lastRowValue": 712776
+              }
+            }
+          ],
+          [
+            {
+              "name": "reducer-suspense-retries",
+              "mode": "sync",
+              "iterations": 391,
+              "durationMs": 114.30000007152557,
+              "operations": 75072,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 37632,
+                "layoutCleanups": 37536,
+                "minRowCommits": 392,
+                "maxRowCommits": 392,
+                "layoutDomChecks": 37632,
+                "fallbackMounts": 391,
+                "fallbackUnmounts": 391,
+                "hiddenChecks": 782,
+                "independentSuspensions": 1,
+                "firstRowValue": 891760,
+                "lastRowValue": 712776
+              }
+            },
+            {
+              "name": "reducer-suspense-retries",
+              "mode": "sync",
+              "iterations": 391,
+              "durationMs": 113,
+              "operations": 75072,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 37632,
+                "layoutCleanups": 37536,
+                "minRowCommits": 392,
+                "maxRowCommits": 392,
+                "layoutDomChecks": 37632,
+                "fallbackMounts": 391,
+                "fallbackUnmounts": 391,
+                "hiddenChecks": 782,
+                "independentSuspensions": 1,
+                "firstRowValue": 891760,
+                "lastRowValue": 712776
+              }
+            },
+            {
+              "name": "reducer-suspense-retries",
+              "mode": "sync",
+              "iterations": 391,
+              "durationMs": 113.69999992847443,
+              "operations": 75072,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 37632,
+                "layoutCleanups": 37536,
+                "minRowCommits": 392,
+                "maxRowCommits": 392,
+                "layoutDomChecks": 37632,
+                "fallbackMounts": 391,
+                "fallbackUnmounts": 391,
+                "hiddenChecks": 782,
+                "independentSuspensions": 1,
+                "firstRowValue": 891760,
+                "lastRowValue": 712776
+              }
+            }
+          ]
+        ],
+        "current": [
+          [
+            {
+              "name": "reducer-suspense-retries",
+              "mode": "sync",
+              "iterations": 391,
+              "durationMs": 180,
+              "operations": 75072,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 37632,
+                "layoutCleanups": 37536,
+                "minRowCommits": 392,
+                "maxRowCommits": 392,
+                "layoutDomChecks": 37632,
+                "fallbackMounts": 391,
+                "fallbackUnmounts": 391,
+                "hiddenChecks": 782,
+                "independentSuspensions": 1,
+                "firstRowValue": 891760,
+                "lastRowValue": 712776
+              }
+            },
+            {
+              "name": "reducer-suspense-retries",
+              "mode": "sync",
+              "iterations": 391,
+              "durationMs": 177.39999997615814,
+              "operations": 75072,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 37632,
+                "layoutCleanups": 37536,
+                "minRowCommits": 392,
+                "maxRowCommits": 392,
+                "layoutDomChecks": 37632,
+                "fallbackMounts": 391,
+                "fallbackUnmounts": 391,
+                "hiddenChecks": 782,
+                "independentSuspensions": 1,
+                "firstRowValue": 891760,
+                "lastRowValue": 712776
+              }
+            },
+            {
+              "name": "reducer-suspense-retries",
+              "mode": "sync",
+              "iterations": 391,
+              "durationMs": 175.39999997615814,
+              "operations": 75072,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 37632,
+                "layoutCleanups": 37536,
+                "minRowCommits": 392,
+                "maxRowCommits": 392,
+                "layoutDomChecks": 37632,
+                "fallbackMounts": 391,
+                "fallbackUnmounts": 391,
+                "hiddenChecks": 782,
+                "independentSuspensions": 1,
+                "firstRowValue": 891760,
+                "lastRowValue": 712776
+              }
+            }
+          ],
+          [
+            {
+              "name": "reducer-suspense-retries",
+              "mode": "sync",
+              "iterations": 391,
+              "durationMs": 191.30000007152557,
+              "operations": 75072,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 37632,
+                "layoutCleanups": 37536,
+                "minRowCommits": 392,
+                "maxRowCommits": 392,
+                "layoutDomChecks": 37632,
+                "fallbackMounts": 391,
+                "fallbackUnmounts": 391,
+                "hiddenChecks": 782,
+                "independentSuspensions": 1,
+                "firstRowValue": 891760,
+                "lastRowValue": 712776
+              }
+            },
+            {
+              "name": "reducer-suspense-retries",
+              "mode": "sync",
+              "iterations": 391,
+              "durationMs": 179.09999990463257,
+              "operations": 75072,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 37632,
+                "layoutCleanups": 37536,
+                "minRowCommits": 392,
+                "maxRowCommits": 392,
+                "layoutDomChecks": 37632,
+                "fallbackMounts": 391,
+                "fallbackUnmounts": 391,
+                "hiddenChecks": 782,
+                "independentSuspensions": 1,
+                "firstRowValue": 891760,
+                "lastRowValue": 712776
+              }
+            },
+            {
+              "name": "reducer-suspense-retries",
+              "mode": "sync",
+              "iterations": 391,
+              "durationMs": 188.80000007152557,
+              "operations": 75072,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 37632,
+                "layoutCleanups": 37536,
+                "minRowCommits": 392,
+                "maxRowCommits": 392,
+                "layoutDomChecks": 37632,
+                "fallbackMounts": 391,
+                "fallbackUnmounts": 391,
+                "hiddenChecks": 782,
+                "independentSuspensions": 1,
+                "firstRowValue": 891760,
+                "lastRowValue": 712776
+              }
+            }
+          ],
+          [
+            {
+              "name": "reducer-suspense-retries",
+              "mode": "sync",
+              "iterations": 391,
+              "durationMs": 182.29999995231628,
+              "operations": 75072,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 37632,
+                "layoutCleanups": 37536,
+                "minRowCommits": 392,
+                "maxRowCommits": 392,
+                "layoutDomChecks": 37632,
+                "fallbackMounts": 391,
+                "fallbackUnmounts": 391,
+                "hiddenChecks": 782,
+                "independentSuspensions": 1,
+                "firstRowValue": 891760,
+                "lastRowValue": 712776
+              }
+            },
+            {
+              "name": "reducer-suspense-retries",
+              "mode": "sync",
+              "iterations": 391,
+              "durationMs": 178.40000009536743,
+              "operations": 75072,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 37632,
+                "layoutCleanups": 37536,
+                "minRowCommits": 392,
+                "maxRowCommits": 392,
+                "layoutDomChecks": 37632,
+                "fallbackMounts": 391,
+                "fallbackUnmounts": 391,
+                "hiddenChecks": 782,
+                "independentSuspensions": 1,
+                "firstRowValue": 891760,
+                "lastRowValue": 712776
+              }
+            },
+            {
+              "name": "reducer-suspense-retries",
+              "mode": "sync",
+              "iterations": 391,
+              "durationMs": 177.79999995231628,
+              "operations": 75072,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 37632,
+                "layoutCleanups": 37536,
+                "minRowCommits": 392,
+                "maxRowCommits": 392,
+                "layoutDomChecks": 37632,
+                "fallbackMounts": 391,
+                "fallbackUnmounts": 391,
+                "hiddenChecks": 782,
+                "independentSuspensions": 1,
+                "firstRowValue": 891760,
+                "lastRowValue": 712776
+              }
+            }
+          ]
+        ],
+        "flat-hooks": [
+          [
+            {
+              "name": "reducer-suspense-retries",
+              "mode": "sync",
+              "iterations": 391,
+              "durationMs": 110.5,
+              "operations": 75072,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 37632,
+                "layoutCleanups": 37536,
+                "minRowCommits": 392,
+                "maxRowCommits": 392,
+                "layoutDomChecks": 37632,
+                "fallbackMounts": 391,
+                "fallbackUnmounts": 391,
+                "hiddenChecks": 782,
+                "independentSuspensions": 1,
+                "firstRowValue": 891760,
+                "lastRowValue": 712776
+              }
+            },
+            {
+              "name": "reducer-suspense-retries",
+              "mode": "sync",
+              "iterations": 391,
+              "durationMs": 112.5,
+              "operations": 75072,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 37632,
+                "layoutCleanups": 37536,
+                "minRowCommits": 392,
+                "maxRowCommits": 392,
+                "layoutDomChecks": 37632,
+                "fallbackMounts": 391,
+                "fallbackUnmounts": 391,
+                "hiddenChecks": 782,
+                "independentSuspensions": 1,
+                "firstRowValue": 891760,
+                "lastRowValue": 712776
+              }
+            },
+            {
+              "name": "reducer-suspense-retries",
+              "mode": "sync",
+              "iterations": 391,
+              "durationMs": 111.09999990463257,
+              "operations": 75072,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 37632,
+                "layoutCleanups": 37536,
+                "minRowCommits": 392,
+                "maxRowCommits": 392,
+                "layoutDomChecks": 37632,
+                "fallbackMounts": 391,
+                "fallbackUnmounts": 391,
+                "hiddenChecks": 782,
+                "independentSuspensions": 1,
+                "firstRowValue": 891760,
+                "lastRowValue": 712776
+              }
+            }
+          ],
+          [
+            {
+              "name": "reducer-suspense-retries",
+              "mode": "sync",
+              "iterations": 391,
+              "durationMs": 111.69999992847443,
+              "operations": 75072,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 37632,
+                "layoutCleanups": 37536,
+                "minRowCommits": 392,
+                "maxRowCommits": 392,
+                "layoutDomChecks": 37632,
+                "fallbackMounts": 391,
+                "fallbackUnmounts": 391,
+                "hiddenChecks": 782,
+                "independentSuspensions": 1,
+                "firstRowValue": 891760,
+                "lastRowValue": 712776
+              }
+            },
+            {
+              "name": "reducer-suspense-retries",
+              "mode": "sync",
+              "iterations": 391,
+              "durationMs": 121.89999997615814,
+              "operations": 75072,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 37632,
+                "layoutCleanups": 37536,
+                "minRowCommits": 392,
+                "maxRowCommits": 392,
+                "layoutDomChecks": 37632,
+                "fallbackMounts": 391,
+                "fallbackUnmounts": 391,
+                "hiddenChecks": 782,
+                "independentSuspensions": 1,
+                "firstRowValue": 891760,
+                "lastRowValue": 712776
+              }
+            },
+            {
+              "name": "reducer-suspense-retries",
+              "mode": "sync",
+              "iterations": 391,
+              "durationMs": 111.39999997615814,
+              "operations": 75072,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 37632,
+                "layoutCleanups": 37536,
+                "minRowCommits": 392,
+                "maxRowCommits": 392,
+                "layoutDomChecks": 37632,
+                "fallbackMounts": 391,
+                "fallbackUnmounts": 391,
+                "hiddenChecks": 782,
+                "independentSuspensions": 1,
+                "firstRowValue": 891760,
+                "lastRowValue": 712776
+              }
+            }
+          ],
+          [
+            {
+              "name": "reducer-suspense-retries",
+              "mode": "sync",
+              "iterations": 391,
+              "durationMs": 112.10000002384186,
+              "operations": 75072,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 37632,
+                "layoutCleanups": 37536,
+                "minRowCommits": 392,
+                "maxRowCommits": 392,
+                "layoutDomChecks": 37632,
+                "fallbackMounts": 391,
+                "fallbackUnmounts": 391,
+                "hiddenChecks": 782,
+                "independentSuspensions": 1,
+                "firstRowValue": 891760,
+                "lastRowValue": 712776
+              }
+            },
+            {
+              "name": "reducer-suspense-retries",
+              "mode": "sync",
+              "iterations": 391,
+              "durationMs": 112,
+              "operations": 75072,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 37632,
+                "layoutCleanups": 37536,
+                "minRowCommits": 392,
+                "maxRowCommits": 392,
+                "layoutDomChecks": 37632,
+                "fallbackMounts": 391,
+                "fallbackUnmounts": 391,
+                "hiddenChecks": 782,
+                "independentSuspensions": 1,
+                "firstRowValue": 891760,
+                "lastRowValue": 712776
+              }
+            },
+            {
+              "name": "reducer-suspense-retries",
+              "mode": "sync",
+              "iterations": 391,
+              "durationMs": 109.5,
+              "operations": 75072,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 37632,
+                "layoutCleanups": 37536,
+                "minRowCommits": 392,
+                "maxRowCommits": 392,
+                "layoutDomChecks": 37632,
+                "fallbackMounts": 391,
+                "fallbackUnmounts": 391,
+                "hiddenChecks": 782,
+                "independentSuspensions": 1,
+                "firstRowValue": 891760,
+                "lastRowValue": 712776
+              }
+            }
+          ]
+        ]
+      },
+      "expectedOperations": 75072,
+      "summary": {
+        "react": {
+          "n": 9,
+          "median": 0.1335038361342057,
+          "p95": 0.13427109974424553,
+          "min": 0.1278772378516624,
+          "max": 0.13427109974424553
+        },
+        "react-control": {
+          "n": 9,
+          "median": 0.13196930952389221,
+          "p95": 0.13365728916109676,
+          "min": 0.12813299238834236,
+          "max": 0.13375959097576873
+        },
+        "journal": {
+          "n": 9,
+          "median": 0.2923273659118301,
+          "p95": 0.32281329936688513,
+          "min": 0.2887468030080771,
+          "max": 0.32301790299622907
+        },
+        "current": {
+          "n": 9,
+          "median": 0.45805626574074826,
+          "p95": 0.486700767446357,
+          "min": 0.44859335032265507,
+          "max": 0.4892583122033902
+        },
+        "flat-hooks": {
+          "n": 9,
+          "median": 0.28567774917768396,
+          "p95": 0.30214833755932197,
+          "min": 0.28005115089514065,
+          "max": 0.31176470582137633
+        }
+      },
+      "comparisons": {
+        "react": {
+          "react-control": {
+            "pairedTimeChangePercent": -1.1494253319804026,
+            "blockBootstrap95CI": [
+              -2.3391811492979198,
+              2.2837027824351708e-7
+            ],
+            "independentBlocks": 3
+          },
+          "journal": {
+            "pairedTimeChangePercent": 123.07692307692308,
+            "blockBootstrap95CI": [
+              117.30769230769229,
+              140.57142870766776
+            ],
+            "independentBlocks": 3
+          },
+          "current": {
+            "pairedTimeChangePercent": 249.23371606472924,
+            "blockBootstrap95CI": [
+              243.076923260322,
+              261.6858243874012
+            ],
+            "independentBlocks": 3
+          },
+          "flat-hooks": {
+            "pairedTimeChangePercent": 114.75095770390924,
+            "blockBootstrap95CI": [
+              113.40996193256868,
+              115.39961033666772
+            ],
+            "independentBlocks": 3
+          }
+        },
+        "journal": {
+          "react": {
+            "pairedTimeChangePercent": -55.172413793103445,
+            "blockBootstrap95CI": [
+              -58.43230406154516,
+              -53.982300884955755
+            ],
+            "independentBlocks": 3
+          },
+          "react-control": {
+            "pairedTimeChangePercent": -55.398230004099624,
+            "blockBootstrap95CI": [
+              -58.604282285635044,
+              -54.85564305201041
+            ],
+            "independentBlocks": 3
+          },
+          "current": {
+            "pairedTimeChangePercent": 55.35872454667719,
+            "blockBootstrap95CI": [
+              51.46476639999171,
+              57.876106279086216
+            ],
+            "independentBlocks": 3
+          },
+          "flat-hooks": {
+            "pairedTimeChangePercent": -1.9247594455879424,
+            "blockBootstrap95CI": [
+              -11.55977841233804,
+              -1.5943313302973383
+            ],
+            "independentBlocks": 3
+          }
+        },
+        "flat-hooks": {
+          "react": {
+            "pairedTimeChangePercent": -53.4344335088478,
+            "blockBootstrap95CI": [
+              -53.57466067663685,
+              -53.14183129295667
+            ],
+            "independentBlocks": 3
+          },
+          "react-control": {
+            "pairedTimeChangePercent": -54.45544548399952,
+            "blockBootstrap95CI": [
+              -54.66063346258656,
+              -53.536257825074664
+            ],
+            "independentBlocks": 3
+          },
+          "journal": {
+            "pairedTimeChangePercent": 1.9625334943941253,
+            "blockBootstrap95CI": [
+              1.6201620819717988,
+              13.070725293106577
+            ],
+            "independentBlocks": 3
+          },
+          "current": {
+            "pairedTimeChangePercent": 62.37442918019751,
+            "blockBootstrap95CI": [
+              57.8757876928175,
+              69.47935378090895
+            ],
+            "independentBlocks": 3
+          }
+        }
+      }
+    },
+    "reducer-batches": {
+      "mode": "sync",
+      "iterations": 1423,
+      "samples": {
+        "react": [
+          [
+            {
+              "name": "reducer-batches",
+              "mode": "sync",
+              "iterations": 1423,
+              "durationMs": 83.60000002384186,
+              "operations": 409824,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 136704,
+                "layoutCleanups": 136608,
+                "minRowCommits": 1424,
+                "maxRowCommits": 1424,
+                "layoutDomChecks": 136704,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 145436,
+                "lastRowValue": 961912
+              }
+            },
+            {
+              "name": "reducer-batches",
+              "mode": "sync",
+              "iterations": 1423,
+              "durationMs": 82.69999992847443,
+              "operations": 409824,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 136704,
+                "layoutCleanups": 136608,
+                "minRowCommits": 1424,
+                "maxRowCommits": 1424,
+                "layoutDomChecks": 136704,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 145436,
+                "lastRowValue": 961912
+              }
+            },
+            {
+              "name": "reducer-batches",
+              "mode": "sync",
+              "iterations": 1423,
+              "durationMs": 81.89999997615814,
+              "operations": 409824,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 136704,
+                "layoutCleanups": 136608,
+                "minRowCommits": 1424,
+                "maxRowCommits": 1424,
+                "layoutDomChecks": 136704,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 145436,
+                "lastRowValue": 961912
+              }
+            }
+          ],
+          [
+            {
+              "name": "reducer-batches",
+              "mode": "sync",
+              "iterations": 1423,
+              "durationMs": 79.89999997615814,
+              "operations": 409824,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 136704,
+                "layoutCleanups": 136608,
+                "minRowCommits": 1424,
+                "maxRowCommits": 1424,
+                "layoutDomChecks": 136704,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 145436,
+                "lastRowValue": 961912
+              }
+            },
+            {
+              "name": "reducer-batches",
+              "mode": "sync",
+              "iterations": 1423,
+              "durationMs": 79.79999995231628,
+              "operations": 409824,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 136704,
+                "layoutCleanups": 136608,
+                "minRowCommits": 1424,
+                "maxRowCommits": 1424,
+                "layoutDomChecks": 136704,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 145436,
+                "lastRowValue": 961912
+              }
+            },
+            {
+              "name": "reducer-batches",
+              "mode": "sync",
+              "iterations": 1423,
+              "durationMs": 81.89999997615814,
+              "operations": 409824,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 136704,
+                "layoutCleanups": 136608,
+                "minRowCommits": 1424,
+                "maxRowCommits": 1424,
+                "layoutDomChecks": 136704,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 145436,
+                "lastRowValue": 961912
+              }
+            }
+          ],
+          [
+            {
+              "name": "reducer-batches",
+              "mode": "sync",
+              "iterations": 1423,
+              "durationMs": 86.89999997615814,
+              "operations": 409824,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 136704,
+                "layoutCleanups": 136608,
+                "minRowCommits": 1424,
+                "maxRowCommits": 1424,
+                "layoutDomChecks": 136704,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 145436,
+                "lastRowValue": 961912
+              }
+            },
+            {
+              "name": "reducer-batches",
+              "mode": "sync",
+              "iterations": 1423,
+              "durationMs": 84.40000009536743,
+              "operations": 409824,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 136704,
+                "layoutCleanups": 136608,
+                "minRowCommits": 1424,
+                "maxRowCommits": 1424,
+                "layoutDomChecks": 136704,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 145436,
+                "lastRowValue": 961912
+              }
+            },
+            {
+              "name": "reducer-batches",
+              "mode": "sync",
+              "iterations": 1423,
+              "durationMs": 84.29999995231628,
+              "operations": 409824,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 136704,
+                "layoutCleanups": 136608,
+                "minRowCommits": 1424,
+                "maxRowCommits": 1424,
+                "layoutDomChecks": 136704,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 145436,
+                "lastRowValue": 961912
+              }
+            }
+          ]
+        ],
+        "react-control": [
+          [
+            {
+              "name": "reducer-batches",
+              "mode": "sync",
+              "iterations": 1423,
+              "durationMs": 84.10000002384186,
+              "operations": 409824,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 136704,
+                "layoutCleanups": 136608,
+                "minRowCommits": 1424,
+                "maxRowCommits": 1424,
+                "layoutDomChecks": 136704,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 145436,
+                "lastRowValue": 961912
+              }
+            },
+            {
+              "name": "reducer-batches",
+              "mode": "sync",
+              "iterations": 1423,
+              "durationMs": 83.20000004768372,
+              "operations": 409824,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 136704,
+                "layoutCleanups": 136608,
+                "minRowCommits": 1424,
+                "maxRowCommits": 1424,
+                "layoutDomChecks": 136704,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 145436,
+                "lastRowValue": 961912
+              }
+            },
+            {
+              "name": "reducer-batches",
+              "mode": "sync",
+              "iterations": 1423,
+              "durationMs": 82.79999995231628,
+              "operations": 409824,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 136704,
+                "layoutCleanups": 136608,
+                "minRowCommits": 1424,
+                "maxRowCommits": 1424,
+                "layoutDomChecks": 136704,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 145436,
+                "lastRowValue": 961912
+              }
+            }
+          ],
+          [
+            {
+              "name": "reducer-batches",
+              "mode": "sync",
+              "iterations": 1423,
+              "durationMs": 80.29999995231628,
+              "operations": 409824,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 136704,
+                "layoutCleanups": 136608,
+                "minRowCommits": 1424,
+                "maxRowCommits": 1424,
+                "layoutDomChecks": 136704,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 145436,
+                "lastRowValue": 961912
+              }
+            },
+            {
+              "name": "reducer-batches",
+              "mode": "sync",
+              "iterations": 1423,
+              "durationMs": 80.09999990463257,
+              "operations": 409824,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 136704,
+                "layoutCleanups": 136608,
+                "minRowCommits": 1424,
+                "maxRowCommits": 1424,
+                "layoutDomChecks": 136704,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 145436,
+                "lastRowValue": 961912
+              }
+            },
+            {
+              "name": "reducer-batches",
+              "mode": "sync",
+              "iterations": 1423,
+              "durationMs": 80.30000007152557,
+              "operations": 409824,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 136704,
+                "layoutCleanups": 136608,
+                "minRowCommits": 1424,
+                "maxRowCommits": 1424,
+                "layoutDomChecks": 136704,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 145436,
+                "lastRowValue": 961912
+              }
+            }
+          ],
+          [
+            {
+              "name": "reducer-batches",
+              "mode": "sync",
+              "iterations": 1423,
+              "durationMs": 87.39999997615814,
+              "operations": 409824,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 136704,
+                "layoutCleanups": 136608,
+                "minRowCommits": 1424,
+                "maxRowCommits": 1424,
+                "layoutDomChecks": 136704,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 145436,
+                "lastRowValue": 961912
+              }
+            },
+            {
+              "name": "reducer-batches",
+              "mode": "sync",
+              "iterations": 1423,
+              "durationMs": 83.70000004768372,
+              "operations": 409824,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 136704,
+                "layoutCleanups": 136608,
+                "minRowCommits": 1424,
+                "maxRowCommits": 1424,
+                "layoutDomChecks": 136704,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 145436,
+                "lastRowValue": 961912
+              }
+            },
+            {
+              "name": "reducer-batches",
+              "mode": "sync",
+              "iterations": 1423,
+              "durationMs": 84.30000007152557,
+              "operations": 409824,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 136704,
+                "layoutCleanups": 136608,
+                "minRowCommits": 1424,
+                "maxRowCommits": 1424,
+                "layoutDomChecks": 136704,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 145436,
+                "lastRowValue": 961912
+              }
+            }
+          ]
+        ],
+        "journal": [
+          [
+            {
+              "name": "reducer-batches",
+              "mode": "sync",
+              "iterations": 1423,
+              "durationMs": 90.29999995231628,
+              "operations": 409824,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 136704,
+                "layoutCleanups": 136608,
+                "minRowCommits": 1424,
+                "maxRowCommits": 1424,
+                "layoutDomChecks": 136704,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 145436,
+                "lastRowValue": 961912
+              }
+            },
+            {
+              "name": "reducer-batches",
+              "mode": "sync",
+              "iterations": 1423,
+              "durationMs": 90.60000002384186,
+              "operations": 409824,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 136704,
+                "layoutCleanups": 136608,
+                "minRowCommits": 1424,
+                "maxRowCommits": 1424,
+                "layoutDomChecks": 136704,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 145436,
+                "lastRowValue": 961912
+              }
+            },
+            {
+              "name": "reducer-batches",
+              "mode": "sync",
+              "iterations": 1423,
+              "durationMs": 89,
+              "operations": 409824,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 136704,
+                "layoutCleanups": 136608,
+                "minRowCommits": 1424,
+                "maxRowCommits": 1424,
+                "layoutDomChecks": 136704,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 145436,
+                "lastRowValue": 961912
+              }
+            }
+          ],
+          [
+            {
+              "name": "reducer-batches",
+              "mode": "sync",
+              "iterations": 1423,
+              "durationMs": 87.19999992847443,
+              "operations": 409824,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 136704,
+                "layoutCleanups": 136608,
+                "minRowCommits": 1424,
+                "maxRowCommits": 1424,
+                "layoutDomChecks": 136704,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 145436,
+                "lastRowValue": 961912
+              }
+            },
+            {
+              "name": "reducer-batches",
+              "mode": "sync",
+              "iterations": 1423,
+              "durationMs": 87.60000002384186,
+              "operations": 409824,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 136704,
+                "layoutCleanups": 136608,
+                "minRowCommits": 1424,
+                "maxRowCommits": 1424,
+                "layoutDomChecks": 136704,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 145436,
+                "lastRowValue": 961912
+              }
+            },
+            {
+              "name": "reducer-batches",
+              "mode": "sync",
+              "iterations": 1423,
+              "durationMs": 86.09999990463257,
+              "operations": 409824,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 136704,
+                "layoutCleanups": 136608,
+                "minRowCommits": 1424,
+                "maxRowCommits": 1424,
+                "layoutDomChecks": 136704,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 145436,
+                "lastRowValue": 961912
+              }
+            }
+          ],
+          [
+            {
+              "name": "reducer-batches",
+              "mode": "sync",
+              "iterations": 1423,
+              "durationMs": 88.79999995231628,
+              "operations": 409824,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 136704,
+                "layoutCleanups": 136608,
+                "minRowCommits": 1424,
+                "maxRowCommits": 1424,
+                "layoutDomChecks": 136704,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 145436,
+                "lastRowValue": 961912
+              }
+            },
+            {
+              "name": "reducer-batches",
+              "mode": "sync",
+              "iterations": 1423,
+              "durationMs": 90.29999995231628,
+              "operations": 409824,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 136704,
+                "layoutCleanups": 136608,
+                "minRowCommits": 1424,
+                "maxRowCommits": 1424,
+                "layoutDomChecks": 136704,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 145436,
+                "lastRowValue": 961912
+              }
+            },
+            {
+              "name": "reducer-batches",
+              "mode": "sync",
+              "iterations": 1423,
+              "durationMs": 89.70000004768372,
+              "operations": 409824,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 136704,
+                "layoutCleanups": 136608,
+                "minRowCommits": 1424,
+                "maxRowCommits": 1424,
+                "layoutDomChecks": 136704,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 145436,
+                "lastRowValue": 961912
+              }
+            }
+          ]
+        ],
+        "current": [
+          [
+            {
+              "name": "reducer-batches",
+              "mode": "sync",
+              "iterations": 1423,
+              "durationMs": 91,
+              "operations": 409824,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 136704,
+                "layoutCleanups": 136608,
+                "minRowCommits": 1424,
+                "maxRowCommits": 1424,
+                "layoutDomChecks": 136704,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 145436,
+                "lastRowValue": 961912
+              }
+            },
+            {
+              "name": "reducer-batches",
+              "mode": "sync",
+              "iterations": 1423,
+              "durationMs": 89.70000004768372,
+              "operations": 409824,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 136704,
+                "layoutCleanups": 136608,
+                "minRowCommits": 1424,
+                "maxRowCommits": 1424,
+                "layoutDomChecks": 136704,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 145436,
+                "lastRowValue": 961912
+              }
+            },
+            {
+              "name": "reducer-batches",
+              "mode": "sync",
+              "iterations": 1423,
+              "durationMs": 89.10000002384186,
+              "operations": 409824,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 136704,
+                "layoutCleanups": 136608,
+                "minRowCommits": 1424,
+                "maxRowCommits": 1424,
+                "layoutDomChecks": 136704,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 145436,
+                "lastRowValue": 961912
+              }
+            }
+          ],
+          [
+            {
+              "name": "reducer-batches",
+              "mode": "sync",
+              "iterations": 1423,
+              "durationMs": 86.10000002384186,
+              "operations": 409824,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 136704,
+                "layoutCleanups": 136608,
+                "minRowCommits": 1424,
+                "maxRowCommits": 1424,
+                "layoutDomChecks": 136704,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 145436,
+                "lastRowValue": 961912
+              }
+            },
+            {
+              "name": "reducer-batches",
+              "mode": "sync",
+              "iterations": 1423,
+              "durationMs": 88.10000002384186,
+              "operations": 409824,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 136704,
+                "layoutCleanups": 136608,
+                "minRowCommits": 1424,
+                "maxRowCommits": 1424,
+                "layoutDomChecks": 136704,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 145436,
+                "lastRowValue": 961912
+              }
+            },
+            {
+              "name": "reducer-batches",
+              "mode": "sync",
+              "iterations": 1423,
+              "durationMs": 88.79999995231628,
+              "operations": 409824,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 136704,
+                "layoutCleanups": 136608,
+                "minRowCommits": 1424,
+                "maxRowCommits": 1424,
+                "layoutDomChecks": 136704,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 145436,
+                "lastRowValue": 961912
+              }
+            }
+          ],
+          [
+            {
+              "name": "reducer-batches",
+              "mode": "sync",
+              "iterations": 1423,
+              "durationMs": 88.60000002384186,
+              "operations": 409824,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 136704,
+                "layoutCleanups": 136608,
+                "minRowCommits": 1424,
+                "maxRowCommits": 1424,
+                "layoutDomChecks": 136704,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 145436,
+                "lastRowValue": 961912
+              }
+            },
+            {
+              "name": "reducer-batches",
+              "mode": "sync",
+              "iterations": 1423,
+              "durationMs": 90.89999997615814,
+              "operations": 409824,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 136704,
+                "layoutCleanups": 136608,
+                "minRowCommits": 1424,
+                "maxRowCommits": 1424,
+                "layoutDomChecks": 136704,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 145436,
+                "lastRowValue": 961912
+              }
+            },
+            {
+              "name": "reducer-batches",
+              "mode": "sync",
+              "iterations": 1423,
+              "durationMs": 89.70000004768372,
+              "operations": 409824,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 136704,
+                "layoutCleanups": 136608,
+                "minRowCommits": 1424,
+                "maxRowCommits": 1424,
+                "layoutDomChecks": 136704,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 145436,
+                "lastRowValue": 961912
+              }
+            }
+          ]
+        ],
+        "flat-hooks": [
+          [
+            {
+              "name": "reducer-batches",
+              "mode": "sync",
+              "iterations": 1423,
+              "durationMs": 90.29999995231628,
+              "operations": 409824,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 136704,
+                "layoutCleanups": 136608,
+                "minRowCommits": 1424,
+                "maxRowCommits": 1424,
+                "layoutDomChecks": 136704,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 145436,
+                "lastRowValue": 961912
+              }
+            },
+            {
+              "name": "reducer-batches",
+              "mode": "sync",
+              "iterations": 1423,
+              "durationMs": 89.30000007152557,
+              "operations": 409824,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 136704,
+                "layoutCleanups": 136608,
+                "minRowCommits": 1424,
+                "maxRowCommits": 1424,
+                "layoutDomChecks": 136704,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 145436,
+                "lastRowValue": 961912
+              }
+            },
+            {
+              "name": "reducer-batches",
+              "mode": "sync",
+              "iterations": 1423,
+              "durationMs": 89.10000002384186,
+              "operations": 409824,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 136704,
+                "layoutCleanups": 136608,
+                "minRowCommits": 1424,
+                "maxRowCommits": 1424,
+                "layoutDomChecks": 136704,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 145436,
+                "lastRowValue": 961912
+              }
+            }
+          ],
+          [
+            {
+              "name": "reducer-batches",
+              "mode": "sync",
+              "iterations": 1423,
+              "durationMs": 86.79999995231628,
+              "operations": 409824,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 136704,
+                "layoutCleanups": 136608,
+                "minRowCommits": 1424,
+                "maxRowCommits": 1424,
+                "layoutDomChecks": 136704,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 145436,
+                "lastRowValue": 961912
+              }
+            },
+            {
+              "name": "reducer-batches",
+              "mode": "sync",
+              "iterations": 1423,
+              "durationMs": 87.19999992847443,
+              "operations": 409824,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 136704,
+                "layoutCleanups": 136608,
+                "minRowCommits": 1424,
+                "maxRowCommits": 1424,
+                "layoutDomChecks": 136704,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 145436,
+                "lastRowValue": 961912
+              }
+            },
+            {
+              "name": "reducer-batches",
+              "mode": "sync",
+              "iterations": 1423,
+              "durationMs": 86,
+              "operations": 409824,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 136704,
+                "layoutCleanups": 136608,
+                "minRowCommits": 1424,
+                "maxRowCommits": 1424,
+                "layoutDomChecks": 136704,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 145436,
+                "lastRowValue": 961912
+              }
+            }
+          ],
+          [
+            {
+              "name": "reducer-batches",
+              "mode": "sync",
+              "iterations": 1423,
+              "durationMs": 91.60000002384186,
+              "operations": 409824,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 136704,
+                "layoutCleanups": 136608,
+                "minRowCommits": 1424,
+                "maxRowCommits": 1424,
+                "layoutDomChecks": 136704,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 145436,
+                "lastRowValue": 961912
+              }
+            },
+            {
+              "name": "reducer-batches",
+              "mode": "sync",
+              "iterations": 1423,
+              "durationMs": 92.10000002384186,
+              "operations": 409824,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 136704,
+                "layoutCleanups": 136608,
+                "minRowCommits": 1424,
+                "maxRowCommits": 1424,
+                "layoutDomChecks": 136704,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 145436,
+                "lastRowValue": 961912
+              }
+            },
+            {
+              "name": "reducer-batches",
+              "mode": "sync",
+              "iterations": 1423,
+              "durationMs": 91.10000002384186,
+              "operations": 409824,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 136704,
+                "layoutCleanups": 136608,
+                "minRowCommits": 1424,
+                "maxRowCommits": 1424,
+                "layoutDomChecks": 136704,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 145436,
+                "lastRowValue": 961912
+              }
+            }
+          ]
+        ]
+      },
+      "expectedOperations": 409824,
+      "summary": {
+        "react": {
+          "n": 9,
+          "median": 0.05811665490405792,
+          "p95": 0.0603654251748713,
+          "min": 0.05607870692362353,
+          "max": 0.061068165830047885
+        },
+        "react-control": {
+          "n": 9,
+          "median": 0.05846802533217408,
+          "p95": 0.06054813774722777,
+          "min": 0.056289529096720005,
+          "max": 0.061419536174390825
+        },
+        "journal": {
+          "n": 9,
+          "median": 0.06254392129304287,
+          "p95": 0.06358397750894704,
+          "min": 0.060505973228835254,
+          "max": 0.06366830641169491
+        },
+        "current": {
+          "n": 9,
+          "median": 0.0626141953786661,
+          "p95": 0.06392129303616532,
+          "min": 0.06050597331260847,
+          "max": 0.06394940267041462
+        },
+        "flat-hooks": {
+          "n": 9,
+          "median": 0.06275474354991256,
+          "p95": 0.06458186930698655,
+          "min": 0.060435699226985246,
+          "max": 0.06472241744472372
+        }
+      },
+      "comparisons": {
+        "react": {
+          "react-control": {
+            "pairedTimeChangePercent": 0.5006257525375535,
+            "blockBootstrap95CI": [
+              1.4141077198104313e-7,
+              0.6045950660722221
+            ],
+            "independentBlocks": 3
+          },
+          "journal": {
+            "pairedTimeChangePercent": 8.014353979143118,
+            "blockBootstrap95CI": [
+              6.405694066929901,
+              9.13642046870411
+            ],
+            "independentBlocks": 3
+          },
+          "current": {
+            "pairedTimeChangePercent": 8.424908398250054,
+            "blockBootstrap95CI": [
+              6.405694066929901,
+              8.791208851989873
+            ],
+            "independentBlocks": 3
+          },
+          "flat-hooks": {
+            "pairedTimeChangePercent": 8.066429508151774,
+            "blockBootstrap95CI": [
+              8.014353979143118,
+              8.635794716166556
+            ],
+            "independentBlocks": 3
+          }
+        },
+        "journal": {
+          "react": {
+            "pairedTimeChangePercent": -7.419711995584077,
+            "blockBootstrap95CI": [
+              -8.371559585211108,
+              -6.020066992750095
+            ],
+            "independentBlocks": 3
+          },
+          "react-control": {
+            "pairedTimeChangePercent": -6.966292188408674,
+            "blockBootstrap95CI": [
+              -7.912844015846154,
+              -6.020066859852347
+            ],
+            "independentBlocks": 3
+          },
+          "current": {
+            "pairedTimeChangePercent": 0.11235957735040714,
+            "blockBootstrap95CI": [
+              0,
+              0.5707762555524187
+            ],
+            "independentBlocks": 3
+          },
+          "flat-hooks": {
+            "pairedTimeChangePercent": 0,
+            "blockBootstrap95CI": [
+              -0.4566211133088638,
+              1.9933555619890075
+            ],
+            "independentBlocks": 3
+          }
+        },
+        "flat-hooks": {
+          "react": {
+            "pairedTimeChangePercent": -7.464324994232641,
+            "blockBootstrap95CI": [
+              -7.9493087326597545,
+              -7.419711995584077
+            ],
+            "independentBlocks": 3
+          },
+          "react-control": {
+            "pairedTimeChangePercent": -7.070707149090671,
+            "blockBootstrap95CI": [
+              -7.4884792667866185,
+              -6.866002139256244
+            ],
+            "independentBlocks": 3
+          },
+          "journal": {
+            "pairedTimeChangePercent": 0,
+            "blockBootstrap95CI": [
+              -1.9543974712916468,
+              0.45871570607285417
+            ],
+            "independentBlocks": 3
+          },
+          "current": {
+            "pairedTimeChangePercent": 0,
+            "blockBootstrap95CI": [
+              -1.5367727505946727,
+              1.0321102019560158
+            ],
+            "independentBlocks": 3
+          }
+        }
+      }
+    },
+    "reducer-suspense-updates": {
+      "mode": "sync",
+      "iterations": 1455,
+      "samples": {
+        "react": [
+          [
+            {
+              "name": "reducer-suspense-updates",
+              "mode": "sync",
+              "iterations": 1455,
+              "durationMs": 86.5,
+              "operations": 419040,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 139776,
+                "layoutCleanups": 139680,
+                "minRowCommits": 1456,
+                "maxRowCommits": 1456,
+                "layoutDomChecks": 139776,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 18949,
+                "lastRowValue": 819196
+              }
+            },
+            {
+              "name": "reducer-suspense-updates",
+              "mode": "sync",
+              "iterations": 1455,
+              "durationMs": 86.5,
+              "operations": 419040,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 139776,
+                "layoutCleanups": 139680,
+                "minRowCommits": 1456,
+                "maxRowCommits": 1456,
+                "layoutDomChecks": 139776,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 18949,
+                "lastRowValue": 819196
+              }
+            },
+            {
+              "name": "reducer-suspense-updates",
+              "mode": "sync",
+              "iterations": 1455,
+              "durationMs": 86.79999995231628,
+              "operations": 419040,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 139776,
+                "layoutCleanups": 139680,
+                "minRowCommits": 1456,
+                "maxRowCommits": 1456,
+                "layoutDomChecks": 139776,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 18949,
+                "lastRowValue": 819196
+              }
+            }
+          ],
+          [
+            {
+              "name": "reducer-suspense-updates",
+              "mode": "sync",
+              "iterations": 1455,
+              "durationMs": 85.60000002384186,
+              "operations": 419040,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 139776,
+                "layoutCleanups": 139680,
+                "minRowCommits": 1456,
+                "maxRowCommits": 1456,
+                "layoutDomChecks": 139776,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 18949,
+                "lastRowValue": 819196
+              }
+            },
+            {
+              "name": "reducer-suspense-updates",
+              "mode": "sync",
+              "iterations": 1455,
+              "durationMs": 83.89999997615814,
+              "operations": 419040,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 139776,
+                "layoutCleanups": 139680,
+                "minRowCommits": 1456,
+                "maxRowCommits": 1456,
+                "layoutDomChecks": 139776,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 18949,
+                "lastRowValue": 819196
+              }
+            },
+            {
+              "name": "reducer-suspense-updates",
+              "mode": "sync",
+              "iterations": 1455,
+              "durationMs": 84.59999990463257,
+              "operations": 419040,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 139776,
+                "layoutCleanups": 139680,
+                "minRowCommits": 1456,
+                "maxRowCommits": 1456,
+                "layoutDomChecks": 139776,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 18949,
+                "lastRowValue": 819196
+              }
+            }
+          ],
+          [
+            {
+              "name": "reducer-suspense-updates",
+              "mode": "sync",
+              "iterations": 1455,
+              "durationMs": 87.79999995231628,
+              "operations": 419040,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 139776,
+                "layoutCleanups": 139680,
+                "minRowCommits": 1456,
+                "maxRowCommits": 1456,
+                "layoutDomChecks": 139776,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 18949,
+                "lastRowValue": 819196
+              }
+            },
+            {
+              "name": "reducer-suspense-updates",
+              "mode": "sync",
+              "iterations": 1455,
+              "durationMs": 87.39999997615814,
+              "operations": 419040,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 139776,
+                "layoutCleanups": 139680,
+                "minRowCommits": 1456,
+                "maxRowCommits": 1456,
+                "layoutDomChecks": 139776,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 18949,
+                "lastRowValue": 819196
+              }
+            },
+            {
+              "name": "reducer-suspense-updates",
+              "mode": "sync",
+              "iterations": 1455,
+              "durationMs": 87.80000007152557,
+              "operations": 419040,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 139776,
+                "layoutCleanups": 139680,
+                "minRowCommits": 1456,
+                "maxRowCommits": 1456,
+                "layoutDomChecks": 139776,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 18949,
+                "lastRowValue": 819196
+              }
+            }
+          ]
+        ],
+        "react-control": [
+          [
+            {
+              "name": "reducer-suspense-updates",
+              "mode": "sync",
+              "iterations": 1455,
+              "durationMs": 86.79999995231628,
+              "operations": 419040,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 139776,
+                "layoutCleanups": 139680,
+                "minRowCommits": 1456,
+                "maxRowCommits": 1456,
+                "layoutDomChecks": 139776,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 18949,
+                "lastRowValue": 819196
+              }
+            },
+            {
+              "name": "reducer-suspense-updates",
+              "mode": "sync",
+              "iterations": 1455,
+              "durationMs": 87.19999992847443,
+              "operations": 419040,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 139776,
+                "layoutCleanups": 139680,
+                "minRowCommits": 1456,
+                "maxRowCommits": 1456,
+                "layoutDomChecks": 139776,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 18949,
+                "lastRowValue": 819196
+              }
+            },
+            {
+              "name": "reducer-suspense-updates",
+              "mode": "sync",
+              "iterations": 1455,
+              "durationMs": 88,
+              "operations": 419040,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 139776,
+                "layoutCleanups": 139680,
+                "minRowCommits": 1456,
+                "maxRowCommits": 1456,
+                "layoutDomChecks": 139776,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 18949,
+                "lastRowValue": 819196
+              }
+            }
+          ],
+          [
+            {
+              "name": "reducer-suspense-updates",
+              "mode": "sync",
+              "iterations": 1455,
+              "durationMs": 84.60000002384186,
+              "operations": 419040,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 139776,
+                "layoutCleanups": 139680,
+                "minRowCommits": 1456,
+                "maxRowCommits": 1456,
+                "layoutDomChecks": 139776,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 18949,
+                "lastRowValue": 819196
+              }
+            },
+            {
+              "name": "reducer-suspense-updates",
+              "mode": "sync",
+              "iterations": 1455,
+              "durationMs": 83.70000004768372,
+              "operations": 419040,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 139776,
+                "layoutCleanups": 139680,
+                "minRowCommits": 1456,
+                "maxRowCommits": 1456,
+                "layoutDomChecks": 139776,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 18949,
+                "lastRowValue": 819196
+              }
+            },
+            {
+              "name": "reducer-suspense-updates",
+              "mode": "sync",
+              "iterations": 1455,
+              "durationMs": 84.20000004768372,
+              "operations": 419040,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 139776,
+                "layoutCleanups": 139680,
+                "minRowCommits": 1456,
+                "maxRowCommits": 1456,
+                "layoutDomChecks": 139776,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 18949,
+                "lastRowValue": 819196
+              }
+            }
+          ],
+          [
+            {
+              "name": "reducer-suspense-updates",
+              "mode": "sync",
+              "iterations": 1455,
+              "durationMs": 87.79999995231628,
+              "operations": 419040,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 139776,
+                "layoutCleanups": 139680,
+                "minRowCommits": 1456,
+                "maxRowCommits": 1456,
+                "layoutDomChecks": 139776,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 18949,
+                "lastRowValue": 819196
+              }
+            },
+            {
+              "name": "reducer-suspense-updates",
+              "mode": "sync",
+              "iterations": 1455,
+              "durationMs": 87.30000007152557,
+              "operations": 419040,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 139776,
+                "layoutCleanups": 139680,
+                "minRowCommits": 1456,
+                "maxRowCommits": 1456,
+                "layoutDomChecks": 139776,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 18949,
+                "lastRowValue": 819196
+              }
+            },
+            {
+              "name": "reducer-suspense-updates",
+              "mode": "sync",
+              "iterations": 1455,
+              "durationMs": 88,
+              "operations": 419040,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 139776,
+                "layoutCleanups": 139680,
+                "minRowCommits": 1456,
+                "maxRowCommits": 1456,
+                "layoutDomChecks": 139776,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 18949,
+                "lastRowValue": 819196
+              }
+            }
+          ]
+        ],
+        "journal": [
+          [
+            {
+              "name": "reducer-suspense-updates",
+              "mode": "sync",
+              "iterations": 1455,
+              "durationMs": 119.89999997615814,
+              "operations": 419040,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 139776,
+                "layoutCleanups": 139680,
+                "minRowCommits": 1456,
+                "maxRowCommits": 1456,
+                "layoutDomChecks": 139776,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 18949,
+                "lastRowValue": 819196
+              }
+            },
+            {
+              "name": "reducer-suspense-updates",
+              "mode": "sync",
+              "iterations": 1455,
+              "durationMs": 139.89999997615814,
+              "operations": 419040,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 139776,
+                "layoutCleanups": 139680,
+                "minRowCommits": 1456,
+                "maxRowCommits": 1456,
+                "layoutDomChecks": 139776,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 18949,
+                "lastRowValue": 819196
+              }
+            },
+            {
+              "name": "reducer-suspense-updates",
+              "mode": "sync",
+              "iterations": 1455,
+              "durationMs": 140,
+              "operations": 419040,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 139776,
+                "layoutCleanups": 139680,
+                "minRowCommits": 1456,
+                "maxRowCommits": 1456,
+                "layoutDomChecks": 139776,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 18949,
+                "lastRowValue": 819196
+              }
+            }
+          ],
+          [
+            {
+              "name": "reducer-suspense-updates",
+              "mode": "sync",
+              "iterations": 1455,
+              "durationMs": 119.29999995231628,
+              "operations": 419040,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 139776,
+                "layoutCleanups": 139680,
+                "minRowCommits": 1456,
+                "maxRowCommits": 1456,
+                "layoutDomChecks": 139776,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 18949,
+                "lastRowValue": 819196
+              }
+            },
+            {
+              "name": "reducer-suspense-updates",
+              "mode": "sync",
+              "iterations": 1455,
+              "durationMs": 119.60000002384186,
+              "operations": 419040,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 139776,
+                "layoutCleanups": 139680,
+                "minRowCommits": 1456,
+                "maxRowCommits": 1456,
+                "layoutDomChecks": 139776,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 18949,
+                "lastRowValue": 819196
+              }
+            },
+            {
+              "name": "reducer-suspense-updates",
+              "mode": "sync",
+              "iterations": 1455,
+              "durationMs": 117,
+              "operations": 419040,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 139776,
+                "layoutCleanups": 139680,
+                "minRowCommits": 1456,
+                "maxRowCommits": 1456,
+                "layoutDomChecks": 139776,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 18949,
+                "lastRowValue": 819196
+              }
+            }
+          ],
+          [
+            {
+              "name": "reducer-suspense-updates",
+              "mode": "sync",
+              "iterations": 1455,
+              "durationMs": 133.80000007152557,
+              "operations": 419040,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 139776,
+                "layoutCleanups": 139680,
+                "minRowCommits": 1456,
+                "maxRowCommits": 1456,
+                "layoutDomChecks": 139776,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 18949,
+                "lastRowValue": 819196
+              }
+            },
+            {
+              "name": "reducer-suspense-updates",
+              "mode": "sync",
+              "iterations": 1455,
+              "durationMs": 123.89999997615814,
+              "operations": 419040,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 139776,
+                "layoutCleanups": 139680,
+                "minRowCommits": 1456,
+                "maxRowCommits": 1456,
+                "layoutDomChecks": 139776,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 18949,
+                "lastRowValue": 819196
+              }
+            },
+            {
+              "name": "reducer-suspense-updates",
+              "mode": "sync",
+              "iterations": 1455,
+              "durationMs": 122.60000002384186,
+              "operations": 419040,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 139776,
+                "layoutCleanups": 139680,
+                "minRowCommits": 1456,
+                "maxRowCommits": 1456,
+                "layoutDomChecks": 139776,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 18949,
+                "lastRowValue": 819196
+              }
+            }
+          ]
+        ],
+        "current": [
+          [
+            {
+              "name": "reducer-suspense-updates",
+              "mode": "sync",
+              "iterations": 1455,
+              "durationMs": 137.10000002384186,
+              "operations": 419040,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 139776,
+                "layoutCleanups": 139680,
+                "minRowCommits": 1456,
+                "maxRowCommits": 1456,
+                "layoutDomChecks": 139776,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 18949,
+                "lastRowValue": 819196
+              }
+            },
+            {
+              "name": "reducer-suspense-updates",
+              "mode": "sync",
+              "iterations": 1455,
+              "durationMs": 136.69999992847443,
+              "operations": 419040,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 139776,
+                "layoutCleanups": 139680,
+                "minRowCommits": 1456,
+                "maxRowCommits": 1456,
+                "layoutDomChecks": 139776,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 18949,
+                "lastRowValue": 819196
+              }
+            },
+            {
+              "name": "reducer-suspense-updates",
+              "mode": "sync",
+              "iterations": 1455,
+              "durationMs": 138.20000004768372,
+              "operations": 419040,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 139776,
+                "layoutCleanups": 139680,
+                "minRowCommits": 1456,
+                "maxRowCommits": 1456,
+                "layoutDomChecks": 139776,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 18949,
+                "lastRowValue": 819196
+              }
+            }
+          ],
+          [
+            {
+              "name": "reducer-suspense-updates",
+              "mode": "sync",
+              "iterations": 1455,
+              "durationMs": 120.10000002384186,
+              "operations": 419040,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 139776,
+                "layoutCleanups": 139680,
+                "minRowCommits": 1456,
+                "maxRowCommits": 1456,
+                "layoutDomChecks": 139776,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 18949,
+                "lastRowValue": 819196
+              }
+            },
+            {
+              "name": "reducer-suspense-updates",
+              "mode": "sync",
+              "iterations": 1455,
+              "durationMs": 121.39999997615814,
+              "operations": 419040,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 139776,
+                "layoutCleanups": 139680,
+                "minRowCommits": 1456,
+                "maxRowCommits": 1456,
+                "layoutDomChecks": 139776,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 18949,
+                "lastRowValue": 819196
+              }
+            },
+            {
+              "name": "reducer-suspense-updates",
+              "mode": "sync",
+              "iterations": 1455,
+              "durationMs": 118.39999997615814,
+              "operations": 419040,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 139776,
+                "layoutCleanups": 139680,
+                "minRowCommits": 1456,
+                "maxRowCommits": 1456,
+                "layoutDomChecks": 139776,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 18949,
+                "lastRowValue": 819196
+              }
+            }
+          ],
+          [
+            {
+              "name": "reducer-suspense-updates",
+              "mode": "sync",
+              "iterations": 1455,
+              "durationMs": 140.89999997615814,
+              "operations": 419040,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 139776,
+                "layoutCleanups": 139680,
+                "minRowCommits": 1456,
+                "maxRowCommits": 1456,
+                "layoutDomChecks": 139776,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 18949,
+                "lastRowValue": 819196
+              }
+            },
+            {
+              "name": "reducer-suspense-updates",
+              "mode": "sync",
+              "iterations": 1455,
+              "durationMs": 138.19999992847443,
+              "operations": 419040,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 139776,
+                "layoutCleanups": 139680,
+                "minRowCommits": 1456,
+                "maxRowCommits": 1456,
+                "layoutDomChecks": 139776,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 18949,
+                "lastRowValue": 819196
+              }
+            },
+            {
+              "name": "reducer-suspense-updates",
+              "mode": "sync",
+              "iterations": 1455,
+              "durationMs": 137,
+              "operations": 419040,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 139776,
+                "layoutCleanups": 139680,
+                "minRowCommits": 1456,
+                "maxRowCommits": 1456,
+                "layoutDomChecks": 139776,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 18949,
+                "lastRowValue": 819196
+              }
+            }
+          ]
+        ],
+        "flat-hooks": [
+          [
+            {
+              "name": "reducer-suspense-updates",
+              "mode": "sync",
+              "iterations": 1455,
+              "durationMs": 131.10000002384186,
+              "operations": 419040,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 139776,
+                "layoutCleanups": 139680,
+                "minRowCommits": 1456,
+                "maxRowCommits": 1456,
+                "layoutDomChecks": 139776,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 18949,
+                "lastRowValue": 819196
+              }
+            },
+            {
+              "name": "reducer-suspense-updates",
+              "mode": "sync",
+              "iterations": 1455,
+              "durationMs": 121.89999997615814,
+              "operations": 419040,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 139776,
+                "layoutCleanups": 139680,
+                "minRowCommits": 1456,
+                "maxRowCommits": 1456,
+                "layoutDomChecks": 139776,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 18949,
+                "lastRowValue": 819196
+              }
+            },
+            {
+              "name": "reducer-suspense-updates",
+              "mode": "sync",
+              "iterations": 1455,
+              "durationMs": 123.10000002384186,
+              "operations": 419040,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 139776,
+                "layoutCleanups": 139680,
+                "minRowCommits": 1456,
+                "maxRowCommits": 1456,
+                "layoutDomChecks": 139776,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 18949,
+                "lastRowValue": 819196
+              }
+            }
+          ],
+          [
+            {
+              "name": "reducer-suspense-updates",
+              "mode": "sync",
+              "iterations": 1455,
+              "durationMs": 119.39999997615814,
+              "operations": 419040,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 139776,
+                "layoutCleanups": 139680,
+                "minRowCommits": 1456,
+                "maxRowCommits": 1456,
+                "layoutDomChecks": 139776,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 18949,
+                "lastRowValue": 819196
+              }
+            },
+            {
+              "name": "reducer-suspense-updates",
+              "mode": "sync",
+              "iterations": 1455,
+              "durationMs": 120.10000002384186,
+              "operations": 419040,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 139776,
+                "layoutCleanups": 139680,
+                "minRowCommits": 1456,
+                "maxRowCommits": 1456,
+                "layoutDomChecks": 139776,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 18949,
+                "lastRowValue": 819196
+              }
+            },
+            {
+              "name": "reducer-suspense-updates",
+              "mode": "sync",
+              "iterations": 1455,
+              "durationMs": 117.10000002384186,
+              "operations": 419040,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 139776,
+                "layoutCleanups": 139680,
+                "minRowCommits": 1456,
+                "maxRowCommits": 1456,
+                "layoutDomChecks": 139776,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 18949,
+                "lastRowValue": 819196
+              }
+            }
+          ],
+          [
+            {
+              "name": "reducer-suspense-updates",
+              "mode": "sync",
+              "iterations": 1455,
+              "durationMs": 141,
+              "operations": 419040,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 139776,
+                "layoutCleanups": 139680,
+                "minRowCommits": 1456,
+                "maxRowCommits": 1456,
+                "layoutDomChecks": 139776,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 18949,
+                "lastRowValue": 819196
+              }
+            },
+            {
+              "name": "reducer-suspense-updates",
+              "mode": "sync",
+              "iterations": 1455,
+              "durationMs": 139.10000002384186,
+              "operations": 419040,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 139776,
+                "layoutCleanups": 139680,
+                "minRowCommits": 1456,
+                "maxRowCommits": 1456,
+                "layoutDomChecks": 139776,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 18949,
+                "lastRowValue": 819196
+              }
+            },
+            {
+              "name": "reducer-suspense-updates",
+              "mode": "sync",
+              "iterations": 1455,
+              "durationMs": 140.59999990463257,
+              "operations": 419040,
+              "checks": 10,
+              "diagnostics": {
+                "layoutCommits": 139776,
+                "layoutCleanups": 139680,
+                "minRowCommits": 1456,
+                "maxRowCommits": 1456,
+                "layoutDomChecks": 139776,
+                "fallbackMounts": 0,
+                "fallbackUnmounts": 0,
+                "hiddenChecks": 0,
+                "independentSuspensions": 0,
+                "firstRowValue": 18949,
+                "lastRowValue": 819196
+              }
+            }
+          ]
+        ]
+      },
+      "expectedOperations": 419040,
+      "summary": {
+        "react": {
+          "n": 9,
+          "median": 0.05945017182130584,
+          "p95": 0.06034364262807001,
+          "min": 0.05766323022416367,
+          "max": 0.06034364266084232
+        },
+        "react-control": {
+          "n": 9,
+          "median": 0.05993127142850476,
+          "p95": 0.06048109965635739,
+          "min": 0.0575257732286486,
+          "max": 0.06048109965635739
+        },
+        "journal": {
+          "n": 9,
+          "median": 0.08426116840126588,
+          "p95": 0.09619243985598849,
+          "min": 0.08041237113402062,
+          "max": 0.09621993127147767
+        },
+        "current": {
+          "n": 9,
+          "median": 0.09415807560137457,
+          "p95": 0.09609621993454871,
+          "min": 0.08137457043034924,
+          "max": 0.09683848795612243
+        },
+        "flat-hooks": {
+          "n": 9,
+          "median": 0.08460481101294973,
+          "p95": 0.09679725083288868,
+          "min": 0.08048109967274354,
+          "max": 0.09690721649484536
+        }
+      },
+      "comparisons": {
+        "react": {
+          "react-control": {
+            "pairedTimeChangePercent": 0,
+            "blockBootstrap95CI": [
+              -0.47281307021248553,
+              0.8092484722247661
+            ],
+            "independentBlocks": 3
+          },
+          "journal": {
+            "pairedTimeChangePercent": 41.76201374136939,
+            "blockBootstrap95CI": [
+              39.36915878398142,
+              61.29032266925025
+            ],
+            "independentBlocks": 3
+          },
+          "current": {
+            "pairedTimeChangePercent": 58.03468199823634,
+            "blockBootstrap95CI": [
+              40.30373830653136,
+              58.49710985415244
+            ],
+            "independentBlocks": 3
+          },
+          "flat-hooks": {
+            "pairedTimeChangePercent": 43.14660316802226,
+            "blockBootstrap95CI": [
+              39.48598124170806,
+              60.13667402060807
+            ],
+            "independentBlocks": 3
+          }
+        },
+        "journal": {
+          "react": {
+            "pairedTimeChangePercent": -29.45924132931689,
+            "blockBootstrap95CI": [
+              -38.0000000340598,
+              -28.248113949659825
+            ],
+            "independentBlocks": 3
+          },
+          "react-control": {
+            "pairedTimeChangePercent": -29.53995150256291,
+            "blockBootstrap95CI": [
+              -37.142857142857146,
+              -29.086336917304166
+            ],
+            "independentBlocks": 3
+          },
+          "current": {
+            "pairedTimeChangePercent": 1.5050166822386801,
+            "blockBootstrap95CI": [
+              -1.2857142516544906,
+              11.5415657425892
+            ],
+            "independentBlocks": 3
+          },
+          "flat-hooks": {
+            "pairedTimeChangePercent": 0.41806020058556825,
+            "blockBootstrap95CI": [
+              -12.071428554398677,
+              12.267958071516238
+            ],
+            "independentBlocks": 3
+          }
+        },
+        "flat-hooks": {
+          "react": {
+            "pairedTimeChangePercent": -30.141548743128567,
+            "blockBootstrap95CI": [
+              -37.55334272327215,
+              -28.308207670909113
+            ],
+            "independentBlocks": 3
+          },
+          "react-control": {
+            "pairedTimeChangePercent": -30.30807657696264,
+            "blockBootstrap95CI": [
+              -37.41109526337878,
+              -28.513403750644784
+            ],
+            "independentBlocks": 3
+          },
+          "journal": {
+            "pairedTimeChangePercent": -0.41631973347272533,
+            "blockBootstrap95CI": [
+              -10.927390399049909,
+              13.72867585124693
+            ],
+            "independentBlocks": 3
+          },
+          "current": {
+            "pairedTimeChangePercent": 1.0824312673257452,
+            "blockBootstrap95CI": [
+              -0.6470166033164415,
+              12.14109922494746
+            ],
+            "independentBlocks": 3
+          }
+        }
+      }
+    }
+  },
+  "interactions": {},
+  "memory": {},
+  "complete": true
+}

@@ -1,0 +1,4839 @@
+{
+  "schema": 1,
+  "environment": {
+    "date": "2026-09-10T22:06:33.133Z",
+    "node": "v24.15.0",
+    "esbuild": "0.28.0",
+    "os": "darwin 25.6.0",
+    "architecture": "arm64",
+    "cpu": "Apple M5 Pro",
+    "cpuRate": 1,
+    "headless": true,
+    "blocks": 2,
+    "rounds": 3,
+    "interactionRounds": 12,
+    "interactionRows": [
+      240,
+      2400
+    ],
+    "targetMs": 80,
+    "seed": 20260909,
+    "fixtureSHA256": "202750ec0c7e4ed80f1112b86696b314aa7d5f96c0baeefdad722a87c6965013",
+    "runnerSHA256": "fa7ab2445c8a9ec53ff0f9e0947bb8d116e8759dcd133c67365a30df5cf56897",
+    "statsSHA256": "037386579674b16f449aa9853b6db2b759c7d8c79b525a27d59f00d98629ceb1",
+    "referenceLockSHA256": "1190290f58b3354f51d525b09d8661696b9d4a2c5cad2c99c5b00f1ccdff5ce1",
+    "browser": "152.0.7977.83"
+  },
+  "method": {
+    "timing": "Production bundles, identical fixture and iteration counts, completed work checked after timing. GC remains enabled naturally in timing samples.",
+    "order": "Fresh browser per block. Seeded permutation with rotating renderer order each round.",
+    "intervals": "95% percentile bootstrap of paired log-time ratios, resampling entire fresh-browser blocks. Not a guarantee of cross-device or whole-app performance.",
+    "interaction": "Trusted Playwright clicks with normal scheduling. Handler-to-commit and next-rAF are not paint. Event Timing duration is quantized and entries below the browser threshold can be absent. This is not field INP.",
+    "memory": "Separate mount/unmount-only forced-GC retained JS heap and DOM counters, not allocation rate or process RSS. No Playwright click injection in these pages.",
+    "units": "Throughput summaries are milliseconds per iteration/batch, including p95 of batch averages, not individual-update tail latency. observedTaskDurationMs includes Playwright instrumentation and is diagnostic only.",
+    "multiplicity": "Intervals are exploratory, not adjusted for testing multiple workloads. Assess repeatability and identical-React control noise, not only whether an interval crosses zero."
+  },
+  "variants": [
+    {
+      "name": "react",
+      "version": "19.3.0",
+      "kind": "react",
+      "bundleSHA256": "09d4c7e8d1b5db0c854ec0c94fb3a539be1d8766ab7fabc7926a0fb8079b1b45",
+      "inputSHA256": "ceeb49f0719413c56063458f9e64d9221dc224e7c2a414c6e063a29b4713b3f0",
+      "inputs": [
+        {
+          "path": "benchmarks/reference/node_modules/react-dom/cjs/react-dom-client.production.js",
+          "sha256": "8a8147c1cebdb19d82fd11bdb76391be9b20d00edf67cc8e8b30f44e850ce693"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/react-dom/cjs/react-dom-server-legacy.browser.production.js",
+          "sha256": "5528f58d28f5e035dccbf0ebec7e593ed0b97cebae830b838756c27c100a8caa"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/react-dom/cjs/react-dom-server.browser.production.js",
+          "sha256": "3e201e0287f8b51028ce52684551b32ef8fa970766a51095e6a46bdbdb55a605"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/react-dom/cjs/react-dom.production.js",
+          "sha256": "fd016e2c887f97b82f466ca435ae259d08cf7d4e7fef37e087963336d4770c01"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/react-dom/client.js",
+          "sha256": "00e348ab3d6bc2eef908345d0bc4e008c95bcfecec060dfda5c4967953761396"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/react-dom/index.js",
+          "sha256": "ba1a3e33489f868371561777607e3ee5091df0f7ea3f1a10f789d6b86e4c1505"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/react-dom/server.browser.js",
+          "sha256": "f759460eb3571d5bf1e1a9e5ef7cb033ec5c67f25d64a6bbf5a9ac43bd25831a"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/react/cjs/react-jsx-runtime.production.js",
+          "sha256": "1e46f15002696985e80c61d47aaa30dabb03c954270a690f5f7dfbbacfa9002b"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/react/cjs/react.production.js",
+          "sha256": "6b28feb9dbe9781ab1e1b64dea7b29a7c70f03d2dc10eaa966363053d8a9b4e5"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/react/index.js",
+          "sha256": "60caffdecbdc5db3bc4ec4e83df9488345ccb271d07533b9210bf5750918d97e"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/react/jsx-runtime.js",
+          "sha256": "b392951a77d0a2e6a6bd017e49d768481ae5b63c4109c6c31f622cf7b2433edc"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/scheduler/cjs/scheduler.production.js",
+          "sha256": "679adff761d31e9426604f80c0e99be44a3e6f4c6834b0218ecf0312a67c171f"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/scheduler/index.js",
+          "sha256": "145965504d60007bc25486ab930b0367867dcd5d579ccd343c148d69349a7cfb"
+        },
+        {
+          "path": "benchmarks/runtime-workloads.ts",
+          "sha256": "202750ec0c7e4ed80f1112b86696b314aa7d5f96c0baeefdad722a87c6965013"
+        }
+      ],
+      "fixtureBundle": {
+        "raw": 439679,
+        "gzip": 135068,
+        "brotli": 92504
+      }
+    },
+    {
+      "name": "react-control",
+      "version": "19.3.0",
+      "kind": "react",
+      "bundleSHA256": "09d4c7e8d1b5db0c854ec0c94fb3a539be1d8766ab7fabc7926a0fb8079b1b45",
+      "inputSHA256": "ceeb49f0719413c56063458f9e64d9221dc224e7c2a414c6e063a29b4713b3f0",
+      "inputs": [
+        {
+          "path": "benchmarks/reference/node_modules/react-dom/cjs/react-dom-client.production.js",
+          "sha256": "8a8147c1cebdb19d82fd11bdb76391be9b20d00edf67cc8e8b30f44e850ce693"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/react-dom/cjs/react-dom-server-legacy.browser.production.js",
+          "sha256": "5528f58d28f5e035dccbf0ebec7e593ed0b97cebae830b838756c27c100a8caa"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/react-dom/cjs/react-dom-server.browser.production.js",
+          "sha256": "3e201e0287f8b51028ce52684551b32ef8fa970766a51095e6a46bdbdb55a605"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/react-dom/cjs/react-dom.production.js",
+          "sha256": "fd016e2c887f97b82f466ca435ae259d08cf7d4e7fef37e087963336d4770c01"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/react-dom/client.js",
+          "sha256": "00e348ab3d6bc2eef908345d0bc4e008c95bcfecec060dfda5c4967953761396"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/react-dom/index.js",
+          "sha256": "ba1a3e33489f868371561777607e3ee5091df0f7ea3f1a10f789d6b86e4c1505"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/react-dom/server.browser.js",
+          "sha256": "f759460eb3571d5bf1e1a9e5ef7cb033ec5c67f25d64a6bbf5a9ac43bd25831a"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/react/cjs/react-jsx-runtime.production.js",
+          "sha256": "1e46f15002696985e80c61d47aaa30dabb03c954270a690f5f7dfbbacfa9002b"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/react/cjs/react.production.js",
+          "sha256": "6b28feb9dbe9781ab1e1b64dea7b29a7c70f03d2dc10eaa966363053d8a9b4e5"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/react/index.js",
+          "sha256": "60caffdecbdc5db3bc4ec4e83df9488345ccb271d07533b9210bf5750918d97e"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/react/jsx-runtime.js",
+          "sha256": "b392951a77d0a2e6a6bd017e49d768481ae5b63c4109c6c31f622cf7b2433edc"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/scheduler/cjs/scheduler.production.js",
+          "sha256": "679adff761d31e9426604f80c0e99be44a3e6f4c6834b0218ecf0312a67c171f"
+        },
+        {
+          "path": "benchmarks/reference/node_modules/scheduler/index.js",
+          "sha256": "145965504d60007bc25486ab930b0367867dcd5d579ccd343c148d69349a7cfb"
+        },
+        {
+          "path": "benchmarks/runtime-workloads.ts",
+          "sha256": "202750ec0c7e4ed80f1112b86696b314aa7d5f96c0baeefdad722a87c6965013"
+        }
+      ],
+      "fixtureBundle": {
+        "raw": 439679,
+        "gzip": 135068,
+        "brotli": 92504
+      }
+    },
+    {
+      "name": "pre-animation",
+      "source": "/tmp/redact-before-view-transition-animations/src",
+      "bundleSHA256": "9d611332e9c8b6f52dd567608c242e7efabf856f60528a09e88a48193fb2d0c3",
+      "inputSHA256": "23e2b1c7d59f1f68c67b34231ac84b1d9efc9886aeeba2b3541d224c3d25d50d",
+      "inputs": [
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/core/attributes.ts",
+          "sha256": "af40ac45359c9de6c3ad1290a5d6af51c705b147e9e42a5841914dd786a427e4"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/core/browser.ts",
+          "sha256": "b4c9757a8689ccd2981079ee9af2c3b0da9ef1172ddfb8aa841089426e8181eb"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/core/index.ts",
+          "sha256": "9afcb4a85c06b45f125f109d9af0cc75ea0f536b05c930a8c066dd553b58386b"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/core/internal.ts",
+          "sha256": "eb9cfbd5b2da0fd23d64aac68eea592588e769726743bab21f1f6223d4a74bc4"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/core/types.ts",
+          "sha256": "843aaf9d0b3bf996212545fef86fe3f77436c88e86b32eee5094c904c9775213"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/dom/dispatcher.ts",
+          "sha256": "2aa296b5bd392b7a519b1fa1b091f84f05adeec2040bbb66f37b585b8b86a52e"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/dom/dom.ts",
+          "sha256": "c489205c26906fa7f190053a631030d2e2d832673cc306ffbc6dd51a5892f62b"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/dom/event-replay.ts",
+          "sha256": "e31a638c5d6296f9e8a6c777a682f3be86cd6a4e70342ba5661f0a34af47e4c5"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/dom/features/activity/full.ts",
+          "sha256": "536296ad8ecd7a7fd7950d37b74a031da0fcf5f4e162fe571c916900922e7904"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/dom/features/activity/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/dom/features/class/full.ts",
+          "sha256": "97627b2bf3ffad330ecb53749cbbac8edc3689b42ffb534a140c5cc701023b3e"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/dom/features/class/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/dom/features/context/full.ts",
+          "sha256": "e65aa8e9b680668143c40dfe2e39b7e9be0583156978c775667b3976d43ca286"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/dom/features/context/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/dom/features/forward-ref/full.ts",
+          "sha256": "0cc09f7d0c55bca89a879aa30895d8474002870e9dcf8cfddc8ede1c46fff17f"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/dom/features/forward-ref/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/dom/features/fragment-refs/index.ts",
+          "sha256": "0601b83935b83af959fb822f1d3a9ced31d75462ed52b3050978fc405fd21f75"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/dom/features/hydration/full.ts",
+          "sha256": "dc3b454bd5121e6f4199ca424026b71f2eb434608530ed3fd095a2e0b6acea5d"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/dom/features/hydration/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/dom/features/index.ts",
+          "sha256": "17652a22c2de7dd6e1a7c8251c3c6c0559b7a0100dddb122458423ceaec19e9c"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/dom/features/lazy/full.ts",
+          "sha256": "21349d7a8be9d9eacdffcfd044909b8b67de5822a1a3717e992354318b97c347"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/dom/features/lazy/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/dom/features/memo/full.ts",
+          "sha256": "ad925fec582d01a1077919a2f1408e1fabc07e3f1f7d0e1ab4e0d63a7657bc0c"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/dom/features/memo/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/dom/features/portal/full.ts",
+          "sha256": "ff77c98c976e215cc94c64b46a6cac7ce649f7ec51e22a9b686c5c2d4b0cfbf6"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/dom/features/portal/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/dom/features/suspense/full.ts",
+          "sha256": "93c84fbeacb126e240f4c7d4fb21f8191b89860b6d3c6406db44688f81528ca9"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/dom/features/suspense/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/dom/fragment-instance.ts",
+          "sha256": "a7be14be5d64b277045eebe902aa76401404a750e8053797efbb8d19dfb6de11"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/dom/portal.ts",
+          "sha256": "1358070e547c2d6c030bb73afc0a999d5b59f65e8dfb9db337077f2ec2a1798a"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/dom/reconcile.ts",
+          "sha256": "b2d8020eabd3db9b9c6bfdd9a2c0f8200787d1aa015ef4cd3047b99853345b34"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/dom/root-internal.ts",
+          "sha256": "df78cf377c832cef5d96bccbb6a0aed575e7557e2fafeb13417fd0324f3188e1"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/dom/root.ts",
+          "sha256": "3be040da155d48e62eac3274e509556ca84ff37c625ac6f0f0fe4196f73a3d7e"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/react/activity.ts",
+          "sha256": "dac42f0847c53ea6233dd5c04491379f305547acbfbe7d6491728505e66fdf77"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/react/children.ts",
+          "sha256": "ab214cdab258cfc71a90e0633569dd6c4558b0b9c76271d077224cad933f82d4"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/react/class.ts",
+          "sha256": "64911643dbc4c029fdc7a499b3406e18bb8569df3e8c34d7aef332e5319516b8"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/react/context.ts",
+          "sha256": "a3808f65aed8a6afcbaed55398e31186403f8db0b33ffa422ce2888dddc2dcaf"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/react/element.ts",
+          "sha256": "3e3a22cb9325bea8cb4cd1936af06f3f532fbf70a64c183d3775904aa2617aa0"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/react/hooks.ts",
+          "sha256": "213c72635e7cc9ab43bfdff455b670d89cc6bb6d3e4cff8e32ecc8b4c101a9e7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/react/index.ts",
+          "sha256": "f5602fdd6d5106b4ecfecc2be27b844c589de4fb891a5c467f988348c0510bb4"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/react/memo.ts",
+          "sha256": "5aadf27b6dd989c23f06550511414cd4ae053ab2bb7250d82355bb59e8aff56d"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/react/portal.ts",
+          "sha256": "0e0e28608e1dc5ef5e18649e1d8d122206468d4b9b4d1fdbebc36535612d4958"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/react/shared-internals.ts",
+          "sha256": "fac7c44b657bd877c0f9c06159c819763aa9256232813032847d4fc31ed9e482"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/react/suspense.ts",
+          "sha256": "487b236e813138ce54a0931a580254100fa790d429d4423ef09e370176565678"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/react/view-transition.ts",
+          "sha256": "7fd1e2f0969bea26b4c863beec96b0255e397768fa5f4e9109a6708a1eec0d9e"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/server/bootstrap-script.ts",
+          "sha256": "5346db06e740cfb9f68691d2240c03c974d73e788fb4a2f49a849e648c4d627b"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/server/dispatcher.ts",
+          "sha256": "b564b5216d6645b33ebf8233995e19a91d1ffa7aa6d73cb5b2e3167cd5a0df0a"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/server/escape.ts",
+          "sha256": "0a338961be7f12a7a34f453a48a1d24d876fd1352defd2a2ba078991824f1cd7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/server/renderToString.ts",
+          "sha256": "730d33ad6d560ed2d3791c5929cfb5f09a38c0c3ae329c5a5b5d0d8da18d2049"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/server/stream.ts",
+          "sha256": "ecefb45707ea41355b4f1a83259e49f72cc93b67317726e84ab3b5ece4c6c067"
+        },
+        {
+          "path": "../../../../private/tmp/redact-before-view-transition-animations/src/server/walk.ts",
+          "sha256": "6ea5f420269cb777a3abd4863f4b42e2c46c7386d1ed0cba399b64874f0b5987"
+        },
+        {
+          "path": "../../../../tmp/redact-before-view-transition-animations/src/dom/client.ts",
+          "sha256": "787e1f0517d0fe7c6df938b09e755436e3259d1698d6a53c971fef4e4884e924"
+        },
+        {
+          "path": "../../../../tmp/redact-before-view-transition-animations/src/dom/index.ts",
+          "sha256": "42bcecbc8cfa30de34d6ab1b6da22a68212c526f5c25a499d1912368d147543b"
+        },
+        {
+          "path": "../../../../tmp/redact-before-view-transition-animations/src/react/index.ts",
+          "sha256": "f5602fdd6d5106b4ecfecc2be27b844c589de4fb891a5c467f988348c0510bb4"
+        },
+        {
+          "path": "../../../../tmp/redact-before-view-transition-animations/src/react/jsx-runtime.ts",
+          "sha256": "842a08086f193d641f99611d2214c484a2f2a97f6807364ba5f194ed972e62e3"
+        },
+        {
+          "path": "../../../../tmp/redact-before-view-transition-animations/src/server/index.ts",
+          "sha256": "1b5fa6eb9b09f4a68c0b46cbf20eec8e5f910283230a8ece6513e79ddc2d4410"
+        },
+        {
+          "path": "benchmarks/runtime-workloads.ts",
+          "sha256": "202750ec0c7e4ed80f1112b86696b314aa7d5f96c0baeefdad722a87c6965013"
+        }
+      ],
+      "fixtureBundle": {
+        "raw": 64853,
+        "gzip": 22792,
+        "brotli": 19911
+      }
+    },
+    {
+      "name": "current",
+      "source": "/tmp/redact-commit-optimized-d/src",
+      "bundleSHA256": "fde56057d4af48d5aeeaf866897bc956fdcd51bf2fd0c8eeee743d936cde5aed",
+      "inputSHA256": "9f2442a341c0ec148f19f48b8d0206c224bf2ba2995c2a5ec1c4a6256a8ed95c",
+      "inputs": [
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/core/attributes.ts",
+          "sha256": "af40ac45359c9de6c3ad1290a5d6af51c705b147e9e42a5841914dd786a427e4"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/core/browser.ts",
+          "sha256": "b4c9757a8689ccd2981079ee9af2c3b0da9ef1172ddfb8aa841089426e8181eb"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/core/index.ts",
+          "sha256": "9afcb4a85c06b45f125f109d9af0cc75ea0f536b05c930a8c066dd553b58386b"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/core/internal.ts",
+          "sha256": "eb6645ebf77c3be39b22124c1652ba095008ffac38445bbfa6cb6c063beba400"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/core/types.ts",
+          "sha256": "843aaf9d0b3bf996212545fef86fe3f77436c88e86b32eee5094c904c9775213"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/dom/commit.ts",
+          "sha256": "526bf91089f5bb69865d11604089c297f9a6b4dc19c95964e1112bed4f36c8fd"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/dom/dispatcher.ts",
+          "sha256": "6bc0a0fa68dad113e9864ccea18b3fe90411948aef889cbec2e38d2fcb5ef2df"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/dom/dom.ts",
+          "sha256": "644fc9d1228bd4e38338b5228f7338239f5a5174611e6ec159556a2e572cd040"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/dom/event-replay.ts",
+          "sha256": "e31a638c5d6296f9e8a6c777a682f3be86cd6a4e70342ba5661f0a34af47e4c5"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/dom/features/activity/full.ts",
+          "sha256": "a2d22fb5b59abd64cc654b8d9cd31a913c67cc0ff8496a2d3912dd4fd1bf74f5"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/dom/features/activity/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/dom/features/class/full.ts",
+          "sha256": "bb9a8a5ce8f0318c0a5cec8d0671350bf1655590fc10f7a628500076228f08f1"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/dom/features/class/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/dom/features/context/full.ts",
+          "sha256": "e65aa8e9b680668143c40dfe2e39b7e9be0583156978c775667b3976d43ca286"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/dom/features/context/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/dom/features/forward-ref/full.ts",
+          "sha256": "0cc09f7d0c55bca89a879aa30895d8474002870e9dcf8cfddc8ede1c46fff17f"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/dom/features/forward-ref/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/dom/features/fragment-refs/index.ts",
+          "sha256": "88e29a82f36597d5e4a94c047f9258b8f2a079041d5037f333bf8b429c933f50"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/dom/features/hydration/full.ts",
+          "sha256": "10fe9d0daf1ab2eefe905ef389278d19612a87d27adb5036b887d5f8e3cecf78"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/dom/features/hydration/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/dom/features/index.ts",
+          "sha256": "17652a22c2de7dd6e1a7c8251c3c6c0559b7a0100dddb122458423ceaec19e9c"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/dom/features/lazy/full.ts",
+          "sha256": "21349d7a8be9d9eacdffcfd044909b8b67de5822a1a3717e992354318b97c347"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/dom/features/lazy/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/dom/features/memo/full.ts",
+          "sha256": "6ebad09d48015e6e3467041278e58246995ad74e7beaf0ea84ede03e151a5c5d"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/dom/features/memo/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/dom/features/portal/full.ts",
+          "sha256": "ff77c98c976e215cc94c64b46a6cac7ce649f7ec51e22a9b686c5c2d4b0cfbf6"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/dom/features/portal/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/dom/features/suspense/full.ts",
+          "sha256": "132580885addb50e9fca506eaae9d18c4730264b673e8da953f9e650c12accce"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/dom/features/suspense/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/dom/features/view-transition/full.ts",
+          "sha256": "ea673e6368f1473bb617b3e9e4a69434d967dee5f86e7ad3cb0116b03bd6fca7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/dom/features/view-transition/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/dom/features/view-transition/visual.ts",
+          "sha256": "20ce321afc2befb83fc858ac839c698f57c36b9209ba2459458e8cd8e0f62254"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/dom/fragment-instance.ts",
+          "sha256": "7a3f13fa0ef7cf1cedf66923788e8eb4d43bf1cec74911fd13d53396b9eb6b90"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/dom/portal.ts",
+          "sha256": "1358070e547c2d6c030bb73afc0a999d5b59f65e8dfb9db337077f2ec2a1798a"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/dom/reconcile.ts",
+          "sha256": "b6868e9eb21452537e6e6edce66fa2f9980cb998106234636cfd811795180352"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/dom/root-internal.ts",
+          "sha256": "df78cf377c832cef5d96bccbb6a0aed575e7557e2fafeb13417fd0324f3188e1"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/dom/root.ts",
+          "sha256": "09f5ab2b505673c26603024446a1b12654ee660b569025fed18e89fe297e5ac1"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/react/activity.ts",
+          "sha256": "dac42f0847c53ea6233dd5c04491379f305547acbfbe7d6491728505e66fdf77"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/react/children.ts",
+          "sha256": "ab214cdab258cfc71a90e0633569dd6c4558b0b9c76271d077224cad933f82d4"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/react/class.ts",
+          "sha256": "64911643dbc4c029fdc7a499b3406e18bb8569df3e8c34d7aef332e5319516b8"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/react/context.ts",
+          "sha256": "a3808f65aed8a6afcbaed55398e31186403f8db0b33ffa422ce2888dddc2dcaf"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/react/element.ts",
+          "sha256": "3e3a22cb9325bea8cb4cd1936af06f3f532fbf70a64c183d3775904aa2617aa0"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/react/hooks.ts",
+          "sha256": "16db79f42be3bbd340980eb17ccfb47c61ba4facfa444db522b717f1f37a9e3a"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/react/index.ts",
+          "sha256": "e68b17b4a2da13a0105d72aef9012cfd9928e1b0f2eed32edb13768194797525"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/react/memo.ts",
+          "sha256": "5aadf27b6dd989c23f06550511414cd4ae053ab2bb7250d82355bb59e8aff56d"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/react/portal.ts",
+          "sha256": "0e0e28608e1dc5ef5e18649e1d8d122206468d4b9b4d1fdbebc36535612d4958"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/react/shared-internals.ts",
+          "sha256": "afc354a40b9302397a8fbe238ba8295b54f6165ba6401d025d68d5063feb687b"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/react/suspense.ts",
+          "sha256": "487b236e813138ce54a0931a580254100fa790d429d4423ef09e370176565678"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/react/view-transition.ts",
+          "sha256": "deae1edf4bc2b1025b1e63e12f052435a415db3163b86cfb1c9135a3bebfe09b"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/server/bootstrap-script.ts",
+          "sha256": "5346db06e740cfb9f68691d2240c03c974d73e788fb4a2f49a849e648c4d627b"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/server/dispatcher.ts",
+          "sha256": "b564b5216d6645b33ebf8233995e19a91d1ffa7aa6d73cb5b2e3167cd5a0df0a"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/server/escape.ts",
+          "sha256": "0a338961be7f12a7a34f453a48a1d24d876fd1352defd2a2ba078991824f1cd7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/server/renderToString.ts",
+          "sha256": "730d33ad6d560ed2d3791c5929cfb5f09a38c0c3ae329c5a5b5d0d8da18d2049"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/server/stream.ts",
+          "sha256": "ecefb45707ea41355b4f1a83259e49f72cc93b67317726e84ab3b5ece4c6c067"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-d/src/server/walk.ts",
+          "sha256": "6ea5f420269cb777a3abd4863f4b42e2c46c7386d1ed0cba399b64874f0b5987"
+        },
+        {
+          "path": "../../../../tmp/redact-commit-optimized-d/src/dom/client.ts",
+          "sha256": "787e1f0517d0fe7c6df938b09e755436e3259d1698d6a53c971fef4e4884e924"
+        },
+        {
+          "path": "../../../../tmp/redact-commit-optimized-d/src/dom/index.ts",
+          "sha256": "42bcecbc8cfa30de34d6ab1b6da22a68212c526f5c25a499d1912368d147543b"
+        },
+        {
+          "path": "../../../../tmp/redact-commit-optimized-d/src/react/index.ts",
+          "sha256": "e68b17b4a2da13a0105d72aef9012cfd9928e1b0f2eed32edb13768194797525"
+        },
+        {
+          "path": "../../../../tmp/redact-commit-optimized-d/src/react/jsx-runtime.ts",
+          "sha256": "842a08086f193d641f99611d2214c484a2f2a97f6807364ba5f194ed972e62e3"
+        },
+        {
+          "path": "../../../../tmp/redact-commit-optimized-d/src/server/index.ts",
+          "sha256": "1b5fa6eb9b09f4a68c0b46cbf20eec8e5f910283230a8ece6513e79ddc2d4410"
+        },
+        {
+          "path": "benchmarks/runtime-workloads.ts",
+          "sha256": "202750ec0c7e4ed80f1112b86696b314aa7d5f96c0baeefdad722a87c6965013"
+        }
+      ],
+      "fixtureBundle": {
+        "raw": 79884,
+        "gzip": 28305,
+        "brotli": 24955
+      }
+    },
+    {
+      "name": "c-tape",
+      "source": "/tmp/redact-commit-optimized-c/src",
+      "bundleSHA256": "15e8d714c7618307d5090707f1856bd84c827f6fb748d75ce4652d5fd6cfb55c",
+      "inputSHA256": "95e2bd22dad59d56673fc37589eb1145c6d5a4d5ceea37c223022855401eec4f",
+      "inputs": [
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/core/attributes.ts",
+          "sha256": "af40ac45359c9de6c3ad1290a5d6af51c705b147e9e42a5841914dd786a427e4"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/core/browser.ts",
+          "sha256": "b4c9757a8689ccd2981079ee9af2c3b0da9ef1172ddfb8aa841089426e8181eb"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/core/index.ts",
+          "sha256": "9afcb4a85c06b45f125f109d9af0cc75ea0f536b05c930a8c066dd553b58386b"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/core/internal.ts",
+          "sha256": "eb6645ebf77c3be39b22124c1652ba095008ffac38445bbfa6cb6c063beba400"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/core/types.ts",
+          "sha256": "843aaf9d0b3bf996212545fef86fe3f77436c88e86b32eee5094c904c9775213"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/dom/commit.ts",
+          "sha256": "526bf91089f5bb69865d11604089c297f9a6b4dc19c95964e1112bed4f36c8fd"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/dom/dispatcher.ts",
+          "sha256": "6bc0a0fa68dad113e9864ccea18b3fe90411948aef889cbec2e38d2fcb5ef2df"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/dom/dom.ts",
+          "sha256": "644fc9d1228bd4e38338b5228f7338239f5a5174611e6ec159556a2e572cd040"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/dom/event-replay.ts",
+          "sha256": "e31a638c5d6296f9e8a6c777a682f3be86cd6a4e70342ba5661f0a34af47e4c5"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/dom/features/activity/full.ts",
+          "sha256": "a2d22fb5b59abd64cc654b8d9cd31a913c67cc0ff8496a2d3912dd4fd1bf74f5"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/dom/features/activity/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/dom/features/class/full.ts",
+          "sha256": "bb9a8a5ce8f0318c0a5cec8d0671350bf1655590fc10f7a628500076228f08f1"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/dom/features/class/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/dom/features/context/full.ts",
+          "sha256": "e65aa8e9b680668143c40dfe2e39b7e9be0583156978c775667b3976d43ca286"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/dom/features/context/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/dom/features/forward-ref/full.ts",
+          "sha256": "0cc09f7d0c55bca89a879aa30895d8474002870e9dcf8cfddc8ede1c46fff17f"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/dom/features/forward-ref/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/dom/features/fragment-refs/index.ts",
+          "sha256": "88e29a82f36597d5e4a94c047f9258b8f2a079041d5037f333bf8b429c933f50"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/dom/features/hydration/full.ts",
+          "sha256": "10fe9d0daf1ab2eefe905ef389278d19612a87d27adb5036b887d5f8e3cecf78"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/dom/features/hydration/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/dom/features/index.ts",
+          "sha256": "17652a22c2de7dd6e1a7c8251c3c6c0559b7a0100dddb122458423ceaec19e9c"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/dom/features/lazy/full.ts",
+          "sha256": "21349d7a8be9d9eacdffcfd044909b8b67de5822a1a3717e992354318b97c347"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/dom/features/lazy/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/dom/features/memo/full.ts",
+          "sha256": "6ebad09d48015e6e3467041278e58246995ad74e7beaf0ea84ede03e151a5c5d"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/dom/features/memo/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/dom/features/portal/full.ts",
+          "sha256": "ff77c98c976e215cc94c64b46a6cac7ce649f7ec51e22a9b686c5c2d4b0cfbf6"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/dom/features/portal/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/dom/features/suspense/full.ts",
+          "sha256": "132580885addb50e9fca506eaae9d18c4730264b673e8da953f9e650c12accce"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/dom/features/suspense/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/dom/features/view-transition/full.ts",
+          "sha256": "ea673e6368f1473bb617b3e9e4a69434d967dee5f86e7ad3cb0116b03bd6fca7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/dom/features/view-transition/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/dom/features/view-transition/visual.ts",
+          "sha256": "20ce321afc2befb83fc858ac839c698f57c36b9209ba2459458e8cd8e0f62254"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/dom/fragment-instance.ts",
+          "sha256": "7a3f13fa0ef7cf1cedf66923788e8eb4d43bf1cec74911fd13d53396b9eb6b90"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/dom/portal.ts",
+          "sha256": "1358070e547c2d6c030bb73afc0a999d5b59f65e8dfb9db337077f2ec2a1798a"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/dom/reconcile.ts",
+          "sha256": "667268b21584499a21ba6a7e28a1234bfb4fcb94b841828cba97e9643be26a99"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/dom/root-internal.ts",
+          "sha256": "df78cf377c832cef5d96bccbb6a0aed575e7557e2fafeb13417fd0324f3188e1"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/dom/root.ts",
+          "sha256": "09f5ab2b505673c26603024446a1b12654ee660b569025fed18e89fe297e5ac1"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/react/activity.ts",
+          "sha256": "dac42f0847c53ea6233dd5c04491379f305547acbfbe7d6491728505e66fdf77"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/react/children.ts",
+          "sha256": "ab214cdab258cfc71a90e0633569dd6c4558b0b9c76271d077224cad933f82d4"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/react/class.ts",
+          "sha256": "64911643dbc4c029fdc7a499b3406e18bb8569df3e8c34d7aef332e5319516b8"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/react/context.ts",
+          "sha256": "a3808f65aed8a6afcbaed55398e31186403f8db0b33ffa422ce2888dddc2dcaf"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/react/element.ts",
+          "sha256": "3e3a22cb9325bea8cb4cd1936af06f3f532fbf70a64c183d3775904aa2617aa0"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/react/hooks.ts",
+          "sha256": "16db79f42be3bbd340980eb17ccfb47c61ba4facfa444db522b717f1f37a9e3a"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/react/index.ts",
+          "sha256": "e68b17b4a2da13a0105d72aef9012cfd9928e1b0f2eed32edb13768194797525"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/react/memo.ts",
+          "sha256": "5aadf27b6dd989c23f06550511414cd4ae053ab2bb7250d82355bb59e8aff56d"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/react/portal.ts",
+          "sha256": "0e0e28608e1dc5ef5e18649e1d8d122206468d4b9b4d1fdbebc36535612d4958"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/react/shared-internals.ts",
+          "sha256": "afc354a40b9302397a8fbe238ba8295b54f6165ba6401d025d68d5063feb687b"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/react/suspense.ts",
+          "sha256": "487b236e813138ce54a0931a580254100fa790d429d4423ef09e370176565678"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/react/view-transition.ts",
+          "sha256": "deae1edf4bc2b1025b1e63e12f052435a415db3163b86cfb1c9135a3bebfe09b"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/server/bootstrap-script.ts",
+          "sha256": "5346db06e740cfb9f68691d2240c03c974d73e788fb4a2f49a849e648c4d627b"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/server/dispatcher.ts",
+          "sha256": "b564b5216d6645b33ebf8233995e19a91d1ffa7aa6d73cb5b2e3167cd5a0df0a"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/server/escape.ts",
+          "sha256": "0a338961be7f12a7a34f453a48a1d24d876fd1352defd2a2ba078991824f1cd7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/server/renderToString.ts",
+          "sha256": "730d33ad6d560ed2d3791c5929cfb5f09a38c0c3ae329c5a5b5d0d8da18d2049"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/server/stream.ts",
+          "sha256": "ecefb45707ea41355b4f1a83259e49f72cc93b67317726e84ab3b5ece4c6c067"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-c/src/server/walk.ts",
+          "sha256": "6ea5f420269cb777a3abd4863f4b42e2c46c7386d1ed0cba399b64874f0b5987"
+        },
+        {
+          "path": "../../../../tmp/redact-commit-optimized-c/src/dom/client.ts",
+          "sha256": "787e1f0517d0fe7c6df938b09e755436e3259d1698d6a53c971fef4e4884e924"
+        },
+        {
+          "path": "../../../../tmp/redact-commit-optimized-c/src/dom/index.ts",
+          "sha256": "42bcecbc8cfa30de34d6ab1b6da22a68212c526f5c25a499d1912368d147543b"
+        },
+        {
+          "path": "../../../../tmp/redact-commit-optimized-c/src/react/index.ts",
+          "sha256": "e68b17b4a2da13a0105d72aef9012cfd9928e1b0f2eed32edb13768194797525"
+        },
+        {
+          "path": "../../../../tmp/redact-commit-optimized-c/src/react/jsx-runtime.ts",
+          "sha256": "842a08086f193d641f99611d2214c484a2f2a97f6807364ba5f194ed972e62e3"
+        },
+        {
+          "path": "../../../../tmp/redact-commit-optimized-c/src/server/index.ts",
+          "sha256": "1b5fa6eb9b09f4a68c0b46cbf20eec8e5f910283230a8ece6513e79ddc2d4410"
+        },
+        {
+          "path": "benchmarks/runtime-workloads.ts",
+          "sha256": "202750ec0c7e4ed80f1112b86696b314aa7d5f96c0baeefdad722a87c6965013"
+        }
+      ],
+      "fixtureBundle": {
+        "raw": 79731,
+        "gzip": 28261,
+        "brotli": 24928
+      }
+    },
+    {
+      "name": "b-tape",
+      "source": "/tmp/redact-commit-optimized-b/src",
+      "bundleSHA256": "08928b8c47276338797b8d2df4a783785d734c7b5bda6e621a5fb6fc9cf3706a",
+      "inputSHA256": "401c01263c844dbc4d23095f574cd4f9752153f13c37ad73021c21d2b54c4956",
+      "inputs": [
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/core/attributes.ts",
+          "sha256": "af40ac45359c9de6c3ad1290a5d6af51c705b147e9e42a5841914dd786a427e4"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/core/browser.ts",
+          "sha256": "b4c9757a8689ccd2981079ee9af2c3b0da9ef1172ddfb8aa841089426e8181eb"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/core/index.ts",
+          "sha256": "9afcb4a85c06b45f125f109d9af0cc75ea0f536b05c930a8c066dd553b58386b"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/core/internal.ts",
+          "sha256": "eb6645ebf77c3be39b22124c1652ba095008ffac38445bbfa6cb6c063beba400"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/core/types.ts",
+          "sha256": "843aaf9d0b3bf996212545fef86fe3f77436c88e86b32eee5094c904c9775213"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/dom/commit.ts",
+          "sha256": "79c57b9802f39121a3d6e99303208a5bc9eae5a64617e325165d5e7512004622"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/dom/dispatcher.ts",
+          "sha256": "c7e3f8db9973a1eec1b36be533feb7a215e6044e195d619a19f00aabd33eda00"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/dom/dom.ts",
+          "sha256": "644fc9d1228bd4e38338b5228f7338239f5a5174611e6ec159556a2e572cd040"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/dom/event-replay.ts",
+          "sha256": "e31a638c5d6296f9e8a6c777a682f3be86cd6a4e70342ba5661f0a34af47e4c5"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/dom/features/activity/full.ts",
+          "sha256": "a2d22fb5b59abd64cc654b8d9cd31a913c67cc0ff8496a2d3912dd4fd1bf74f5"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/dom/features/activity/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/dom/features/class/full.ts",
+          "sha256": "5010c8db83c8ea469efc25a76b395196cd5dee8d372001cf99e41ab742cbc3d4"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/dom/features/class/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/dom/features/context/full.ts",
+          "sha256": "e65aa8e9b680668143c40dfe2e39b7e9be0583156978c775667b3976d43ca286"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/dom/features/context/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/dom/features/forward-ref/full.ts",
+          "sha256": "0cc09f7d0c55bca89a879aa30895d8474002870e9dcf8cfddc8ede1c46fff17f"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/dom/features/forward-ref/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/dom/features/fragment-refs/index.ts",
+          "sha256": "88e29a82f36597d5e4a94c047f9258b8f2a079041d5037f333bf8b429c933f50"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/dom/features/hydration/full.ts",
+          "sha256": "10fe9d0daf1ab2eefe905ef389278d19612a87d27adb5036b887d5f8e3cecf78"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/dom/features/hydration/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/dom/features/index.ts",
+          "sha256": "17652a22c2de7dd6e1a7c8251c3c6c0559b7a0100dddb122458423ceaec19e9c"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/dom/features/lazy/full.ts",
+          "sha256": "21349d7a8be9d9eacdffcfd044909b8b67de5822a1a3717e992354318b97c347"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/dom/features/lazy/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/dom/features/memo/full.ts",
+          "sha256": "6ebad09d48015e6e3467041278e58246995ad74e7beaf0ea84ede03e151a5c5d"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/dom/features/memo/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/dom/features/portal/full.ts",
+          "sha256": "ff77c98c976e215cc94c64b46a6cac7ce649f7ec51e22a9b686c5c2d4b0cfbf6"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/dom/features/portal/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/dom/features/suspense/full.ts",
+          "sha256": "1510b4a6488095477abc4e5e62447b91f88080d0c95ed12a3fea7c132e3c6242"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/dom/features/suspense/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/dom/features/view-transition/full.ts",
+          "sha256": "8e45d6f2c21c6da6f7d01892a797e1d39c4d42c9562de51cb6d5fc39f3ec89df"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/dom/features/view-transition/index.ts",
+          "sha256": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/dom/features/view-transition/visual.ts",
+          "sha256": "20ce321afc2befb83fc858ac839c698f57c36b9209ba2459458e8cd8e0f62254"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/dom/fragment-instance.ts",
+          "sha256": "7a3f13fa0ef7cf1cedf66923788e8eb4d43bf1cec74911fd13d53396b9eb6b90"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/dom/portal.ts",
+          "sha256": "1358070e547c2d6c030bb73afc0a999d5b59f65e8dfb9db337077f2ec2a1798a"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/dom/reconcile.ts",
+          "sha256": "5733c8d0cf62fb05d5a43f18d0782e4b09a4fb7288395bb6d2192f98114fab88"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/dom/root-internal.ts",
+          "sha256": "df78cf377c832cef5d96bccbb6a0aed575e7557e2fafeb13417fd0324f3188e1"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/dom/root.ts",
+          "sha256": "09f5ab2b505673c26603024446a1b12654ee660b569025fed18e89fe297e5ac1"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/react/activity.ts",
+          "sha256": "dac42f0847c53ea6233dd5c04491379f305547acbfbe7d6491728505e66fdf77"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/react/children.ts",
+          "sha256": "ab214cdab258cfc71a90e0633569dd6c4558b0b9c76271d077224cad933f82d4"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/react/class.ts",
+          "sha256": "64911643dbc4c029fdc7a499b3406e18bb8569df3e8c34d7aef332e5319516b8"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/react/context.ts",
+          "sha256": "a3808f65aed8a6afcbaed55398e31186403f8db0b33ffa422ce2888dddc2dcaf"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/react/element.ts",
+          "sha256": "3e3a22cb9325bea8cb4cd1936af06f3f532fbf70a64c183d3775904aa2617aa0"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/react/hooks.ts",
+          "sha256": "16db79f42be3bbd340980eb17ccfb47c61ba4facfa444db522b717f1f37a9e3a"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/react/index.ts",
+          "sha256": "e68b17b4a2da13a0105d72aef9012cfd9928e1b0f2eed32edb13768194797525"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/react/memo.ts",
+          "sha256": "5aadf27b6dd989c23f06550511414cd4ae053ab2bb7250d82355bb59e8aff56d"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/react/portal.ts",
+          "sha256": "0e0e28608e1dc5ef5e18649e1d8d122206468d4b9b4d1fdbebc36535612d4958"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/react/shared-internals.ts",
+          "sha256": "afc354a40b9302397a8fbe238ba8295b54f6165ba6401d025d68d5063feb687b"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/react/suspense.ts",
+          "sha256": "487b236e813138ce54a0931a580254100fa790d429d4423ef09e370176565678"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/react/view-transition.ts",
+          "sha256": "deae1edf4bc2b1025b1e63e12f052435a415db3163b86cfb1c9135a3bebfe09b"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/server/bootstrap-script.ts",
+          "sha256": "5346db06e740cfb9f68691d2240c03c974d73e788fb4a2f49a849e648c4d627b"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/server/dispatcher.ts",
+          "sha256": "b564b5216d6645b33ebf8233995e19a91d1ffa7aa6d73cb5b2e3167cd5a0df0a"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/server/escape.ts",
+          "sha256": "0a338961be7f12a7a34f453a48a1d24d876fd1352defd2a2ba078991824f1cd7"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/server/renderToString.ts",
+          "sha256": "730d33ad6d560ed2d3791c5929cfb5f09a38c0c3ae329c5a5b5d0d8da18d2049"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/server/stream.ts",
+          "sha256": "ecefb45707ea41355b4f1a83259e49f72cc93b67317726e84ab3b5ece4c6c067"
+        },
+        {
+          "path": "../../../../private/tmp/redact-commit-optimized-b/src/server/walk.ts",
+          "sha256": "6ea5f420269cb777a3abd4863f4b42e2c46c7386d1ed0cba399b64874f0b5987"
+        },
+        {
+          "path": "../../../../tmp/redact-commit-optimized-b/src/dom/client.ts",
+          "sha256": "787e1f0517d0fe7c6df938b09e755436e3259d1698d6a53c971fef4e4884e924"
+        },
+        {
+          "path": "../../../../tmp/redact-commit-optimized-b/src/dom/index.ts",
+          "sha256": "42bcecbc8cfa30de34d6ab1b6da22a68212c526f5c25a499d1912368d147543b"
+        },
+        {
+          "path": "../../../../tmp/redact-commit-optimized-b/src/react/index.ts",
+          "sha256": "e68b17b4a2da13a0105d72aef9012cfd9928e1b0f2eed32edb13768194797525"
+        },
+        {
+          "path": "../../../../tmp/redact-commit-optimized-b/src/react/jsx-runtime.ts",
+          "sha256": "842a08086f193d641f99611d2214c484a2f2a97f6807364ba5f194ed972e62e3"
+        },
+        {
+          "path": "../../../../tmp/redact-commit-optimized-b/src/server/index.ts",
+          "sha256": "1b5fa6eb9b09f4a68c0b46cbf20eec8e5f910283230a8ece6513e79ddc2d4410"
+        },
+        {
+          "path": "benchmarks/runtime-workloads.ts",
+          "sha256": "202750ec0c7e4ed80f1112b86696b314aa7d5f96c0baeefdad722a87c6965013"
+        }
+      ],
+      "fixtureBundle": {
+        "raw": 79959,
+        "gzip": 28294,
+        "brotli": 24957
+      }
+    }
+  ],
+  "calibration": {
+    "jsx-props-updates": {
+      "name": "jsx-props-updates",
+      "mode": "sync",
+      "defaultIterations": 100,
+      "iterations": 337,
+      "durationsMs": {
+        "c-tape": 25.59999990463257,
+        "pre-animation": 23.799999952316284,
+        "react": 24.700000047683716,
+        "react-control": 24.700000047683716,
+        "current": 25.299999952316284,
+        "b-tape": 25.700000047683716
+      }
+    },
+    "stable-keyed-rows": {
+      "name": "stable-keyed-rows",
+      "mode": "sync",
+      "defaultIterations": 100,
+      "iterations": 1703,
+      "durationsMs": {
+        "current": 5,
+        "react": 5.200000047683716,
+        "b-tape": 4.800000071525574,
+        "c-tape": 4.799999952316284,
+        "react-control": 5.199999928474426,
+        "pre-animation": 4.699999928474426
+      }
+    },
+    "props-updates": {
+      "name": "props-updates",
+      "mode": "sync",
+      "defaultIterations": 100,
+      "iterations": 332,
+      "durationsMs": {
+        "pre-animation": 24.600000023841858,
+        "c-tape": 25.200000047683716,
+        "b-tape": 25.5,
+        "current": 25.899999976158142,
+        "react-control": 24.09999990463257,
+        "react": 24.100000023841858
+      }
+    },
+    "batched-setters": {
+      "name": "batched-setters",
+      "mode": "sync",
+      "defaultIterations": 80,
+      "iterations": 1730,
+      "durationsMs": {
+        "react-control": 5.5,
+        "b-tape": 4.099999904632568,
+        "react": 5.699999928474426,
+        "c-tape": 4.299999952316284,
+        "current": 4.600000023841858,
+        "pre-animation": 3.700000047683716
+      }
+    },
+    "controlled-selects": {
+      "name": "controlled-selects",
+      "mode": "sync",
+      "defaultIterations": 50,
+      "iterations": 572,
+      "durationsMs": {
+        "react-control": 7.600000023841858,
+        "b-tape": 7.5,
+        "current": 7,
+        "pre-animation": 7.700000047683716,
+        "react": 7.699999928474426,
+        "c-tape": 7.399999976158142
+      }
+    },
+    "sparse-setters": {
+      "name": "sparse-setters",
+      "mode": "sync",
+      "defaultIterations": 200,
+      "iterations": 32000,
+      "durationsMs": {
+        "b-tape": 0.6000000238418579,
+        "c-tape": 0.7000000476837158,
+        "pre-animation": 0.6000000238418579,
+        "current": 0.5,
+        "react-control": 1.899999976158142,
+        "react": 2
+      }
+    }
+  },
+  "throughput": {
+    "jsx-props-updates": {
+      "mode": "sync",
+      "iterations": 337,
+      "samples": {
+        "react": [
+          [
+            {
+              "name": "jsx-props-updates",
+              "mode": "sync",
+              "iterations": 337,
+              "durationMs": 80.80000007152557,
+              "operations": 337,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 338
+              }
+            },
+            {
+              "name": "jsx-props-updates",
+              "mode": "sync",
+              "iterations": 337,
+              "durationMs": 80.79999995231628,
+              "operations": 337,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 338
+              }
+            },
+            {
+              "name": "jsx-props-updates",
+              "mode": "sync",
+              "iterations": 337,
+              "durationMs": 82,
+              "operations": 337,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 338
+              }
+            }
+          ],
+          [
+            {
+              "name": "jsx-props-updates",
+              "mode": "sync",
+              "iterations": 337,
+              "durationMs": 87.19999992847443,
+              "operations": 337,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 338
+              }
+            },
+            {
+              "name": "jsx-props-updates",
+              "mode": "sync",
+              "iterations": 337,
+              "durationMs": 89.20000004768372,
+              "operations": 337,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 338
+              }
+            },
+            {
+              "name": "jsx-props-updates",
+              "mode": "sync",
+              "iterations": 337,
+              "durationMs": 88.10000002384186,
+              "operations": 337,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 338
+              }
+            }
+          ]
+        ],
+        "react-control": [
+          [
+            {
+              "name": "jsx-props-updates",
+              "mode": "sync",
+              "iterations": 337,
+              "durationMs": 79.10000002384186,
+              "operations": 337,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 338
+              }
+            },
+            {
+              "name": "jsx-props-updates",
+              "mode": "sync",
+              "iterations": 337,
+              "durationMs": 80.60000002384186,
+              "operations": 337,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 338
+              }
+            },
+            {
+              "name": "jsx-props-updates",
+              "mode": "sync",
+              "iterations": 337,
+              "durationMs": 80.5,
+              "operations": 337,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 338
+              }
+            }
+          ],
+          [
+            {
+              "name": "jsx-props-updates",
+              "mode": "sync",
+              "iterations": 337,
+              "durationMs": 88.5,
+              "operations": 337,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 338
+              }
+            },
+            {
+              "name": "jsx-props-updates",
+              "mode": "sync",
+              "iterations": 337,
+              "durationMs": 87.89999997615814,
+              "operations": 337,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 338
+              }
+            },
+            {
+              "name": "jsx-props-updates",
+              "mode": "sync",
+              "iterations": 337,
+              "durationMs": 90.29999995231628,
+              "operations": 337,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 338
+              }
+            }
+          ]
+        ],
+        "pre-animation": [
+          [
+            {
+              "name": "jsx-props-updates",
+              "mode": "sync",
+              "iterations": 337,
+              "durationMs": 76.29999995231628,
+              "operations": 337,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 338
+              }
+            },
+            {
+              "name": "jsx-props-updates",
+              "mode": "sync",
+              "iterations": 337,
+              "durationMs": 78.5,
+              "operations": 337,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 338
+              }
+            },
+            {
+              "name": "jsx-props-updates",
+              "mode": "sync",
+              "iterations": 337,
+              "durationMs": 77.89999997615814,
+              "operations": 337,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 338
+              }
+            }
+          ],
+          [
+            {
+              "name": "jsx-props-updates",
+              "mode": "sync",
+              "iterations": 337,
+              "durationMs": 83.70000004768372,
+              "operations": 337,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 338
+              }
+            },
+            {
+              "name": "jsx-props-updates",
+              "mode": "sync",
+              "iterations": 337,
+              "durationMs": 80.5,
+              "operations": 337,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 338
+              }
+            },
+            {
+              "name": "jsx-props-updates",
+              "mode": "sync",
+              "iterations": 337,
+              "durationMs": 85,
+              "operations": 337,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 338
+              }
+            }
+          ]
+        ],
+        "current": [
+          [
+            {
+              "name": "jsx-props-updates",
+              "mode": "sync",
+              "iterations": 337,
+              "durationMs": 80.39999997615814,
+              "operations": 337,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 338
+              }
+            },
+            {
+              "name": "jsx-props-updates",
+              "mode": "sync",
+              "iterations": 337,
+              "durationMs": 80.89999997615814,
+              "operations": 337,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 338
+              }
+            },
+            {
+              "name": "jsx-props-updates",
+              "mode": "sync",
+              "iterations": 337,
+              "durationMs": 81.5,
+              "operations": 337,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 338
+              }
+            }
+          ],
+          [
+            {
+              "name": "jsx-props-updates",
+              "mode": "sync",
+              "iterations": 337,
+              "durationMs": 83.5,
+              "operations": 337,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 338
+              }
+            },
+            {
+              "name": "jsx-props-updates",
+              "mode": "sync",
+              "iterations": 337,
+              "durationMs": 85.5,
+              "operations": 337,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 338
+              }
+            },
+            {
+              "name": "jsx-props-updates",
+              "mode": "sync",
+              "iterations": 337,
+              "durationMs": 86.79999995231628,
+              "operations": 337,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 338
+              }
+            }
+          ]
+        ],
+        "c-tape": [
+          [
+            {
+              "name": "jsx-props-updates",
+              "mode": "sync",
+              "iterations": 337,
+              "durationMs": 81.60000002384186,
+              "operations": 337,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 338
+              }
+            },
+            {
+              "name": "jsx-props-updates",
+              "mode": "sync",
+              "iterations": 337,
+              "durationMs": 80.39999997615814,
+              "operations": 337,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 338
+              }
+            },
+            {
+              "name": "jsx-props-updates",
+              "mode": "sync",
+              "iterations": 337,
+              "durationMs": 81.29999995231628,
+              "operations": 337,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 338
+              }
+            }
+          ],
+          [
+            {
+              "name": "jsx-props-updates",
+              "mode": "sync",
+              "iterations": 337,
+              "durationMs": 86.10000002384186,
+              "operations": 337,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 338
+              }
+            },
+            {
+              "name": "jsx-props-updates",
+              "mode": "sync",
+              "iterations": 337,
+              "durationMs": 85.79999995231628,
+              "operations": 337,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 338
+              }
+            },
+            {
+              "name": "jsx-props-updates",
+              "mode": "sync",
+              "iterations": 337,
+              "durationMs": 87.20000004768372,
+              "operations": 337,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 338
+              }
+            }
+          ]
+        ],
+        "b-tape": [
+          [
+            {
+              "name": "jsx-props-updates",
+              "mode": "sync",
+              "iterations": 337,
+              "durationMs": 83,
+              "operations": 337,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 338
+              }
+            },
+            {
+              "name": "jsx-props-updates",
+              "mode": "sync",
+              "iterations": 337,
+              "durationMs": 83.5,
+              "operations": 337,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 338
+              }
+            },
+            {
+              "name": "jsx-props-updates",
+              "mode": "sync",
+              "iterations": 337,
+              "durationMs": 83.70000004768372,
+              "operations": 337,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 338
+              }
+            }
+          ],
+          [
+            {
+              "name": "jsx-props-updates",
+              "mode": "sync",
+              "iterations": 337,
+              "durationMs": 87,
+              "operations": 337,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 338
+              }
+            },
+            {
+              "name": "jsx-props-updates",
+              "mode": "sync",
+              "iterations": 337,
+              "durationMs": 88.10000002384186,
+              "operations": 337,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 338
+              }
+            },
+            {
+              "name": "jsx-props-updates",
+              "mode": "sync",
+              "iterations": 337,
+              "durationMs": 87,
+              "operations": 337,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 338
+              }
+            }
+          ]
+        ]
+      },
+      "expectedOperations": 337,
+      "summary": {
+        "react": {
+          "n": 6,
+          "median": 0.25103857556153475,
+          "p95": 0.2638724036846387,
+          "min": 0.2397626111344697,
+          "max": 0.26468842744119797
+        },
+        "react-control": {
+          "n": 6,
+          "median": 0.25,
+          "p95": 0.26661721057637155,
+          "min": 0.23471810096095508,
+          "max": 0.2679525221136982
+        },
+        "pre-animation": {
+          "n": 6,
+          "median": 0.23590504451038574,
+          "p95": 0.25126112763181285,
+          "min": 0.22640949540746672,
+          "max": 0.2522255192878338
+        },
+        "current": {
+          "n": 6,
+          "median": 0.24480712166172108,
+          "p95": 0.25660237378111933,
+          "min": 0.238575667585039,
+          "max": 0.2575667654371403
+        },
+        "c-tape": {
+          "n": 6,
+          "median": 0.2483679524868815,
+          "p95": 0.2579376855837485,
+          "min": 0.238575667585039,
+          "max": 0.2587537093403078
+        },
+        "b-tape": {
+          "n": 6,
+          "median": 0.2532640950262369,
+          "p95": 0.26060830865840173,
+          "min": 0.24629080118694363,
+          "max": 0.261424332414961
+        }
+      },
+      "comparisons": {
+        "react": {
+          "react-control": {
+            "pairedTimeChangePercent": -0.8543074179286125,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "pre-animation": {
+            "pairedTimeChangePercent": -4.508153906031842,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "current": {
+            "pairedTimeChangePercent": -1.0436230228343835,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "c-tape": {
+            "pairedTimeChangePercent": -0.9376480594453951,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "b-tape": {
+            "pairedTimeChangePercent": 0.9153398133061152,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          }
+        },
+        "pre-animation": {
+          "react": {
+            "pairedTimeChangePercent": 4.720983089588215,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "react-control": {
+            "pairedTimeChangePercent": 4.697154689555028,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "current": {
+            "pairedTimeChangePercent": 3.8363725542953864,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "c-tape": {
+            "pairedTimeChangePercent": 3.6132724953521267,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "b-tape": {
+            "pairedTimeChangePercent": 6.906081098059347,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          }
+        },
+        "c-tape": {
+          "react": {
+            "pairedTimeChangePercent": 0.9465231150660003,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "react-control": {
+            "pairedTimeChangePercent": 1.3421912114781165,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "pre-animation": {
+            "pairedTimeChangePercent": -3.487267999873478,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "current": {
+            "pairedTimeChangePercent": -0.40419792928070297,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "b-tape": {
+            "pairedTimeChangePercent": 2.1970305836057635,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          }
+        },
+        "b-tape": {
+          "react": {
+            "pairedTimeChangePercent": -0.9070373394168829,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "react-control": {
+            "pairedTimeChangePercent": -1.8634544764561833,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "pre-animation": {
+            "pairedTimeChangePercent": -6.459951601560232,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "current": {
+            "pairedTimeChangePercent": -3.0325162425539176,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "c-tape": {
+            "pairedTimeChangePercent": -2.149798845484474,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          }
+        }
+      }
+    },
+    "stable-keyed-rows": {
+      "mode": "sync",
+      "iterations": 1703,
+      "samples": {
+        "react": [
+          [
+            {
+              "name": "stable-keyed-rows",
+              "mode": "sync",
+              "iterations": 1703,
+              "durationMs": 83.69999992847443,
+              "operations": 1703,
+              "checks": 3,
+              "diagnostics": {
+                "commits": 1704
+              }
+            },
+            {
+              "name": "stable-keyed-rows",
+              "mode": "sync",
+              "iterations": 1703,
+              "durationMs": 83.30000007152557,
+              "operations": 1703,
+              "checks": 3,
+              "diagnostics": {
+                "commits": 1704
+              }
+            },
+            {
+              "name": "stable-keyed-rows",
+              "mode": "sync",
+              "iterations": 1703,
+              "durationMs": 80.30000007152557,
+              "operations": 1703,
+              "checks": 3,
+              "diagnostics": {
+                "commits": 1704
+              }
+            }
+          ],
+          [
+            {
+              "name": "stable-keyed-rows",
+              "mode": "sync",
+              "iterations": 1703,
+              "durationMs": 82.19999992847443,
+              "operations": 1703,
+              "checks": 3,
+              "diagnostics": {
+                "commits": 1704
+              }
+            },
+            {
+              "name": "stable-keyed-rows",
+              "mode": "sync",
+              "iterations": 1703,
+              "durationMs": 80.39999997615814,
+              "operations": 1703,
+              "checks": 3,
+              "diagnostics": {
+                "commits": 1704
+              }
+            },
+            {
+              "name": "stable-keyed-rows",
+              "mode": "sync",
+              "iterations": 1703,
+              "durationMs": 79.39999997615814,
+              "operations": 1703,
+              "checks": 3,
+              "diagnostics": {
+                "commits": 1704
+              }
+            }
+          ]
+        ],
+        "react-control": [
+          [
+            {
+              "name": "stable-keyed-rows",
+              "mode": "sync",
+              "iterations": 1703,
+              "durationMs": 85,
+              "operations": 1703,
+              "checks": 3,
+              "diagnostics": {
+                "commits": 1704
+              }
+            },
+            {
+              "name": "stable-keyed-rows",
+              "mode": "sync",
+              "iterations": 1703,
+              "durationMs": 83.29999995231628,
+              "operations": 1703,
+              "checks": 3,
+              "diagnostics": {
+                "commits": 1704
+              }
+            },
+            {
+              "name": "stable-keyed-rows",
+              "mode": "sync",
+              "iterations": 1703,
+              "durationMs": 84.30000007152557,
+              "operations": 1703,
+              "checks": 3,
+              "diagnostics": {
+                "commits": 1704
+              }
+            }
+          ],
+          [
+            {
+              "name": "stable-keyed-rows",
+              "mode": "sync",
+              "iterations": 1703,
+              "durationMs": 81.39999997615814,
+              "operations": 1703,
+              "checks": 3,
+              "diagnostics": {
+                "commits": 1704
+              }
+            },
+            {
+              "name": "stable-keyed-rows",
+              "mode": "sync",
+              "iterations": 1703,
+              "durationMs": 79.90000009536743,
+              "operations": 1703,
+              "checks": 3,
+              "diagnostics": {
+                "commits": 1704
+              }
+            },
+            {
+              "name": "stable-keyed-rows",
+              "mode": "sync",
+              "iterations": 1703,
+              "durationMs": 79.79999995231628,
+              "operations": 1703,
+              "checks": 3,
+              "diagnostics": {
+                "commits": 1704
+              }
+            }
+          ]
+        ],
+        "pre-animation": [
+          [
+            {
+              "name": "stable-keyed-rows",
+              "mode": "sync",
+              "iterations": 1703,
+              "durationMs": 78.89999997615814,
+              "operations": 1703,
+              "checks": 3,
+              "diagnostics": {
+                "commits": 1704
+              }
+            },
+            {
+              "name": "stable-keyed-rows",
+              "mode": "sync",
+              "iterations": 1703,
+              "durationMs": 78,
+              "operations": 1703,
+              "checks": 3,
+              "diagnostics": {
+                "commits": 1704
+              }
+            },
+            {
+              "name": "stable-keyed-rows",
+              "mode": "sync",
+              "iterations": 1703,
+              "durationMs": 76.89999997615814,
+              "operations": 1703,
+              "checks": 3,
+              "diagnostics": {
+                "commits": 1704
+              }
+            }
+          ],
+          [
+            {
+              "name": "stable-keyed-rows",
+              "mode": "sync",
+              "iterations": 1703,
+              "durationMs": 81.89999997615814,
+              "operations": 1703,
+              "checks": 3,
+              "diagnostics": {
+                "commits": 1704
+              }
+            },
+            {
+              "name": "stable-keyed-rows",
+              "mode": "sync",
+              "iterations": 1703,
+              "durationMs": 80.5,
+              "operations": 1703,
+              "checks": 3,
+              "diagnostics": {
+                "commits": 1704
+              }
+            },
+            {
+              "name": "stable-keyed-rows",
+              "mode": "sync",
+              "iterations": 1703,
+              "durationMs": 79.79999995231628,
+              "operations": 1703,
+              "checks": 3,
+              "diagnostics": {
+                "commits": 1704
+              }
+            }
+          ]
+        ],
+        "current": [
+          [
+            {
+              "name": "stable-keyed-rows",
+              "mode": "sync",
+              "iterations": 1703,
+              "durationMs": 78.5,
+              "operations": 1703,
+              "checks": 3,
+              "diagnostics": {
+                "commits": 1704
+              }
+            },
+            {
+              "name": "stable-keyed-rows",
+              "mode": "sync",
+              "iterations": 1703,
+              "durationMs": 78.19999992847443,
+              "operations": 1703,
+              "checks": 3,
+              "diagnostics": {
+                "commits": 1704
+              }
+            },
+            {
+              "name": "stable-keyed-rows",
+              "mode": "sync",
+              "iterations": 1703,
+              "durationMs": 75.10000002384186,
+              "operations": 1703,
+              "checks": 3,
+              "diagnostics": {
+                "commits": 1704
+              }
+            }
+          ],
+          [
+            {
+              "name": "stable-keyed-rows",
+              "mode": "sync",
+              "iterations": 1703,
+              "durationMs": 81.69999992847443,
+              "operations": 1703,
+              "checks": 3,
+              "diagnostics": {
+                "commits": 1704
+              }
+            },
+            {
+              "name": "stable-keyed-rows",
+              "mode": "sync",
+              "iterations": 1703,
+              "durationMs": 80.70000004768372,
+              "operations": 1703,
+              "checks": 3,
+              "diagnostics": {
+                "commits": 1704
+              }
+            },
+            {
+              "name": "stable-keyed-rows",
+              "mode": "sync",
+              "iterations": 1703,
+              "durationMs": 80.40000009536743,
+              "operations": 1703,
+              "checks": 3,
+              "diagnostics": {
+                "commits": 1704
+              }
+            }
+          ]
+        ],
+        "c-tape": [
+          [
+            {
+              "name": "stable-keyed-rows",
+              "mode": "sync",
+              "iterations": 1703,
+              "durationMs": 80.89999997615814,
+              "operations": 1703,
+              "checks": 3,
+              "diagnostics": {
+                "commits": 1704
+              }
+            },
+            {
+              "name": "stable-keyed-rows",
+              "mode": "sync",
+              "iterations": 1703,
+              "durationMs": 78.60000002384186,
+              "operations": 1703,
+              "checks": 3,
+              "diagnostics": {
+                "commits": 1704
+              }
+            },
+            {
+              "name": "stable-keyed-rows",
+              "mode": "sync",
+              "iterations": 1703,
+              "durationMs": 78.70000004768372,
+              "operations": 1703,
+              "checks": 3,
+              "diagnostics": {
+                "commits": 1704
+              }
+            }
+          ],
+          [
+            {
+              "name": "stable-keyed-rows",
+              "mode": "sync",
+              "iterations": 1703,
+              "durationMs": 81.60000002384186,
+              "operations": 1703,
+              "checks": 3,
+              "diagnostics": {
+                "commits": 1704
+              }
+            },
+            {
+              "name": "stable-keyed-rows",
+              "mode": "sync",
+              "iterations": 1703,
+              "durationMs": 80.20000004768372,
+              "operations": 1703,
+              "checks": 3,
+              "diagnostics": {
+                "commits": 1704
+              }
+            },
+            {
+              "name": "stable-keyed-rows",
+              "mode": "sync",
+              "iterations": 1703,
+              "durationMs": 80.79999995231628,
+              "operations": 1703,
+              "checks": 3,
+              "diagnostics": {
+                "commits": 1704
+              }
+            }
+          ]
+        ],
+        "b-tape": [
+          [
+            {
+              "name": "stable-keyed-rows",
+              "mode": "sync",
+              "iterations": 1703,
+              "durationMs": 84.10000002384186,
+              "operations": 1703,
+              "checks": 3,
+              "diagnostics": {
+                "commits": 1704
+              }
+            },
+            {
+              "name": "stable-keyed-rows",
+              "mode": "sync",
+              "iterations": 1703,
+              "durationMs": 81.5,
+              "operations": 1703,
+              "checks": 3,
+              "diagnostics": {
+                "commits": 1704
+              }
+            },
+            {
+              "name": "stable-keyed-rows",
+              "mode": "sync",
+              "iterations": 1703,
+              "durationMs": 79.79999995231628,
+              "operations": 1703,
+              "checks": 3,
+              "diagnostics": {
+                "commits": 1704
+              }
+            }
+          ],
+          [
+            {
+              "name": "stable-keyed-rows",
+              "mode": "sync",
+              "iterations": 1703,
+              "durationMs": 84.30000007152557,
+              "operations": 1703,
+              "checks": 3,
+              "diagnostics": {
+                "commits": 1704
+              }
+            },
+            {
+              "name": "stable-keyed-rows",
+              "mode": "sync",
+              "iterations": 1703,
+              "durationMs": 81.79999995231628,
+              "operations": 1703,
+              "checks": 3,
+              "diagnostics": {
+                "commits": 1704
+              }
+            },
+            {
+              "name": "stable-keyed-rows",
+              "mode": "sync",
+              "iterations": 1703,
+              "durationMs": 82.09999990463257,
+              "operations": 1703,
+              "checks": 3,
+              "diagnostics": {
+                "commits": 1704
+              }
+            }
+          ]
+        ]
+      },
+      "expectedOperations": 1703,
+      "summary": {
+        "react": {
+          "n": 6,
+          "median": 0.04773928358914638,
+          "p95": 0.04908984143525379,
+          "min": 0.04662360538823144,
+          "max": 0.04914856132030207
+        },
+        "react-control": {
+          "n": 6,
+          "median": 0.04835584260965192,
+          "p95": 0.04980916031584345,
+          "min": 0.04685848499842413,
+          "max": 0.049911920140927775
+        },
+        "pre-animation": {
+          "n": 6,
+          "median": 0.046594245428207406,
+          "p95": 0.04788608337176665,
+          "min": 0.04515560773702768,
+          "max": 0.048091603039435195
+        },
+        "current": {
+          "n": 6,
+          "median": 0.046652965383255265,
+          "p95": 0.047827363451718584,
+          "min": 0.04409864945616081,
+          "max": 0.047974163199339066
+        },
+        "c-tape": {
+          "n": 6,
+          "median": 0.04726952436876101,
+          "p95": 0.04781268350670636,
+          "min": 0.04615384616784607,
+          "max": 0.04791544334929058
+        },
+        "b-tape": {
+          "n": 6,
+          "median": 0.04812096296445944,
+          "p95": 0.04947152088056644,
+          "min": 0.04685848499842413,
+          "max": 0.04950088084059047
+        }
+      },
+      "comparisons": {
+        "react": {
+          "react-control": {
+            "pairedTimeChangePercent": 0.25157263795210216,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "pre-animation": {
+            "pairedTimeChangePercent": -2.3186981071403046,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "current": {
+            "pairedTimeChangePercent": -3.4047001546090083,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "c-tape": {
+            "pairedTimeChangePercent": -1.363247692204983,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "b-tape": {
+            "pairedTimeChangePercent": 1.1076220991440122,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          }
+        },
+        "pre-animation": {
+          "react": {
+            "pairedTimeChangePercent": 2.373737923439556,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "react-control": {
+            "pairedTimeChangePercent": 3.341604271338272,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "current": {
+            "pairedTimeChangePercent": 0.0018201098057168963,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "c-tape": {
+            "pairedTimeChangePercent": 1.0108920445407898,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "b-tape": {
+            "pairedTimeChangePercent": 3.3499122902846956,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          }
+        },
+        "c-tape": {
+          "react": {
+            "pairedTimeChangePercent": 1.3820889884441634,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "react-control": {
+            "pairedTimeChangePercent": 2.37698255220824,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "pre-animation": {
+            "pairedTimeChangePercent": -1.0007752867829733,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "current": {
+            "pairedTimeChangePercent": -0.5019778921164897,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "b-tape": {
+            "pairedTimeChangePercent": 2.649816061582233,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          }
+        },
+        "b-tape": {
+          "react": {
+            "pairedTimeChangePercent": -1.0954882294214263,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "react-control": {
+            "pairedTimeChangePercent": -0.6407732277485256,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "pre-animation": {
+            "pairedTimeChangePercent": -3.2413305595031305,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "current": {
+            "pairedTimeChangePercent": -3.5678582439482964,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "c-tape": {
+            "pairedTimeChangePercent": -2.5814133558627383,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          }
+        }
+      }
+    },
+    "props-updates": {
+      "mode": "sync",
+      "iterations": 332,
+      "samples": {
+        "react": [
+          [
+            {
+              "name": "props-updates",
+              "mode": "sync",
+              "iterations": 332,
+              "durationMs": 87.10000002384186,
+              "operations": 332,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 333
+              }
+            },
+            {
+              "name": "props-updates",
+              "mode": "sync",
+              "iterations": 332,
+              "durationMs": 87.70000004768372,
+              "operations": 332,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 333
+              }
+            },
+            {
+              "name": "props-updates",
+              "mode": "sync",
+              "iterations": 332,
+              "durationMs": 87.10000002384186,
+              "operations": 332,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 333
+              }
+            }
+          ],
+          [
+            {
+              "name": "props-updates",
+              "mode": "sync",
+              "iterations": 332,
+              "durationMs": 91.29999995231628,
+              "operations": 332,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 333
+              }
+            },
+            {
+              "name": "props-updates",
+              "mode": "sync",
+              "iterations": 332,
+              "durationMs": 91.70000004768372,
+              "operations": 332,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 333
+              }
+            },
+            {
+              "name": "props-updates",
+              "mode": "sync",
+              "iterations": 332,
+              "durationMs": 91.69999992847443,
+              "operations": 332,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 333
+              }
+            }
+          ]
+        ],
+        "react-control": [
+          [
+            {
+              "name": "props-updates",
+              "mode": "sync",
+              "iterations": 332,
+              "durationMs": 87.5,
+              "operations": 332,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 333
+              }
+            },
+            {
+              "name": "props-updates",
+              "mode": "sync",
+              "iterations": 332,
+              "durationMs": 87.19999992847443,
+              "operations": 332,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 333
+              }
+            },
+            {
+              "name": "props-updates",
+              "mode": "sync",
+              "iterations": 332,
+              "durationMs": 87.30000007152557,
+              "operations": 332,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 333
+              }
+            }
+          ],
+          [
+            {
+              "name": "props-updates",
+              "mode": "sync",
+              "iterations": 332,
+              "durationMs": 92.29999995231628,
+              "operations": 332,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 333
+              }
+            },
+            {
+              "name": "props-updates",
+              "mode": "sync",
+              "iterations": 332,
+              "durationMs": 93.39999997615814,
+              "operations": 332,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 333
+              }
+            },
+            {
+              "name": "props-updates",
+              "mode": "sync",
+              "iterations": 332,
+              "durationMs": 94.79999995231628,
+              "operations": 332,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 333
+              }
+            }
+          ]
+        ],
+        "pre-animation": [
+          [
+            {
+              "name": "props-updates",
+              "mode": "sync",
+              "iterations": 332,
+              "durationMs": 82.59999990463257,
+              "operations": 332,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 333
+              }
+            },
+            {
+              "name": "props-updates",
+              "mode": "sync",
+              "iterations": 332,
+              "durationMs": 83.90000009536743,
+              "operations": 332,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 333
+              }
+            },
+            {
+              "name": "props-updates",
+              "mode": "sync",
+              "iterations": 332,
+              "durationMs": 85,
+              "operations": 332,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 333
+              }
+            }
+          ],
+          [
+            {
+              "name": "props-updates",
+              "mode": "sync",
+              "iterations": 332,
+              "durationMs": 90.39999997615814,
+              "operations": 332,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 333
+              }
+            },
+            {
+              "name": "props-updates",
+              "mode": "sync",
+              "iterations": 332,
+              "durationMs": 91.19999992847443,
+              "operations": 332,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 333
+              }
+            },
+            {
+              "name": "props-updates",
+              "mode": "sync",
+              "iterations": 332,
+              "durationMs": 90.5,
+              "operations": 332,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 333
+              }
+            }
+          ]
+        ],
+        "current": [
+          [
+            {
+              "name": "props-updates",
+              "mode": "sync",
+              "iterations": 332,
+              "durationMs": 84.69999992847443,
+              "operations": 332,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 333
+              }
+            },
+            {
+              "name": "props-updates",
+              "mode": "sync",
+              "iterations": 332,
+              "durationMs": 86.5,
+              "operations": 332,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 333
+              }
+            },
+            {
+              "name": "props-updates",
+              "mode": "sync",
+              "iterations": 332,
+              "durationMs": 86.29999995231628,
+              "operations": 332,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 333
+              }
+            }
+          ],
+          [
+            {
+              "name": "props-updates",
+              "mode": "sync",
+              "iterations": 332,
+              "durationMs": 94.10000002384186,
+              "operations": 332,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 333
+              }
+            },
+            {
+              "name": "props-updates",
+              "mode": "sync",
+              "iterations": 332,
+              "durationMs": 93.5,
+              "operations": 332,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 333
+              }
+            },
+            {
+              "name": "props-updates",
+              "mode": "sync",
+              "iterations": 332,
+              "durationMs": 93,
+              "operations": 332,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 333
+              }
+            }
+          ]
+        ],
+        "c-tape": [
+          [
+            {
+              "name": "props-updates",
+              "mode": "sync",
+              "iterations": 332,
+              "durationMs": 85.89999997615814,
+              "operations": 332,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 333
+              }
+            },
+            {
+              "name": "props-updates",
+              "mode": "sync",
+              "iterations": 332,
+              "durationMs": 85.40000009536743,
+              "operations": 332,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 333
+              }
+            },
+            {
+              "name": "props-updates",
+              "mode": "sync",
+              "iterations": 332,
+              "durationMs": 85.79999995231628,
+              "operations": 332,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 333
+              }
+            }
+          ],
+          [
+            {
+              "name": "props-updates",
+              "mode": "sync",
+              "iterations": 332,
+              "durationMs": 94.19999992847443,
+              "operations": 332,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 333
+              }
+            },
+            {
+              "name": "props-updates",
+              "mode": "sync",
+              "iterations": 332,
+              "durationMs": 92.5,
+              "operations": 332,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 333
+              }
+            },
+            {
+              "name": "props-updates",
+              "mode": "sync",
+              "iterations": 332,
+              "durationMs": 95.89999997615814,
+              "operations": 332,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 333
+              }
+            }
+          ]
+        ],
+        "b-tape": [
+          [
+            {
+              "name": "props-updates",
+              "mode": "sync",
+              "iterations": 332,
+              "durationMs": 88,
+              "operations": 332,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 333
+              }
+            },
+            {
+              "name": "props-updates",
+              "mode": "sync",
+              "iterations": 332,
+              "durationMs": 88.79999995231628,
+              "operations": 332,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 333
+              }
+            },
+            {
+              "name": "props-updates",
+              "mode": "sync",
+              "iterations": 332,
+              "durationMs": 87.5,
+              "operations": 332,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 333
+              }
+            }
+          ],
+          [
+            {
+              "name": "props-updates",
+              "mode": "sync",
+              "iterations": 332,
+              "durationMs": 96.39999997615814,
+              "operations": 332,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 333
+              }
+            },
+            {
+              "name": "props-updates",
+              "mode": "sync",
+              "iterations": 332,
+              "durationMs": 97.20000004768372,
+              "operations": 332,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 333
+              }
+            },
+            {
+              "name": "props-updates",
+              "mode": "sync",
+              "iterations": 332,
+              "durationMs": 95.39999997615814,
+              "operations": 332,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 333
+              }
+            }
+          ]
+        ]
+      },
+      "expectedOperations": 332,
+      "summary": {
+        "react": {
+          "n": 6,
+          "median": 0.26957831325301207,
+          "p95": 0.2762048193309681,
+          "min": 0.26234939766217424,
+          "max": 0.2762048194207341
+        },
+        "react-control": {
+          "n": 6,
+          "median": 0.27078313245830765,
+          "p95": 0.2844879516815565,
+          "min": 0.26265060219420006,
+          "max": 0.28554216853107317
+        },
+        "pre-animation": {
+          "n": 6,
+          "median": 0.26415662647011773,
+          "p95": 0.27417168658540914,
+          "min": 0.24879518043564028,
+          "max": 0.27469879496528443
+        },
+        "current": {
+          "n": 6,
+          "median": 0.27033132530120485,
+          "p95": 0.282981927764703,
+          "min": 0.25512048171227236,
+          "max": 0.2834337350115719
+        },
+        "c-tape": {
+          "n": 6,
+          "median": 0.2686746987592743,
+          "p95": 0.28757530109710006,
+          "min": 0.2572289159499019,
+          "max": 0.28885542161493416
+        },
+        "b-tape": {
+          "n": 6,
+          "median": 0.27740963844649763,
+          "p95": 0.29216867478856123,
+          "min": 0.2635542168674699,
+          "max": 0.29277108448097505
+        }
+      },
+      "comparisons": {
+        "react": {
+          "react-control": {
+            "pairedTimeChangePercent": 0.7767644403106733,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "pre-animation": {
+            "pairedTimeChangePercent": -1.8613663331438213,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "current": {
+            "pairedTimeChangePercent": 0.2427856519733096,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "c-tape": {
+            "pairedTimeChangePercent": -0.25900353972666545,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "b-tape": {
+            "pairedTimeChangePercent": 2.6351699072049373,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          }
+        },
+        "pre-animation": {
+          "react": {
+            "pairedTimeChangePercent": 1.8966703158538545,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "react-control": {
+            "pairedTimeChangePercent": 3.3177454881920143,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "current": {
+            "pairedTimeChangePercent": 2.6523429583200198,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "c-tape": {
+            "pairedTimeChangePercent": 2.8855807555226987,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "b-tape": {
+            "pairedTimeChangePercent": 6.188335861861072,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          }
+        },
+        "c-tape": {
+          "react": {
+            "pairedTimeChangePercent": 0.2596761100435163,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "react-control": {
+            "pairedTimeChangePercent": 1.359871178529315,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "pre-animation": {
+            "pairedTimeChangePercent": -2.8046503060321304,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "current": {
+            "pairedTimeChangePercent": 0.23770495233013111,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "b-tape": {
+            "pairedTimeChangePercent": 2.3900652795044497,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          }
+        },
+        "b-tape": {
+          "react": {
+            "pairedTimeChangePercent": -2.567511613794249,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "react-control": {
+            "pairedTimeChangePercent": -1.2171070402091977,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "pre-animation": {
+            "pairedTimeChangePercent": -5.827698316989716,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "current": {
+            "pairedTimeChangePercent": -2.5529137360617127,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "c-tape": {
+            "pairedTimeChangePercent": -2.3342745929305186,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          }
+        }
+      }
+    },
+    "batched-setters": {
+      "mode": "sync",
+      "iterations": 1730,
+      "samples": {
+        "react": [
+          [
+            {
+              "name": "batched-setters",
+              "mode": "sync",
+              "iterations": 1730,
+              "durationMs": 100.70000004768372,
+              "operations": 311400,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 311400
+              }
+            },
+            {
+              "name": "batched-setters",
+              "mode": "sync",
+              "iterations": 1730,
+              "durationMs": 100.09999990463257,
+              "operations": 311400,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 311400
+              }
+            },
+            {
+              "name": "batched-setters",
+              "mode": "sync",
+              "iterations": 1730,
+              "durationMs": 100.10000002384186,
+              "operations": 311400,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 311400
+              }
+            }
+          ],
+          [
+            {
+              "name": "batched-setters",
+              "mode": "sync",
+              "iterations": 1730,
+              "durationMs": 86.80000007152557,
+              "operations": 311400,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 311400
+              }
+            },
+            {
+              "name": "batched-setters",
+              "mode": "sync",
+              "iterations": 1730,
+              "durationMs": 88.59999990463257,
+              "operations": 311400,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 311400
+              }
+            },
+            {
+              "name": "batched-setters",
+              "mode": "sync",
+              "iterations": 1730,
+              "durationMs": 88.60000002384186,
+              "operations": 311400,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 311400
+              }
+            }
+          ]
+        ],
+        "react-control": [
+          [
+            {
+              "name": "batched-setters",
+              "mode": "sync",
+              "iterations": 1730,
+              "durationMs": 99.10000002384186,
+              "operations": 311400,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 311400
+              }
+            },
+            {
+              "name": "batched-setters",
+              "mode": "sync",
+              "iterations": 1730,
+              "durationMs": 98.70000004768372,
+              "operations": 311400,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 311400
+              }
+            },
+            {
+              "name": "batched-setters",
+              "mode": "sync",
+              "iterations": 1730,
+              "durationMs": 99,
+              "operations": 311400,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 311400
+              }
+            }
+          ],
+          [
+            {
+              "name": "batched-setters",
+              "mode": "sync",
+              "iterations": 1730,
+              "durationMs": 87.60000002384186,
+              "operations": 311400,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 311400
+              }
+            },
+            {
+              "name": "batched-setters",
+              "mode": "sync",
+              "iterations": 1730,
+              "durationMs": 87.5,
+              "operations": 311400,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 311400
+              }
+            },
+            {
+              "name": "batched-setters",
+              "mode": "sync",
+              "iterations": 1730,
+              "durationMs": 86.89999997615814,
+              "operations": 311400,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 311400
+              }
+            }
+          ]
+        ],
+        "pre-animation": [
+          [
+            {
+              "name": "batched-setters",
+              "mode": "sync",
+              "iterations": 1730,
+              "durationMs": 68.89999997615814,
+              "operations": 311400,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 311400
+              }
+            },
+            {
+              "name": "batched-setters",
+              "mode": "sync",
+              "iterations": 1730,
+              "durationMs": 70.10000002384186,
+              "operations": 311400,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 311400
+              }
+            },
+            {
+              "name": "batched-setters",
+              "mode": "sync",
+              "iterations": 1730,
+              "durationMs": 69.90000009536743,
+              "operations": 311400,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 311400
+              }
+            }
+          ],
+          [
+            {
+              "name": "batched-setters",
+              "mode": "sync",
+              "iterations": 1730,
+              "durationMs": 67.39999997615814,
+              "operations": 311400,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 311400
+              }
+            },
+            {
+              "name": "batched-setters",
+              "mode": "sync",
+              "iterations": 1730,
+              "durationMs": 67.39999997615814,
+              "operations": 311400,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 311400
+              }
+            },
+            {
+              "name": "batched-setters",
+              "mode": "sync",
+              "iterations": 1730,
+              "durationMs": 66.80000007152557,
+              "operations": 311400,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 311400
+              }
+            }
+          ]
+        ],
+        "current": [
+          [
+            {
+              "name": "batched-setters",
+              "mode": "sync",
+              "iterations": 1730,
+              "durationMs": 69.70000004768372,
+              "operations": 311400,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 311400
+              }
+            },
+            {
+              "name": "batched-setters",
+              "mode": "sync",
+              "iterations": 1730,
+              "durationMs": 70.10000002384186,
+              "operations": 311400,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 311400
+              }
+            },
+            {
+              "name": "batched-setters",
+              "mode": "sync",
+              "iterations": 1730,
+              "durationMs": 70.20000004768372,
+              "operations": 311400,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 311400
+              }
+            }
+          ],
+          [
+            {
+              "name": "batched-setters",
+              "mode": "sync",
+              "iterations": 1730,
+              "durationMs": 66,
+              "operations": 311400,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 311400
+              }
+            },
+            {
+              "name": "batched-setters",
+              "mode": "sync",
+              "iterations": 1730,
+              "durationMs": 65.89999997615814,
+              "operations": 311400,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 311400
+              }
+            },
+            {
+              "name": "batched-setters",
+              "mode": "sync",
+              "iterations": 1730,
+              "durationMs": 65.60000002384186,
+              "operations": 311400,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 311400
+              }
+            }
+          ]
+        ],
+        "c-tape": [
+          [
+            {
+              "name": "batched-setters",
+              "mode": "sync",
+              "iterations": 1730,
+              "durationMs": 70,
+              "operations": 311400,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 311400
+              }
+            },
+            {
+              "name": "batched-setters",
+              "mode": "sync",
+              "iterations": 1730,
+              "durationMs": 70,
+              "operations": 311400,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 311400
+              }
+            },
+            {
+              "name": "batched-setters",
+              "mode": "sync",
+              "iterations": 1730,
+              "durationMs": 70.19999992847443,
+              "operations": 311400,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 311400
+              }
+            }
+          ],
+          [
+            {
+              "name": "batched-setters",
+              "mode": "sync",
+              "iterations": 1730,
+              "durationMs": 67.90000009536743,
+              "operations": 311400,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 311400
+              }
+            },
+            {
+              "name": "batched-setters",
+              "mode": "sync",
+              "iterations": 1730,
+              "durationMs": 68,
+              "operations": 311400,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 311400
+              }
+            },
+            {
+              "name": "batched-setters",
+              "mode": "sync",
+              "iterations": 1730,
+              "durationMs": 68.80000007152557,
+              "operations": 311400,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 311400
+              }
+            }
+          ]
+        ],
+        "b-tape": [
+          [
+            {
+              "name": "batched-setters",
+              "mode": "sync",
+              "iterations": 1730,
+              "durationMs": 73.90000009536743,
+              "operations": 311400,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 311400
+              }
+            },
+            {
+              "name": "batched-setters",
+              "mode": "sync",
+              "iterations": 1730,
+              "durationMs": 74.20000004768372,
+              "operations": 311400,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 311400
+              }
+            },
+            {
+              "name": "batched-setters",
+              "mode": "sync",
+              "iterations": 1730,
+              "durationMs": 74.29999995231628,
+              "operations": 311400,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 311400
+              }
+            }
+          ],
+          [
+            {
+              "name": "batched-setters",
+              "mode": "sync",
+              "iterations": 1730,
+              "durationMs": 69.10000002384186,
+              "operations": 311400,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 311400
+              }
+            },
+            {
+              "name": "batched-setters",
+              "mode": "sync",
+              "iterations": 1730,
+              "durationMs": 68.5,
+              "operations": 311400,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 311400
+              }
+            },
+            {
+              "name": "batched-setters",
+              "mode": "sync",
+              "iterations": 1730,
+              "durationMs": 69.5,
+              "operations": 311400,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 311400
+              }
+            }
+          ]
+        ]
+      },
+      "expectedOperations": 311400,
+      "summary": {
+        "react": {
+          "n": 6,
+          "median": 0.05453757223366313,
+          "p95": 0.05812138730735448,
+          "min": 0.05017341044596854,
+          "max": 0.05820809251311197
+        },
+        "react-control": {
+          "n": 6,
+          "median": 0.05384393065651028,
+          "p95": 0.05726878613750369,
+          "min": 0.05023121385905095,
+          "max": 0.05728323700800107
+        },
+        "pre-animation": {
+          "n": 6,
+          "median": 0.03939306357003361,
+          "p95": 0.04049132950388627,
+          "min": 0.03861271680435004,
+          "max": 0.04052023122765425
+        },
+        "current": {
+          "n": 6,
+          "median": 0.03921965319297217,
+          "p95": 0.04056358383914639,
+          "min": 0.03791907515829009,
+          "max": 0.040578034709643766
+        },
+        "c-tape": {
+          "n": 6,
+          "median": 0.040115606957088316,
+          "p95": 0.04054913291696868,
+          "min": 0.03924855496842048,
+          "max": 0.040578034640736664
+        },
+        "b-tape": {
+          "n": 6,
+          "median": 0.04144508673276515,
+          "p95": 0.042933525997779276,
+          "min": 0.039595375722543354,
+          "max": 0.042947976851049875
+        }
+      },
+      "comparisons": {
+        "react": {
+          "react-control": {
+            "pairedTimeChangePercent": -1.3200993195500388,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "pre-animation": {
+            "pairedTimeChangePercent": -27.336997222202484,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "current": {
+            "pairedTimeChangePercent": -27.941274552813343,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "c-tape": {
+            "pairedTimeChangePercent": -26.634967765161566,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "b-tape": {
+            "pairedTimeChangePercent": -24.24596103665563,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          }
+        },
+        "pre-animation": {
+          "react": {
+            "pairedTimeChangePercent": 37.621617848354894,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "react-control": {
+            "pairedTimeChangePercent": 35.33845803235969,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "current": {
+            "pairedTimeChangePercent": -0.9022741204865348,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "c-tape": {
+            "pairedTimeChangePercent": 0.8159965517409828,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "b-tape": {
+            "pairedTimeChangePercent": 4.941463023430748,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          }
+        },
+        "c-tape": {
+          "react": {
+            "pairedTimeChangePercent": 36.30471759339535,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "react-control": {
+            "pairedTimeChangePercent": 34.873529326844775,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "pre-animation": {
+            "pairedTimeChangePercent": -0.8093919414089878,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "current": {
+            "pairedTimeChangePercent": -1.6205365777994585,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "b-tape": {
+            "pairedTimeChangePercent": 3.6519163278007527,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          }
+        },
+        "b-tape": {
+          "react": {
+            "pairedTimeChangePercent": 32.00616279798321,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "react-control": {
+            "pairedTimeChangePercent": 30.3512992974174,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "pre-animation": {
+            "pairedTimeChangePercent": -4.7087803819996665,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "current": {
+            "pairedTimeChangePercent": -5.521888050949242,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "c-tape": {
+            "pairedTimeChangePercent": -3.5232501792359594,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          }
+        }
+      }
+    },
+    "controlled-selects": {
+      "mode": "sync",
+      "iterations": 572,
+      "samples": {
+        "react": [
+          [
+            {
+              "name": "controlled-selects",
+              "mode": "sync",
+              "iterations": 572,
+              "durationMs": 87.10000002384186,
+              "operations": 572,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 573
+              }
+            },
+            {
+              "name": "controlled-selects",
+              "mode": "sync",
+              "iterations": 572,
+              "durationMs": 87.70000004768372,
+              "operations": 572,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 573
+              }
+            },
+            {
+              "name": "controlled-selects",
+              "mode": "sync",
+              "iterations": 572,
+              "durationMs": 86.90000009536743,
+              "operations": 572,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 573
+              }
+            }
+          ],
+          [
+            {
+              "name": "controlled-selects",
+              "mode": "sync",
+              "iterations": 572,
+              "durationMs": 90.89999997615814,
+              "operations": 572,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 573
+              }
+            },
+            {
+              "name": "controlled-selects",
+              "mode": "sync",
+              "iterations": 572,
+              "durationMs": 92.39999997615814,
+              "operations": 572,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 573
+              }
+            },
+            {
+              "name": "controlled-selects",
+              "mode": "sync",
+              "iterations": 572,
+              "durationMs": 91.10000002384186,
+              "operations": 572,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 573
+              }
+            }
+          ]
+        ],
+        "react-control": [
+          [
+            {
+              "name": "controlled-selects",
+              "mode": "sync",
+              "iterations": 572,
+              "durationMs": 88.69999992847443,
+              "operations": 572,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 573
+              }
+            },
+            {
+              "name": "controlled-selects",
+              "mode": "sync",
+              "iterations": 572,
+              "durationMs": 88.5,
+              "operations": 572,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 573
+              }
+            },
+            {
+              "name": "controlled-selects",
+              "mode": "sync",
+              "iterations": 572,
+              "durationMs": 88.29999995231628,
+              "operations": 572,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 573
+              }
+            }
+          ],
+          [
+            {
+              "name": "controlled-selects",
+              "mode": "sync",
+              "iterations": 572,
+              "durationMs": 90.39999997615814,
+              "operations": 572,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 573
+              }
+            },
+            {
+              "name": "controlled-selects",
+              "mode": "sync",
+              "iterations": 572,
+              "durationMs": 90.59999990463257,
+              "operations": 572,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 573
+              }
+            },
+            {
+              "name": "controlled-selects",
+              "mode": "sync",
+              "iterations": 572,
+              "durationMs": 91,
+              "operations": 572,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 573
+              }
+            }
+          ]
+        ],
+        "pre-animation": [
+          [
+            {
+              "name": "controlled-selects",
+              "mode": "sync",
+              "iterations": 572,
+              "durationMs": 80.60000002384186,
+              "operations": 572,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 573
+              }
+            },
+            {
+              "name": "controlled-selects",
+              "mode": "sync",
+              "iterations": 572,
+              "durationMs": 79.60000002384186,
+              "operations": 572,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 573
+              }
+            },
+            {
+              "name": "controlled-selects",
+              "mode": "sync",
+              "iterations": 572,
+              "durationMs": 79.5,
+              "operations": 572,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 573
+              }
+            }
+          ],
+          [
+            {
+              "name": "controlled-selects",
+              "mode": "sync",
+              "iterations": 572,
+              "durationMs": 80.5,
+              "operations": 572,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 573
+              }
+            },
+            {
+              "name": "controlled-selects",
+              "mode": "sync",
+              "iterations": 572,
+              "durationMs": 81.79999995231628,
+              "operations": 572,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 573
+              }
+            },
+            {
+              "name": "controlled-selects",
+              "mode": "sync",
+              "iterations": 572,
+              "durationMs": 80.60000002384186,
+              "operations": 572,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 573
+              }
+            }
+          ]
+        ],
+        "current": [
+          [
+            {
+              "name": "controlled-selects",
+              "mode": "sync",
+              "iterations": 572,
+              "durationMs": 77.5,
+              "operations": 572,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 573
+              }
+            },
+            {
+              "name": "controlled-selects",
+              "mode": "sync",
+              "iterations": 572,
+              "durationMs": 78.39999997615814,
+              "operations": 572,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 573
+              }
+            },
+            {
+              "name": "controlled-selects",
+              "mode": "sync",
+              "iterations": 572,
+              "durationMs": 78.20000004768372,
+              "operations": 572,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 573
+              }
+            }
+          ],
+          [
+            {
+              "name": "controlled-selects",
+              "mode": "sync",
+              "iterations": 572,
+              "durationMs": 79,
+              "operations": 572,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 573
+              }
+            },
+            {
+              "name": "controlled-selects",
+              "mode": "sync",
+              "iterations": 572,
+              "durationMs": 81.10000002384186,
+              "operations": 572,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 573
+              }
+            },
+            {
+              "name": "controlled-selects",
+              "mode": "sync",
+              "iterations": 572,
+              "durationMs": 80.30000007152557,
+              "operations": 572,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 573
+              }
+            }
+          ]
+        ],
+        "c-tape": [
+          [
+            {
+              "name": "controlled-selects",
+              "mode": "sync",
+              "iterations": 572,
+              "durationMs": 79.5,
+              "operations": 572,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 573
+              }
+            },
+            {
+              "name": "controlled-selects",
+              "mode": "sync",
+              "iterations": 572,
+              "durationMs": 79.69999992847443,
+              "operations": 572,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 573
+              }
+            },
+            {
+              "name": "controlled-selects",
+              "mode": "sync",
+              "iterations": 572,
+              "durationMs": 83.60000002384186,
+              "operations": 572,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 573
+              }
+            }
+          ],
+          [
+            {
+              "name": "controlled-selects",
+              "mode": "sync",
+              "iterations": 572,
+              "durationMs": 81.89999997615814,
+              "operations": 572,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 573
+              }
+            },
+            {
+              "name": "controlled-selects",
+              "mode": "sync",
+              "iterations": 572,
+              "durationMs": 81.79999995231628,
+              "operations": 572,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 573
+              }
+            },
+            {
+              "name": "controlled-selects",
+              "mode": "sync",
+              "iterations": 572,
+              "durationMs": 82.59999990463257,
+              "operations": 572,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 573
+              }
+            }
+          ]
+        ],
+        "b-tape": [
+          [
+            {
+              "name": "controlled-selects",
+              "mode": "sync",
+              "iterations": 572,
+              "durationMs": 81.5,
+              "operations": 572,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 573
+              }
+            },
+            {
+              "name": "controlled-selects",
+              "mode": "sync",
+              "iterations": 572,
+              "durationMs": 79.5,
+              "operations": 572,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 573
+              }
+            },
+            {
+              "name": "controlled-selects",
+              "mode": "sync",
+              "iterations": 572,
+              "durationMs": 80.20000004768372,
+              "operations": 572,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 573
+              }
+            }
+          ],
+          [
+            {
+              "name": "controlled-selects",
+              "mode": "sync",
+              "iterations": 572,
+              "durationMs": 81.89999997615814,
+              "operations": 572,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 573
+              }
+            },
+            {
+              "name": "controlled-selects",
+              "mode": "sync",
+              "iterations": 572,
+              "durationMs": 82.10000002384186,
+              "operations": 572,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 573
+              }
+            },
+            {
+              "name": "controlled-selects",
+              "mode": "sync",
+              "iterations": 572,
+              "durationMs": 82.29999995231628,
+              "operations": 572,
+              "checks": 2,
+              "diagnostics": {
+                "commits": 573
+              }
+            }
+          ]
+        ]
+      },
+      "expectedOperations": 572,
+      "summary": {
+        "react": {
+          "n": 6,
+          "median": 0.1561188811397219,
+          "p95": 0.16097027969943895,
+          "min": 0.1519230770898032,
+          "max": 0.16153846149677997
+        },
+        "react-control": {
+          "n": 6,
+          "median": 0.15655594397258094,
+          "p95": 0.15891608387440234,
+          "min": 0.15437062928726622,
+          "max": 0.1590909090909091
+        },
+        "pre-animation": {
+          "n": 6,
+          "median": 0.1408216783425191,
+          "p95": 0.1424825174304155,
+          "min": 0.13898601398601398,
+          "max": 0.14300699292362987
+        },
+        "current": {
+          "n": 6,
+          "median": 0.1375874125665718,
+          "p95": 0.1414335664960888,
+          "min": 0.1354895104895105,
+          "max": 0.14178321682489836
+        },
+        "c-tape": {
+          "n": 6,
+          "median": 0.14309440553188324,
+          "p95": 0.14571678320636283,
+          "min": 0.13898601398601398,
+          "max": 0.14615384619552774
+        },
+        "b-tape": {
+          "n": 6,
+          "median": 0.14283216781132704,
+          "p95": 0.14379370624160434,
+          "min": 0.13898601398601398,
+          "max": 0.14388111879775575
+        }
+      },
+      "comparisons": {
+        "react": {
+          "react-control": {
+            "pairedTimeChangePercent": 0.3999152394534189,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "pre-animation": {
+            "pairedTimeChangePercent": -10.34536727907318,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "current": {
+            "pairedTimeChangePercent": -11.439439204495605,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "c-tape": {
+            "pairedTimeChangePercent": -9.22626642963662,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "b-tape": {
+            "pairedTimeChangePercent": -9.505018317590642,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          }
+        },
+        "pre-animation": {
+          "react": {
+            "pairedTimeChangePercent": 11.539132965137222,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "react-control": {
+            "pairedTimeChangePercent": 11.12502936932347,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "current": {
+            "pairedTimeChangePercent": -1.571399610655999,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "c-tape": {
+            "pairedTimeChangePercent": 0.9291549856289549,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "b-tape": {
+            "pairedTimeChangePercent": 0.9984952394207713,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          }
+        },
+        "c-tape": {
+          "react": {
+            "pairedTimeChangePercent": 10.164026604111044,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "react-control": {
+            "pairedTimeChangePercent": 10.56806550657019,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "pre-animation": {
+            "pairedTimeChangePercent": -0.9206011739236852,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "current": {
+            "pairedTimeChangePercent": -2.6502061135892263,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "b-tape": {
+            "pairedTimeChangePercent": -0.1255492827819893,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          }
+        },
+        "b-tape": {
+          "react": {
+            "pairedTimeChangePercent": 10.503365093711325,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "react-control": {
+            "pairedTimeChangePercent": 10.365868278192014,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "pre-animation": {
+            "pairedTimeChangePercent": -0.9886238770724254,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "current": {
+            "pairedTimeChangePercent": -2.4619547382845663,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "c-tape": {
+            "pairedTimeChangePercent": 0.1257071071534277,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          }
+        }
+      }
+    },
+    "sparse-setters": {
+      "mode": "sync",
+      "iterations": 32000,
+      "samples": {
+        "react": [
+          [
+            {
+              "name": "sparse-setters",
+              "mode": "sync",
+              "iterations": 32000,
+              "durationMs": 304.5,
+              "operations": 320000,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 320000
+              }
+            },
+            {
+              "name": "sparse-setters",
+              "mode": "sync",
+              "iterations": 32000,
+              "durationMs": 295.60000002384186,
+              "operations": 320000,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 320000
+              }
+            },
+            {
+              "name": "sparse-setters",
+              "mode": "sync",
+              "iterations": 32000,
+              "durationMs": 301.7000000476837,
+              "operations": 320000,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 320000
+              }
+            }
+          ],
+          [
+            {
+              "name": "sparse-setters",
+              "mode": "sync",
+              "iterations": 32000,
+              "durationMs": 285,
+              "operations": 320000,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 320000
+              }
+            },
+            {
+              "name": "sparse-setters",
+              "mode": "sync",
+              "iterations": 32000,
+              "durationMs": 273.2000000476837,
+              "operations": 320000,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 320000
+              }
+            },
+            {
+              "name": "sparse-setters",
+              "mode": "sync",
+              "iterations": 32000,
+              "durationMs": 274,
+              "operations": 320000,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 320000
+              }
+            }
+          ]
+        ],
+        "react-control": [
+          [
+            {
+              "name": "sparse-setters",
+              "mode": "sync",
+              "iterations": 32000,
+              "durationMs": 310.7000000476837,
+              "operations": 320000,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 320000
+              }
+            },
+            {
+              "name": "sparse-setters",
+              "mode": "sync",
+              "iterations": 32000,
+              "durationMs": 302.5,
+              "operations": 320000,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 320000
+              }
+            },
+            {
+              "name": "sparse-setters",
+              "mode": "sync",
+              "iterations": 32000,
+              "durationMs": 300,
+              "operations": 320000,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 320000
+              }
+            }
+          ],
+          [
+            {
+              "name": "sparse-setters",
+              "mode": "sync",
+              "iterations": 32000,
+              "durationMs": 291.60000002384186,
+              "operations": 320000,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 320000
+              }
+            },
+            {
+              "name": "sparse-setters",
+              "mode": "sync",
+              "iterations": 32000,
+              "durationMs": 284.6999999284744,
+              "operations": 320000,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 320000
+              }
+            },
+            {
+              "name": "sparse-setters",
+              "mode": "sync",
+              "iterations": 32000,
+              "durationMs": 285.39999997615814,
+              "operations": 320000,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 320000
+              }
+            }
+          ]
+        ],
+        "pre-animation": [
+          [
+            {
+              "name": "sparse-setters",
+              "mode": "sync",
+              "iterations": 32000,
+              "durationMs": 75.60000002384186,
+              "operations": 320000,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 320000
+              }
+            },
+            {
+              "name": "sparse-setters",
+              "mode": "sync",
+              "iterations": 32000,
+              "durationMs": 75.70000004768372,
+              "operations": 320000,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 320000
+              }
+            },
+            {
+              "name": "sparse-setters",
+              "mode": "sync",
+              "iterations": 32000,
+              "durationMs": 76.90000009536743,
+              "operations": 320000,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 320000
+              }
+            }
+          ],
+          [
+            {
+              "name": "sparse-setters",
+              "mode": "sync",
+              "iterations": 32000,
+              "durationMs": 76.20000004768372,
+              "operations": 320000,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 320000
+              }
+            },
+            {
+              "name": "sparse-setters",
+              "mode": "sync",
+              "iterations": 32000,
+              "durationMs": 75.69999992847443,
+              "operations": 320000,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 320000
+              }
+            },
+            {
+              "name": "sparse-setters",
+              "mode": "sync",
+              "iterations": 32000,
+              "durationMs": 76.29999995231628,
+              "operations": 320000,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 320000
+              }
+            }
+          ]
+        ],
+        "current": [
+          [
+            {
+              "name": "sparse-setters",
+              "mode": "sync",
+              "iterations": 32000,
+              "durationMs": 78.60000002384186,
+              "operations": 320000,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 320000
+              }
+            },
+            {
+              "name": "sparse-setters",
+              "mode": "sync",
+              "iterations": 32000,
+              "durationMs": 78.10000002384186,
+              "operations": 320000,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 320000
+              }
+            },
+            {
+              "name": "sparse-setters",
+              "mode": "sync",
+              "iterations": 32000,
+              "durationMs": 76.5,
+              "operations": 320000,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 320000
+              }
+            }
+          ],
+          [
+            {
+              "name": "sparse-setters",
+              "mode": "sync",
+              "iterations": 32000,
+              "durationMs": 81.20000004768372,
+              "operations": 320000,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 320000
+              }
+            },
+            {
+              "name": "sparse-setters",
+              "mode": "sync",
+              "iterations": 32000,
+              "durationMs": 76.5,
+              "operations": 320000,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 320000
+              }
+            },
+            {
+              "name": "sparse-setters",
+              "mode": "sync",
+              "iterations": 32000,
+              "durationMs": 81.29999995231628,
+              "operations": 320000,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 320000
+              }
+            }
+          ]
+        ],
+        "c-tape": [
+          [
+            {
+              "name": "sparse-setters",
+              "mode": "sync",
+              "iterations": 32000,
+              "durationMs": 78.19999992847443,
+              "operations": 320000,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 320000
+              }
+            },
+            {
+              "name": "sparse-setters",
+              "mode": "sync",
+              "iterations": 32000,
+              "durationMs": 77.5,
+              "operations": 320000,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 320000
+              }
+            },
+            {
+              "name": "sparse-setters",
+              "mode": "sync",
+              "iterations": 32000,
+              "durationMs": 77.20000004768372,
+              "operations": 320000,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 320000
+              }
+            }
+          ],
+          [
+            {
+              "name": "sparse-setters",
+              "mode": "sync",
+              "iterations": 32000,
+              "durationMs": 83.90000009536743,
+              "operations": 320000,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 320000
+              }
+            },
+            {
+              "name": "sparse-setters",
+              "mode": "sync",
+              "iterations": 32000,
+              "durationMs": 77.79999995231628,
+              "operations": 320000,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 320000
+              }
+            },
+            {
+              "name": "sparse-setters",
+              "mode": "sync",
+              "iterations": 32000,
+              "durationMs": 83.79999995231628,
+              "operations": 320000,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 320000
+              }
+            }
+          ]
+        ],
+        "b-tape": [
+          [
+            {
+              "name": "sparse-setters",
+              "mode": "sync",
+              "iterations": 32000,
+              "durationMs": 83,
+              "operations": 320000,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 320000
+              }
+            },
+            {
+              "name": "sparse-setters",
+              "mode": "sync",
+              "iterations": 32000,
+              "durationMs": 80,
+              "operations": 320000,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 320000
+              }
+            },
+            {
+              "name": "sparse-setters",
+              "mode": "sync",
+              "iterations": 32000,
+              "durationMs": 82.39999997615814,
+              "operations": 320000,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 320000
+              }
+            }
+          ],
+          [
+            {
+              "name": "sparse-setters",
+              "mode": "sync",
+              "iterations": 32000,
+              "durationMs": 90.59999990463257,
+              "operations": 320000,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 320000
+              }
+            },
+            {
+              "name": "sparse-setters",
+              "mode": "sync",
+              "iterations": 32000,
+              "durationMs": 85,
+              "operations": 320000,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 320000
+              }
+            },
+            {
+              "name": "sparse-setters",
+              "mode": "sync",
+              "iterations": 32000,
+              "durationMs": 86.89999997615814,
+              "operations": 320000,
+              "checks": 2,
+              "diagnostics": {
+                "renders": 320000
+              }
+            }
+          ]
+        ]
+      },
+      "expectedOperations": 320000,
+      "summary": {
+        "react": {
+          "n": 6,
+          "median": 0.009071875000372528,
+          "p95": 0.009493750000372529,
+          "min": 0.008537500001490115,
+          "max": 0.009515625
+        },
+        "react-control": {
+          "n": 6,
+          "median": 0.009243750000372529,
+          "p95": 0.009645312501117588,
+          "min": 0.008896874997764826,
+          "max": 0.009709375001490116
+        },
+        "pre-animation": {
+          "n": 6,
+          "median": 0.0023734375014901163,
+          "p95": 0.002398437501862645,
+          "min": 0.002362500000745058,
+          "max": 0.0024031250029802323
+        },
+        "current": {
+          "n": 6,
+          "median": 0.002448437500745058,
+          "p95": 0.002539843749254942,
+          "min": 0.002390625,
+          "max": 0.0025406249985098837
+        },
+        "c-tape": {
+          "n": 6,
+          "median": 0.002437499998137355,
+          "p95": 0.002621093751862645,
+          "min": 0.002412500001490116,
+          "max": 0.0026218750029802325
+        },
+        "b-tape": {
+          "n": 6,
+          "median": 0.002625,
+          "p95": 0.0028023437475785612,
+          "min": 0.0025,
+          "max": 0.0028312499970197676
+        }
+      },
+      "comparisons": {
+        "react": {
+          "react-control": {
+            "pairedTimeChangePercent": 2.3250120479026526,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "pre-animation": {
+            "pairedTimeChangePercent": -73.83319000889679,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "current": {
+            "pairedTimeChangePercent": -72.8003276719409,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "c-tape": {
+            "pairedTimeChangePercent": -72.67576025623433,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "b-tape": {
+            "pairedTimeChangePercent": -70.84956325240285,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          }
+        },
+        "pre-animation": {
+          "react": {
+            "pairedTimeChangePercent": 282.16351184573244,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "react-control": {
+            "pairedTimeChangePercent": 286.3791931330929,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "current": {
+            "pairedTimeChangePercent": 3.5685634469307947,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "c-tape": {
+            "pairedTimeChangePercent": 3.1060946344975138,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "b-tape": {
+            "pairedTimeChangePercent": 11.029829187768026,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          }
+        },
+        "c-tape": {
+          "react": {
+            "pairedTimeChangePercent": 265.9754157398508,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "react-control": {
+            "pairedTimeChangePercent": 277.09946148587477,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "pre-animation": {
+            "pairedTimeChangePercent": -3.0125228246771996,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "current": {
+            "pairedTimeChangePercent": -1.2895830203551006,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "b-tape": {
+            "pairedTimeChangePercent": 6.4365098840261314,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          }
+        },
+        "b-tape": {
+          "react": {
+            "pairedTimeChangePercent": 243.04803343381437,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "react-control": {
+            "pairedTimeChangePercent": 249.20567447938117,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "pre-animation": {
+            "pairedTimeChangePercent": -9.934113443617875,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "current": {
+            "pairedTimeChangePercent": -6.802879054059574,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          },
+          "c-tape": {
+            "pairedTimeChangePercent": -6.047276344404184,
+            "blockBootstrap95CI": null,
+            "independentBlocks": 2
+          }
+        }
+      }
+    }
+  },
+  "interactions": {},
+  "memory": {},
+  "complete": true
+}

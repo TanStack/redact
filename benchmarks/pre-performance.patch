@@ -1,0 +1,330 @@
+--- a/core/internal.ts
++++ b/core/internal.ts
+@@ -21,7 +21,6 @@
+   q: any
+   d: any
+   c: any
+-  n: Hook | null
+ }
+ 
+ export interface Effect {
+@@ -42,7 +41,7 @@
+   parent: Fiber | null
+   child: Fiber | null
+   sibling: Fiber | null
+-  hooks: Hook | null
++  hooks: Hook[] | null
+   cu: Array<() => void> | null
+   dy: boolean
+   um: boolean
+--- a/dom/dispatcher.ts
++++ b/dom/dispatcher.ts
+@@ -14,32 +14,9 @@
+ }
+ 
+ function nextHook(): Hook {
+-  const fiber = getCurrentFiber()
+-  const idx = ReactSharedInternals.I++
+-
+-  let prev = ReactSharedInternals.K
+-
+-  if (idx === 0) {
+-    if (fiber.hooks) {
+-      ReactSharedInternals.K = fiber.hooks
+-      return fiber.hooks
+-    }
+-    const h: Hook = { s: undefined, q: undefined, d: undefined, c: undefined, n: null }
+-    fiber.hooks = h
+-    ReactSharedInternals.K = h
+-    return h
+-  }
+-
+-  if (prev && prev.n) {
+-    ReactSharedInternals.K = prev.n
+-    return prev.n
+-  }
+-
+-  const h: Hook = { s: undefined, q: undefined, d: undefined, c: undefined, n: null }
+-  if (prev) prev.n = h
+-  else fiber.hooks = h
+-  ReactSharedInternals.K = h
+-  return h
++  const hooks = getCurrentFiber().hooks ||= []
++  const index = ReactSharedInternals.I++
++  return hooks[index] ||= { s: undefined, q: undefined, d: undefined, c: undefined }
+ }
+ 
+ function depsEqual(
+--- a/dom/features/forward-ref/full.ts
++++ b/dom/features/forward-ref/full.ts
+@@ -18,11 +18,9 @@
+ 
+   const prevDispatcher = ReactSharedInternals.H
+   const prevFiber = ReactSharedInternals.F
+-  const prevHook = ReactSharedInternals.K
+   const prevIndex = ReactSharedInternals.I
+   ReactSharedInternals.H = makeDispatcher()
+   ReactSharedInternals.F = fiber
+-  ReactSharedInternals.K = null
+   ReactSharedInternals.I = 0
+ 
+   let rendered: ReactNode
+@@ -40,7 +38,6 @@
+   } finally {
+     ReactSharedInternals.H = prevDispatcher
+     ReactSharedInternals.F = prevFiber
+-    ReactSharedInternals.K = prevHook
+     ReactSharedInternals.I = prevIndex
+   }
+ 
+--- a/dom/reconcile.ts
++++ b/dom/reconcile.ts
+@@ -8,7 +8,6 @@
+   type FiberRoot,
+   type ReactElement,
+   type ReactNode,
+-  type Hook,
+   type Effect,
+ } from '../core'
+ import {
+@@ -380,14 +379,7 @@
+     if (ok && f === null) {
+       // Pass 2: render forward with per-child anchors. Identical to the slow
+       // path's pass 2.
+-      for (let r: Fiber | null = parent.child; r; r = r.sibling) {
+-        let a = anchor
+-        for (let s: Fiber | null = r.sibling; s; s = s.sibling) {
+-          const d = firstDomNode(s)
+-          if (d && d.parentNode === domParent) { a = d; break }
+-        }
+-        renderFiber(r, domParent, a)
+-      }
++      renderChildChain(parent, domParent, anchor, false)
+       return
+     }
+   }
+@@ -450,7 +442,7 @@
+     if (!match) {
+       while (existingIdx < existing.length) {
+         const cand = existing[existingIdx]!
+-        if (claimed.has(cand) || cand.key != null) {
++        if (cand.key != null) {
+           existingIdx++
+           continue
+         }
+@@ -503,17 +495,7 @@
+   // walks DOM forward and each renderFiber adopts the next existing node,
+   // so per-child anchors are moot — fall back to the parent's anchor.
+   const hydrating = !!currentRoot?.h
+-  for (let f: Fiber | null = parent.child; f; f = f.sibling) {
+-    let a = anchor
+-    if (!hydrating) {
+-      // Find the firstDomNode of the next still-mounted sibling, if any.
+-      for (let s: Fiber | null = f.sibling; s; s = s.sibling) {
+-        const d = firstDomNode(s)
+-        if (d && d.parentNode === domParent) { a = d; break }
+-      }
+-    }
+-    renderFiber(f, domParent, a)
+-  }
++  renderChildChain(parent, domParent, anchor, hydrating)
+ 
+   if (!prevNewFiber) parent.child = null
+   else prevNewFiber.sibling = null
+@@ -535,13 +517,6 @@
+         structurallyChanged = true
+       }
+     }
+-    // Leftover keyed
+-    for (const f of keyed.values()) {
+-      if (!claimed.has(f)) {
+-        unmountFiber(f, domParent)
+-        structurallyChanged = true
+-      }
+-    }
+   }
+ 
+   // During hydration, DOM is already in document order from the cursor-driven
+@@ -560,6 +535,27 @@
+   }
+ }
+ 
++function renderChildChain(
++  parent: Fiber,
++  domParent: Node,
++  anchor: Node | null,
++  hydrating: boolean,
++): void {
++  for (let f = parent.child; f; f = f.sibling) {
++    let nextAnchor = anchor
++    if (!hydrating) {
++      for (let sibling = f.sibling; sibling; sibling = sibling.sibling) {
++        const dom = firstDomNode(sibling)
++        if (dom?.parentNode === domParent) {
++          nextAnchor = dom
++          break
++        }
++      }
++    }
++    renderFiber(f, domParent, nextAnchor)
++  }
++}
++
+ function placeChildrenInOrder(parent: Fiber, domParent: Node, anchor: Node | null): void {
+   const doms: Node[] = []
+   let c = parent.child
+@@ -862,12 +858,10 @@
+ function renderFunction(fiber: Fiber, domParent: Node, anchor: Node | null): void {
+   const prevDispatcher = ReactSharedInternals.H
+   const prevFiber = ReactSharedInternals.F
+-  const prevHook = ReactSharedInternals.K
+   const prevIndex = ReactSharedInternals.I
+ 
+   ReactSharedInternals.H = makeDispatcher()
+   ReactSharedInternals.F = fiber
+-  ReactSharedInternals.K = null
+   ReactSharedInternals.I = 0
+ 
+   let rendered: ReactNode
+@@ -889,7 +883,6 @@
+   } finally {
+     ReactSharedInternals.H = prevDispatcher
+     ReactSharedInternals.F = prevFiber
+-    ReactSharedInternals.K = prevHook
+     ReactSharedInternals.I = prevIndex
+   }
+ 
+@@ -1055,9 +1048,7 @@
+   if (fiber.ref) detachRef(fiber.ref)
+ 
+   // Remove DOM if host
+-  if (fiber.tag === FiberTag.Host && fiber.dom && fiber.dom.parentNode) {
+-    fiber.dom.parentNode.removeChild(fiber.dom)
+-  } else if (fiber.tag === FiberTag.Text && fiber.dom && fiber.dom.parentNode) {
++  if ((fiber.tag === FiberTag.Host || fiber.tag === FiberTag.Text) && fiber.dom?.parentNode) {
+     fiber.dom.parentNode.removeChild(fiber.dom)
+   }
+ }
+--- a/react/shared-internals.ts
++++ b/react/shared-internals.ts
+@@ -1,4 +1,4 @@
+-import type { Fiber, Hook } from '../core'
++import type { Fiber } from '../core'
+ 
+ export interface Dispatcher {
+   useState<S>(initial: S | (() => S)): [S, (s: S | ((p: S) => S)) => void]
+@@ -30,7 +30,6 @@
+ interface SharedInternals {
+   H: Dispatcher | null
+   F: Fiber | null
+-  K: Hook | null
+   I: number
+ }
+ 
+@@ -52,7 +51,6 @@
+   (g[KEY] = {
+     H: null,
+     F: null,
+-    K: null,
+     I: 0,
+   })
+ 
+--- a/server/dispatcher.ts
++++ b/server/dispatcher.ts
+@@ -8,11 +8,14 @@
+ 
+ let frame: SSRFrame | null = null
+ 
+-export function beginSSR(identifierPrefix = ':R'): void {
++export function beginSSR(identifierPrefix = ':R') {
++  const previous = { frame, dispatcher: ReactSharedInternals.H }
+   frame = { idCounter: 0, identifierPrefix, contextStack: [] }
++  ReactSharedInternals.H = ssrDispatcher as any
++  return previous
+ }
+ 
+-export function endSSR(): void {
++export function endSSR(previous?: ReturnType<typeof beginSSR>): void {
+   // Restore any remaining pushed contexts (defensive)
+   if (frame) {
+     for (let i = frame.contextStack.length - 1; i >= 0; i--) {
+@@ -20,7 +23,10 @@
+       context._currentValue = prev
+     }
+   }
+-  frame = null
++  // Only synchronous renders restore their caller. A stream can finish
++  // after its caller has returned, so it must not reinstall that dispatcher.
++  ReactSharedInternals.H = previous?.dispatcher ?? null
++  frame = previous?.frame ?? null
+ }
+ 
+ export function pushContext(context: any, value: any): void {
+@@ -147,12 +153,4 @@
+     }
+     throw new Error('use() expected a Promise or Context')
+   },
+-}
+-
+-export function installSSRDispatcher(): void {
+-  ReactSharedInternals.H = ssrDispatcher as any
+-}
+-
+-export function uninstallSSRDispatcher(): void {
+-  ReactSharedInternals.H = null
+ }
+--- a/server/renderToString.ts
++++ b/server/renderToString.ts
+@@ -1,13 +1,12 @@
+ import type { ReactNode } from '../core'
+-import { beginSSR, endSSR, installSSRDispatcher, uninstallSSRDispatcher } from './dispatcher'
++import { beginSSR, endSSR } from './dispatcher'
+ import { walk } from './walk'
+ 
+ export function renderToString(
+   children: ReactNode,
+   options: { identifierPrefix?: string } = {},
+ ): string {
+-  installSSRDispatcher()
+-  beginSSR(options.identifierPrefix)
++  const previous = beginSSR(options.identifierPrefix)
+   let output = ''
+   let id = 0
+   try {
+@@ -18,8 +17,7 @@
+       nextBoundaryId: () => id++,
+     })
+   } finally {
+-    endSSR()
+-    uninstallSSRDispatcher()
++    endSSR(previous)
+   }
+   return output
+ }
+--- a/server/stream.ts
++++ b/server/stream.ts
+@@ -2,8 +2,6 @@
+ import {
+   beginSSR,
+   endSSR,
+-  installSSRDispatcher,
+-  uninstallSSRDispatcher,
+   applyContextSnapshot,
+ } from './dispatcher'
+ import { walk, type SuspendedBoundary } from './walk'
+@@ -45,7 +43,6 @@
+   options: StreamOptions,
+   state: OrchestratorState,
+ ): Promise<void> {
+-  installSSRDispatcher()
+   beginSSR(options.identifierPrefix)
+   const nonce = options.nonce
+ 
+@@ -127,7 +124,6 @@
+     throw err
+   } finally {
+     endSSR()
+-    uninstallSSRDispatcher()
+     state.closed = true
+   }
+ }

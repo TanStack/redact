@@ -15,6 +15,8 @@ import {
   REACT_STRICT_MODE_TYPE,
   REACT_PROFILER_TYPE,
   REACT_PORTAL_TYPE,
+  REACT_ACTIVITY_TYPE,
+  REACT_VIEW_TRANSITION_TYPE,
 } from '../react'
 import {
   attrToHtml,
@@ -27,8 +29,19 @@ import {
   pushContext,
   popContext,
   snapshotContexts,
+  recordHostResource,
+  currentSSRFrame,
   type ContextSnapshot,
 } from './dispatcher'
+import { isBrowserError } from '../core/browser'
+import { resourceKind } from '../core/resource-hints'
+import type { ResourceScope } from './resource-hints'
+
+export interface ServerErrorInfo {
+  componentStack: string
+}
+
+export type BrowserBailoutCallback = (error: Error, errorInfo: ServerErrorInfo) => void
 
 export interface SuspendedBoundary {
   id: number
@@ -36,15 +49,21 @@ export interface SuspendedBoundary {
   children: ReactNode
   thenable: Promise<any>
   contextSnapshot: ContextSnapshot
+  componentStack: string
 }
 
 export interface WalkOptions {
   emit: (chunk: string) => void
+  onHead?: () => void
   onSuspend?: ((boundary: SuspendedBoundary) => void) | undefined
+  onBrowserBailout?: BrowserBailoutCallback | undefined
+  componentStack?: string | undefined
+  thrownInfo?: { componentStack?: string | undefined }
   nextBoundaryId: () => number
   bootstrapped?: boolean | undefined
   isBoundaryResolution?: boolean | undefined
   isSvg?: boolean | undefined
+  resourceScope?: ResourceScope | undefined
   /**
    * Tracks whether the most recent emission within the *current text flow*
    * ended with a text node. When the next emission is also text, we emit a
@@ -160,6 +179,15 @@ function walkElement(el: ReactElement, opts: WalkOptions): void {
     return
   }
 
+  if (type === REACT_ACTIVITY_TYPE) {
+    if (props.mode !== 'hidden') walkNode(props.children, opts)
+    return
+  }
+  if (type === REACT_VIEW_TRANSITION_TYPE) {
+    walkNode(props.children, opts)
+    return
+  }
+
   if (typeof type === 'string') {
     walkHost(type, props, opts)
     return
@@ -196,8 +224,7 @@ function walkElement(el: ReactElement, opts: WalkOptions): void {
     const render = (type as any).render
     const ref = (props as any).ref ?? null
     const { ref: _omit, ...rest } = props as any
-    const rendered = render(rest, ref)
-    walkNode(rendered, opts)
+    walkComponent(render, rest, opts, ref)
     return
   }
 
@@ -234,6 +261,7 @@ function walkHost(
   opts: WalkOptions,
 ): void {
   const isSvg = opts.isSvg || tag === 'svg'
+  if (!isSvg && resourceKind(tag, props) && recordHostResource(tag, props, opts.resourceScope)) return
   // <textarea value="..."> serializes its value as a TEXT CHILD, not an
   // attribute. `defaultValue` is the fallback when `value` is absent. This
   // matches React and the HTML spec — `<textarea value="x">` is not valid
@@ -270,6 +298,7 @@ function walkHost(
     pushSelectContext(val)
   }
   const isOption = tag === 'option'
+  try {
 
   // Prepend the HTML5 doctype to the stream when rendering an <html> root.
   // Without it the browser parses the document in quirks mode, which breaks
@@ -312,6 +341,7 @@ function walkHost(
     return
   }
   opts.emit('>')
+  if (tag === 'head') opts.onHead?.()
   // Opening a host element starts a fresh text flow context for its children.
   // Children's text separator tracking is independent of the outer context.
   const parentTextState = opts.textState
@@ -322,7 +352,9 @@ function walkHost(
   }
 
   if (tag === 'html' && !hasHeadChild(props.children)) {
-    opts.emit('<head></head>')
+    opts.emit('<head>')
+    opts.onHead?.()
+    opts.emit('</head>')
   }
 
   const dangerouslyHtml = props.dangerouslySetInnerHTML?.__html
@@ -358,9 +390,11 @@ function walkHost(
     walkNode(props.children, childOpts)
   }
   opts.emit(`</${tag}>`)
-  if (isSelect) popSelectContext()
   // Host element closing resets outer flow — next sibling text starts fresh.
   if (parentTextState) parentTextState.lastWasText = false
+  } finally {
+    if (isSelect) popSelectContext()
+  }
 }
 
 function hasHeadChild(children: unknown): boolean {
@@ -393,7 +427,12 @@ function walkComponent(
   fn: Function,
   props: Record<string, any>,
   opts: WalkOptions,
+  ref?: unknown,
 ): void {
+  if (opts.onBrowserBailout) {
+    opts = { ...opts, componentStack: `\n    at ${(fn as any).displayName || fn.name || 'Anonymous'}${opts.componentStack || ''}` }
+  }
+  try {
   if ((fn as any).prototype?.isReactComponent) {
     const ctxType = (fn as any).contextType
     const ctxValue = ctxType ? ctxType._currentValue : undefined
@@ -407,8 +446,15 @@ function walkComponent(
     walkNode(instance.render(), opts)
     return
   }
-  const rendered = (fn as any)(props)
+  const rendered = (fn as any)(props, ref)
   walkNode(rendered, opts)
+  } catch (error) {
+    if (opts.thrownInfo && !opts.thrownInfo.componentStack) opts.thrownInfo.componentStack = opts.componentStack
+    if (isBrowserError(error) && !(error as any).componentStack) {
+      Object.defineProperty(error, 'componentStack', { value: opts.componentStack })
+    }
+    throw error
+  }
 }
 
 function walkSuspense(
@@ -423,26 +469,37 @@ function walkSuspense(
   // Try to render the children synchronously. If a thenable is thrown,
   // record the boundary and emit the fallback.
   const childParts: string[] = []
+  const nested: SuspendedBoundary[] = []
+  const thrownInfo: { componentStack?: string | undefined } = {}
   const childEmit = (s: string) => childParts.push(s)
+  const resourceScope: ResourceScope | undefined = currentSSRFrame().shellFlushed ? {} : undefined
   try {
     walkNode(props.children, {
+      ...opts,
+      resourceScope,
+      thrownInfo,
       emit: childEmit,
-      onSuspend: opts.onSuspend,
+      onSuspend: opts.onSuspend ? (boundary) => nested.push(boundary) : undefined,
       nextBoundaryId: opts.nextBoundaryId,
     })
   } catch (thenable: any) {
-    if (isThenable(thenable)) {
+    nested.length = 0
+    if (isThenable(thenable) || isBrowserError(thenable)) {
       const fallbackParts: string[] = []
-      try {
         walkNode(props.fallback, {
+          ...opts,
           emit: (s) => fallbackParts.push(s),
-          onSuspend: opts.onSuspend,
+          onSuspend: opts.onSuspend ? (boundary) => nested.push(boundary) : undefined,
           nextBoundaryId: opts.nextBoundaryId,
         })
-      } catch {
-        // Fallback suspending is unsupported; emit nothing
+      if (isBrowserError(thenable)) {
+        opts.onBrowserBailout?.(thenable, { componentStack: (thenable as any).componentStack || opts.componentStack || '' })
+        opts.emit(`<!--$!${id}-->${fallbackParts.join('')}<!--/$-->`)
+        for (const boundary of nested) opts.onSuspend?.(boundary)
+        return
       }
       emitBoundary(opts, id, fallbackParts.join(''))
+      for (const boundary of nested) opts.onSuspend?.(boundary)
 
       if (opts.onSuspend) {
         opts.onSuspend({
@@ -451,12 +508,15 @@ function walkSuspense(
           children: props.children,
           thenable,
           contextSnapshot,
+          componentStack: thrownInfo.componentStack || opts.componentStack || '',
         })
       }
       return
     }
     throw thenable
   }
+
+  if (resourceScope) currentSSRFrame().resources?.mergeScope(resourceScope, opts.resourceScope)
 
   // Children rendered fully — emit them wrapped in resolved-boundary markers
   // (`<!--$N-->` / `<!--/$-->`). Without markers, the client hydrator has no
@@ -468,6 +528,7 @@ function walkSuspense(
   opts.emit(`<!--$${id}-->`)
   opts.emit(childParts.join(''))
   opts.emit(`<!--/$-->`)
+  for (const boundary of nested) opts.onSuspend?.(boundary)
 }
 
 function emitBoundary(opts: WalkOptions, id: number, fallbackHTML: string): void {

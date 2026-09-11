@@ -5,14 +5,11 @@ import './features'
 
 export { flushSync, batchedUpdates as unstable_batchedUpdates } from './root'
 export { createPortal } from './portal'
+export { browser } from '../core/browser'
+export type { BrowserToken } from '../core/browser'
 
-// Resource hints — stubs
-export function preconnect(_href: string, _opts?: any): void {}
-export function prefetchDNS(_href: string): void {}
-export function preload(_href: string, _opts?: any): void {}
-export function preinit(_href: string, _opts?: any): void {}
-export function preloadModule(_href: string, _opts?: any): void {}
-export function preinitModule(_href: string, _opts?: any): void {}
+import { preconnect, prefetchDNS, preload, preinit, preloadModule, preinitModule } from './resource-hints'
+export { preconnect, prefetchDNS, preload, preinit, preloadModule, preinitModule }
 
 export const __DOM_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE = {
   d: {
@@ -35,10 +32,12 @@ export const version = '19.2.3'
 // Required by React's default export consumers
 import { flushSync, batchedUpdates } from './root'
 import { createPortal } from './portal'
+import { browser } from '../core/browser'
 export default {
   flushSync,
   unstable_batchedUpdates: batchedUpdates,
   createPortal,
+  browser,
   preconnect,
   prefetchDNS,
   preload,

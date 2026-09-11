@@ -7,6 +7,12 @@ import {
   childrenToArray,
 } from '../../reconcile'
 
+export function hasContextChanged(_fiber: Fiber, _includeFallback = true): boolean {
+  return false
+}
+export const ownContextChanged = hasContextChanged
+export function renderContextConsumers(_fiber: Fiber): void {}
+
 // Stub: Context feature disabled. Provider elements render as Fragments
 // (value is never propagated — descendants see only the Context's default).
 // Consumer elements still invoke their function-children with the default
