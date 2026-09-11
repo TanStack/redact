@@ -9,12 +9,12 @@ const releases: Array<() => Promise<void>> = []
 const cleanups: Array<() => void> = []
 
 afterEach(async () => {
+  for (const cleanup of cleanups.splice(0)) cleanup()
   for (const release of releases.splice(0)) await release()
   for (const transition of transitions.splice(0)) {
     transition.skipTransition()
     await transition.finished.catch(() => {})
   }
-  for (const cleanup of cleanups.splice(0)) cleanup()
   vi.restoreAllMocks()
 })
 

@@ -22,11 +22,12 @@ beforeEach(() => {
 })
 
 afterEach(async () => {
+  // Unmount first so pending captures are cancelled by their owning roots.
+  for (const cleanup of cleanups.splice(0)) cleanup()
   for (const transition of transitions.splice(0)) {
     transition.skipTransition()
     await transition.finished.catch(() => {})
   }
-  for (const cleanup of cleanups.splice(0)) cleanup()
   vi.restoreAllMocks()
 })
 

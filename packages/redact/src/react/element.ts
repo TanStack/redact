@@ -14,8 +14,6 @@ export const Fragment = REACT_FRAGMENT_TYPE as unknown as (props: {
   ref?: Ref<FragmentInstance>
 }) => ReactElement
 
-const RESERVED_PROPS: Record<string, 1> = { key: 1, __self: 1, __source: 1 }
-
 export function createElement(
   type: any,
   config?: Record<string, any> | null,
@@ -27,7 +25,7 @@ export function createElement(
   if (config != null) {
     if (config.key !== undefined && config.key !== null) key = '' + config.key
     for (const k in config) {
-      if (!RESERVED_PROPS[k] && Object.prototype.hasOwnProperty.call(config, k)) {
+      if (k !== 'key' && k !== '__self' && k !== '__source' && Object.prototype.hasOwnProperty.call(config, k)) {
         props[k] = config[k]
       }
     }
@@ -58,7 +56,7 @@ export function cloneElement(
     if (config.key !== undefined) key = '' + config.key
     const defaultProps = element.type?.defaultProps
     for (const k in config) {
-      if (RESERVED_PROPS[k] || !Object.prototype.hasOwnProperty.call(config, k)) continue
+      if (k === 'key' || k === '__self' || k === '__source' || !Object.prototype.hasOwnProperty.call(config, k)) continue
       if (k === 'ref' && config.ref === undefined) continue
       props[k] = config[k] === undefined && defaultProps ? defaultProps[k] : config[k]
     }

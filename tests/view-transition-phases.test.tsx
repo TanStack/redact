@@ -8,12 +8,12 @@ const cleanups: Array<() => void> = []
 const nativeTransitions: globalThis.ViewTransition[] = []
 const releaseNativeWaits: Array<() => void> = []
 afterEach(async () => {
+  for (const cleanup of cleanups.splice(0)) cleanup()
   for (const release of releaseNativeWaits.splice(0)) release()
   for (const transition of nativeTransitions.splice(0)) {
     transition.skipTransition()
     await transition.finished.catch(() => {})
   }
-  for (const cleanup of cleanups.splice(0)) cleanup()
   vi.restoreAllMocks()
 })
 function setup() {

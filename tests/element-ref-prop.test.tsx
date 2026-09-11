@@ -54,6 +54,16 @@ describe('React 19 ref props in classic element helpers', () => {
     expect(reads).toBe(1)
   })
 
+  it.each(['constructor', 'toString', 'hasOwnProperty'])('copies an own %s prop in both helpers', name => {
+    const element = React.createElement('div', { [name]: 'original' })
+    expect(Object.prototype.hasOwnProperty.call(element.props, name)).toBe(true)
+    expect(element.props[name]).toBe('original')
+    const clone = React.cloneElement(element, { [name]: 'cloned' })
+    expect(Object.prototype.hasOwnProperty.call(clone.props, name)).toBe(true)
+    expect(clone.props[name]).toBe('cloned')
+    expect(element.props[name]).toBe('original')
+  })
+
   it.each(['function', 'memo', 'forwardRef'])('attaches and replaces cloned refs through a %s component', mode => {
     const { container, render } = setup()
     const received: unknown[] = []
