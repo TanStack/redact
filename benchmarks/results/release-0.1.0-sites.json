@@ -1,0 +1,450 @@
+{
+  "verifiedAt": "2026-09-11T20:02:51.020Z",
+  "package": {
+    "name": "@tanstack/redact",
+    "version": "0.1.0",
+    "tag": "latest",
+    "integrity": "sha512-iauMc/2TLcrlEu0yt58k9ntVraIbKcijp7qJ79wWLPMGxznk6mO436DiSYHoAD0+OP3Yo1WOiGiooRfD8/Ic8Q==",
+    "distSha256": "6d24350769a6868ab4ee51e255ebaafce790086a00bb1ceb0fccfd47921ddb75",
+    "pluginSha256": "f0665834805725c71c6415e3d1a6a5409707e990082281487df8af1c09e12d3f",
+    "installed": [
+      {
+        "root": "/tmp/redact-tanstack-upgrade-0.1.0/node_modules/@tanstack/redact",
+        "version": "0.1.0",
+        "matchedSourceFiles": 83,
+        "matchedBuiltFiles": 249
+      },
+      {
+        "root": "/Users/tannerlinsley/GitHub/tannerlinsley.com/node_modules/@tanstack/redact",
+        "version": "0.1.0",
+        "matchedSourceFiles": 83,
+        "matchedBuiltFiles": 249
+      }
+    ]
+  },
+  "release": {
+    "changesPr": {
+      "url": "https://github.com/TanStack/redact/pull/24",
+      "mergeSha": "4225bb7d0d43269444d2f2b299eb400904235b65"
+    },
+    "versionPr": {
+      "url": "https://github.com/TanStack/redact/pull/25",
+      "mergeSha": "953c4c9b69ddfa8f2d27566191a251efdf8c5a95"
+    },
+    "publishRun": "https://github.com/TanStack/redact/actions/runs/34640595555",
+    "releaseUrl": "https://github.com/TanStack/redact/releases/tag/%40tanstack/redact%400.1.0"
+  },
+  "tanstack": {
+    "source": "/tmp/redact-tanstack-upgrade-0.1.0",
+    "baseSha": "f2f65d1e96ffb9c001af7d050f63f2c562ca4ef5",
+    "headSha": "4f147de29cc4d76a5b65ba695ff14890244a5d23",
+    "pr": "https://github.com/TanStack/tanstack.com/pull/1253",
+    "changes": [
+      "package.json",
+      "pnpm-lock.yaml"
+    ],
+    "tests": {
+      "command": "corepack pnpm test",
+      "passed": 503,
+      "skipped": 2,
+      "failed": 0,
+      "includes": [
+        "content build",
+        "TypeScript",
+        "lint",
+        "unit tests"
+      ],
+      "log": {
+        "path": "/tmp/tanstack-redact-0.1.0-tests.log",
+        "sha256": "59e0c8e09e09a71d6719bcec7ee2295a9eec21fea8c5b78b38bdfa2a94a920a1"
+      }
+    },
+    "build": {
+      "renderer": "published-redact",
+      "command": [
+        "/Users/tannerlinsley/.nvm/versions/node/v24.15.0/bin/node",
+        "/private/tmp/redact-tanstack-upgrade-0.1.0/node_modules/.pnpm/vite@8.0.16_@types+node@25.5.0_esbuild@0.27.4_jiti@2.7.0_tsx@4.21.0_yaml@2.9.0/node_modules/vite/bin/vite.js",
+        "build",
+        "--config",
+        "/private/tmp/redact-tanstack-site-xS8foL/site/vite.config.ts",
+        "--configLoader",
+        "bundle"
+      ],
+      "pluginSha256": "f0665834805725c71c6415e3d1a6a5409707e990082281487df8af1c09e12d3f",
+      "distSha256": "6d24350769a6868ab4ee51e255ebaafce790086a00bb1ceb0fccfd47921ddb75",
+      "passed": true,
+      "timedOut": false,
+      "code": 0,
+      "signal": null
+    },
+    "smoke": {
+      "renderer": "published-redact",
+      "pluginSha256": "f0665834805725c71c6415e3d1a6a5409707e990082281487df8af1c09e12d3f",
+      "distSha256": "6d24350769a6868ab4ee51e255ebaafce790086a00bb1ceb0fccfd47921ddb75",
+      "started": true,
+      "passed": true,
+      "routes": [
+        {
+          "path": "/privacy",
+          "status": 200,
+          "expectedStatus": 200,
+          "hasExpectedContent": true,
+          "passed": true,
+          "bytes": 128996
+        },
+        {
+          "path": "/terms",
+          "status": 200,
+          "expectedStatus": 200,
+          "hasExpectedContent": true,
+          "passed": true,
+          "bytes": 126330
+        },
+        {
+          "path": "/blog",
+          "status": 200,
+          "expectedStatus": 200,
+          "hasExpectedContent": true,
+          "passed": true,
+          "bytes": 240134
+        },
+        {
+          "path": "/",
+          "status": 200,
+          "expectedStatus": 200,
+          "hasExpectedContent": true,
+          "passed": true,
+          "bytes": 263259
+        },
+        {
+          "path": "/__redact_smoke_missing__",
+          "status": 404,
+          "expectedStatus": 404,
+          "hasExpectedContent": true,
+          "passed": true,
+          "bytes": 133401
+        }
+      ],
+      "browser": {
+        "origin": "http://127.0.0.1:64302",
+        "passed": true,
+        "completed": [
+          "hydration and theme context updates",
+          "client navigation and history without document reload",
+          "stateful blog pagination",
+          "controlled search input and URL-backed filter reset",
+          "Radix portal menu and route search updates",
+          "mobile navigation menu and overflow check"
+        ],
+        "pageErrors": [],
+        "pageErrorCount": 0,
+        "consoleErrors": []
+      }
+    },
+    "control": {
+      "version": "0.0.21",
+      "stage": "/tmp/redact-tanstack-site-sbHqfn",
+      "build": {
+        "renderer": "published-redact",
+        "command": [
+          "/Users/tannerlinsley/.nvm/versions/node/v24.15.0/bin/node",
+          "/Users/tannerlinsley/GitHub/tanstack.com/node_modules/.pnpm/vite@8.0.16_@types+node@25.5.0_esbuild@0.27.4_jiti@2.7.0_tsx@4.21.0_yaml@2.9.0/node_modules/vite/bin/vite.js",
+          "build",
+          "--config",
+          "/private/tmp/redact-tanstack-site-sbHqfn/site/vite.config.ts",
+          "--configLoader",
+          "bundle"
+        ],
+        "pluginSha256": "70d2d398749dd73d7a3a9c1f2d7943718e0d5862dafd5ec88318f2036adcc45c",
+        "distSha256": "0d6deeb7773eab34869e581935044bf305778f3ecc1459381a827c27eec456d6",
+        "passed": true,
+        "timedOut": false,
+        "code": 0,
+        "signal": null
+      },
+      "smoke": {
+        "renderer": "published-redact",
+        "pluginSha256": "70d2d398749dd73d7a3a9c1f2d7943718e0d5862dafd5ec88318f2036adcc45c",
+        "distSha256": "0d6deeb7773eab34869e581935044bf305778f3ecc1459381a827c27eec456d6",
+        "started": true,
+        "passed": true,
+        "routes": [
+          {
+            "path": "/privacy",
+            "status": 200,
+            "expectedStatus": 200,
+            "hasExpectedContent": true,
+            "passed": true,
+            "bytes": 127453
+          },
+          {
+            "path": "/terms",
+            "status": 200,
+            "expectedStatus": 200,
+            "hasExpectedContent": true,
+            "passed": true,
+            "bytes": 126320
+          },
+          {
+            "path": "/blog",
+            "status": 200,
+            "expectedStatus": 200,
+            "hasExpectedContent": true,
+            "passed": true,
+            "bytes": 240124
+          },
+          {
+            "path": "/",
+            "status": 200,
+            "expectedStatus": 200,
+            "hasExpectedContent": true,
+            "passed": true,
+            "bytes": 263249
+          },
+          {
+            "path": "/__redact_smoke_missing__",
+            "status": 404,
+            "expectedStatus": 404,
+            "hasExpectedContent": true,
+            "passed": true,
+            "bytes": 133391
+          }
+        ],
+        "browser": {
+          "origin": "http://127.0.0.1:57721",
+          "passed": true,
+          "completed": [
+            "hydration and theme context updates",
+            "client navigation and history without document reload",
+            "stateful blog pagination",
+            "controlled search input and URL-backed filter reset",
+            "Radix portal menu and route search updates",
+            "mobile navigation menu and overflow check"
+          ],
+          "pageErrors": [],
+          "pageErrorCount": 0,
+          "consoleErrors": []
+        }
+      }
+    },
+    "preview": {
+      "url": "https://e8ca00b4-tanstack-com.thetanstack.workers.dev",
+      "buildUrl": "https://dash.cloudflare.com/8da95258a9c70b54c3e2b374a0079106/workers/services/view/tanstack-com/production/builds/28481995-7ddc-4ab8-8dd1-f3460204069c",
+      "versionId": "e8ca00b4-406f-412b-b219-ffe8860d4a7a",
+      "browser": {
+        "completed": [
+          "home rendering",
+          "theme changes match current production",
+          "blog navigation",
+          "controlled search and clear",
+          "Radix topic menu",
+          "Query URL filter"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      "existingIssue": "The theme button next-mode label differs from its system-dependent cycle. Current production reproduces it; ThemeProvider selects the cycle based on system theme while ThemeToggle labels use a fixed order."
+    },
+    "production": {
+      "upgraded": false,
+      "blocker": "All seven checks are green. The required Website Maintainers review is still pending."
+    }
+  },
+  "tanner": {
+    "source": "/Users/tannerlinsley/GitHub/tannerlinsley.com",
+    "baseSha": "dcbc8ec50f3d86fdcb7b363dcd1ac13bc99e59e6",
+    "headSha": "e78542f65dc02e8d766ab36f21f39bc4bb2217e6",
+    "mergeSha": "fa7885506d0bb80ea164424e1219446be5426ca2",
+    "pr": "https://github.com/tannerlinsley/tannerlinsley.com/pull/23",
+    "changes": [
+      "package.json",
+      "package-lock.json"
+    ],
+    "normalBuild": {
+      "command": "npm run typecheck && WRANGLER_SEND_METRICS=false npm run build",
+      "passed": true,
+      "prerenderedPages": 10,
+      "log": {
+        "path": "/tmp/tanner-redact-0.1.0-direct-build.log",
+        "sha256": "c88b74f024052ac2b94019456652bf52a1abb5230f45c29c8a0bd68fb92d0739"
+      },
+      "outputSha256": "bfb4c2d6777d603f6f7757d5f1bd27ec89b23455947c8a47d74eace1930fbeb9",
+      "outputSnapshot": "/tmp/redact-tanner-site-mxjaVG"
+    },
+    "normalBuildControl": {
+      "version": "0.0.12",
+      "passed": true,
+      "prerenderedPages": 10,
+      "log": {
+        "path": "/tmp/tanner-redact-0.0.12-direct-build.log",
+        "sha256": "eb0f558ef1efc78da8727a317cd57dcc90868a0054675b7f84ef963448480abe"
+      }
+    },
+    "smoke": {
+      "origin": "http://127.0.0.1:49455",
+      "adapter": "unchanged emitted Worker through Miniflare",
+      "renderer": "published-redact",
+      "passed": false,
+      "pluginSha256": "f0665834805725c71c6415e3d1a6a5409707e990082281487df8af1c09e12d3f",
+      "distSha256": "6d24350769a6868ab4ee51e255ebaafce790086a00bb1ceb0fccfd47921ddb75",
+      "buildSha256": "bfb4c2d6777d603f6f7757d5f1bd27ec89b23455947c8a47d74eace1930fbeb9",
+      "ssr": [
+        {
+          "path": "/",
+          "status": 200,
+          "bytes": 76839
+        },
+        {
+          "path": "/posts",
+          "status": 200,
+          "bytes": 73955
+        },
+        {
+          "path": "/posts/projecting-react",
+          "status": 200,
+          "bytes": 119465
+        },
+        {
+          "path": "/about",
+          "status": 200,
+          "bytes": 67529
+        },
+        {
+          "path": "/appearances",
+          "status": 200,
+          "bytes": 130000
+        },
+        {
+          "path": "/appearances?type=talk",
+          "status": 200,
+          "bytes": 130000
+        },
+        {
+          "path": "/feed.xml",
+          "status": 200,
+          "bytes": 2966
+        },
+        {
+          "path": "/__redact_smoke_missing__",
+          "status": 404,
+          "bytes": 61071
+        }
+      ],
+      "completed": [
+        "hydration, client post navigation, canonical and structured data",
+        "URL-backed appearance filters and browser history without document reload",
+        "theme context updates",
+        "About navigation and desktop/mobile rendering"
+      ],
+      "pageErrors": [],
+      "pageErrorCount": 0,
+      "consoleErrors": [],
+      "mobileWidths": {
+        "viewport": 390,
+        "document": 454,
+        "body": 454,
+        "header": 454
+      },
+      "error": "AssertionError [ERR_ASSERTION]: Mobile page overflows horizontally.\n    at smoke (file:///Users/tannerlinsley/GitHub/redact/scripts/verify-tanner-site.mjs:304:5)\n    at async file:///Users/tannerlinsley/GitHub/redact/scripts/verify-tanner-site.mjs:329:37"
+    },
+    "isolatedBuild": {
+      "passed": false,
+      "stage": "/tmp/redact-tanner-site-HDR5vm",
+      "log": {
+        "path": "/tmp/tanner-redact-0.1.0-isolated-build.log",
+        "sha256": "469d8e51f3270256721bb961a4f85c1c8fc13093847b45785c38d99385e20ed5"
+      },
+      "error": "Worker startup internal error during prerender. Reproduces in the isolated old Redact and React controls. Does not reproduce in either normal production build."
+    },
+    "production": {
+      "upgraded": true,
+      "url": "https://tannerlinsley.com",
+      "mergeSha": "fa7885506d0bb80ea164424e1219446be5426ca2",
+      "buildUrl": "https://dash.cloudflare.com/144575f7380700ae3ca2076ac0168566/workers/services/view/tannerlinsley/production/builds/4b4d7975-5c55-4796-bf1b-a8f41eb6343e",
+      "versionId": "78cfd6be-01b1-4042-bf66-4d54dbbf2a7a",
+      "entrypointBefore": "/assets/index-CSJpmMx8.js",
+      "entrypointAfter": "/assets/index-BT4HMfyi.js",
+      "routes": [
+        {
+          "path": "/",
+          "status": 200,
+          "bytes": 76839
+        },
+        {
+          "path": "/posts",
+          "status": 200,
+          "bytes": 73955
+        },
+        {
+          "path": "/posts/projecting-react",
+          "status": 200,
+          "bytes": 119465
+        },
+        {
+          "path": "/about",
+          "status": 200,
+          "bytes": 67529
+        },
+        {
+          "path": "/appearances",
+          "status": 200,
+          "bytes": 130000
+        },
+        {
+          "path": "/appearances?type=talk",
+          "status": 200,
+          "bytes": 130000
+        },
+        {
+          "path": "/feed.xml",
+          "status": 200,
+          "bytes": 2966
+        },
+        {
+          "path": "/__redact_smoke_missing__",
+          "status": 404,
+          "bytes": 61071
+        }
+      ],
+      "routeVerification": "Each production URL was fetched independently after deployment. All eight status codes and response lengths matched the normal built output, and RSS content was checked.",
+      "browser": {
+        "name": "in-app browser",
+        "completed": [
+          "Writing navigation",
+          "Projecting React post",
+          "canonical URL and exactly one BlogPosting record",
+          "Talks 11 / Podcasts 22 / back to Talks 11 / All 39",
+          "theme auto / light / dark / auto",
+          "About rendering"
+        ],
+        "warnings": [],
+        "errors": [],
+        "mobile": "The requested viewport override did not apply in the in-app browser; mobile width is verified only by the local Chrome smoke."
+      }
+    }
+  },
+  "limitations": [
+    "Local smokes block external requests and do not load env files.",
+    "Production checks use public pages only; authenticated flows and writes were not exercised.",
+    "No whole-site speed measurement or Safari/Firefox parity claim.",
+    "Tanner mobile overflow assertion remains enabled and fails at 454px width in a 390px viewport, matching old Redact and React controls."
+  ],
+  "verificationUpdateChecks": {
+    "testCi": {
+      "passed": 1569,
+      "skipped": 91,
+      "types": "passed",
+      "build": "passed",
+      "sizeBudgets": "all 19 source and built variants passed",
+      "log": "/tmp/redact-release-verification-tests.log",
+      "sha256": "c31a3e66db26f79b734481c78dbea5cc7b0a37bbe5c9948e96b059f42ff01117"
+    },
+    "readme": {
+      "numericRows": 34,
+      "localLinks": 24,
+      "tables": 8,
+      "mobileWidth": 390,
+      "horizontalOverflow": false
+    }
+  }
+}

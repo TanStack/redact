@@ -1,5 +1,7 @@
 # Site integration gate
 
+Scope correction from the [published 0.1.0 checks](./RELEASE_0_1_0_SITES.md): Tanner's normal production build passes and prerenders all 10 pages on both 0.0.12 and 0.1.0. The prerender startup failures recorded below are specific to the isolated harness, not the site's normal build. The original results and inputs are retained.
+
 Completed 2026-09-11 UTC against the final explicit-import packaged build. TanStack passes. Tanner's runtime checks pass, with two failures also present in both controls: Vite prerender startup and mobile header overflow. [Commands, hashes, results, and artifact paths](./results/ship-site-integration.json).
 
 | Site | Renderer | Production build | Worker SSR | Browser result |

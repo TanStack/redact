@@ -15,12 +15,12 @@ const rootFiles = ['AGENTS.md', 'package.json', 'tsconfig.json', 'vite.config.ts
 const excluded = new Set(['.git', 'node_modules', 'dist', 'build', '.output', '.wrangler', '.cloudflare', '.tanstack', '.vite', '.vite-temp', '.cache', '.next', '.turbo', '.vinxi', 'coverage', 'test-results', 'playwright-report', 'legacy-source', '.vscode', '.idea', '.codex', '.agents', '.claude', '.cursor', '.DS_Store'])
 const forbidden = name => excluded.has(name) || /^\.(env|dev\.vars|secret|npmrc|yarnrc|mcp)/i.test(name) || /\.(pem|key|p12|pfx|log|tsbuildinfo)$/i.test(name)
 
-function copyTree(from, to) {
+function copyTree(from, to, filter = forbidden) {
   mkdirSync(to, { recursive: true })
   for (const entry of readdirSync(from, { withFileTypes: true })) {
-    if (forbidden(entry.name) || entry.isSymbolicLink()) continue
+    if (filter(entry.name) || entry.isSymbolicLink()) continue
     const target = join(to, entry.name), origin = join(from, entry.name)
-    if (entry.isDirectory()) copyTree(origin, target)
+    if (entry.isDirectory()) copyTree(origin, target, filter)
     else if (entry.isFile()) copyFileSync(origin, target)
   }
 }
@@ -65,7 +65,7 @@ function linkDependencies(app, frozenPackage) {
   return count
 }
 
-function prepare(renderer = 'local-redact') {
+function prepare(renderer = 'local-redact', includeBuild = false) {
   const published = renderer === 'published-redact'
   const packageRoot = published ? join(source, 'node_modules/@tanstack/redact') : originalPackage
   assert(existsSync(join(packageRoot, 'dist/vite/index.js')), 'Build Redact before preparing the site smoke.')
@@ -85,6 +85,16 @@ function prepare(renderer = 'local-redact') {
   assert.equal(hashTree(join(frozenPackage, 'dist')).sha256, before.sha256, 'Redact snapshot differs from dist.')
   for (const path of ['cache/vite', 'cache/home', 'cache/config', 'cache/tmp', 'artifacts']) mkdirSync(join(stage, path), { recursive: true })
   const linkedDependencies = linkDependencies(app, frozenPackage)
+  let build = null
+  if (includeBuild) {
+    const output = join(source, 'dist')
+    assert(existsSync(join(output, 'server/wrangler.json')), 'Run the site production build before preparing its output.')
+    build = hashTree(output)
+    // Generated output includes Vite's runtime manifest, not source caches.
+    copyTree(output, join(app, 'dist'), name => /^\.(env|dev\.vars|secret|npmrc|yarnrc|mcp)/i.test(name) || /\.(pem|key|p12|pfx)$/i.test(name))
+    assert.equal(hashTree(output).sha256, build.sha256, 'Site output changed during snapshot.')
+    assert.equal(hashTree(join(app, 'dist')).sha256, build.sha256, 'Site output snapshot differs from the normal build.')
+  }
   const oldConfig = readFileSync(join(app, 'vite.config.ts'), 'utf8')
   assert(oldConfig.includes("preset: 'nano'"), 'Expected the site nano preset.')
   const plugin = join(frozenPackage, 'dist/vite/index.js')
@@ -107,7 +117,7 @@ function prepare(renderer = 'local-redact') {
   const appearances = JSON.parse(readFileSync(join(app, 'src/data/appearances.json'), 'utf8'))
   const manifest = {
     stage, source, app, frozenPackage, createdAt: new Date().toISOString(), linkedDependencies,
-    renderer,
+    renderer, build,
     packageVersion: JSON.parse(readFileSync(renderer === 'react' ? requireSite.resolve('react/package.json') : join(packageRoot, 'package.json'), 'utf8')).version,
     originalPlugin: join(packageRoot, 'dist/vite/index.js'),
     pluginSource: published ? null : join(originalPackage, 'src/vite/index.ts'),
@@ -118,7 +128,7 @@ function prepare(renderer = 'local-redact') {
     posts, appearanceCounts: Object.fromEntries(['all', 'talk', 'podcast', 'interview', 'livestream'].map(type => [type, appearances.filter(value => type === 'all' || value.type === type).length])),
   }
   writeFileSync(join(stage, 'manifest.json'), JSON.stringify(manifest, null, 2))
-  console.log(JSON.stringify({ stage, renderer, packageVersion: manifest.packageVersion, pluginSha256: manifest.pluginSha256, distSha256: before.sha256, posts: posts.map(post => post.slug), appearanceCounts: manifest.appearanceCounts, commands: ['build', 'preview', 'smoke'].map(command => `${process.execPath} ${script} ${command} ${stage}`) }, null, 2))
+  console.log(JSON.stringify({ stage, renderer, packageVersion: manifest.packageVersion, pluginSha256: manifest.pluginSha256, distSha256: before.sha256, buildSha256: build?.sha256, posts: posts.map(post => post.slug), appearanceCounts: manifest.appearanceCounts, commands: (includeBuild ? ['worker-smoke'] : ['build', 'preview', 'smoke']).map(command => `${process.execPath} ${script} ${command} ${stage}`) }, null, 2))
 }
 
 function readStage() {
@@ -128,6 +138,7 @@ function readStage() {
   const manifest = JSON.parse(readFileSync(join(stage, 'manifest.json'), 'utf8'))
   assert.equal(realpathSync(manifest.app), join(stage, 'site'))
   assert.equal(hashTree(join(stage, 'redact-package/dist')).sha256, manifest.dist.sha256, 'Frozen Redact build was changed.')
+  if (manifest.build) assert.equal(hashTree(join(stage, 'site/dist')).sha256, manifest.build.sha256, 'Frozen site output was changed.')
   assert(readFileSync(join(stage, 'site/vite.config.ts'), 'utf8').includes('envDir: false'), 'The isolated config must not load env files.')
   return { stage, app: join(stage, 'site'), manifest }
 }
@@ -206,7 +217,7 @@ async function smoke(info, directWorker = false) {
   const server = directWorker ? await startWorker(info) : vite(info, 'preview', ['--host', '127.0.0.1', '--port', String(port), '--strictPort'])
   const origin = directWorker ? server.origin : `http://127.0.0.1:${port}`
   let browser
-  const result = { origin, adapter: directWorker ? 'unchanged emitted Worker through Miniflare' : 'Vite preview', renderer: info.manifest.renderer ?? 'local-redact', passed: false, pluginSha256: info.manifest.pluginSha256, distSha256: info.manifest.dist.sha256, ssr: [], completed: [], blockedRequests: [], blockedOutbound: server.blockedOutbound ?? [], pageErrors: [], pageErrorCount: 0, consoleErrors: [] }
+  const result = { origin, adapter: directWorker ? 'unchanged emitted Worker through Miniflare' : 'Vite preview', renderer: info.manifest.renderer ?? 'local-redact', passed: false, pluginSha256: info.manifest.pluginSha256, distSha256: info.manifest.dist.sha256, buildSha256: info.manifest.build?.sha256, ssr: [], completed: [], blockedRequests: [], blockedOutbound: server.blockedOutbound ?? [], pageErrors: [], pageErrorCount: 0, consoleErrors: [] }
   try {
     let ready = directWorker
     for (let attempt = 0; !ready && attempt < 100; attempt++) {
@@ -307,6 +318,7 @@ async function smoke(info, directWorker = false) {
 }
 
 if (action === 'prepare' || action === 'prepare-published' || action === 'prepare-react') prepare(action === 'prepare-react' ? 'react' : action === 'prepare-published' ? 'published-redact' : 'local-redact')
+else if (action === 'prepare-built') prepare('published-redact', true)
 else if (action === 'build' || action === 'preview') {
   const info = readStage()
   const task = vite(info, action, action === 'preview' ? ['--host', '127.0.0.1', '--port', String(Number(process.env.SMOKE_PORT || 4179)), '--strictPort'] : [])
