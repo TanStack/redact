@@ -10,7 +10,7 @@ import { attributeName, STRING_BOOLEAN_ATTRS } from '../../../core/attributes'
 import { createHostNode, setProp, syncTextareaValue } from '../../dom'
 import { queueMutation, queueProp, queueText } from '../../commit'
 import { drainReplayQueue } from '../../event-replay'
-import { discardPendingWork, discardPendingEffects, findRoot, flushSyncWork, renderRoot, scheduleRootRender, recoverRootError } from '../../reconcile'
+import { discardPendingWork, discardPendingEffects, findRoot, flushSyncWork, renderRoot, scheduleRootRender, recoverRootError, unmountFiber } from '../../reconcile'
 import { attachRootFiber, createFiberRoot } from '../../root-internal'
 import { componentStack } from '../../error-info'
 
@@ -571,6 +571,8 @@ function resetAfterHydrationFailure(
   root: FiberRoot,
   container: Element | Document,
 ): void {
+  // Retire committed subscriptions and portals without removing the document shell.
+  unmountFiber(root.r, container, false)
   discardPendingWork(root)
   discardPendingEffects(root)
   clearHydrationContainer(container)
