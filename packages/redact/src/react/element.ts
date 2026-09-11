@@ -14,7 +14,7 @@ export const Fragment = REACT_FRAGMENT_TYPE as unknown as (props: {
   ref?: Ref<FragmentInstance>
 }) => ReactElement
 
-const RESERVED_PROPS: Record<string, 1> = { key: 1, ref: 1, __self: 1, __source: 1 }
+const RESERVED_PROPS: Record<string, 1> = { key: 1, __self: 1, __source: 1 }
 
 export function createElement(
   type: any,
@@ -22,12 +22,10 @@ export function createElement(
   ...children: ReactNode[]
 ): ReactElement {
   let key: string | null = null
-  let ref: any = null
   const props: Record<string, any> = {}
 
   if (config != null) {
     if (config.key !== undefined && config.key !== null) key = '' + config.key
-    if (config.ref !== undefined) ref = config.ref
     for (const k in config) {
       if (!RESERVED_PROPS[k] && Object.prototype.hasOwnProperty.call(config, k)) {
         props[k] = config[k]
@@ -45,7 +43,7 @@ export function createElement(
     }
   }
 
-  return { $$typeof: REACT_ELEMENT_TYPE, type, key, ref, props }
+  return { $$typeof: REACT_ELEMENT_TYPE, type, key, ref: props.ref ?? null, props }
 }
 
 export function cloneElement(
@@ -54,15 +52,14 @@ export function cloneElement(
   ...children: ReactNode[]
 ): ReactElement {
   let key = element.key
-  let ref = element.ref
   const props = { ...element.props }
 
   if (config != null) {
-    if (config.ref !== undefined) ref = config.ref
     if (config.key !== undefined) key = '' + config.key
     const defaultProps = element.type?.defaultProps
     for (const k in config) {
       if (RESERVED_PROPS[k] || !Object.prototype.hasOwnProperty.call(config, k)) continue
+      if (k === 'ref' && config.ref === undefined) continue
       props[k] = config[k] === undefined && defaultProps ? defaultProps[k] : config[k]
     }
   }
@@ -70,7 +67,7 @@ export function cloneElement(
   if (children.length === 1) props.children = children[0]
   else if (children.length > 1) props.children = children
 
-  return { $$typeof: REACT_ELEMENT_TYPE, type: element.type, key, ref, props }
+  return { $$typeof: REACT_ELEMENT_TYPE, type: element.type, key, ref: props.ref === undefined ? element.ref : props.ref, props }
 }
 
 export function isValidElement(obj: any): obj is ReactElement {

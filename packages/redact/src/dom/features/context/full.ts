@@ -1,5 +1,5 @@
 import { FiberTag, type Fiber } from '../../../core'
-import { REACT_PROVIDER_TYPE, REACT_CONSUMER_TYPE } from '../../../react'
+import { REACT_CONTEXT_TYPE, REACT_PROVIDER_TYPE, REACT_CONSUMER_TYPE } from '../../../react'
 import {
   registerRenderer,
   registerTypeMatcher,
@@ -17,7 +17,7 @@ function contextValue(fiber: Fiber, ctx: any): any {
   let p: Fiber | null = fiber.parent
   while (p) {
     if (p.tag === FiberTag.Provider && (p.type as any)._context === ctx) {
-      return (p.pp ?? p.mp)?.value
+      return p.pp?.value
     }
     p = p.parent
   }
@@ -81,7 +81,6 @@ export function renderContextConsumers(fiber: Fiber): void {
 }
 
 function renderProvider(fiber: Fiber, domParent: Node, anchor: Node | null): void {
-  const ctx = (fiber.type as any)._context
   const props = fiber.pp ?? {}
   const changed = fiber.mp && !Object.is(fiber.mp.value, props.value)
   if (changed) changingProviders++
@@ -90,25 +89,21 @@ function renderProvider(fiber: Fiber, domParent: Node, anchor: Node | null): voi
   } finally {
     if (changed) changingProviders--
   }
-  // Also store the value on the fiber so descendants rendering later (via updates)
-  // can read through by walking up.
-  fiber.ms = props.value
   fiber.mp = props
 }
 
 function renderConsumer(fiber: Fiber, domParent: Node, anchor: Node | null): void {
   fiber.cx?.clear()
-  const ctx = (fiber.type as any)._context
   const props = fiber.pp ?? {}
   const children = props.children
-  const value = realReadContext(fiber, ctx)
+  const value = realReadContext(fiber, (fiber.type as any)._context)
   const rendered = typeof children == 'function' ? children(value) : null
   reconcileChildren(fiber, childrenToArray(rendered), domParent, anchor)
   fiber.mp = props
 }
 
 registerTypeMatcher((_type, marker) =>
-  marker === REACT_PROVIDER_TYPE
+  marker === REACT_CONTEXT_TYPE || marker === REACT_PROVIDER_TYPE
     ? FiberTag.Provider
     : marker === REACT_CONSUMER_TYPE
       ? FiberTag.Consumer
