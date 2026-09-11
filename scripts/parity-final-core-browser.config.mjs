@@ -30,7 +30,7 @@ export default {
       'hydration-form-controls.test.tsx',
       'layout-ref-order.test.tsx',
       'activity-hydration.test.tsx',
-      ...(reference ? [] : ['reducer-native-sync.test.tsx']),
+      ...(reference ? [] : ['reducer-native-sync.test.tsx', 'hydration-recovery-lifecycle.test.tsx']),
     ],
     // Pipeable streams run in Node. The bounded Activity hydration reference
     // failure remains excluded, never counted as a parity pass.

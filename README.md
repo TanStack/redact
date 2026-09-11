@@ -38,17 +38,17 @@ Production ESM bundles retaining all exports from the React, JSX, DOM, and DOM-c
 | Runtime | Gzip bytes | Compared with React |
 |---|---:|---:|
 | React 19.3.0 | 69,162 | Reference |
-| Redact, default Vite configuration | 23,310 | 66.3% smaller |
-| Redact, native animation enabled | 28,158 | 59.3% smaller |
+| Redact, default Vite configuration | 23,311 | 66.3% smaller |
+| Redact, native animation enabled | 28,159 | 59.3% smaller |
 
-These are runtime bundles, not whole applications. Redact is measured from the built package. Real apps tree-shake differently, and the runtimes have different scheduling capabilities.
+These are runtime bundles, not whole applications. Redact is measured from the [0.1.0 release build](./benchmarks/results/release-0.1.0-sizes.json). Real apps tree-shake differently, and the runtimes have different scheduling capabilities.
 
 Standalone Redact entries, measured separately:
 
 | Entry / configuration | Gzip bytes |
 |---|---:|
-| DOM client, default Vite features | 20,134 |
-| DOM client, native animation enabled | 24,981 |
+| DOM client, default Vite features | 20,139 |
+| DOM client, native animation enabled | 24,991 |
 | DOM client, `nano` preset | 12,466 |
 | React API entry | 2,764 |
 | Server entry | 8,964 |
@@ -58,6 +58,8 @@ These entries overlap, so their sizes are not additive. `nano` removes behavior 
 ## Performance
 
 Production microbenchmarks on an Apple M5 Pro, Chrome 152, without CPU throttling: five fresh-browser blocks, five rounds each. Redact uses the built package with default Vite features. Synchronous flushes ensure updates complete before timing stops.
+
+These timings use the frozen pre-release snapshot, before the final hydration-recovery cleanup was merged from 0.0.21. That cleanup passed the release tests; the timing experiments were not repeated.
 
 Times are median averages per completed workload batch in **milliseconds**, not per component. Negative percentages mean less time. Percentages use paired measurements, not division of the rounded medians.
 

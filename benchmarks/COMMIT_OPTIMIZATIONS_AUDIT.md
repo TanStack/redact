@@ -20,4 +20,3 @@ BASELINE_PATCHES='{"pre-animation":"benchmarks/pre-view-transitions.patch","firs
 If the temporary source directories are gone, reconstruct them using the [benchmark guide](./README.md#native-transitions-and-the-commit-split), then pass their paths through `SOURCE_OVERRIDES` using the same variant names. Do not run audits or rebuilding alongside timings.
 
 The identical-React control's median absolute difference is 0.4%, and its largest pooled difference is 1.7%. Some control intervals are much wider: deep-tree props reaches +13.6%, mixed-depth setters +17.0%, and sparse setters +6.0%. This audit establishes measurement integrity, not cross-device repeatability, exact equivalence, whole-app responsiveness or complete React parity.
-
