@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url'
 
 const script = fileURLToPath(import.meta.url)
 const redactRepo = resolve(dirname(script), '..')
-const source = '/Users/tannerlinsley/GitHub/tannerlinsley.com'
+const source = resolve(process.env.SITE_SOURCE || '/Users/tannerlinsley/GitHub/tannerlinsley.com')
 const originalPackage = join(redactRepo, 'packages/redact')
 const [action = 'prepare', requestedStage] = process.argv.slice(2)
 const rootFiles = ['AGENTS.md', 'package.json', 'tsconfig.json', 'vite.config.ts', 'vite-plugin-posts.ts', 'posts-discover.ts', 'wrangler.jsonc', 'src', 'public']

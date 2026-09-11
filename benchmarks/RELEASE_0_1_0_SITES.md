@@ -48,7 +48,7 @@ node scripts/verify-tanstack-site.mjs smoke /tmp/redact-tanstack-site-...
 For Tanner, run `npm run typecheck` and `npm run build` in the site first, then:
 
 ```sh
-node scripts/verify-tanner-site.mjs prepare-built
+SITE_SOURCE=/path/to/tannerlinsley.com node scripts/verify-tanner-site.mjs prepare-built
 node scripts/verify-tanner-site.mjs worker-smoke /tmp/redact-tanner-site-...
 ```
 
