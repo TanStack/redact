@@ -14,7 +14,8 @@ export const Fragment = REACT_FRAGMENT_TYPE as unknown as (props: {
   ref?: Ref<FragmentInstance>
 }) => ReactElement
 
-const RESERVED_PROPS: Record<string, 1> = { key: 1, ref: 1, __self: 1, __source: 1 }
+// React 19 passes `ref` through as a regular prop — only these are held back.
+const RESERVED_PROPS: Record<string, 1> = { key: 1, __self: 1, __source: 1 }
 
 export function createElement(
   type: any,
@@ -63,6 +64,7 @@ export function cloneElement(
     const defaultProps = element.type?.defaultProps
     for (const k in config) {
       if (RESERVED_PROPS[k] || !Object.prototype.hasOwnProperty.call(config, k)) continue
+      if (k === 'ref' && config.ref === undefined) continue
       props[k] = config[k] === undefined && defaultProps ? defaultProps[k] : config[k]
     }
   }
