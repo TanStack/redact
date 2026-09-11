@@ -10,6 +10,7 @@ import {
   renderFiber,
   getForceRerenderingFiber,
 } from '../../reconcile'
+import { ownContextChanged, renderContextConsumers } from '../context'
 
 function shallowEqual(a: any, b: any): boolean {
   if (a === b) return true
@@ -33,10 +34,10 @@ function renderMemo(fiber: Fiber, domParent: Node, anchor: Node | null): void {
   // useSyncExternalStore notification), props haven't changed by definition —
   // bailing would swallow the state change and the subscriber never re-runs.
   // rerenderFiber tags the fiber so we skip the gate here.
-  const bypassMemo = fiber === getForceRerenderingFiber()
+  const bypassMemo = fiber.dy || fiber === getForceRerenderingFiber()
   const eq = !bypassMemo && prev && (compare ? compare(prev, props) : shallowEqual(prev, props))
-  if (eq) {
-    // Re-render children with previous output (already in tree)
+  if (eq && !ownContextChanged(fiber)) {
+    renderContextConsumers(fiber)
     return
   }
 

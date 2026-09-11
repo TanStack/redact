@@ -18,13 +18,7 @@ export type { Root, RootOptions } from './root'
 export { createPortal } from './portal'
 export { act } from './test-utils'
 
-// Resource hints — stubs
-export function preconnect(_href: string, _opts?: any): void {}
-export function prefetchDNS(_href: string): void {}
-export function preload(_href: string, _opts?: any): void {}
-export function preinit(_href: string, _opts?: any): void {}
-export function preloadModule(_href: string, _opts?: any): void {}
-export function preinitModule(_href: string, _opts?: any): void {}
+export { preconnect, prefetchDNS, preload, preinit, preloadModule, preinitModule } from './resource-hints'
 
 export const version = '19.2.3'
 

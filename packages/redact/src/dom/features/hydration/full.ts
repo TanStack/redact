@@ -7,10 +7,12 @@ import {
   type ReactNode,
 } from '../../../core'
 import { attributeName, STRING_BOOLEAN_ATTRS } from '../../../core/attributes'
-import { createHostNode, setProp } from '../../dom'
+import { createHostNode, setProp, syncTextareaValue } from '../../dom'
+import { queueMutation, queueProp, queueText } from '../../commit'
 import { drainReplayQueue } from '../../event-replay'
-import { discardPendingWork, findRoot, flushSyncWork, renderRoot } from '../../reconcile'
+import { discardPendingWork, discardPendingEffects, findRoot, flushSyncWork, renderRoot, scheduleRootRender, recoverRootError } from '../../reconcile'
 import { attachRootFiber, createFiberRoot } from '../../root-internal'
+import { componentStack } from '../../error-info'
 
 // Re-export from event-replay so all hydration concerns live behind one
 // feature boundary — the plugin's stub swap strips drainReplayQueue too.
@@ -146,9 +148,9 @@ export function abortHydration(cause: unknown, fiber: Fiber | null = null): neve
 
 interface HydrateRootOptions {
   identifierPrefix?: string
-  onRecoverableError?: (error: unknown) => void
-  onCaughtError?: (error: unknown) => void
-  onUncaughtError?: (error: unknown) => void
+  onRecoverableError?: import('../../../core').RecoverableErrorHandler
+  onCaughtError?: import('../../../core').RecoverableErrorHandler
+  onUncaughtError?: import('../../../core').RecoverableErrorHandler
 }
 
 interface HydratedRoot {
@@ -186,7 +188,7 @@ export function hydrateRootImpl(
 
   return {
     render(children) {
-      flushSyncWork(() => {
+      scheduleRootRender(root, () => {
         const normalized = isDocument ? normalizeDocumentChildren(children) : children
         renderRoot(
           root,
@@ -224,11 +226,17 @@ function headAttrsMatch(
   if (!keys) return true
   for (const k of keys) {
     const propVal = props[k]
-    const elVal = el.getAttribute(attributeName(k))
+    const elVal = hydrationAttribute(el, attributeName(k))
     if (propVal == null && elVal == null) continue
     if (propVal == null || elVal == null || String(propVal) !== elVal) return false
   }
   return true
+}
+
+function hydrationAttribute(el: Element, name: string): string | null {
+  return name === 'nonce' && 'nonce' in el && el.hasAttribute(name)
+    ? (el as HTMLElement).nonce ?? ''
+    : el.getAttribute(name)
 }
 
 export function beginHydration(root: FiberRoot): void {
@@ -247,7 +255,7 @@ export function endHydration(root: FiberRoot): void {
  * marker emitted by the server. Returns info + advances the cursor past the
  * marker pair (start comment + fallback/real content + end comment).
  */
-export type BoundaryInfo = [0 | 1, number, Comment, Comment]
+export type BoundaryInfo = [0 | 1 | 2 | 3, number, Comment, Comment]
 
 export function tryConsumeBoundary(parent: Fiber): BoundaryInfo | null {
   const cursor = hydrationCursors.get(findHostParent(parent))
@@ -255,9 +263,9 @@ export function tryConsumeBoundary(parent: Fiber): BoundaryInfo | null {
   const peek = cursor.n
   if (!peek || peek.nodeType !== 8) return null
   const data = (peek as Comment).data
-  const m = /^(\$\??)(\d+)$/.exec(data)
+  const m = /^(\$[?!E]?)(\d+)$/.exec(data)
   if (!m) return null
-  const kind = m[1] === '$?' ? 1 : 0
+  const kind = m[1] === '$?' ? 1 : m[1] === '$!' ? 2 : m[1] === '$E' ? 3 : 0
   const id = Number(m[2])
   const startMark = peek as Comment
   // Advance past the start comment
@@ -265,8 +273,11 @@ export function tryConsumeBoundary(parent: Fiber): BoundaryInfo | null {
   // Locate end comment: closest <!--/$-->
   let endMark: Comment | null = null
   let scan = startMark.nextSibling
+  let depth = 0
   while (scan) {
+    if (scan.nodeType === 8 && /^\$[?!E]?\d+$/.test((scan as Comment).data)) depth++
     if (scan.nodeType === 8 && (scan as Comment).data === '/$') {
+      if (depth) { depth--; scan = scan.nextSibling; continue }
       endMark = scan as Comment
       break
     }
@@ -360,24 +371,41 @@ export function adoptHostDom(fiber: Fiber, parent: Fiber): boolean {
     !props.suppressHydrationWarning &&
     canRecoverHydrationPropMismatch(candidate, tag)
   validateHydrationProps(fiber, candidate as Element, props, tag, isSvg)
+  // Form state can change between server paint and hydration. Initialize reset
+  // defaults without treating the live value or selection as a mismatch.
+  if (tag === 'input' || tag === 'textarea') queueHydrationFormState(candidate as Element, props, tag)
   for (const k in props) {
     if (
-      k === 'children' ||
-      k === 'key' ||
-      k === 'ref' ||
-      k === 'suppressHydrationWarning' ||
-      k === 'suppressContentEditableWarning'
-    ) continue
-    if (
-      syncHydrationProps ||
+      (syncHydrationProps &&
+        k !== 'children' && k !== 'key' && k !== 'ref' &&
+        (k !== 'nonce' || hydrationAttribute(candidate as Element, k) !== props[k]) &&
+        k !== 'suppressHydrationWarning' && k !== 'suppressContentEditableWarning' &&
+        !isHydrationFormProp(tag, k)) ||
       (k[0] === 'o' && k[1] === 'n' && typeof props[k] == 'function')
-    ) {
-      setProp(candidate as Element, k, props[k], undefined, isSvg)
-    }
+    ) queueProp(candidate as Element, k, props[k], undefined, isSvg)
   }
   // Set up child cursor for this host's children
   hydrationCursors.set(fiber, new HydrationCursor(candidate))
   return true
+}
+
+function queueHydrationFormState(el: Element, props: any, tag: string): void {
+  queueMutation(() => {
+    if (tag === 'input') {
+      const input = el as HTMLInputElement
+      if (props.type != null) input.type = props.type
+      const value = props.value ?? props.defaultValue
+      if (value != null && (props.value != null || (input.type !== 'submit' && input.type !== 'reset'))) {
+        input.defaultValue = '' + value
+      }
+      // Mark checked as dirty before changing its default, including clean SSR
+      // inputs whose client default differs. This also preserves radio groups.
+      input.checked = input.checked
+      input.defaultChecked = !!(props.checked ?? props.defaultChecked)
+    } else {
+      syncTextareaValue(el as HTMLTextAreaElement, props, true)
+    }
+  })
 }
 
 export function adoptTextDom(fiber: Fiber, parent: Fiber, text: string): boolean {
@@ -400,7 +428,7 @@ export function adoptTextDom(fiber: Fiber, parent: Fiber, text: string): boolean
         canRecoverHydrationPropMismatch(candidate),
       )
       if (recovered) {
-        ;(candidate as Text).data = text
+        queueText(candidate as Text, text)
       }
     }
     fiber.dom = candidate
@@ -447,7 +475,7 @@ function failHydration(
 ): boolean {
   const root = findRoot(fiber)
   if (root?.re) {
-    root.re(error)
+    root.re(error, { componentStack: componentStack(fiber) })
   }
   if (recoverInPlace) return true
   abortHydration(error, findHostRecoveryParent(fiber) ?? fiber)
@@ -533,6 +561,7 @@ export function recoverHydration(root: FiberRoot, error: unknown): boolean {
     flushSyncWork(() => renderRoot(root, children))
   } catch (clientError) {
     resetAfterHydrationFailure(root, container)
+    if (recoverRootError(clientError)) return true
     throw clientError
   }
   return true
@@ -543,24 +572,27 @@ function resetAfterHydrationFailure(
   container: Element | Document,
 ): void {
   discardPendingWork(root)
+  discardPendingEffects(root)
   clearHydrationContainer(container)
   attachRootFiber(root, container)
   root.h = false
 }
 
 function clearHydrationContainer(container: Element | Document): void {
-  if (container.nodeType === 9) {
-    let node = container.firstChild
-    while (node) {
-      const next = node.nextSibling
-      if (node.nodeType !== 10 /* DOCUMENT_TYPE_NODE */) {
-        container.removeChild(node)
+  queueMutation(() => {
+    if (container.nodeType === 9) {
+      let node = container.firstChild
+      while (node) {
+        const next = node.nextSibling
+        if (node.nodeType !== 10 /* DOCUMENT_TYPE_NODE */) {
+          container.removeChild(node)
+        }
+        node = next
       }
-      node = next
+      return
     }
-    return
-  }
-  ;(container as Element).textContent = ''
+    ;(container as Element).textContent = ''
+  })
 }
 
 function getRecoverableHostChildren(
@@ -684,6 +716,14 @@ function createHostElement(type: string, props: Record<string, unknown>): ReactE
   }
 }
 
+function isHydrationFormProp(tag: string, key: string): boolean {
+  return (
+    ((tag === 'input' || tag === 'textarea' || tag === 'select') && (key === 'value' || key === 'defaultValue')) ||
+    (tag === 'input' && (key === 'checked' || key === 'defaultChecked')) ||
+    (tag === 'option' && key === 'selected')
+  )
+}
+
 function validateHydrationProps(
   fiber: Fiber,
   el: Element,
@@ -708,13 +748,14 @@ function validateHydrationProps(
     ) continue
 
     if (k === 'dangerouslySetInnerHTML') {
-      let html = '' + (value?.__html ?? '')
+      let html = value?.__html
+      if (html == null) continue
       if (tag !== 'script' && tag !== 'style') {
-        const probe = document.createElement('div')
+        const probe = createHostNode(tag, isSvg)
         probe.innerHTML = html
         html = probe.innerHTML
       }
-      if ((el as HTMLElement).innerHTML !== html) {
+      if ((el as HTMLElement).innerHTML !== '' + html) {
         failHydration(
           fiber,
           process.env.NODE_ENV !== 'production'
@@ -726,51 +767,7 @@ function validateHydrationProps(
       continue
     }
 
-    if (k === 'value' || k === 'defaultValue') {
-      if (tag === 'select') continue
-      if (tag === 'input' || tag === 'textarea') {
-        if (k === 'value' || props.value == null) {
-          if (value != null && (el as HTMLInputElement).value !== '' + value) {
-            failHydration(
-              fiber,
-              process.env.NODE_ENV !== 'production'
-                ? new Error(`Hydration ${tag} value mismatch on <${tag}>.`)
-                : undefined,
-              recoverInPlace,
-            )
-          }
-        }
-        continue
-      }
-    }
-
-    if (tag === 'input' && (k === 'checked' || k === 'defaultChecked')) {
-      if (k === 'checked' || props.checked == null) {
-        if (value != null && (el as HTMLInputElement).checked !== !!value) {
-          failHydration(
-            fiber,
-            process.env.NODE_ENV !== 'production'
-              ? new Error(`Hydration checked mismatch on <input>.`)
-              : undefined,
-            recoverInPlace,
-          )
-        }
-      }
-      continue
-    }
-
-    if (tag === 'option' && k === 'selected') {
-      if (value != null && (el as HTMLOptionElement).selected !== !!value) {
-        failHydration(
-          fiber,
-          process.env.NODE_ENV !== 'production'
-            ? new Error(`Hydration selected mismatch on <option>.`)
-            : undefined,
-          recoverInPlace,
-        )
-      }
-      continue
-    }
+    if (isHydrationFormProp(tag, k)) continue
 
     if (k === 'style') {
       expected ??= createHostNode(tag, isSvg)
@@ -802,12 +799,15 @@ function validateHydrationProps(
     } else if (k === 'muted' && !isSvg && (tag === 'video' || tag === 'audio')) {
       // The muted property controls playback; defaultMuted reflects the SSR attribute.
       expectedValue = value ? '' : null
+    } else if (stringifiedBoolean && k.length > 5) {
+      // These attributes use setAttribute string coercion, not DOM property normalization.
+      expectedValue = '' + value
     } else {
       expected ??= createHostNode(tag, isSvg)
       setProp(expected, k, value, undefined, isSvg)
       expectedValue = expected.getAttribute(attr)
     }
-    const actualValue = el.getAttribute(attr)
+    const actualValue = hydrationAttribute(el, attr)
     if (expectedValue !== actualValue) {
       failHydration(
         fiber,

@@ -1,0 +1,546 @@
+--- a/core/attributes.ts
++++ b/core/attributes.ts
+@@ -14,6 +14,7 @@
+   if (name === 'acceptCharset') return 'accept-charset'
+   if (name === 'crossOrigin') return 'crossorigin'
+   if (name === 'noModule') return 'nomodule'
++  if (name === 'maskType') return 'mask-type'
+   if (name === 'viewBox') return 'viewBox'
+   return name.startsWith('aria-') || name.startsWith('data-')
+     ? name
+--- a/core/internal.ts
++++ b/core/internal.ts
+@@ -21,7 +21,6 @@
+   q: any
+   d: any
+   c: any
+-  n: Hook | null
+ }
+ 
+ export interface Effect {
+@@ -42,11 +41,12 @@
+   parent: Fiber | null
+   child: Fiber | null
+   sibling: Fiber | null
+-  hooks: Hook | null
++  hooks: Hook[] | null
+   cu: Array<() => void> | null
+   dy: boolean
+   um: boolean
+   root: FiberRoot | null
++  depth?: number
+ }
+ 
+ export interface FiberRoot {
+--- a/dom/dispatcher.ts
++++ b/dom/dispatcher.ts
+@@ -14,32 +14,9 @@
+ }
+ 
+ function nextHook(): Hook {
+-  const fiber = getCurrentFiber()
+-  const idx = ReactSharedInternals.I++
+-
+-  let prev = ReactSharedInternals.K
+-
+-  if (idx === 0) {
+-    if (fiber.hooks) {
+-      ReactSharedInternals.K = fiber.hooks
+-      return fiber.hooks
+-    }
+-    const h: Hook = { s: undefined, q: undefined, d: undefined, c: undefined, n: null }
+-    fiber.hooks = h
+-    ReactSharedInternals.K = h
+-    return h
+-  }
+-
+-  if (prev && prev.n) {
+-    ReactSharedInternals.K = prev.n
+-    return prev.n
+-  }
+-
+-  const h: Hook = { s: undefined, q: undefined, d: undefined, c: undefined, n: null }
+-  if (prev) prev.n = h
+-  else fiber.hooks = h
+-  ReactSharedInternals.K = h
+-  return h
++  const hooks = getCurrentFiber().hooks ||= []
++  const index = ReactSharedInternals.I++
++  return hooks[index] ||= { s: undefined, q: undefined, d: undefined, c: undefined }
+ }
+ 
+ function depsEqual(
+@@ -372,7 +349,7 @@
+ function findRootFromFiber(fiber: Fiber): FiberRoot | null {
+   let f: Fiber | null = fiber
+   while (f) {
+-    if (f.root) return f.root
++    if (f.root) return fiber.root = f.root
+     f = f.parent
+   }
+   return null
+--- a/dom/dom.ts
++++ b/dom/dom.ts
+@@ -9,6 +9,7 @@
+   'autoplay',
+   'checked',
+   'controls',
++  'credentialless',
+   'default',
+   'defer',
+   'disabled',
+--- a/dom/features/forward-ref/full.ts
++++ b/dom/features/forward-ref/full.ts
+@@ -18,11 +18,9 @@
+ 
+   const prevDispatcher = ReactSharedInternals.H
+   const prevFiber = ReactSharedInternals.F
+-  const prevHook = ReactSharedInternals.K
+   const prevIndex = ReactSharedInternals.I
+   ReactSharedInternals.H = makeDispatcher()
+   ReactSharedInternals.F = fiber
+-  ReactSharedInternals.K = null
+   ReactSharedInternals.I = 0
+ 
+   let rendered: ReactNode
+@@ -40,7 +38,6 @@
+   } finally {
+     ReactSharedInternals.H = prevDispatcher
+     ReactSharedInternals.F = prevFiber
+-    ReactSharedInternals.K = prevHook
+     ReactSharedInternals.I = prevIndex
+   }
+ 
+--- a/dom/reconcile.ts
++++ b/dom/reconcile.ts
+@@ -8,7 +8,6 @@
+   type FiberRoot,
+   type ReactElement,
+   type ReactNode,
+-  type Hook,
+   type Effect,
+ } from '../core'
+ import {
+@@ -140,19 +139,14 @@
+ }
+ 
+ function fiberDepth(fiber: Fiber): number {
+-  let d = 0
+-  let p: Fiber | null = fiber.parent
+-  while (p) {
+-    d++
+-    p = p.parent
+-  }
+-  return d
++  // Reused fibers keep their parent and root, including keyed sibling moves.
++  return fiber.depth ??= fiber.parent ? fiberDepth(fiber.parent) + 1 : 0
+ }
+ 
+ export function findRoot(fiber: Fiber): FiberRoot | null {
+   let f: Fiber | null = fiber
+   while (f) {
+-    if (f.root) return f.root
++    if (f.root) return fiber.root = f.root
+     f = f.parent
+   }
+   return null
+@@ -355,8 +349,9 @@
+   domParent: Node,
+   anchor: Node | null,
+ ): void {
+-  // Fast path: unkeyed positional steady-state. Walk the existing sibling
+-  // chain and newChildren in lockstep, validating AND committing in one pass.
++  // Fast path: positional steady-state, including unchanged keyed lists.
++  // Walk the sibling chain and newChildren in lockstep, validating and
++  // committing in one pass.
+   // On any divergence we fall back to the slow path, which rebuilds the
+   // sibling chain anyway — partial pp writes are idempotent.
+   // Skips the Map / Set / existing-array allocation entirely.
+@@ -365,12 +360,12 @@
+     let ok = true
+     for (let i = 0; i < newChildren.length; i++) {
+       const child = newChildren[i]
+-      if (child == null || !f || f.key != null) { ok = false; break }
++      if (child == null || !f) { ok = false; break }
+       if (typeof child === 'string') {
+-        if (f.tag !== FiberTag.Text) { ok = false; break }
++        if (f.tag !== FiberTag.Text || f.key != null) { ok = false; break }
+         f.pp = child
+       } else {
+-        if ((child as ReactElement).key != null) { ok = false; break }
++        if (!sameKey(f.key, (child as ReactElement).key)) { ok = false; break }
+         if (f.type !== (child as ReactElement).type) { ok = false; break }
+         f.pp = (child as ReactElement).props
+         f.ref = (child as any).ref ?? null
+@@ -380,14 +375,7 @@
+     if (ok && f === null) {
+       // Pass 2: render forward with per-child anchors. Identical to the slow
+       // path's pass 2.
+-      for (let r: Fiber | null = parent.child; r; r = r.sibling) {
+-        let a = anchor
+-        for (let s: Fiber | null = r.sibling; s; s = s.sibling) {
+-          const d = firstDomNode(s)
+-          if (d && d.parentNode === domParent) { a = d; break }
+-        }
+-        renderFiber(r, domParent, a)
+-      }
++      renderChildChain(parent, domParent, anchor, false)
+       return
+     }
+   }
+@@ -450,7 +438,7 @@
+     if (!match) {
+       while (existingIdx < existing.length) {
+         const cand = existing[existingIdx]!
+-        if (claimed.has(cand) || cand.key != null) {
++        if (cand.key != null) {
+           existingIdx++
+           continue
+         }
+@@ -503,17 +491,8 @@
+   // walks DOM forward and each renderFiber adopts the next existing node,
+   // so per-child anchors are moot — fall back to the parent's anchor.
+   const hydrating = !!currentRoot?.h
+-  for (let f: Fiber | null = parent.child; f; f = f.sibling) {
+-    let a = anchor
+-    if (!hydrating) {
+-      // Find the firstDomNode of the next still-mounted sibling, if any.
+-      for (let s: Fiber | null = f.sibling; s; s = s.sibling) {
+-        const d = firstDomNode(s)
+-        if (d && d.parentNode === domParent) { a = d; break }
+-      }
+-    }
+-    renderFiber(f, domParent, a)
+-  }
++  // New siblings have no DOM yet, so searching them for an anchor cannot help.
++  renderChildChain(parent, domParent, anchor, hydrating || existing.length === 0)
+ 
+   if (!prevNewFiber) parent.child = null
+   else prevNewFiber.sibling = null
+@@ -535,13 +514,6 @@
+         structurallyChanged = true
+       }
+     }
+-    // Leftover keyed
+-    for (const f of keyed.values()) {
+-      if (!claimed.has(f)) {
+-        unmountFiber(f, domParent)
+-        structurallyChanged = true
+-      }
+-    }
+   }
+ 
+   // During hydration, DOM is already in document order from the cursor-driven
+@@ -560,6 +532,27 @@
+   }
+ }
+ 
++function renderChildChain(
++  parent: Fiber,
++  domParent: Node,
++  anchor: Node | null,
++  skipAnchors: boolean,
++): void {
++  for (let f = parent.child; f; f = f.sibling) {
++    let nextAnchor = anchor
++    if (!skipAnchors) {
++      for (let sibling = f.sibling; sibling; sibling = sibling.sibling) {
++        const dom = firstDomNode(sibling)
++        if (dom?.parentNode === domParent) {
++          nextAnchor = dom
++          break
++        }
++      }
++    }
++    renderFiber(f, domParent, nextAnchor)
++  }
++}
++
+ function placeChildrenInOrder(parent: Fiber, domParent: Node, anchor: Node | null): void {
+   const doms: Node[] = []
+   let c = parent.child
+@@ -579,7 +572,7 @@
+       current = current!.nextSibling
+       // Skip foreign nodes (SSR-injected scripts, dev-styles) between owned
+       // fiber DOMs — they should stay where they are.
+-      while (current && !doms.includes(current as Node)) {
++      while (current && current !== doms[i] && !doms.includes(current as Node)) {
+         current = current.nextSibling
+       }
+       if (current !== doms[i]) inOrder = false
+@@ -846,9 +839,11 @@
+   if (isSelect && deferredSelectValue !== undefined) {
+     const select = fiber.dom as HTMLSelectElement
+     if (Array.isArray(deferredSelectValue)) {
+-      const asStrings = deferredSelectValue.map((v) => '' + v)
+-      for (const opt of Array.from(select.options)) {
+-        opt.selected = asStrings.includes(opt.value)
++      const selected = new Set(deferredSelectValue.map((v) => '' + v))
++      const options = select.options
++      for (let i = 0; i < options.length; i++) {
++        const opt = options[i]!
++        opt.selected = selected.has(opt.value)
+       }
+     } else {
+       select.value = '' + deferredSelectValue
+@@ -862,12 +857,10 @@
+ function renderFunction(fiber: Fiber, domParent: Node, anchor: Node | null): void {
+   const prevDispatcher = ReactSharedInternals.H
+   const prevFiber = ReactSharedInternals.F
+-  const prevHook = ReactSharedInternals.K
+   const prevIndex = ReactSharedInternals.I
+ 
+   ReactSharedInternals.H = makeDispatcher()
+   ReactSharedInternals.F = fiber
+-  ReactSharedInternals.K = null
+   ReactSharedInternals.I = 0
+ 
+   let rendered: ReactNode
+@@ -889,7 +882,6 @@
+   } finally {
+     ReactSharedInternals.H = prevDispatcher
+     ReactSharedInternals.F = prevFiber
+-    ReactSharedInternals.K = prevHook
+     ReactSharedInternals.I = prevIndex
+   }
+ 
+@@ -1055,9 +1047,7 @@
+   if (fiber.ref) detachRef(fiber.ref)
+ 
+   // Remove DOM if host
+-  if (fiber.tag === FiberTag.Host && fiber.dom && fiber.dom.parentNode) {
+-    fiber.dom.parentNode.removeChild(fiber.dom)
+-  } else if (fiber.tag === FiberTag.Text && fiber.dom && fiber.dom.parentNode) {
++  if ((fiber.tag === FiberTag.Host || fiber.tag === FiberTag.Text) && fiber.dom?.parentNode) {
+     fiber.dom.parentNode.removeChild(fiber.dom)
+   }
+ }
+--- a/react/shared-internals.ts
++++ b/react/shared-internals.ts
+@@ -1,4 +1,4 @@
+-import type { Fiber, Hook } from '../core'
++import type { Fiber } from '../core'
+ 
+ export interface Dispatcher {
+   useState<S>(initial: S | (() => S)): [S, (s: S | ((p: S) => S)) => void]
+@@ -30,7 +30,6 @@
+ interface SharedInternals {
+   H: Dispatcher | null
+   F: Fiber | null
+-  K: Hook | null
+   I: number
+ }
+ 
+@@ -52,7 +51,6 @@
+   (g[KEY] = {
+     H: null,
+     F: null,
+-    K: null,
+     I: 0,
+   })
+ 
+--- a/server/dispatcher.ts
++++ b/server/dispatcher.ts
+@@ -8,11 +8,14 @@
+ 
+ let frame: SSRFrame | null = null
+ 
+-export function beginSSR(identifierPrefix = ':R'): void {
++export function beginSSR(identifierPrefix = ':R') {
++  const previous = { frame, dispatcher: ReactSharedInternals.H }
+   frame = { idCounter: 0, identifierPrefix, contextStack: [] }
++  ReactSharedInternals.H = ssrDispatcher as any
++  return previous
+ }
+ 
+-export function endSSR(): void {
++export function endSSR(previous?: ReturnType<typeof beginSSR>): void {
+   // Restore any remaining pushed contexts (defensive)
+   if (frame) {
+     for (let i = frame.contextStack.length - 1; i >= 0; i--) {
+@@ -20,7 +23,10 @@
+       context._currentValue = prev
+     }
+   }
+-  frame = null
++  // Only synchronous renders restore their caller. A stream can finish
++  // after its caller has returned, so it must not reinstall that dispatcher.
++  ReactSharedInternals.H = previous?.dispatcher ?? null
++  frame = previous?.frame ?? null
+ }
+ 
+ export function pushContext(context: any, value: any): void {
+@@ -147,12 +153,4 @@
+     }
+     throw new Error('use() expected a Promise or Context')
+   },
+-}
+-
+-export function installSSRDispatcher(): void {
+-  ReactSharedInternals.H = ssrDispatcher as any
+-}
+-
+-export function uninstallSSRDispatcher(): void {
+-  ReactSharedInternals.H = null
+ }
+--- a/server/escape.ts
++++ b/server/escape.ts
+@@ -13,11 +13,11 @@
+ }
+ 
+ export function escapeAttr(value: string): string {
+-  return value.replace(/[&"<>]/g, (c) => ATTR_MAP[c]!)
++  return /[&"<>]/.test(value) ? value.replace(/[&"<>]/g, (c) => ATTR_MAP[c]!) : value
+ }
+ 
+ export function escapeText(value: string): string {
+-  return value.replace(/[&<>]/g, (c) => TEXT_MAP[c]!)
++  return /[&<>]/.test(value) ? value.replace(/[&<>]/g, (c) => TEXT_MAP[c]!) : value
+ }
+ 
+ // Raw-text element body escaping: prevent any closing tag for the raw-text
+@@ -57,6 +57,7 @@
+   'autoplay',
+   'checked',
+   'controls',
++  'credentialless',
+   'default',
+   'defer',
+   'disabled',
+--- a/server/renderToString.ts
++++ b/server/renderToString.ts
+@@ -1,13 +1,12 @@
+ import type { ReactNode } from '../core'
+-import { beginSSR, endSSR, installSSRDispatcher, uninstallSSRDispatcher } from './dispatcher'
++import { beginSSR, endSSR } from './dispatcher'
+ import { walk } from './walk'
+ 
+ export function renderToString(
+   children: ReactNode,
+   options: { identifierPrefix?: string } = {},
+ ): string {
+-  installSSRDispatcher()
+-  beginSSR(options.identifierPrefix)
++  const previous = beginSSR(options.identifierPrefix)
+   let output = ''
+   let id = 0
+   try {
+@@ -18,8 +17,7 @@
+       nextBoundaryId: () => id++,
+     })
+   } finally {
+-    endSSR()
+-    uninstallSSRDispatcher()
++    endSSR(previous)
+   }
+   return output
+ }
+--- a/server/stream.ts
++++ b/server/stream.ts
+@@ -2,8 +2,6 @@
+ import {
+   beginSSR,
+   endSSR,
+-  installSSRDispatcher,
+-  uninstallSSRDispatcher,
+   applyContextSnapshot,
+ } from './dispatcher'
+ import { walk, type SuspendedBoundary } from './walk'
+@@ -45,7 +43,6 @@
+   options: StreamOptions,
+   state: OrchestratorState,
+ ): Promise<void> {
+-  installSSRDispatcher()
+   beginSSR(options.identifierPrefix)
+   const nonce = options.nonce
+ 
+@@ -127,7 +124,6 @@
+     throw err
+   } finally {
+     endSSR()
+-    uninstallSSRDispatcher()
+     state.closed = true
+   }
+ }
+@@ -259,6 +255,13 @@
+     errored: null,
+   }
+   const encoder = new TextEncoder()
++  let abortListener: (() => void) | undefined
++  const detachAbortListener = () => {
++    if (abortListener) {
++      options.signal?.removeEventListener('abort', abortListener)
++      abortListener = undefined
++    }
++  }
+ 
+   let allReadyResolve!: () => void
+   let allReadyReject!: (e: unknown) => void
+@@ -277,12 +280,14 @@
+ 
+       streamHtml(children, emit, options, state).then(
+         () => {
++          detachAbortListener()
+           try {
+             controller.close()
+           } catch {}
+           allReadyResolve()
+         },
+         (err) => {
++          detachAbortListener()
+           try {
+             controller.error(err)
+           } catch {}
+@@ -290,13 +295,21 @@
+         },
+       )
+ 
+-      options.signal?.addEventListener('abort', () => {
+-        state.closed = true
+-        try {
+-          controller.close()
+-        } catch {}
+-      })
++      if (options.signal) {
++        abortListener = () => {
++          detachAbortListener()
++          state.closed = true
++          try {
++            controller.close()
++          } catch {}
++        }
++        options.signal.addEventListener('abort', abortListener)
++      }
+     },
++    cancel() {
++      state.closed = true
++      detachAbortListener()
++    },
+   })
+ 
+   return Promise.resolve(Object.assign(stream, { allReady }))
+@@ -331,6 +344,7 @@
+   const buffers: string[] = []
+   let dest: PipeableWritable | null = null
+   let shellReady = false
++  let shellFailed = false
+   let finished = false
+   let aborted = false
+ 
+@@ -355,6 +369,7 @@
+     },
+     (err) => {
+       if (!shellReady) {
++        shellFailed = true
+         options.onShellError?.(err)
+       } else {
+         options.onError?.(err)
+@@ -367,7 +382,7 @@
+   // streamHtml above runs the shell synchronously before the first await in drain(),
+   // so we can schedule onShellReady right after the first microtask.
+   queueMicrotask(() => {
+-    if (aborted || finished) return
++    if (aborted || finished || shellFailed) return
+     shellReady = true
+     options.onShellReady?.()
+   })

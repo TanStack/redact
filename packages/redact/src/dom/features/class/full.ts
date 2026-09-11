@@ -1,4 +1,5 @@
 import { FiberTag, type Fiber, type ReactNode } from '../../../core'
+import { checkpointCommit, rewindCommit, queueBeforeMutation, queueMutation } from '../../commit'
 import {
   registerRenderer,
   reconcileChildren,
@@ -8,17 +9,30 @@ import {
   isThenable,
   handleSuspended,
   handleErrorInRender,
+  readContext,
+  attachRef,
+  syncRefIfChanged,
+  isActivityHidden,
+  layoutIsDisconnected,
+  RenderErrorCapture,
+  handleCommitError,
 } from '../../reconcile'
 
 function renderClass(fiber: Fiber, domParent: Node, anchor: Node | null): void {
+  fiber.cx?.clear()
   const Ctor = fiber.type as any
   let instance = fiber.sn
   const props = fiber.pp ?? {}
   const isNew = !instance
+  const previous = fiber.ms?.c
+  let didRender = true
+  let captured = fiber.ms?.error instanceof RenderErrorCapture ? fiber.ms.error as RenderErrorCapture : undefined
+  if (captured) delete fiber.ms.error
 
   // Class contextType: read the current value of the subscribed context so
   // `this.context` reflects the nearest Provider. Evaluated every render.
-  const ctxValue = Ctor.contextType ? Ctor.contextType._currentValue : undefined
+  const ctxValue = Ctor.contextType ? readContext(fiber, Ctor.contextType) : undefined
+  const contextChanged = instance && !Object.is(instance.context, ctxValue)
 
   if (isNew) {
     instance = new Ctor(props, ctxValue)
@@ -47,39 +61,31 @@ function renderClass(fiber: Fiber, domParent: Node, anchor: Node | null): void {
       if (d) instance.state = { ...instance.state, ...d }
     }
   } else {
-    const prevProps = instance.props
-    const prevState = instance.state
     // Refresh context on every render — Providers higher up may have changed.
     instance.context = ctxValue
     if (Ctor.getDerivedStateFromProps) {
       const d = Ctor.getDerivedStateFromProps(props, instance.state)
       if (d) instance.state = { ...instance.state, ...d }
     }
-    if (instance.shouldComponentUpdate) {
+    if (!captured && instance.shouldComponentUpdate && !contextChanged) {
       if (!instance.shouldComponentUpdate(props, instance.state, instance.context)) {
-        instance.props = props
-        fiber.mp = props
-        // Still need to render children with previous output
-        if (fiber.ms?.r) {
-          reconcileChildren(fiber, childrenToArray(fiber.ms.r), domParent, anchor)
-        }
-        return
+        didRender = false
       }
     }
     instance.props = props
-    // New snapshot must win over any stale one from a previous render —
-    // otherwise componentDidUpdate keeps seeing the original props and can
-    // ping-pong setState forever.
-    fiber.ms = { ...(fiber.ms ?? {}), p: prevProps, s: prevState }
+  }
+  if (captured && Ctor.getDerivedStateFromError) {
+    const update = Ctor.getDerivedStateFromError(captured.error)
+    if (update != null) instance.state = { ...instance.state, ...update }
   }
 
   let rendered: ReactNode
   try {
-    rendered = instance.render()
+    rendered = captured && !Ctor.getDerivedStateFromError ? null : didRender ? instance.render() : fiber.ms?.r
   } catch (e: any) {
     if (isThenable(e)) {
       handleSuspended(fiber, e)
-      rendered = null
+      return
     } else {
       handleErrorInRender(fiber, e)
       return
@@ -87,17 +93,62 @@ function renderClass(fiber: Fiber, domParent: Node, anchor: Node | null): void {
   }
   fiber.ms = { ...(fiber.ms ?? {}), r: rendered }
 
-  reconcileChildren(fiber, childrenToArray(rendered), domParent, anchor)
+  const canCatch = Ctor.getDerivedStateFromError || instance.componentDidCatch
+  if (canCatch) fiber.ms.b = Ctor
+  if (canCatch && fiber.root) fiber.root.eb = true
+  const checkpoint = canCatch ? checkpointCommit(fiber) : -1
+  try {
+    reconcileChildren(fiber, childrenToArray(rendered), domParent, anchor)
+  } catch (error) {
+    if (!(error instanceof RenderErrorCapture) || error.boundary !== fiber) throw error
+    rewindCommit(checkpoint)
+    captured = error
+    didRender = true
+    if (Ctor.getDerivedStateFromError) {
+      const update = Ctor.getDerivedStateFromError(error.error)
+      if (update != null) instance.state = { ...instance.state, ...update }
+      try { rendered = instance.render() } catch (fallbackError) {
+        handleErrorInRender(fiber, fallbackError)
+        return
+      }
+    } else rendered = null
+    fiber.ms = { ...(fiber.ms ?? {}), r: rendered }
+    reconcileChildren(fiber, childrenToArray(rendered), domParent, anchor)
+  }
   fiber.mp = props
+  const state = instance.state
+  queueMutation(() => { fiber.ms.c = { props, state } })
+
+  if (isNew) attachRef(fiber, instance)
+  else syncRefIfChanged(fiber, instance)
 
   // Schedule lifecycle
   if (isNew) {
     if (instance.componentDidMount) {
       scheduleLifecycle(fiber, () => instance.componentDidMount())
     }
-  } else if (instance.componentDidUpdate) {
-    const { p, s } = fiber.ms ?? {}
-    scheduleLifecycle(fiber, () => instance.componentDidUpdate(p, s))
+  } else if (previous && didRender) {
+    let snapshot: any
+    if (instance.getSnapshotBeforeUpdate && !layoutIsDisconnected(fiber)) {
+      queueBeforeMutation(() => {
+        if (!fiber.um && !fiber.pd && !isActivityHidden(fiber) && !layoutIsDisconnected(fiber)) {
+          try { snapshot = instance.getSnapshotBeforeUpdate(previous.props, previous.state) }
+          catch (error) { handleCommitError(fiber, error) }
+        }
+      })
+    }
+    if (instance.componentDidUpdate) {
+      scheduleLifecycle(fiber, () => instance.componentDidUpdate(previous.props, previous.state, snapshot))
+    }
+  }
+  if (captured) {
+    const error = captured.error
+    const info = { componentStack: captured.stack }
+    scheduleLifecycle(fiber, () => {
+      try { fiber.root?.ce?.(error, { ...info, errorBoundary: instance }) }
+      catch (callbackError) { setTimeout(() => { throw callbackError }) }
+      instance.componentDidCatch?.(error, info)
+    })
   }
 }
 

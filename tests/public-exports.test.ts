@@ -29,11 +29,13 @@ describe('public API surface', () => {
   it('@tanstack/redact', () => {
     expect(surface(redact)).toMatchInlineSnapshot(`
       [
+        "Activity",
         "Children",
         "Component",
         "Fragment",
         "Profiler",
         "PureComponent",
+        "REACT_ACTIVITY_TYPE",
         "REACT_CONSUMER_TYPE",
         "REACT_CONTEXT_TYPE",
         "REACT_FORWARD_REF_TYPE",
@@ -44,11 +46,15 @@ describe('public API surface', () => {
         "REACT_PROVIDER_TYPE",
         "REACT_STRICT_MODE_TYPE",
         "REACT_SUSPENSE_TYPE",
+        "REACT_VIEW_TRANSITION_TYPE",
         "ReactSharedInternals",
         "StrictMode",
         "Suspense",
+        "ViewTransition",
         "act",
+        "addTransitionType",
         "cache",
+        "cacheSignal",
         "cloneElement",
         "createContext",
         "createElement",
@@ -61,6 +67,7 @@ describe('public API surface', () => {
         "startTransition",
         "taintObjectReference",
         "taintUniqueValue",
+        "unstable_useCacheRefresh",
         "use",
         "useActionState",
         "useCallback",
@@ -110,6 +117,7 @@ describe('public API surface', () => {
     expect(surface(redactDom)).toMatchInlineSnapshot(`
       [
         "__DOM_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE",
+        "browser",
         "createPortal",
         "default",
         "flushSync",

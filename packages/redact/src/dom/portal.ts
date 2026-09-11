@@ -3,7 +3,7 @@ import { REACT_PORTAL_TYPE } from '../react'
 
 export function createPortal(
   children: ReactNode,
-  container: Element,
+  container: Element | DocumentFragment,
   key: string | null = null,
 ): ReactElement {
   return {

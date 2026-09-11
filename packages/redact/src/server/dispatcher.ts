@@ -1,18 +1,41 @@
 import { ReactSharedInternals, REACT_CONTEXT_TYPE } from '../react'
+import { isBrowserToken, browserError } from '../core/browser'
+import { resourceHintDispatcher } from '../core/resource-hints'
+import { createResourceHints, type ResourceScope } from './resource-hints'
 
-interface SSRFrame {
+export interface SSRFrame {
   idCounter: number
   identifierPrefix: string
   contextStack: Array<{ context: any; prev: any }>
+  resources?: ReturnType<typeof createResourceHints>
+  shellFlushed?: boolean
+  styleNonce?: string | undefined
 }
 
 let frame: SSRFrame | null = null
 
-export function beginSSR(identifierPrefix = ':R'): void {
-  frame = { idCounter: 0, identifierPrefix, contextStack: [] }
+resourceHintDispatcher.emit = (kind, href, options) => {
+  if (!frame) return false
+  ;(frame.resources ||= createResourceHints(!!frame.shellFlushed, frame.styleNonce)).add(kind, href, options)
+  return true
 }
 
-export function endSSR(): void {
+export function beginSSR(identifierPrefix = ':R', nextFrame?: SSRFrame) {
+  const previous = { frame, dispatcher: ReactSharedInternals.H }
+  frame = nextFrame ?? { idCounter: 0, identifierPrefix, contextStack: [] }
+  ReactSharedInternals.H = ssrDispatcher as any
+  return previous
+}
+
+export function currentSSRFrame(): SSRFrame {
+  return frame!
+}
+
+export function recordHostResource(type: string, props: any, scope?: ResourceScope): boolean {
+  return !!frame && (frame.resources ||= createResourceHints(!!frame.shellFlushed, frame.styleNonce)).addHost(type, props, scope)
+}
+
+export function endSSR(previous?: ReturnType<typeof beginSSR>): void {
   // Restore any remaining pushed contexts (defensive)
   if (frame) {
     for (let i = frame.contextStack.length - 1; i >= 0; i--) {
@@ -20,7 +43,10 @@ export function endSSR(): void {
       context._currentValue = prev
     }
   }
-  frame = null
+  // Only synchronous renders restore their caller. A stream can finish
+  // after its caller has returned, so it must not reinstall that dispatcher.
+  ReactSharedInternals.H = previous?.dispatcher ?? null
+  frame = previous?.frame ?? null
 }
 
 export function pushContext(context: any, value: any): void {
@@ -59,6 +85,9 @@ export function applyContextSnapshot(snapshot: ContextSnapshot): () => void {
 }
 
 export const ssrDispatcher = {
+  useCacheRefresh() {
+    return () => { throw new Error('Refreshing the cache is not supported during server rendering.') }
+  },
   useState<S>(initial: S | (() => S)) {
     const v = typeof initial === 'function' ? (initial as () => S)() : initial
     return [v, (() => {}) as any] as [S, any]
@@ -113,6 +142,7 @@ export const ssrDispatcher = {
   },
   use<T>(resource: any): T {
     if (resource == null) throw new Error('use() received null or undefined')
+    if (isBrowserToken(resource)) throw browserError(resource)
     if (resource.$$typeof === REACT_CONTEXT_TYPE) {
       return resource._currentValue
     }
@@ -147,12 +177,4 @@ export const ssrDispatcher = {
     }
     throw new Error('use() expected a Promise or Context')
   },
-}
-
-export function installSSRDispatcher(): void {
-  ReactSharedInternals.H = ssrDispatcher as any
-}
-
-export function uninstallSSRDispatcher(): void {
-  ReactSharedInternals.H = null
 }

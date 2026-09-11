@@ -1,0 +1,1239 @@
+--- a/core/attributes.ts
++++ b/core/attributes.ts
+@@ -14,6 +14,7 @@
+   if (name === 'acceptCharset') return 'accept-charset'
+   if (name === 'crossOrigin') return 'crossorigin'
+   if (name === 'noModule') return 'nomodule'
++  if (name === 'maskType') return 'mask-type'
+   if (name === 'viewBox') return 'viewBox'
+   return name.startsWith('aria-') || name.startsWith('data-')
+     ? name
+--- a/core/internal.ts
++++ b/core/internal.ts
+@@ -21,7 +21,6 @@
+   q: any
+   d: any
+   c: any
+-  n: Hook | null
+ }
+ 
+ export interface Effect {
+@@ -42,11 +41,13 @@
+   parent: Fiber | null
+   child: Fiber | null
+   sibling: Fiber | null
+-  hooks: Hook | null
++  hooks: Hook[] | null
+   cu: Array<() => void> | null
+   dy: boolean
+   um: boolean
+   root: FiberRoot | null
++  depth?: number
++  cx?: Map<any, any> | null
+ }
+ 
+ export interface FiberRoot {
+--- a/dom/dispatcher.ts
++++ b/dom/dispatcher.ts
+@@ -14,32 +14,9 @@
+ }
+ 
+ function nextHook(): Hook {
+-  const fiber = getCurrentFiber()
+-  const idx = ReactSharedInternals.I++
+-
+-  let prev = ReactSharedInternals.K
+-
+-  if (idx === 0) {
+-    if (fiber.hooks) {
+-      ReactSharedInternals.K = fiber.hooks
+-      return fiber.hooks
+-    }
+-    const h: Hook = { s: undefined, q: undefined, d: undefined, c: undefined, n: null }
+-    fiber.hooks = h
+-    ReactSharedInternals.K = h
+-    return h
+-  }
+-
+-  if (prev && prev.n) {
+-    ReactSharedInternals.K = prev.n
+-    return prev.n
+-  }
+-
+-  const h: Hook = { s: undefined, q: undefined, d: undefined, c: undefined, n: null }
+-  if (prev) prev.n = h
+-  else fiber.hooks = h
+-  ReactSharedInternals.K = h
+-  return h
++  const hooks = getCurrentFiber().hooks ||= []
++  const index = ReactSharedInternals.I++
++  return hooks[index] ||= { s: undefined, q: undefined, d: undefined, c: undefined }
+ }
+ 
+ function depsEqual(
+@@ -372,7 +349,7 @@
+ function findRootFromFiber(fiber: Fiber): FiberRoot | null {
+   let f: Fiber | null = fiber
+   while (f) {
+-    if (f.root) return f.root
++    if (f.root) return fiber.root = f.root
+     f = f.parent
+   }
+   return null
+--- a/dom/dom.ts
++++ b/dom/dom.ts
+@@ -9,6 +9,7 @@
+   'autoplay',
+   'checked',
+   'controls',
++  'credentialless',
+   'default',
+   'defer',
+   'disabled',
+@@ -49,6 +50,32 @@
+ 
+ export function isSvgElement(el: Element): boolean {
+   return (el as any).ownerSVGElement !== undefined || el.tagName === 'svg'
++}
++
++export function syncInputValue(el: HTMLInputElement, props: any, prev?: any): void {
++  const value = props.value
++  const fallback = props.defaultValue
++  if (!prev) {
++    if (value == null && (el.type === 'submit' || el.type === 'reset')) return
++    if (value != null || fallback != null) {
++      const initial = '' + (value ?? fallback)
++      if (el.value !== initial) el.value = initial
++      el.defaultValue = initial
++    }
++    return
++  }
++  if (value != null) {
++    // Number inputs keep equivalent user spelling, including trailing zeroes.
++    if (el.type === 'number' ? (value === 0 && el.value === '') || el.value != value : el.value !== '' + value) {
++      el.value = '' + value
++    }
++    const nextDefault = el.type === 'number' && el.value == value ? el.value : '' + value
++    if (el.defaultValue !== nextDefault) el.defaultValue = nextDefault
++  } else if (fallback != null) {
++    if (el.defaultValue !== '' + fallback) el.defaultValue = '' + fallback
++  } else if (prev.defaultValue != null || el.type === 'submit' || el.type === 'reset') {
++    el.removeAttribute('value')
++  }
+ }
+ 
+ export function setProp(
+--- a/dom/features/class/full.ts
++++ b/dom/features/class/full.ts
+@@ -8,9 +8,11 @@
+   isThenable,
+   handleSuspended,
+   handleErrorInRender,
++  readContext,
+ } from '../../reconcile'
+ 
+ function renderClass(fiber: Fiber, domParent: Node, anchor: Node | null): void {
++  fiber.cx?.clear()
+   const Ctor = fiber.type as any
+   let instance = fiber.sn
+   const props = fiber.pp ?? {}
+@@ -18,7 +20,8 @@
+ 
+   // Class contextType: read the current value of the subscribed context so
+   // `this.context` reflects the nearest Provider. Evaluated every render.
+-  const ctxValue = Ctor.contextType ? Ctor.contextType._currentValue : undefined
++  const ctxValue = Ctor.contextType ? readContext(fiber, Ctor.contextType) : undefined
++  const contextChanged = instance && !Object.is(instance.context, ctxValue)
+ 
+   if (isNew) {
+     instance = new Ctor(props, ctxValue)
+@@ -55,7 +58,7 @@
+       const d = Ctor.getDerivedStateFromProps(props, instance.state)
+       if (d) instance.state = { ...instance.state, ...d }
+     }
+-    if (instance.shouldComponentUpdate) {
++    if (instance.shouldComponentUpdate && !contextChanged) {
+       if (!instance.shouldComponentUpdate(props, instance.state, instance.context)) {
+         instance.props = props
+         fiber.mp = props
+--- a/dom/features/context/full.ts
++++ b/dom/features/context/full.ts
+@@ -6,9 +6,14 @@
+   installCapability,
+   reconcileChildren,
+   childrenToArray,
++  renderFiber,
++  getHostParent,
++  getAnchor,
+ } from '../../reconcile'
+ 
+-function realReadContext(fiber: Fiber, ctx: any): any {
++let changingProviders = 0
++
++function contextValue(fiber: Fiber, ctx: any): any {
+   let p: Fiber | null = fiber.parent
+   while (p) {
+     if (p.tag === FiberTag.Provider && (p.type as any)._context === ctx) {
+@@ -19,15 +24,71 @@
+   return ctx._currentValue
+ }
+ 
++function remember(fiber: Fiber, ctx: any, value: any): void {
++  ;(fiber.cx ??= new Map()).set(ctx, value)
++}
++
++function realReadContext(fiber: Fiber, ctx: any): any {
++  const value = contextValue(fiber, ctx)
++  remember(fiber, ctx, value)
++  // Initial suspended attempts are discarded. Keep their external context
++  // reads on the boundary so a provider can retry them before a promise settles.
++  let child = fiber
++  let p = fiber.parent
++  while (p) {
++    if (p.tag === FiberTag.Provider && p.type._context === ctx) break
++    if (p.tag === FiberTag.Suspense && p.ms?.f !== child) remember(p, ctx, value)
++    child = p
++    p = p.parent
++  }
++  return value
++}
++
++export function ownContextChanged(fiber: Fiber): boolean {
++  if (!changingProviders) return false
++  const reads = fiber.cx
++  if (reads) {
++    for (const [ctx, value] of reads) {
++      if (!Object.is(value, contextValue(fiber, ctx))) return true
++    }
++  }
++  return false
++}
++
++export function hasContextChanged(fiber: Fiber, includeFallback = true): boolean {
++  if (!changingProviders) return false
++  if (ownContextChanged(fiber)) return true
++  let child = fiber.child
++  while (child) {
++    if (hasContextChanged(child)) return true
++    child = child.sibling
++  }
++  return includeFallback && fiber.tag === FiberTag.Suspense && !!fiber.ms?.f && hasContextChanged(fiber.ms.f)
++}
++
++export function renderContextConsumers(fiber: Fiber): void {
++  if (!changingProviders) return
++  let child = fiber.child
++  while (child) {
++    if (child.tag === FiberTag.Suspense ? hasContextChanged(child) : ownContextChanged(child)) {
++      const domParent = getHostParent(child)
++      renderFiber(child, domParent, getAnchor(child, domParent))
++    } else {
++      renderContextConsumers(child)
++    }
++    child = child.sibling
++  }
++}
++
+ function renderProvider(fiber: Fiber, domParent: Node, anchor: Node | null): void {
+   const ctx = (fiber.type as any)._context
+   const props = fiber.pp ?? {}
+-  const prevValue = ctx._currentValue
+-  ctx._currentValue = props.value
++  const changed = fiber.mp && !Object.is(fiber.mp.value, props.value)
++  if (changed) changingProviders++
+   try {
+     reconcileChildren(fiber, childrenToArray(props.children), domParent, anchor)
+   } finally {
+-    ctx._currentValue = prevValue
++    if (changed) changingProviders--
+   }
+   // Also store the value on the fiber so descendants rendering later (via updates)
+   // can read through by walking up.
+@@ -36,6 +97,7 @@
+ }
+ 
+ function renderConsumer(fiber: Fiber, domParent: Node, anchor: Node | null): void {
++  fiber.cx?.clear()
+   const ctx = (fiber.type as any)._context
+   const props = fiber.pp ?? {}
+   const children = props.children
+--- a/dom/features/context/stub.ts
++++ b/dom/features/context/stub.ts
+@@ -7,6 +7,12 @@
+   childrenToArray,
+ } from '../../reconcile'
+ 
++export function hasContextChanged(_fiber: Fiber, _includeFallback = true): boolean {
++  return false
++}
++export const ownContextChanged = hasContextChanged
++export function renderContextConsumers(_fiber: Fiber): void {}
++
+ // Stub: Context feature disabled. Provider elements render as Fragments
+ // (value is never propagated — descendants see only the Context's default).
+ // Consumer elements still invoke their function-children with the default
+--- a/dom/features/forward-ref/full.ts
++++ b/dom/features/forward-ref/full.ts
+@@ -12,17 +12,16 @@
+ import { makeDispatcher } from '../../dispatcher'
+ 
+ function renderForwardRef(fiber: Fiber, domParent: Node, anchor: Node | null): void {
++  fiber.cx?.clear()
+   const props = fiber.pp ?? {}
+   const render = (fiber.type as any).render
+   const ref = fiber.ref ?? (props.ref ?? null)
+ 
+   const prevDispatcher = ReactSharedInternals.H
+   const prevFiber = ReactSharedInternals.F
+-  const prevHook = ReactSharedInternals.K
+   const prevIndex = ReactSharedInternals.I
+   ReactSharedInternals.H = makeDispatcher()
+   ReactSharedInternals.F = fiber
+-  ReactSharedInternals.K = null
+   ReactSharedInternals.I = 0
+ 
+   let rendered: ReactNode
+@@ -40,7 +39,6 @@
+   } finally {
+     ReactSharedInternals.H = prevDispatcher
+     ReactSharedInternals.F = prevFiber
+-    ReactSharedInternals.K = prevHook
+     ReactSharedInternals.I = prevIndex
+   }
+ 
+--- a/dom/features/hydration/full.ts
++++ b/dom/features/hydration/full.ts
+@@ -360,13 +360,34 @@
+     !props.suppressHydrationWarning &&
+     canRecoverHydrationPropMismatch(candidate, tag)
+   validateHydrationProps(fiber, candidate as Element, props, tag, isSvg)
++  // Form state can change between server paint and hydration. Initialize reset
++  // defaults without treating the live value or selection as a mismatch.
++  if (tag === 'input') {
++    const input = candidate as HTMLInputElement
++    if (props.type != null) input.type = props.type
++    const value = props.value ?? props.defaultValue
++    if (value != null && (props.value != null || (input.type !== 'submit' && input.type !== 'reset'))) {
++      input.defaultValue = '' + value
++    }
++    // Mark checked as dirty before changing its default, including clean SSR
++    // inputs whose client default differs. This also preserves radio groups.
++    input.checked = input.checked
++    input.defaultChecked = !!(props.checked ?? props.defaultChecked)
++  } else if (tag === 'textarea') {
++    const textarea = candidate as HTMLTextAreaElement
++    const children = props.children
++    const value = props.value ?? props.defaultValue ?? (Array.isArray(children) ? children[0] : children) ?? ''
++    textarea.defaultValue = value
++    if (value !== '' && textarea.textContent === value) textarea.value = value
++  }
+   for (const k in props) {
+     if (
+       k === 'children' ||
+       k === 'key' ||
+       k === 'ref' ||
+       k === 'suppressHydrationWarning' ||
+-      k === 'suppressContentEditableWarning'
++      k === 'suppressContentEditableWarning' ||
++      isHydrationFormProp(tag, k)
+     ) continue
+     if (
+       syncHydrationProps ||
+@@ -684,6 +705,14 @@
+   }
+ }
+ 
++function isHydrationFormProp(tag: string, key: string): boolean {
++  return (
++    ((tag === 'input' || tag === 'textarea' || tag === 'select') && (key === 'value' || key === 'defaultValue')) ||
++    (tag === 'input' && (key === 'checked' || key === 'defaultChecked')) ||
++    (tag === 'option' && key === 'selected')
++  )
++}
++
+ function validateHydrationProps(
+   fiber: Fiber,
+   el: Element,
+@@ -726,52 +755,8 @@
+       continue
+     }
+ 
+-    if (k === 'value' || k === 'defaultValue') {
+-      if (tag === 'select') continue
+-      if (tag === 'input' || tag === 'textarea') {
+-        if (k === 'value' || props.value == null) {
+-          if (value != null && (el as HTMLInputElement).value !== '' + value) {
+-            failHydration(
+-              fiber,
+-              process.env.NODE_ENV !== 'production'
+-                ? new Error(`Hydration ${tag} value mismatch on <${tag}>.`)
+-                : undefined,
+-              recoverInPlace,
+-            )
+-          }
+-        }
+-        continue
+-      }
+-    }
++    if (isHydrationFormProp(tag, k)) continue
+ 
+-    if (tag === 'input' && (k === 'checked' || k === 'defaultChecked')) {
+-      if (k === 'checked' || props.checked == null) {
+-        if (value != null && (el as HTMLInputElement).checked !== !!value) {
+-          failHydration(
+-            fiber,
+-            process.env.NODE_ENV !== 'production'
+-              ? new Error(`Hydration checked mismatch on <input>.`)
+-              : undefined,
+-            recoverInPlace,
+-          )
+-        }
+-      }
+-      continue
+-    }
+-
+-    if (tag === 'option' && k === 'selected') {
+-      if (value != null && (el as HTMLOptionElement).selected !== !!value) {
+-        failHydration(
+-          fiber,
+-          process.env.NODE_ENV !== 'production'
+-            ? new Error(`Hydration selected mismatch on <option>.`)
+-            : undefined,
+-          recoverInPlace,
+-        )
+-      }
+-      continue
+-    }
+-
+     if (k === 'style') {
+       expected ??= createHostNode(tag, isSvg)
+       setProp(expected, k, value, undefined, isSvg)
+@@ -802,6 +787,9 @@
+     } else if (k === 'muted' && !isSvg && (tag === 'video' || tag === 'audio')) {
+       // The muted property controls playback; defaultMuted reflects the SSR attribute.
+       expectedValue = value ? '' : null
++    } else if (stringifiedBoolean && k.length > 5) {
++      // These attributes use setAttribute string coercion, not DOM property normalization.
++      expectedValue = '' + value
+     } else {
+       expected ??= createHostNode(tag, isSvg)
+       setProp(expected, k, value, undefined, isSvg)
+--- a/dom/features/memo/full.ts
++++ b/dom/features/memo/full.ts
+@@ -10,6 +10,7 @@
+   renderFiber,
+   getForceRerenderingFiber,
+ } from '../../reconcile'
++import { ownContextChanged, renderContextConsumers } from '../context'
+ 
+ function shallowEqual(a: any, b: any): boolean {
+   if (a === b) return true
+@@ -35,8 +36,8 @@
+   // rerenderFiber tags the fiber so we skip the gate here.
+   const bypassMemo = fiber === getForceRerenderingFiber()
+   const eq = !bypassMemo && prev && (compare ? compare(prev, props) : shallowEqual(prev, props))
+-  if (eq) {
+-    // Re-render children with previous output (already in tree)
++  if (eq && !ownContextChanged(fiber)) {
++    renderContextConsumers(fiber)
+     return
+   }
+ 
+--- a/dom/features/suspense/full.ts
++++ b/dom/features/suspense/full.ts
+@@ -24,6 +24,7 @@
+   tryConsumeBoundary,
+   isHydrationBailout,
+ } from '../hydration'
++import { hasContextChanged } from '../context'
+ 
+ let suspendHandler: ((t: Promise<any>) => void) | null = null
+ 
+@@ -46,8 +47,8 @@
+ // their original `display` so we can restore it) and the fallback as a
+ // detached Fragment fiber in `state.f` (deliberately kept OUT of
+ // `fiber.child` so reconciles against `props.children` don't trip on it).
+-// First-mount suspensions have no committed DOM worth preserving, so they
+-// keep the original unmount-and-render-fallback behavior.
++// First-mount suspensions discard the failed primary but retain a separate
++// fallback fiber so unsuccessful retries preserve its state and DOM.
+ interface SuspenseState {
+   p?: Promise<any> | null
+   b?: Comment
+@@ -85,11 +86,9 @@
+     return
+   }
+ 
+-  // We were already in the suspended-with-preserved-primary state. Don't
+-  // re-attempt primary children (would re-throw and churn the tree). Just
+-  // refresh the fallback in case its JSX changed, and wait for the pending
+-  // promise to fire scheduleUpdate.
+-  if (state.p) {
++  // A changed primary context dependency can unblock the boundary before its
++  // old promise settles. Otherwise update the fallback without retrying it.
++  if (state.p && !hasContextChanged(fiber, false)) {
+     if (state.f) {
+       state.f.pp = { children: props.fallback }
+       renderFiber(state.f, domParent, anchor)
+@@ -107,6 +106,7 @@
+   const hadCommittedPrimary = fiber.mp && fiber.child
+ 
+   const prevHandler = suspendHandler
++  fiber.cx?.clear()
+   let pendingThenable: any
+   suspendHandler = (thenable) => {
+     pendingThenable = thenable
+@@ -118,18 +118,20 @@
+   }
+ 
+   if (pendingThenable) {
++    const previousThenable = state.p
+     state.p = pendingThenable
+     const onSettle = () => {
++      if (state.p !== pendingThenable) return
+       state.p = null
+       scheduleUpdate(fiber)
+     }
+-    pendingThenable.then(onSettle, onSettle)
++    if (previousThenable !== pendingThenable) pendingThenable.then(onSettle, onSettle)
+ 
+     if (hadCommittedPrimary) {
+       // Hide the primary subtree's root host doms so the fallback is the only
+       // thing visible, but the underlying nodes (and their scroll/state/focus)
+       // survive. Save original `display` for the resume path.
+-      const hidden: Array<[HTMLElement, string]> = []
++      const hidden: Array<[HTMLElement, string]> = state.d ?? []
+       let c: Fiber | null = hadCommittedPrimary
+       while (c) {
+         hideRootHostDoms(c, hidden)
+@@ -137,20 +139,20 @@
+       }
+       state.d = hidden
+ 
+-      // Mount fallback in a detached Fragment fiber. Kept off `fiber.child`
+-      // so reconciles of primary don't see it as a stale match candidate.
+-      if (!state.f) {
+-        state.f = createFiber(FiberTag.Fragment, null, null)
+-        state.f.parent = fiber
+-      }
+-      state.f.pp = { children: props.fallback }
+-      renderFiber(state.f, domParent, anchor)
+     } else {
+       // First-mount suspension — nothing to preserve.
+       unmountAllChildren(fiber, domParent)
+-      reconcileChildren(fiber, childrenToArray(props.fallback), domParent, anchor)
+     }
++    // Keep fallback identity across unsuccessful retries of an initial mount.
++    if (!state.f) {
++      state.f = createFiber(FiberTag.Fragment, null, null)
++      state.f.parent = fiber
++    }
++    state.f.pp = { children: props.fallback }
++    renderFiber(state.f, domParent, anchor)
+   } else {
++    state.p = null
++    fiber.cx?.clear()
+     // Render succeeded. Clean up any preserved-suspend state from a prior
+     // suspension cycle: unhide primary, unmount the orphan fallback fiber.
+     if (state.d) {
+@@ -173,7 +175,11 @@
+ function hideRootHostDoms(fiber: Fiber, out: Array<[HTMLElement, string]>): void {
+   if (fiber.tag === FiberTag.Host) {
+     const el = fiber.dom as HTMLElement
+-    out.push([el, el.style.display])
++    const existing = out.find(([node]) => node === el)
++    if (!existing) out.push([el, el.style.display])
++    else if (el.style.display !== 'none' || fiber.pp?.style?.display === 'none') {
++      existing[1] = el.style.display
++    }
+     el.style.display = 'none'
+     return
+   }
+--- a/dom/reconcile.ts
++++ b/dom/reconcile.ts
+@@ -8,7 +8,6 @@
+   type FiberRoot,
+   type ReactElement,
+   type ReactNode,
+-  type Hook,
+   type Effect,
+ } from '../core'
+ import {
+@@ -17,7 +16,7 @@
+   REACT_STRICT_MODE_TYPE,
+   REACT_PROFILER_TYPE,
+ } from '../react'
+-import { createHostNode, setProp } from './dom'
++import { createHostNode, setProp, syncInputValue } from './dom'
+ import { makeDispatcher } from './dispatcher'
+ import {
+   adoptHostDom,
+@@ -140,19 +139,14 @@
+ }
+ 
+ function fiberDepth(fiber: Fiber): number {
+-  let d = 0
+-  let p: Fiber | null = fiber.parent
+-  while (p) {
+-    d++
+-    p = p.parent
+-  }
+-  return d
++  // Reused fibers keep their parent and root, including keyed sibling moves.
++  return fiber.depth ??= fiber.parent ? fiberDepth(fiber.parent) + 1 : 0
+ }
+ 
+ export function findRoot(fiber: Fiber): FiberRoot | null {
+   let f: Fiber | null = fiber
+   while (f) {
+-    if (f.root) return f.root
++    if (f.root) return fiber.root = f.root
+     f = f.parent
+   }
+   return null
+@@ -204,7 +198,8 @@
+   const prevForcing = forceRerenderingFiber
+   forceRerenderingFiber = fiber
+   try {
+-    renderFiber(fiber, getHostParent(fiber), getAnchor(fiber))
++    const domParent = getHostParent(fiber)
++    renderFiber(fiber, domParent, getAnchor(fiber, domParent))
+   } finally {
+     forceRerenderingFiber = prevForcing
+     if (resumeHydration) {
+@@ -355,8 +350,9 @@
+   domParent: Node,
+   anchor: Node | null,
+ ): void {
+-  // Fast path: unkeyed positional steady-state. Walk the existing sibling
+-  // chain and newChildren in lockstep, validating AND committing in one pass.
++  // Fast path: positional steady-state, including unchanged keyed lists.
++  // Walk the sibling chain and newChildren in lockstep, validating and
++  // committing in one pass.
+   // On any divergence we fall back to the slow path, which rebuilds the
+   // sibling chain anyway — partial pp writes are idempotent.
+   // Skips the Map / Set / existing-array allocation entirely.
+@@ -365,12 +361,12 @@
+     let ok = true
+     for (let i = 0; i < newChildren.length; i++) {
+       const child = newChildren[i]
+-      if (child == null || !f || f.key != null) { ok = false; break }
++      if (child == null || !f) { ok = false; break }
+       if (typeof child === 'string') {
+-        if (f.tag !== FiberTag.Text) { ok = false; break }
++        if (f.tag !== FiberTag.Text || f.key != null) { ok = false; break }
+         f.pp = child
+       } else {
+-        if ((child as ReactElement).key != null) { ok = false; break }
++        if (!sameKey(f.key, (child as ReactElement).key)) { ok = false; break }
+         if (f.type !== (child as ReactElement).type) { ok = false; break }
+         f.pp = (child as ReactElement).props
+         f.ref = (child as any).ref ?? null
+@@ -380,18 +376,29 @@
+     if (ok && f === null) {
+       // Pass 2: render forward with per-child anchors. Identical to the slow
+       // path's pass 2.
+-      for (let r: Fiber | null = parent.child; r; r = r.sibling) {
+-        let a = anchor
+-        for (let s: Fiber | null = r.sibling; s; s = s.sibling) {
+-          const d = firstDomNode(s)
+-          if (d && d.parentNode === domParent) { a = d; break }
+-        }
+-        renderFiber(r, domParent, a)
+-      }
++      renderChildChain(parent, domParent, anchor, false)
+       return
+     }
+   }
+ 
++  if (!parent.child) {
++    // Build every sibling before rendering, just like the matching path.
++    // A first mount has no old fibers to index, claim or remove.
++    let previous: Fiber | null = null
++    for (const child of newChildren) {
++      if (child == null) continue
++      const fiber = fiberFromChild(child, parent)
++      if (previous) previous.sibling = fiber
++      else parent.child = fiber
++      previous = fiber
++    }
++    renderChildChain(parent, domParent, anchor, true)
++    if (previous && !currentRoot?.h && domParent.nodeName !== 'HEAD') {
++      placeChildrenInOrder(parent, domParent, anchor)
++    }
++    return
++  }
++
+   const existing = collectChildren(parent)
+   const keyed = new Map<string, Fiber>()
+   for (const f of existing) {
+@@ -450,7 +457,7 @@
+     if (!match) {
+       while (existingIdx < existing.length) {
+         const cand = existing[existingIdx]!
+-        if (claimed.has(cand) || cand.key != null) {
++        if (cand.key != null) {
+           existingIdx++
+           continue
+         }
+@@ -503,17 +510,10 @@
+   // walks DOM forward and each renderFiber adopts the next existing node,
+   // so per-child anchors are moot — fall back to the parent's anchor.
+   const hydrating = !!currentRoot?.h
+-  for (let f: Fiber | null = parent.child; f; f = f.sibling) {
+-    let a = anchor
+-    if (!hydrating) {
+-      // Find the firstDomNode of the next still-mounted sibling, if any.
+-      for (let s: Fiber | null = f.sibling; s; s = s.sibling) {
+-        const d = firstDomNode(s)
+-        if (d && d.parentNode === domParent) { a = d; break }
+-      }
+-    }
+-    renderFiber(f, domParent, a)
+-  }
++  // New siblings have no DOM yet, so searching them for an anchor cannot help.
++  // An empty replacement has no new chain. The old children remain linked
++  // until cleanup below, and must not render again on their way out.
++  if (prevNewFiber) renderChildChain(parent, domParent, anchor, hydrating || existing.length === 0)
+ 
+   if (!prevNewFiber) parent.child = null
+   else prevNewFiber.sibling = null
+@@ -535,13 +535,6 @@
+         structurallyChanged = true
+       }
+     }
+-    // Leftover keyed
+-    for (const f of keyed.values()) {
+-      if (!claimed.has(f)) {
+-        unmountFiber(f, domParent)
+-        structurallyChanged = true
+-      }
+-    }
+   }
+ 
+   // During hydration, DOM is already in document order from the cursor-driven
+@@ -560,6 +553,27 @@
+   }
+ }
+ 
++function renderChildChain(
++  parent: Fiber,
++  domParent: Node,
++  anchor: Node | null,
++  skipAnchors: boolean,
++): void {
++  for (let f = parent.child; f; f = f.sibling) {
++    let nextAnchor = anchor
++    if (!skipAnchors) {
++      for (let sibling = f.sibling; sibling; sibling = sibling.sibling) {
++        const dom = firstDomNode(sibling, domParent)
++        if (dom) {
++          nextAnchor = dom
++          break
++        }
++      }
++    }
++    renderFiber(f, domParent, nextAnchor)
++  }
++}
++
+ function placeChildrenInOrder(parent: Fiber, domParent: Node, anchor: Node | null): void {
+   const doms: Node[] = []
+   let c = parent.child
+@@ -579,7 +593,7 @@
+       current = current!.nextSibling
+       // Skip foreign nodes (SSR-injected scripts, dev-styles) between owned
+       // fiber DOMs — they should stay where they are.
+-      while (current && !doms.includes(current as Node)) {
++      while (current && current !== doms[i] && !doms.includes(current as Node)) {
+         current = current.nextSibling
+       }
+       if (current !== doms[i]) inOrder = false
+@@ -636,6 +650,7 @@
+     collectHostDoms(c, out)
+     c = c.sibling
+   }
++  if (fiber.tag === FiberTag.Suspense && fiber.ms?.f) collectHostDoms(fiber.ms.f, out)
+ }
+ 
+ function collectChildren(parent: Fiber): Fiber[] {
+@@ -748,13 +763,15 @@
+   // on a `<select>` with no matching `<option>` yet resets it to empty. Same
+   // for `defaultValue` on first mount. Stash and replay.
+   const isSelect = type === 'select'
++  const isInput = !isSvg && type === 'input'
++  let hydrated = false
+   const deferredSelectValue =
+     isSelect && (props.value !== undefined || props.defaultValue !== undefined)
+       ? props.value !== undefined ? props.value : props.defaultValue
+       : undefined
+ 
+   if (!fiber.dom) {
+-    const hydrated = currentRoot?.h ? adoptHostDom(fiber, fiber.parent!) : false
++    hydrated = currentRoot?.h ? adoptHostDom(fiber, fiber.parent!) : false
+     if (!hydrated) {
+       fiber.dom = createHostNode(type, isSvg)
+       // Two passes so form-control attributes (notably <input type>) are in
+@@ -763,7 +780,7 @@
+       // → `input` vs `change`); binding before `type` is applied would
+       // attach to the wrong event for checkbox/radio/file inputs.
+       for (const k in props) {
+-        if (isSelect && (k === 'value' || k === 'defaultValue')) continue
++        if ((isSelect || isInput) && (k === 'value' || k === 'defaultValue')) continue
+         if (isEventProp(k)) continue
+         setProp(fiber.dom as Element, k, props[k], undefined, isSvg)
+       }
+@@ -771,6 +788,7 @@
+         if (!isEventProp(k)) continue
+         setProp(fiber.dom as Element, k, props[k], undefined, isSvg)
+       }
++      if (isInput) syncInputValue(fiber.dom as HTMLInputElement, props)
+       insertInto(domParent, fiber.dom, anchor)
+     }
+     attachRef(fiber, fiber.dom)
+@@ -785,7 +803,7 @@
+     // null and we collapse to one for-in over `props`.
+     let deferredEvents: string[] | null = null
+     for (const k in props) {
+-      if (isSelect && (k === 'value' || k === 'defaultValue')) continue
++      if ((isSelect || isInput) && (k === 'value' || k === 'defaultValue')) continue
+       if (isEventProp(k)) {
+         if (prev[k] !== props[k]) {
+           deferredEvents ||= []
+@@ -797,6 +815,7 @@
+     }
+     // Removals — keys present in prev but not in props.
+     for (const k in prev) {
++      if (isInput && (k === 'value' || k === 'defaultValue')) continue
+       if (!(k in props)) setProp(el, k, undefined, prev[k], isSvg)
+     }
+     if (deferredEvents) {
+@@ -805,6 +824,7 @@
+         setProp(el, k, props[k], prev[k], isSvg)
+       }
+     }
++    if (isInput) syncInputValue(el as HTMLInputElement, props, prev)
+     syncRefIfChanged(fiber, fiber.dom)
+   }
+ 
+@@ -843,12 +863,14 @@
+   }
+ 
+   // Apply <select> value after options are mounted.
+-  if (isSelect && deferredSelectValue !== undefined) {
++  if (isSelect && !hydrated && deferredSelectValue !== undefined) {
+     const select = fiber.dom as HTMLSelectElement
+     if (Array.isArray(deferredSelectValue)) {
+-      const asStrings = deferredSelectValue.map((v) => '' + v)
+-      for (const opt of Array.from(select.options)) {
+-        opt.selected = asStrings.includes(opt.value)
++      const selected = new Set(deferredSelectValue.map((v) => '' + v))
++      const options = select.options
++      for (let i = 0; i < options.length; i++) {
++        const opt = options[i]!
++        opt.selected = selected.has(opt.value)
+       }
+     } else {
+       select.value = '' + deferredSelectValue
+@@ -860,14 +882,13 @@
+ }
+ 
+ function renderFunction(fiber: Fiber, domParent: Node, anchor: Node | null): void {
++  fiber.cx?.clear()
+   const prevDispatcher = ReactSharedInternals.H
+   const prevFiber = ReactSharedInternals.F
+-  const prevHook = ReactSharedInternals.K
+   const prevIndex = ReactSharedInternals.I
+ 
+   ReactSharedInternals.H = makeDispatcher()
+   ReactSharedInternals.F = fiber
+-  ReactSharedInternals.K = null
+   ReactSharedInternals.I = 0
+ 
+   let rendered: ReactNode
+@@ -889,7 +910,6 @@
+   } finally {
+     ReactSharedInternals.H = prevDispatcher
+     ReactSharedInternals.F = prevFiber
+-    ReactSharedInternals.K = prevHook
+     ReactSharedInternals.I = prevIndex
+   }
+ 
+@@ -1019,6 +1039,10 @@
+ 
+ export function unmountFiber(fiber: Fiber, domParent: Node): void {
+   fiber.um = true
++  if (fiber.tag === FiberTag.Suspense && fiber.ms?.f) {
++    unmountFiber(fiber.ms.f, domParent)
++    fiber.ms.f = null
++  }
+   // Recurse first
+   let c = fiber.child
+   while (c) {
+@@ -1055,10 +1079,8 @@
+   if (fiber.ref) detachRef(fiber.ref)
+ 
+   // Remove DOM if host
+-  if (fiber.tag === FiberTag.Host && fiber.dom && fiber.dom.parentNode) {
++  if ((fiber.tag === FiberTag.Host || fiber.tag === FiberTag.Text) && fiber.dom?.parentNode) {
+     fiber.dom.parentNode.removeChild(fiber.dom)
+-  } else if (fiber.tag === FiberTag.Text && fiber.dom && fiber.dom.parentNode) {
+-    fiber.dom.parentNode.removeChild(fiber.dom)
+   }
+ }
+ 
+@@ -1103,7 +1125,7 @@
+   return (parent as Document).head
+ }
+ 
+-function getHostParent(fiber: Fiber): Node {
++export function getHostParent(fiber: Fiber): Node {
+   let p = fiber.parent
+   while (p) {
+     if (p.tag === FiberTag.Host) return p.dom!
+@@ -1127,35 +1149,32 @@
+   throw new Error()
+ }
+ 
+-function getAnchor(fiber: Fiber): Node | null {
+-  // Return the first DOM node that comes after this fiber within the host parent
+-  let f: Fiber | null = fiber.sibling
+-  while (f) {
+-    const d = firstDomNode(f)
+-    if (d) return d
+-    f = f.sibling
+-  }
+-  // Ascend
+-  let p = fiber.parent
+-  while (p && p.tag !== FiberTag.Host && p.tag !== FiberTag.Root && p.tag !== FiberTag.Portal) {
+-    if (p.sibling) {
+-      const d = firstDomNode(p.sibling)
++export function getAnchor(fiber: Fiber, domParent: Node): Node | null {
++  let p: Fiber | null = fiber
++  while (p) {
++    let sibling = p.sibling
++    while (sibling) {
++      const d = firstDomNode(sibling, domParent)
+       if (d) return d
++      sibling = sibling.sibling
+     }
+     p = p.parent
++    if (p?.tag === FiberTag.Host || p?.tag === FiberTag.Root || p?.tag === FiberTag.Portal) break
+   }
+   return null
+ }
+ 
+-function firstDomNode(fiber: Fiber): Node | null {
+-  if (fiber.tag === FiberTag.Host || fiber.tag === FiberTag.Text) return fiber.dom
++function firstDomNode(fiber: Fiber, domParent: Node): Node | null {
++  if (fiber.tag === FiberTag.Host || fiber.tag === FiberTag.Text) {
++    return fiber.dom?.parentNode === domParent ? fiber.dom : null
++  }
+   let c = fiber.child
+   while (c) {
+-    const d = firstDomNode(c)
++    const d = firstDomNode(c, domParent)
+     if (d) return d
+     c = c.sibling
+   }
+-  return null
++  return fiber.tag === FiberTag.Suspense && fiber.ms?.f ? firstDomNode(fiber.ms.f, domParent) : null
+ }
+ 
+ // ---------------------------------------------------------------------------
+@@ -1257,6 +1276,7 @@
+ }
+ 
+ function runEffect(fiber: Fiber, effect: Effect, root: FiberRoot): void {
++  if (fiber.um) return
+   try {
+     const cleanup = effect.c()
+     if (typeof cleanup == 'function') {
+--- a/react/shared-internals.ts
++++ b/react/shared-internals.ts
+@@ -1,4 +1,4 @@
+-import type { Fiber, Hook } from '../core'
++import type { Fiber } from '../core'
+ 
+ export interface Dispatcher {
+   useState<S>(initial: S | (() => S)): [S, (s: S | ((p: S) => S)) => void]
+@@ -30,7 +30,6 @@
+ interface SharedInternals {
+   H: Dispatcher | null
+   F: Fiber | null
+-  K: Hook | null
+   I: number
+ }
+ 
+@@ -52,7 +51,6 @@
+   (g[KEY] = {
+     H: null,
+     F: null,
+-    K: null,
+     I: 0,
+   })
+ 
+--- a/server/dispatcher.ts
++++ b/server/dispatcher.ts
+@@ -8,11 +8,14 @@
+ 
+ let frame: SSRFrame | null = null
+ 
+-export function beginSSR(identifierPrefix = ':R'): void {
++export function beginSSR(identifierPrefix = ':R') {
++  const previous = { frame, dispatcher: ReactSharedInternals.H }
+   frame = { idCounter: 0, identifierPrefix, contextStack: [] }
++  ReactSharedInternals.H = ssrDispatcher as any
++  return previous
+ }
+ 
+-export function endSSR(): void {
++export function endSSR(previous?: ReturnType<typeof beginSSR>): void {
+   // Restore any remaining pushed contexts (defensive)
+   if (frame) {
+     for (let i = frame.contextStack.length - 1; i >= 0; i--) {
+@@ -20,7 +23,10 @@
+       context._currentValue = prev
+     }
+   }
+-  frame = null
++  // Only synchronous renders restore their caller. A stream can finish
++  // after its caller has returned, so it must not reinstall that dispatcher.
++  ReactSharedInternals.H = previous?.dispatcher ?? null
++  frame = previous?.frame ?? null
+ }
+ 
+ export function pushContext(context: any, value: any): void {
+@@ -147,12 +153,4 @@
+     }
+     throw new Error('use() expected a Promise or Context')
+   },
+-}
+-
+-export function installSSRDispatcher(): void {
+-  ReactSharedInternals.H = ssrDispatcher as any
+-}
+-
+-export function uninstallSSRDispatcher(): void {
+-  ReactSharedInternals.H = null
+ }
+--- a/server/escape.ts
++++ b/server/escape.ts
+@@ -1,23 +1,25 @@
+ import { attributeName, STRING_BOOLEAN_ATTRS } from '../core/attributes'
+ 
+-const ATTR_MAP: Record<string, string> = {
+-  '&': '&amp;',
+-  '"': '&quot;',
+-  '<': '&lt;',
+-  '>': '&gt;',
++function escape(value: string, pattern: RegExp): string {
++  let out = ''
++  let start = 0
++  while (pattern.test(value)) {
++    const end = pattern.lastIndex
++    const char = value[end - 1]
++    out += value.slice(start, end - 1) + (
++      char === '&' ? '&amp;' : char === '<' ? '&lt;' : char === '>' ? '&gt;' : '&quot;'
++    )
++    start = end
++  }
++  return out + value.slice(start)
+ }
+-const TEXT_MAP: Record<string, string> = {
+-  '&': '&amp;',
+-  '<': '&lt;',
+-  '>': '&gt;',
+-}
+ 
+ export function escapeAttr(value: string): string {
+-  return value.replace(/[&"<>]/g, (c) => ATTR_MAP[c]!)
++  return /[&"<>]/.test(value) ? escape(value, /[&"<>]/g) : value
+ }
+ 
+ export function escapeText(value: string): string {
+-  return value.replace(/[&<>]/g, (c) => TEXT_MAP[c]!)
++  return /[&<>]/.test(value) ? escape(value, /[&<>]/g) : value
+ }
+ 
+ // Raw-text element body escaping: prevent any closing tag for the raw-text
+@@ -57,6 +59,7 @@
+   'autoplay',
+   'checked',
+   'controls',
++  'credentialless',
+   'default',
+   'defer',
+   'disabled',
+--- a/server/renderToString.ts
++++ b/server/renderToString.ts
+@@ -1,13 +1,12 @@
+ import type { ReactNode } from '../core'
+-import { beginSSR, endSSR, installSSRDispatcher, uninstallSSRDispatcher } from './dispatcher'
++import { beginSSR, endSSR } from './dispatcher'
+ import { walk } from './walk'
+ 
+ export function renderToString(
+   children: ReactNode,
+   options: { identifierPrefix?: string } = {},
+ ): string {
+-  installSSRDispatcher()
+-  beginSSR(options.identifierPrefix)
++  const previous = beginSSR(options.identifierPrefix)
+   let output = ''
+   let id = 0
+   try {
+@@ -18,8 +17,7 @@
+       nextBoundaryId: () => id++,
+     })
+   } finally {
+-    endSSR()
+-    uninstallSSRDispatcher()
++    endSSR(previous)
+   }
+   return output
+ }
+--- a/server/stream.ts
++++ b/server/stream.ts
+@@ -2,8 +2,6 @@
+ import {
+   beginSSR,
+   endSSR,
+-  installSSRDispatcher,
+-  uninstallSSRDispatcher,
+   applyContextSnapshot,
+ } from './dispatcher'
+ import { walk, type SuspendedBoundary } from './walk'
+@@ -45,7 +43,6 @@
+   options: StreamOptions,
+   state: OrchestratorState,
+ ): Promise<void> {
+-  installSSRDispatcher()
+   beginSSR(options.identifierPrefix)
+   const nonce = options.nonce
+ 
+@@ -127,7 +124,6 @@
+     throw err
+   } finally {
+     endSSR()
+-    uninstallSSRDispatcher()
+     state.closed = true
+   }
+ }
+@@ -259,6 +255,13 @@
+     errored: null,
+   }
+   const encoder = new TextEncoder()
++  let abortListener: (() => void) | undefined
++  const detachAbortListener = () => {
++    if (abortListener) {
++      options.signal?.removeEventListener('abort', abortListener)
++      abortListener = undefined
++    }
++  }
+ 
+   let allReadyResolve!: () => void
+   let allReadyReject!: (e: unknown) => void
+@@ -277,12 +280,14 @@
+ 
+       streamHtml(children, emit, options, state).then(
+         () => {
++          detachAbortListener()
+           try {
+             controller.close()
+           } catch {}
+           allReadyResolve()
+         },
+         (err) => {
++          detachAbortListener()
+           try {
+             controller.error(err)
+           } catch {}
+@@ -290,13 +295,21 @@
+         },
+       )
+ 
+-      options.signal?.addEventListener('abort', () => {
+-        state.closed = true
+-        try {
+-          controller.close()
+-        } catch {}
+-      })
++      if (options.signal) {
++        abortListener = () => {
++          detachAbortListener()
++          state.closed = true
++          try {
++            controller.close()
++          } catch {}
++        }
++        options.signal.addEventListener('abort', abortListener)
++      }
+     },
++    cancel() {
++      state.closed = true
++      detachAbortListener()
++    },
+   })
+ 
+   return Promise.resolve(Object.assign(stream, { allReady }))
+@@ -331,6 +344,7 @@
+   const buffers: string[] = []
+   let dest: PipeableWritable | null = null
+   let shellReady = false
++  let shellFailed = false
+   let finished = false
+   let aborted = false
+ 
+@@ -355,6 +369,7 @@
+     },
+     (err) => {
+       if (!shellReady) {
++        shellFailed = true
+         options.onShellError?.(err)
+       } else {
+         options.onError?.(err)
+@@ -367,7 +382,7 @@
+   // streamHtml above runs the shell synchronously before the first await in drain(),
+   // so we can schedule onShellReady right after the first microtask.
+   queueMicrotask(() => {
+-    if (aborted || finished) return
++    if (aborted || finished || shellFailed) return
+     shellReady = true
+     options.onShellReady?.()
+   })
+--- a/vite/index.ts
++++ b/vite/index.ts
+@@ -390,9 +390,10 @@
+       if (importer && /[\\/]features[\\/]index\.[jt]sx?$/.test(importer)) {
+         const m = id.match(/^\.\/([a-z-]+)$/)
+         if (m) {
+-          const name = m[1] as keyof ResolvedFeatures
++          const dir = m[1]!
++          const name = (dir === 'forward-ref' ? 'forwardRef' : dir === 'class' ? 'classComponents' : dir) as keyof ResolvedFeatures
+           if (name in features && !features[name]) {
+-            const r = await this.resolve(`./${name}/stub`, importer, {
++            const r = await this.resolve(`./${dir}/stub`, importer, {
+               ...opts,
+               skipSelf: true,
+             })
+@@ -401,13 +402,13 @@
+         }
+       }
+ 
+-      // Hydration swap: hydration isn't self-registering, so it's imported
+-      // from reconcile.ts, root.ts, and the Suspense/Lazy feature modules.
+-      // Any specifier ending in `/hydration` that resolves to our feature
+-      // module gets redirected to the stub when the flag is off.
+-      if (!features.hydration && importer && /[\\/]hydration$/.test(id)) {
++      // Peer imports must use the same feature selection as the registration
++      // entrypoint, or an enabled feature can bring a disabled one back in.
++      const peer = id.match(/[\\/](context|hydration)$/)
++      if (importer && peer && !features[peer[1] as 'context' | 'hydration']) {
+         const r = await this.resolve(id, importer, { ...opts, skipSelf: true })
+-        if (r && /features[\\/]hydration[\\/]index\.(ts|js)$/.test(r.id)) {
++        const resolvedFeature = r?.id.match(/features[\\/](context|hydration)[\\/]index\.(ts|js)$/)
++        if (resolvedFeature?.[1] === peer[1]) {
+           return r.id.replace(/index\.(ts|js)$/, 'stub.$1')
+         }
+       }

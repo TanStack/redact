@@ -1,6 +1,8 @@
-# React 19 API Surface — `@tanstack/redact`
+# Historical React 19 API inventory
 
-API-complete drop-in replacement for `react` + `react-dom` targeting TanStack Start apps (tanstack.com). Shipped as `@tanstack/redact@0.0.1`. Client total: **12.24 KB gzip** (full preset) / **10.33 KB gzip** (nano preset, with feature flags off).
+This inventory describes the early `@tanstack/redact@0.0.1` implementation. Some behavior, sizes and support labels below are outdated. See the [React 19.3 audit](./REACT_19_3_AUDIT.md) for the September 2026 findings, confirmed gaps and intentional runtime differences. Do not use this historical table as a current parity guarantee.
+
+Resource APIs are no longer stubs in the current experiment. The [parity expansion](../benchmarks/PARITY_EXPANSION.md) records current resource, reducer, Suspense, error, and security coverage, plus its measured costs.
 
 ## Legend
 

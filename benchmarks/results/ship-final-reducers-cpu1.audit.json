@@ -1,0 +1,136 @@
+{
+  "result": "/Users/tannerlinsley/GitHub/redact/benchmarks/results/ship-final-reducers-cpu1.json",
+  "resultSHA256": "bec89617389d5f94dc90798e8b89487c49dc32c6d52a603ab97255c02f9ab799",
+  "verified": true,
+  "rebuilt": true,
+  "variants": [
+    "react",
+    "react-control",
+    "current",
+    "expanded",
+    "default-package"
+  ],
+  "sourceOverrides": {},
+  "blocks": 5,
+  "rounds": 5,
+  "workloads": 3,
+  "totals": {
+    "throughputSamples": 375,
+    "throughputChecks": 3750,
+    "completedOperations": 120972000,
+    "interactionSamples": 0,
+    "interactionChecks": 0,
+    "observedClickEntries": 0,
+    "memoryCycles": 0
+  },
+  "reconstructed": {
+    "current": {
+      "tree": "src",
+      "sourceSHA256": "8b5494985547768942ff775fc027afa6e1a131b014598f312730491dd07676fc",
+      "files": 83,
+      "patchSHA256": "a9a9f3db9633635743e75a9d562b6433527a2bdddc180212963ee8fbd6c85bce",
+      "sourcePackageSHA256": "f445c60555e60ebdf03e2d9f0220e65bd71a7095084bdd7979e6678f22c9ccca",
+      "reconstructedPackageSHA256": "52ed9f994784c6d3cf505322748a6e9b27a7b2cca2c54df037992bfb1218a353",
+      "packageByteIdentical": false
+    },
+    "expanded": {
+      "tree": "src",
+      "sourceSHA256": "3a6a684608a0a1c05bb7038200341beb3355374cf23a7bea3c9f701314d31ba8",
+      "files": 83,
+      "patchSHA256": "5484157173fc71e19e7d21713ab33337fab0610c049327c3e3d22515071a674b",
+      "sourcePackageSHA256": "52ed9f994784c6d3cf505322748a6e9b27a7b2cca2c54df037992bfb1218a353",
+      "reconstructedPackageSHA256": "52ed9f994784c6d3cf505322748a6e9b27a7b2cca2c54df037992bfb1218a353",
+      "packageByteIdentical": true
+    },
+    "default-package": {
+      "tree": "dist",
+      "sourceSHA256": "90dfba272930321461854b2ae943b594ee5ea1bc16e5c3566202023936743cac",
+      "files": 249,
+      "patchSHA256": "c92afbb94c2d046a6a0423a474719b512ff857d0ac5c8cf39f8dc43aaca6ae35",
+      "sourcePackageSHA256": "f445c60555e60ebdf03e2d9f0220e65bd71a7095084bdd7979e6678f22c9ccca",
+      "reconstructedPackageSHA256": "52ed9f994784c6d3cf505322748a6e9b27a7b2cca2c54df037992bfb1218a353",
+      "packageByteIdentical": false
+    }
+  },
+  "comparisons": {
+    "reducer-suspense-retries": {
+      "react": {
+        "pairedTimeChangePercent": 125.19841227228979,
+        "blockBootstrap95CI": [
+          120.65009548287988,
+          142.116182184698
+        ],
+        "independentBlocks": 5
+      },
+      "expanded": {
+        "pairedTimeChangePercent": -8.345978841608325,
+        "blockBootstrap95CI": [
+          -8.864954378471534,
+          -7.545731777263221
+        ],
+        "independentBlocks": 5
+      },
+      "default-package": {
+        "pairedTimeChangePercent": 0.09017134703639407,
+        "blockBootstrap95CI": [
+          -0.770547925107512,
+          1.1522634529773201
+        ],
+        "independentBlocks": 5
+      }
+    },
+    "reducer-batches": {
+      "react": {
+        "pairedTimeChangePercent": 8.967391333836773,
+        "blockBootstrap95CI": [
+          5.921052631578938,
+          11.366906440515322
+        ],
+        "independentBlocks": 5
+      },
+      "expanded": {
+        "pairedTimeChangePercent": -7.450523839271805,
+        "blockBootstrap95CI": [
+          -8.204518399764604,
+          -6.443914056361388
+        ],
+        "independentBlocks": 5
+      },
+      "default-package": {
+        "pairedTimeChangePercent": 1.312336115679713,
+        "blockBootstrap95CI": [
+          0.1275510508574884,
+          2.216427545524846
+        ],
+        "independentBlocks": 5
+      }
+    },
+    "reducer-suspense-updates": {
+      "react": {
+        "pairedTimeChangePercent": 50.11820326738656,
+        "blockBootstrap95CI": [
+          46.76089524008526,
+          67.02002368827591
+        ],
+        "independentBlocks": 5
+      },
+      "expanded": {
+        "pairedTimeChangePercent": -7.590759075907593,
+        "blockBootstrap95CI": [
+          -12.549537650589194,
+          -5.84707642706922
+        ],
+        "independentBlocks": 5
+      },
+      "default-package": {
+        "pairedTimeChangePercent": 0.8528784991426841,
+        "blockBootstrap95CI": [
+          -0.4961020889903911,
+          2.0667726747435333
+        ],
+        "independentBlocks": 5
+      }
+    }
+  }
+}
+

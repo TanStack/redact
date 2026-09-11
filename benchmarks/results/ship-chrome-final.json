@@ -1,0 +1,848 @@
+{
+  "schemaVersion": 1,
+  "completedUtc": "2026-09-11T02:18:33.474Z",
+  "purpose": "Final frozen renderer browser correctness, not performance measurement",
+  "postGateTypeOnlyChange": {
+    "file": "packages/redact/src/react/element.ts",
+    "change": "createElement and cloneElement accept an omitted config parameter in their TypeScript signatures. Their existing runtime already accepts undefined.",
+    "emittedJavaScriptChanged": false,
+    "browserRerun": false,
+    "coverage": "Separate unit, type, and NodeNext packaging checks are owned by the main task, not counted in this browser ledger.",
+    "capturedUtc": "2026-09-11T02:21:37.762Z",
+    "fullSourceSha256": "722c4bc9cc4a6ef4eb44f1c48ff7207847b3c1cf9075590a863ab77299be75d5",
+    "sourceWithoutViteSha256": "789165bb09d8d88b2db084d2e273448ad893d2834bfcf34487f0b6d3bafaa535",
+    "elementSha256": "2ab139d4d9d099a187179ec1a422c1a307f555690fc0a546054e352f5f45953d"
+  },
+  "supersedes": "ship-chrome-parity.json",
+  "environment": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "node": "v24.15.0",
+    "chrome": "152.0.7977.83",
+    "headless": true,
+    "vitest": "2.1.9",
+    "playwright": "1.59.1",
+    "react": "19.3.0",
+    "reactDOM": "19.3.0"
+  },
+  "source": {
+    "head": "2e3c75c483365d26ae326ec0fdae96fa5c690451",
+    "includesUncommittedChanges": true,
+    "root": "packages/redact/src",
+    "preparedFullSourceSha256": "24169ae569627f0bc1b2a458c85b7f4ceb8e7b69aac54f21c485709df9c6db88",
+    "preparedUtc": "2026-09-11T02:12:53.530Z",
+    "fullSourceFileCount": 83,
+    "completedFullSourceSha256": "04960e78cca832b325f98a7c912db80820b0cabfaf58a5248832b5367983177a",
+    "excludedFromRendererHash": [
+      "vite/"
+    ],
+    "rendererFileCount": 82,
+    "rendererSha256": "7ea8a6e3ccc01cd8495d8d62f92ed538d7b427dd5196215039b84869937a6dd5",
+    "rendererHashConfirmedEqualAt": [
+      "2026-09-11T02:15:52.952Z",
+      "2026-09-11T02:18:33.474Z"
+    ],
+    "concurrentAuthorizedPackagingEdit": "packages/redact/src/vite/index.ts",
+    "completedViteSha256": "f44eac90e74409931405434fabffe831fe49015061a5f90bda516a0beb2a016f",
+    "hashMethod": "Sort all included file paths. Hash relative path, NUL, file bytes, NUL for each file, using SHA-256.",
+    "scope": "Runtime includes state no-op marker, Suspense retry changes, Activity capture and ShadowRoot resource ownership. Browser fixtures import source directly. Vite packaging edits and production import smoke tests are separate evidence."
+  },
+  "execution": {
+    "browserCommandsSerialized": true,
+    "browserSlotExclusiveAcrossAgents": true,
+    "otherUnitBuildSizeCommandsAllowed": true,
+    "rendererChangesDuringThisGate": false,
+    "finalPassed": 1266,
+    "finalFailed": 0,
+    "finalSkipped": 7,
+    "redactPassed": 637,
+    "reactPassed": 629,
+    "countsIncludeModeRepeatsAndOverlappingSuites": true,
+    "newExclusionsAdded": false
+  },
+  "runs": [
+    {
+      "group": "core",
+      "variant": "redact",
+      "passed": 322,
+      "failed": 0,
+      "skipped": 3,
+      "files": [
+        {
+          "file": "browser-api.test.tsx",
+          "passed": 20,
+          "failed": 0,
+          "skipped": [
+            "browser-only rendering reports a missing boundary through normal pipeable shell error callbacks",
+            "browser-only rendering aborts pending pipeable boundaries and reports completion",
+            "browser-only rendering terminates a late pipeable destination when a browser bailout callback fails after the shell"
+          ]
+        },
+        {
+          "file": "new-api-sync.test.tsx",
+          "passed": 7,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "fragment-refs.test.tsx",
+          "passed": 25,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "hook-staging-parity.test.tsx",
+          "passed": 3,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "hook-staging-investigation.test.tsx",
+          "passed": 4,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "reducer-queue.test.tsx",
+          "passed": 21,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "reducer-benchmark.test.ts",
+          "passed": 14,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "suspense-layout.test.tsx",
+          "passed": 12,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "suspense-retry-work.test.tsx",
+          "passed": 10,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "activity-suspense-capture.test.tsx",
+          "passed": 4,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "state-ref-bailout.test.tsx",
+          "passed": 13,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "error-info-parity.test.tsx",
+          "passed": 32,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "element-iterable-precedence.test.tsx",
+          "passed": 2,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "upstream-parity.test.tsx",
+          "passed": 4,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "context-suspense-updates.test.tsx",
+          "passed": 15,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "control-updates.test.tsx",
+          "passed": 56,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "number-input.test.tsx",
+          "passed": 23,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "hydration-form-controls.test.tsx",
+          "passed": 34,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "layout-ref-order.test.tsx",
+          "passed": 10,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "activity-hydration.test.tsx",
+          "passed": 5,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "reducer-native-sync.test.tsx",
+          "passed": 1,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "reducer-layout-sync.test.tsx",
+          "passed": 2,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "reducer-layout.test.tsx",
+          "passed": 5,
+          "failed": 0,
+          "skipped": []
+        }
+      ],
+      "command": "pnpm exec vitest run --config scripts/parity-final-core-browser.config.mjs --reporter=default --reporter=json --outputFile=/tmp/redact-ship-final-core-redact.json",
+      "exitCode": 0
+    },
+    {
+      "group": "core",
+      "variant": "react",
+      "passed": 320,
+      "failed": 0,
+      "skipped": 4,
+      "files": [
+        {
+          "file": "browser-api.test.tsx",
+          "passed": 20,
+          "failed": 0,
+          "skipped": [
+            "browser-only rendering reports a missing boundary through normal pipeable shell error callbacks",
+            "browser-only rendering aborts pending pipeable boundaries and reports completion",
+            "browser-only rendering terminates a late pipeable destination when a browser bailout callback fails after the shell"
+          ]
+        },
+        {
+          "file": "new-api-sync.test.tsx",
+          "passed": 7,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "fragment-refs.test.tsx",
+          "passed": 25,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "hook-staging-parity.test.tsx",
+          "passed": 3,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "hook-staging-investigation.test.tsx",
+          "passed": 4,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "reducer-queue.test.tsx",
+          "passed": 21,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "reducer-benchmark.test.ts",
+          "passed": 14,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "suspense-layout.test.tsx",
+          "passed": 12,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "suspense-retry-work.test.tsx",
+          "passed": 10,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "activity-suspense-capture.test.tsx",
+          "passed": 4,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "state-ref-bailout.test.tsx",
+          "passed": 13,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "error-info-parity.test.tsx",
+          "passed": 32,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "element-iterable-precedence.test.tsx",
+          "passed": 2,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "upstream-parity.test.tsx",
+          "passed": 4,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "context-suspense-updates.test.tsx",
+          "passed": 15,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "control-updates.test.tsx",
+          "passed": 56,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "number-input.test.tsx",
+          "passed": 23,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "hydration-form-controls.test.tsx",
+          "passed": 34,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "layout-ref-order.test.tsx",
+          "passed": 10,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "activity-hydration.test.tsx",
+          "passed": 4,
+          "failed": 0,
+          "skipped": [
+            "hydrates Activity hidden server markup as visible on the client"
+          ]
+        },
+        {
+          "file": "reducer-layout-sync.test.tsx",
+          "passed": 2,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "reducer-layout.test.tsx",
+          "passed": 5,
+          "failed": 0,
+          "skipped": []
+        }
+      ],
+      "command": "REACT_REFERENCE=1 pnpm exec vitest run --config scripts/parity-final-core-browser.config.mjs --reporter=default --reporter=json --outputFile=/tmp/redact-ship-final-core-react.json",
+      "exitCode": 0
+    },
+    {
+      "group": "resources",
+      "variant": "redact",
+      "passed": 75,
+      "failed": 0,
+      "skipped": 0,
+      "files": [
+        {
+          "file": "resource-hints.test.tsx",
+          "passed": 29,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "resource-hints-render.test.tsx",
+          "passed": 19,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "resource-hints-browser.test.tsx",
+          "passed": 10,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "resource-ownership.test.tsx",
+          "passed": 2,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "shadow-resource-ownership.test.tsx",
+          "passed": 15,
+          "failed": 0,
+          "skipped": []
+        }
+      ],
+      "command": "pnpm exec vitest run --config scripts/parity-final-resources-browser.config.mjs --reporter=default --reporter=json --outputFile=/tmp/redact-ship-final-resources-redact.json",
+      "exitCode": 0
+    },
+    {
+      "group": "resources",
+      "variant": "react",
+      "passed": 75,
+      "failed": 0,
+      "skipped": 0,
+      "files": [
+        {
+          "file": "resource-hints.test.tsx",
+          "passed": 29,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "resource-hints-render.test.tsx",
+          "passed": 19,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "resource-hints-browser.test.tsx",
+          "passed": 10,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "resource-ownership.test.tsx",
+          "passed": 2,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "shadow-resource-ownership.test.tsx",
+          "passed": 15,
+          "failed": 0,
+          "skipped": []
+        }
+      ],
+      "command": "REACT_REFERENCE=1 pnpm exec vitest run --config scripts/parity-final-resources-browser.config.mjs --reporter=default --reporter=json --outputFile=/tmp/redact-ship-final-resources-react.json",
+      "exitCode": 0
+    },
+    {
+      "group": "retained",
+      "variant": "redact",
+      "passed": 61,
+      "failed": 0,
+      "skipped": 0,
+      "files": [
+        {
+          "file": "activity.test.tsx",
+          "passed": 25,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "suspense-layout.test.tsx",
+          "passed": 12,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "retained-resource-class.test.tsx",
+          "passed": 14,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "layout-ref-order.test.tsx",
+          "passed": 10,
+          "failed": 0,
+          "skipped": []
+        }
+      ],
+      "command": "pnpm exec vitest run --config scripts/parity-final-retained-browser.config.mjs --reporter=default --reporter=json --outputFile=/tmp/redact-ship-final-retained-redact.json",
+      "exitCode": 0
+    },
+    {
+      "group": "retained",
+      "variant": "react",
+      "passed": 61,
+      "failed": 0,
+      "skipped": 0,
+      "files": [
+        {
+          "file": "activity.test.tsx",
+          "passed": 25,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "suspense-layout.test.tsx",
+          "passed": 12,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "retained-resource-class.test.tsx",
+          "passed": 14,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "layout-ref-order.test.tsx",
+          "passed": 10,
+          "failed": 0,
+          "skipped": []
+        }
+      ],
+      "command": "REACT_REFERENCE=1 pnpm exec vitest run --config scripts/parity-final-retained-browser.config.mjs --reporter=default --reporter=json --outputFile=/tmp/redact-ship-final-retained-react.json",
+      "exitCode": 0
+    },
+    {
+      "group": "native",
+      "variant": "redact",
+      "passed": 80,
+      "failed": 0,
+      "skipped": 0,
+      "files": [
+        {
+          "file": "view-transition.test.tsx",
+          "passed": 34,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "view-transition-phases.test.tsx",
+          "passed": 9,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "view-transition-resources.test.tsx",
+          "passed": 20,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "native-transition-rejections.test.tsx",
+          "passed": 14,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "view-transition-sync.test.tsx",
+          "passed": 3,
+          "failed": 0,
+          "skipped": []
+        }
+      ],
+      "command": "pnpm exec vitest run --config scripts/parity-final-native-browser.config.mjs --reporter=default --reporter=json --outputFile=/tmp/redact-ship-final-native-redact.json",
+      "exitCode": 0
+    },
+    {
+      "group": "native",
+      "variant": "react",
+      "passed": 77,
+      "failed": 0,
+      "skipped": 0,
+      "files": [
+        {
+          "file": "view-transition.test.tsx",
+          "passed": 34,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "view-transition-phases.test.tsx",
+          "passed": 9,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "view-transition-resources.test.tsx",
+          "passed": 20,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "native-transition-rejections.test.tsx",
+          "passed": 14,
+          "failed": 0,
+          "skipped": []
+        }
+      ],
+      "command": "REACT_REFERENCE=1 pnpm exec vitest run --config scripts/parity-final-native-browser.config.mjs --reporter=default --reporter=json --outputFile=/tmp/redact-ship-final-native-react.json",
+      "exitCode": 0
+    },
+    {
+      "group": "native-reduced",
+      "variant": "redact",
+      "passed": 80,
+      "failed": 0,
+      "skipped": 0,
+      "files": [
+        {
+          "file": "view-transition.test.tsx",
+          "passed": 34,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "view-transition-phases.test.tsx",
+          "passed": 9,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "view-transition-resources.test.tsx",
+          "passed": 20,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "native-transition-rejections.test.tsx",
+          "passed": 14,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "view-transition-sync.test.tsx",
+          "passed": 3,
+          "failed": 0,
+          "skipped": []
+        }
+      ],
+      "command": "REDUCED_MOTION=1 pnpm exec vitest run --config scripts/parity-final-native-browser.config.mjs --reporter=default --reporter=json --outputFile=/tmp/redact-ship-final-native-reduced-redact.json",
+      "exitCode": 0
+    },
+    {
+      "group": "native-reduced",
+      "variant": "react",
+      "passed": 77,
+      "failed": 0,
+      "skipped": 0,
+      "files": [
+        {
+          "file": "view-transition.test.tsx",
+          "passed": 34,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "view-transition-phases.test.tsx",
+          "passed": 9,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "view-transition-resources.test.tsx",
+          "passed": 20,
+          "failed": 0,
+          "skipped": []
+        },
+        {
+          "file": "native-transition-rejections.test.tsx",
+          "passed": 14,
+          "failed": 0,
+          "skipped": []
+        }
+      ],
+      "command": "REACT_REFERENCE=1 REDUCED_MOTION=1 pnpm exec vitest run --config scripts/parity-final-native-browser.config.mjs --reporter=default --reporter=json --outputFile=/tmp/redact-ship-final-native-reduced-react.json",
+      "exitCode": 0
+    },
+    {
+      "group": "streamed-resources",
+      "command": "node scripts/verify-streamed-resources.mjs",
+      "mode": "production",
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0,
+      "exitCode": 0,
+      "variants": {
+        "redact": 3,
+        "react": 3
+      },
+      "cases": [
+        "load",
+        "error",
+        "unmatched"
+      ]
+    },
+    {
+      "group": "security",
+      "command": "node scripts/verify-security-parity.mjs",
+      "mode": "development",
+      "passed": 16,
+      "failed": 0,
+      "skipped": 0,
+      "exitCode": 0,
+      "variants": {
+        "redact": 8,
+        "react": 8
+      },
+      "cases": [
+        "trusted-client",
+        "trusted-hydration",
+        "trusted-table-hydration",
+        "trusted-svg-hydration",
+        "trusted-iframe-client",
+        "trusted-iframe-hydration",
+        "nonce-hydration",
+        "nonce-head-hydration"
+      ]
+    },
+    {
+      "group": "security",
+      "command": "MODE=production node scripts/verify-security-parity.mjs",
+      "mode": "production",
+      "passed": 16,
+      "failed": 0,
+      "skipped": 0,
+      "exitCode": 0,
+      "variants": {
+        "redact": 8,
+        "react": 8
+      }
+    }
+  ],
+  "exclusions": {
+    "bothRenderers": [
+      "browser-only rendering reports a missing boundary through normal pipeable shell error callbacks",
+      "browser-only rendering aborts pending pipeable boundaries and reports completion",
+      "browser-only rendering terminates a late pipeable destination when a browser bailout callback fails after the shell"
+    ],
+    "bothReason": "Node-only pipeable stream cases are not browser tests.",
+    "reactOnly": [
+      "hydrates Activity hidden server markup as visible on the client"
+    ],
+    "reactReason": "Predeclared exclusion for the known pinned-reference failure. It remains uncovered in React, not a parity pass.",
+    "redactOnlyContractFiles": {
+      "reducer-native-sync.test.tsx": 1,
+      "view-transition-sync.test.tsx": 3
+    },
+    "redactOnlyContractReason": "These tests assert Redact's intentional synchronous behavior and are not included in shared React parity."
+  },
+  "fixtureCorrections": [
+    {
+      "test": "context updates through memo and Suspense reveals preserved primary siblings when context changes before the pending promise settles",
+      "before": [
+        {
+          "command": "pnpm exec vitest run --config scripts/parity-final-core-browser.config.mjs --reporter=default --reporter=json --outputFile=/tmp/redact-ship-final-core-redact.json",
+          "variant": "redact",
+          "passed": 321,
+          "failed": 1,
+          "skipped": 3
+        },
+        {
+          "command": "REACT_REFERENCE=1 pnpm exec vitest run --config scripts/parity-final-core-browser.config.mjs -t 'reveals preserved primary siblings when context changes before the pending promise settles' --reporter=default --reporter=json --outputFile=/tmp/redact-ship-final-scroll-react-before.json",
+          "variant": "react",
+          "passed": 0,
+          "failed": 1,
+          "skipped": 323
+        }
+      ],
+      "cause": "Both renderers returned scrollTop 0, not 42, because the empty div had no scrollable content.",
+      "correction": "Give the fixture a 50px viewport, overflow:auto, and a 200px child. Assert scrollTop is 42 before suspending, then retain all original identity, visibility, context and scroll assertions."
+    },
+    {
+      "test": "browser-only rendering retains client Suspense fallback while browser-only content waits for data",
+      "before": [
+        {
+          "command": "REACT_REFERENCE=1 pnpm exec vitest run --config scripts/parity-final-core-browser.config.mjs --reporter=default --reporter=json --outputFile=/tmp/redact-ship-final-core-react.json",
+          "variant": "react",
+          "passed": 319,
+          "failed": 1,
+          "skipped": 4
+        }
+      ],
+      "cause": "The test assumed React completed a resolved Suspense retry within two 20ms ticks. Its fallback was still present.",
+      "correction": "Use bounded vi.waitFor around the same loaded-content and removed-fallback assertions. Preserve initial fallback, effect count, and no-recoverable-error assertions."
+    }
+  ],
+  "inputSha256": {
+    "benchmarks/reducer-workloads.ts": "23ccc85dd1864ae1f9541623e08107594a64bf7094c26923c3edfd4391a24b06",
+    "scripts/activity-browser.config.mjs": "908b4075a1424a6c7ebbf2a77b1898f4526d4d61a0112e5859f0d81b36d25078",
+    "scripts/activity.config.mjs": "7b3090b9bb3f3a4b827d0b3f69197b6d90ebbc1b847f55f7de70fbe2c1017e10",
+    "scripts/browser-api-browser.config.mjs": "98076b54532872e9c1dc4fa09a68cee95b65ee10c40a9a4a12eccd84526770f5",
+    "scripts/browser-api.config.mjs": "94fe0076cbd506835d3eea17415c5aaa4291937208c4996ebb278afc43b3e052",
+    "scripts/fixtures/security-parity.tsx": "8e07b9f5fbb6f06286ad9cade3f59bc14a2ce549768b33d5034a70ed84cc1add",
+    "scripts/fixtures/streamed-resources.tsx": "d852f86a25ddf655279504136544acd17204560145f6bc8b02af1e0e13d87d7d",
+    "scripts/new-api-sync-browser.config.mjs": "8aedbef2f9a98ee1b9fd3fa395747e2d9652bf010ba404eb4c9f76c0d49a608e",
+    "scripts/parity-final-core-browser.config.mjs": "c82101b295751f132bc958e9f6d3b2d7e3f9aecde4e847c773499855b7af3b23",
+    "scripts/parity-final-native-browser.config.mjs": "4cc6bde789b31a34231b11111975d8d63f4639b906a59abcb37cc70faf858cda",
+    "scripts/parity-final-resources-browser.config.mjs": "2842226d35637afabcc6f82a05b76c29d921cd57c5f80a7bf339d62d9df12052",
+    "scripts/parity-final-retained-browser.config.mjs": "cef802b1ac05a1dda0be3f08052833dafd2e3463daded229f967f3b3ac1b3783",
+    "scripts/resource-hints-browser.config.mjs": "a24fb60fabad86378687aa5e758de2c8a514c02c3b181e20580685306deb1bdc",
+    "scripts/resource-hints.config.mjs": "1735a96e44d2ef41a9f296a0e65584bc47ca69191489a66bf8a4289258c726f8",
+    "scripts/upstream-gaps.config.mjs": "b9c441b3336880f8a3d76da9e1e8b7bd03b44c97e41e2fd365b14aac1b6ff69b",
+    "scripts/verify-security-parity.mjs": "0210109a82d537632cc25314c1265fcc0d8b969f550004c3aa0536b4d1f1ae9e",
+    "scripts/verify-streamed-resources.mjs": "2d671bf8750398052595b6cfd15b107a15319960d5d479e468c86f6ef350905e",
+    "scripts/view-transition-browser.config.mjs": "90ef4b866b5ffd8b819c574edacc3ae0367a19d3056c02a6d478c007733c73e8",
+    "scripts/view-transition-resources-browser.config.mjs": "be904b65a90ff7e3b2fd394d4aaa84941786d84b0761fc0fefc8ac17004b3114",
+    "tests/activity-hydration.test.tsx": "dd0830458cbe691857619618fe46457346d76b01115258580a390f5f185dee76",
+    "tests/activity-suspense-capture.test.tsx": "682214137e249474f1eb383e4691a3b83906855b15412478f5cb592740fe78dc",
+    "tests/activity.test.tsx": "50b160d108104149f8c6a0df46a886c9a9e070fdaf6b64451cd9df4d5f8bdb86",
+    "tests/browser-api.test.tsx": "206656367054a54405173a2a0f566eee231d4f083f872b6d57f890556811ebd5",
+    "tests/context-suspense-updates.test.tsx": "fee4f4e4984789ca44a93a3e765d043551533c21b352ed36501dfb9fc558684e",
+    "tests/control-updates.test.tsx": "1f0b4d3b291150acaf857a19205283953047f591cc7d6d49f247741f83f17c40",
+    "tests/element-iterable-precedence.test.tsx": "6fa3947043fec8b0e43b05f48bd88229b6c39524935270cc861014be1382056c",
+    "tests/error-info-parity.test.tsx": "9001f799afb4a0e60aa0512ac2370d7d1c53db7b0a86f53c1ce5badf87e1fd36",
+    "tests/fragment-refs.test.tsx": "38ba58fa2d2fe7b9bf45c9d967e45a4f315ec307eaa334060d5f32618f15a768",
+    "tests/hook-staging-investigation.test.tsx": "43952ddf012abd8681e6e5158dfb254dba30719d77faca61dc69880b3310c796",
+    "tests/hook-staging-parity.test.tsx": "cc4ec6bd69af9c90b52b4dd7dac8eb85847b9bec53bcf392955942141eb3dc8d",
+    "tests/hydration-form-controls.test.tsx": "ab821065d0f74324c88a0729c55692243ddb55308eb16642205948738130ff10",
+    "tests/layout-ref-order.test.tsx": "d76ddb2756f7f5c23fd0cfe522a17189ea7468f32e4927fa022a36a621109c52",
+    "tests/native-transition-rejections.test.tsx": "213b079faaa12fcd2af121d2303a84e549136b6a928f68e076874a8581dd7f34",
+    "tests/new-api-sync.test.tsx": "98081471a5d9b8032fcbf63b55eac41924dbc6486d3102da9f93bed0a920d7ee",
+    "tests/number-input.test.tsx": "0d30c62df9e0c852ea6f8ceb47b99c1ddacbde1029d937dda2122855e8bdf24f",
+    "tests/reducer-benchmark.test.ts": "5842c51beb2d4c233086c5d4ff753773745b0a6744fd9df64a57a6b1c91cadf7",
+    "tests/reducer-layout-sync.test.tsx": "8bc957edb624437dd5d1b0c1feec699796b5dd6b6f1af36b6e0a350f48884c39",
+    "tests/reducer-layout.test.tsx": "f8b7e272613fce3117f6d68e90daaa2685a4ac90ec610e10ff4597c8e58f9838",
+    "tests/reducer-native-sync.test.tsx": "2ffc648b92c3e7728f6f3677f89fc2e25fed62ec84782c7662af26ec00468fb2",
+    "tests/reducer-queue.test.tsx": "9c9113a853157c07d658174164d047ffecf7b226a4775a8d0279a83bb6266b68",
+    "tests/resource-hints-browser.test.tsx": "343d960d15a8609495066146f2ca992c7a56c7751ee8e04fbbbcfb47dd2d312b",
+    "tests/resource-hints-render.test.tsx": "31952d1078651f4d6e0bafb9e10e5aab83a99b84352d75769be6afc4c766e863",
+    "tests/resource-hints.test.tsx": "2ac91545592ce64b9ec1367f100175296b5154ce7e49ca705e3dc3aca2254d42",
+    "tests/resource-ownership.test.tsx": "0aaf00b4c8fa5c5a3689a7991390a53fcd0bde03944bb0e7c988aeba67272175",
+    "tests/retained-resource-class.test.tsx": "ac300133a71c6a71617a091232520a0171c4bcf24f0a5149658f579f1194f0fe",
+    "tests/shadow-resource-ownership.test.tsx": "cf1782cc6455a2530440cbe4197051e82ecb523bed4affb4b021fc1cd00839ba",
+    "tests/state-ref-bailout.test.tsx": "3effe9599e03d6657581c3b28d3f9eac14040c459dd526e96ef23c72f48532fe",
+    "tests/suspense-layout.test.tsx": "b0bd148b8b42782e38b0f21880e409791528d4a4c00fad2c48210b40d887c757",
+    "tests/suspense-retry-work.test.tsx": "bee79d079b2a23a4e11084d97b3e13cd652f32ba4b49a0bdf1d10b7093290ce8",
+    "tests/upstream-parity.test.tsx": "4f0170f14b7f8ae3bfa59793707137a6f1c54fbc956e337ddf7579c2ca656742",
+    "tests/view-transition-phases.test.tsx": "02128e31197e6034d16d2a00309a311d9f955d35610cafc38e5f1ce8fd5229ad",
+    "tests/view-transition-resources.test.tsx": "153826d3a8a83210c4b72e0e69fb9f3b6524c0667ca00e002ecdee962f6146e3",
+    "tests/view-transition-sync.test.tsx": "dec17ffbe8b802f3dad25f54169e110c43bec11afb5d7b8ee889ab0d80b26c34",
+    "tests/view-transition.test.tsx": "4008f9d1dc387d7013d6cde710dcf08ac7b1a907eb7bae6baa1aca891dfea7ca"
+  },
+  "limitations": [
+    "This ledger supersedes pre-fix browser evidence for the recorded renderer snapshot only. Later source changes need affected-suite reruns.",
+    "Passing executions include repeated motion modes and overlapping core/retained suites, not 1266 unique behaviors.",
+    "Seven predeclared exclusions remain explicit. The React Activity hydration exclusion is not a passing comparison.",
+    "Headless Chrome 152 on macOS arm64 only. No Safari, Firefox, physical mobile, or real-site coverage is claimed here.",
+    "Vitest runs development runtime branches. Streamed resources and the second security run use production bundles; native production transitions were not separately tested here.",
+    "The ShadowRoot CSS cases exercise real computed styles and real data-URL stylesheets. Other structural resource tests may supply explicit load events to isolate ownership.",
+    "Native resource cases mix real controlled image/font requests with injected decode and rejection conditions, not real-world network performance.",
+    "DNS/preconnect cases inspect emitted hints and deduplication, not whether Chrome opens connections.",
+    "Trusted Types checks cover TrustedHTML, iframe srcDoc, and nonce hydration, not every CSP sink or TrustedScriptURL resource assignment.",
+    "Animation names, callbacks, CSS state, and native handles are asserted, not perceptual animation quality.",
+    "No concurrent scheduling parity, native Node package import compatibility, size result, timing result, or whole-application readiness claim follows from this gate."
+  ]
+}

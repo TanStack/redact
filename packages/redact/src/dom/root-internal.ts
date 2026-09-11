@@ -1,10 +1,10 @@
-import { FiberTag, createFiber, type Fiber, type FiberRoot } from '../core'
+import { FiberTag, createFiber, type Fiber, type FiberRoot, type RecoverableErrorHandler } from '../core'
 
 export interface RootOptionsInternal {
   identifierPrefix?: string
-  onRecoverableError?: (error: unknown) => void
-  onCaughtError?: (error: unknown) => void
-  onUncaughtError?: (error: unknown) => void
+  onRecoverableError?: RecoverableErrorHandler
+  onCaughtError?: RecoverableErrorHandler
+  onUncaughtError?: RecoverableErrorHandler
 }
 
 export function createFiberRoot(

@@ -1,5 +1,5 @@
 import { FiberTag, type Fiber, type ReactNode } from '../../../core'
-import { ReactSharedInternals, REACT_FORWARD_REF_TYPE } from '../../../react'
+import { REACT_FORWARD_REF_TYPE } from '../../../react'
 import {
   registerRenderer,
   registerTypeMatcher,
@@ -8,42 +8,32 @@ import {
   isThenable,
   handleSuspended,
   handleErrorInRender,
+  getForceRerenderingFiber,
 } from '../../reconcile'
-import { makeDispatcher } from '../../dispatcher'
+import { HOOK_BAILOUT, renderWithHooks } from '../../dispatcher'
 
 function renderForwardRef(fiber: Fiber, domParent: Node, anchor: Node | null): void {
+  const canBail = fiber === getForceRerenderingFiber() && fiber.pp === fiber.mp
+  fiber.cx?.clear()
   const props = fiber.pp ?? {}
   const render = (fiber.type as any).render
   const ref = fiber.ref ?? (props.ref ?? null)
 
-  const prevDispatcher = ReactSharedInternals.H
-  const prevFiber = ReactSharedInternals.F
-  const prevHook = ReactSharedInternals.K
-  const prevIndex = ReactSharedInternals.I
-  ReactSharedInternals.H = makeDispatcher()
-  ReactSharedInternals.F = fiber
-  ReactSharedInternals.K = null
-  ReactSharedInternals.I = 0
-
-  let rendered: ReactNode
+  let rendered: ReactNode | typeof HOOK_BAILOUT
   try {
     const { ref: _omit, ...rest } = props
-    rendered = render(rest, ref)
+    rendered = renderWithHooks(fiber, render, rest, ref, canBail)
   } catch (e: any) {
     if (isThenable(e)) {
       handleSuspended(fiber, e)
-      rendered = null
+      return
     } else {
       handleErrorInRender(fiber, e)
       return
     }
-  } finally {
-    ReactSharedInternals.H = prevDispatcher
-    ReactSharedInternals.F = prevFiber
-    ReactSharedInternals.K = prevHook
-    ReactSharedInternals.I = prevIndex
   }
 
+  if (rendered === HOOK_BAILOUT) return
   reconcileChildren(fiber, childrenToArray(rendered), domParent, anchor)
   fiber.mp = props
 }

@@ -5,7 +5,8 @@ import type {
   DependencyList,
 } from '../core'
 import type { Context } from './context'
-import { getDispatcher } from './shared-internals'
+import { getDispatcher, ReactSharedInternals } from './shared-internals'
+import type { BrowserToken } from '../core/browser'
 
 export function useState<S>(initial: S | (() => S)): [S, Dispatch<SetStateAction<S>>] {
   return getDispatcher().useState(initial)
@@ -82,12 +83,20 @@ export function useSyncExternalStore<T>(
   return getDispatcher().useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
 }
 
-export function use<T>(resource: PromiseLike<T> | { _currentValue: T } | { $$typeof: symbol; _currentValue: T }): T {
+export function use(resource: BrowserToken): undefined
+export function use<T>(resource: PromiseLike<T> | { _currentValue: T } | { $$typeof: symbol; _currentValue: T }): T
+export function use<T>(resource: BrowserToken | PromiseLike<T> | { _currentValue: T } | { $$typeof: symbol; _currentValue: T }): T {
   return getDispatcher().use(resource)
 }
 
+export function unstable_useCacheRefresh(): () => void {
+  return getDispatcher().useCacheRefresh()
+}
+
 export function startTransition(fn: () => void): void {
-  fn()
+  const previous = ReactSharedInternals.T
+  ReactSharedInternals.T = previous || new Set()
+  try { fn() } finally { ReactSharedInternals.T = previous }
 }
 
 export function useActionState<S, P>(

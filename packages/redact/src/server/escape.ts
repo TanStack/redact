@@ -1,23 +1,25 @@
 import { attributeName, STRING_BOOLEAN_ATTRS } from '../core/attributes'
 
-const ATTR_MAP: Record<string, string> = {
-  '&': '&amp;',
-  '"': '&quot;',
-  '<': '&lt;',
-  '>': '&gt;',
-}
-const TEXT_MAP: Record<string, string> = {
-  '&': '&amp;',
-  '<': '&lt;',
-  '>': '&gt;',
+function escape(value: string, pattern: RegExp): string {
+  let out = ''
+  let start = 0
+  while (pattern.test(value)) {
+    const end = pattern.lastIndex
+    const char = value[end - 1]
+    out += value.slice(start, end - 1) + (
+      char === '&' ? '&amp;' : char === '<' ? '&lt;' : char === '>' ? '&gt;' : '&quot;'
+    )
+    start = end
+  }
+  return out + value.slice(start)
 }
 
 export function escapeAttr(value: string): string {
-  return value.replace(/[&"<>]/g, (c) => ATTR_MAP[c]!)
+  return /[&"<>]/.test(value) ? escape(value, /[&"<>]/g) : value
 }
 
 export function escapeText(value: string): string {
-  return value.replace(/[&<>]/g, (c) => TEXT_MAP[c]!)
+  return /[&<>]/.test(value) ? escape(value, /[&<>]/g) : value
 }
 
 // Raw-text element body escaping: prevent any closing tag for the raw-text
@@ -57,6 +59,7 @@ const BOOLEAN_ATTRS = new Set([
   'autoplay',
   'checked',
   'controls',
+  'credentialless',
   'default',
   'defer',
   'disabled',

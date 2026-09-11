@@ -1,6 +1,9 @@
-import type { Hook, Fiber, FiberRoot, Effect } from '../core'
-import { ReactSharedInternals, REACT_CONTEXT_TYPE } from '../react'
-import { scheduleUpdate, enqueueEffect, readContext } from './reconcile'
+import type { Hook, Fiber, FiberRoot, Effect, ReactNode } from '../core'
+import { ReactSharedInternals, REACT_CONTEXT_TYPE, startTransition } from '../react'
+import { scheduleUpdate, enqueueEffect, readContext, rememberActivityEffect, handleCommitError } from './reconcile'
+import { REACT_RECOVERABLE_TYPE } from '../core/browser'
+import { queueCommitEffects } from './commit'
+import { deferTransitionPassive } from './features/view-transition'
 
 function getCurrentFiber(): Fiber {
   const f = ReactSharedInternals.F
@@ -14,32 +17,9 @@ function getCurrentFiber(): Fiber {
 }
 
 function nextHook(): Hook {
-  const fiber = getCurrentFiber()
-  const idx = ReactSharedInternals.I++
-
-  let prev = ReactSharedInternals.K
-
-  if (idx === 0) {
-    if (fiber.hooks) {
-      ReactSharedInternals.K = fiber.hooks
-      return fiber.hooks
-    }
-    const h: Hook = { s: undefined, q: undefined, d: undefined, c: undefined, n: null }
-    fiber.hooks = h
-    ReactSharedInternals.K = h
-    return h
-  }
-
-  if (prev && prev.n) {
-    ReactSharedInternals.K = prev.n
-    return prev.n
-  }
-
-  const h: Hook = { s: undefined, q: undefined, d: undefined, c: undefined, n: null }
-  if (prev) prev.n = h
-  else fiber.hooks = h
-  ReactSharedInternals.K = h
-  return h
+  const hooks = getCurrentFiber().hooks ||= []
+  const index = ReactSharedInternals.I++
+  return hooks[index] ||= { s: undefined, q: undefined, d: undefined, c: undefined }
 }
 
 function depsEqual(
@@ -57,110 +37,185 @@ function depsEqual(
 
 type BasicStateAction<S> = S | ((p: S) => S)
 
+function initializeReducer(hook: Hook, fiber: Fiber, initialArg: any, init?: (arg: any) => any): void {
+  hook.s = init ? init(initialArg) : initialArg
+  hook.c = null
+  hook.q = (action: any) => {
+    if (fiber.um || fiber.pd) return
+    ;(hook.c ||= []).push(action)
+    scheduleUpdate(fiber)
+  }
+}
+
+// Reducer slots reuse the effect-cleanup field for pending actions. Zero marks
+// eager state work, null means no update. Replacing arrays lets retries restore
+// pending actions without copying or shifting them.
+function reducePending(hook: Hook, reducer: (state: any, action: any) => any, previous = hook.s): void {
+  const actions = hook.c
+  if (actions == null) return
+  hook.c = null
+  let state = hook.s
+  if (actions) for (const action of actions) state = reducer(state, action)
+  hookFlags |= Object.is(state, previous) ? 2 : 3
+  hook.s = state
+}
+
+let hookEffects: any[] | undefined
+// Bit 1 records a changed value; bit 2 records a processed reducer queue.
+let hookFlags = 0
+export const HOOK_BAILOUT = Symbol()
+
+function resetHookEffects(effects: any[]): void {
+  for (let index = 0; index < effects.length; index += 4) effects[index].d = effects[index + 1]
+}
+
+export function renderWithHooks(
+  fiber: Fiber,
+  render: (props: any, ref?: any) => ReactNode,
+  props: any,
+  ref?: any,
+  canBail = false,
+): ReactNode | typeof HOOK_BAILOUT {
+  const previousDispatcher = ReactSharedInternals.H, previousFiber = ReactSharedInternals.F, previousIndex = ReactSharedInternals.I
+  const previousEffects = hookEffects, previousFlags = hookFlags
+  hookEffects = undefined
+  hookFlags = 0
+  ReactSharedInternals.H = DISPATCHER
+  ReactSharedInternals.F = fiber
+  try {
+    let rendered: ReactNode, attempts = 0
+    do {
+      if (++attempts > 25) throw new Error(process.env.NODE_ENV !== 'production' ? 'Too many re-renders.' : '')
+      if (hookEffects) {
+        resetHookEffects(hookEffects)
+        hookEffects = undefined
+      }
+      ReactSharedInternals.I = 0
+      fiber.dy = false
+      rendered = render(props, ref)
+    } while (fiber.dy)
+    if (canBail && hookFlags === 2) {
+      // React accepts the rendered dependencies on a reducer bailout, but
+      // keeps the previous committed effect descriptions until real work.
+      hookEffects = undefined
+      return HOOK_BAILOUT
+    }
+    if (hookEffects) {
+      const effects: any[] = hookEffects
+      for (let index = 0; index < effects.length; index += 4) {
+        const hook = effects[index], effect = effects[index + 2]
+        rememberActivityEffect(fiber, hook, effect)
+        if (effects[index + 3]) enqueueEffect(fiber, effect)
+      }
+      hookEffects = undefined
+    }
+    return rendered
+  } finally {
+    if (hookEffects) resetHookEffects(hookEffects)
+    hookEffects = previousEffects
+    hookFlags = previousFlags
+    ReactSharedInternals.H = previousDispatcher
+    ReactSharedInternals.F = previousFiber
+    ReactSharedInternals.I = previousIndex
+  }
+}
+
+export function cleanupEffect(hook: Hook, fiber: Fiber): void {
+  if (!hook.c) return
+  const cleanup = hook.c
+  hook.c = null
+  if (fiber.cu) {
+    const index = fiber.cu.indexOf(cleanup)
+    if (index >= 0) fiber.cu.splice(index, 1)
+  }
+  try { cleanup() } catch (error) { handleCommitError(fiber, error) }
+}
+
+function useEffectImpl(type: Effect['t'], create: () => any, deps?: ReadonlyArray<unknown>): void {
+  const hook = nextHook()
+  const fiber = getCurrentFiber()
+  const changed = hook.d === undefined || !depsEqual(hook.d, deps)
+  if (!changed && !fiber.root?.a && !(type === 1 && fiber.root?.sp)) return
+  const previous = hook.d
+  hook.d = deps
+  const effect: Effect = {
+    t: type,
+    c: () => {
+      cleanupEffect(hook, fiber)
+      const cleanup = create()
+      // Each effect owns its cleanup even when hooks return the same function.
+      hook.c = typeof cleanup === 'function' ? () => {
+        if (type === 0) {
+          const dispose = () => {
+            try { cleanup() } catch (error) { handleCommitError(fiber, error) }
+          }
+          if (!deferTransitionPassive(dispose)) queueCommitEffects(dispose)
+        } else cleanup()
+      } : null
+      return hook.c
+    },
+  }
+  if (type === 1) effect.d = () => cleanupEffect(hook, fiber)
+  ;(hookEffects ||= []).push(hook, previous, effect, changed)
+}
+
 // Singleton — every method reads render context via ReactSharedInternals,
 // and per-hook closures live on the hook itself, so nothing is render-local
 // to capture. Allocating a fresh wrapper + 17 method closures per function-
 // component render was pure GC pressure.
 const DISPATCHER = makeDispatcherImpl()
 
-export function makeDispatcher() {
-  return DISPATCHER
-}
-
 function makeDispatcherImpl() {
   return {
     useState<S>(initial: S | (() => S)): [S, (a: BasicStateAction<S>) => void] {
-      return this.useReducer(
-        basicReducer as (state: S, action: BasicStateAction<S>) => S,
-        typeof initial == 'function' ? (initial as () => S)() : initial,
-      )
+      const hook = nextHook(), fiber = getCurrentFiber()
+      if (hook.q === undefined) {
+        hook.s = hook.d = typeof initial === 'function' ? (initial as () => S)() : initial
+        hook.c = null
+        hook.q = (action: BasicStateAction<S>) => {
+          if (fiber.um || fiber.pd) return
+          if (ReactSharedInternals.F !== fiber && !hook.c) {
+            let next: S
+            try {
+              next = basicReducer(hook.s, action)
+            } catch {
+              hook.c = [action]
+              scheduleUpdate(fiber)
+              return
+            }
+            if (Object.is(next, hook.s)) return
+            hook.s = next
+            hook.c = 0
+            scheduleUpdate(fiber)
+            return
+          }
+          ;(hook.c ||= []).push(action)
+          scheduleUpdate(fiber)
+        }
+      }
+      reducePending(hook, basicReducer, hook.d)
+      hook.d = hook.s
+      return [hook.s, hook.q]
     },
 
     useReducer<S, A>(reducer: (s: S, a: A) => S, initialArg: any, init?: (a: any) => S) {
       const hook = nextHook()
-      const fiber = getCurrentFiber()
-      if (hook.q === undefined) {
-        hook.s = init ? init(initialArg) : initialArg
-        const queue: any = { r: reducer }
-        const dispatch = (action: A) => {
-          const currentState = hook.s as S
-          const next = queue.r(currentState, action)
-          if (!Object.is(next, currentState)) {
-            hook.s = next
-            scheduleUpdate(fiber)
-          }
-        }
-        queue.d = dispatch
-        hook.q = queue
-      } else {
-        hook.q.r = reducer
-      }
-      return [hook.s, hook.q.d] as [S, (a: A) => void]
+      if (hook.q === undefined) initializeReducer(hook, getCurrentFiber(), initialArg, init)
+      reducePending(hook, reducer)
+      hook.d = reducer
+      return [hook.s, hook.q] as [S, (a: A) => void]
     },
 
     useEffect(create: () => any, deps?: ReadonlyArray<unknown>) {
-      const hook = nextHook()
-      const fiber = getCurrentFiber()
-      const prevDeps = hook.d
-      if (prevDeps !== undefined && depsEqual(prevDeps, deps)) return
-      hook.d = deps
-      const effect: Effect = {
-        t: 0,
-        c: () => {
-          // Run the prior cleanup INSIDE the effect run, not during the
-          // dispatch/render phase. If render A → B → C all happen back-to-
-          // back before the passive microtask drains, dispatch-time cleanup
-          // only fires once (between A→B) and fx B + C both run fresh,
-          // leaving two side-fx (e.g. two plot SVGs) in the DOM. Doing
-          // it here, at effect-run time, means every new create first tears
-          // down whatever cleanup is currently live on the hook.
-          if (hook.c) {
-            try { hook.c() } catch {}
-            // The prior cleanup was also pushed onto fiber.cu; remove
-            // it so unmount doesn't double-call it.
-            if (fiber.cu) {
-              const i = fiber.cu.indexOf(hook.c)
-              if (i >= 0) fiber.cu.splice(i, 1)
-            }
-            hook.c = null
-          }
-          const c = create()
-          hook.c = typeof c == 'function' ? c : null
-          return hook.c
-        },
-      }
-      enqueueEffect(fiber, effect)
+      useEffectImpl(0, create, deps)
     },
 
     useLayoutEffect(create: () => any, deps?: ReadonlyArray<unknown>) {
-      const hook = nextHook()
-      const fiber = getCurrentFiber()
-      const prevDeps = hook.d
-      if (prevDeps !== undefined && depsEqual(prevDeps, deps)) return
-      hook.d = deps
-      const effect: Effect = {
-        t: 1,
-        c: () => {
-          // Mirror useEffect: tear down the prior cleanup at run time so
-          // coalesced renders don't leak side-fx.
-          if (hook.c) {
-            try { hook.c() } catch {}
-            if (fiber.cu) {
-              const i = fiber.cu.indexOf(hook.c)
-              if (i >= 0) fiber.cu.splice(i, 1)
-            }
-            hook.c = null
-          }
-          const c = create()
-          hook.c = typeof c == 'function' ? c : null
-          return hook.c
-        },
-      }
-      enqueueEffect(fiber, effect)
+      useEffectImpl(1, create, deps)
     },
 
     useInsertionEffect(create: () => any, deps?: ReadonlyArray<unknown>) {
-      return this.useLayoutEffect(create, deps)
+      useEffectImpl(2, create, deps)
     },
 
     useRef<T>(initial: T) {
@@ -190,14 +245,16 @@ function makeDispatcherImpl() {
     },
 
     useImperativeHandle<T>(ref: any, factory: () => T, deps?: ReadonlyArray<unknown>) {
-      const hook = nextHook()
-      if (hook.d !== undefined && depsEqual(hook.d, deps)) return
-      hook.d = deps
-      const value = factory()
-      if (ref) {
-        if (typeof ref == 'function') ref(value)
-        else ref.current = value
-      }
+      useEffectImpl(1, () => {
+        if (!ref) return
+        const value = factory()
+        if (typeof ref === 'function') {
+          const cleanup = ref(value)
+          return typeof cleanup === 'function' ? cleanup : () => ref(null)
+        }
+        ref.current = value
+        return () => { ref.current = null }
+      }, deps == null ? undefined : [...deps, ref])
     },
 
     useDebugValue<T>(_value: T, _formatter?: (v: T) => any): void {
@@ -217,11 +274,17 @@ function makeDispatcherImpl() {
     },
 
     useTransition(): [boolean, (fn: () => void) => void] {
-      return [false, (fn: () => void) => fn()]
+      return [false, startTransition]
     },
 
     useDeferredValue<T>(v: T): T {
       return v
+    },
+
+    useCacheRefresh(): () => void {
+      // There is no client cache to invalidate. Preserve hook identity and
+      // leave state and scheduling alone, as with the uncached client cache().
+      return this.useCallback(() => {}, [])
     },
 
     useSyncExternalStore<T>(
@@ -251,26 +314,19 @@ function makeDispatcherImpl() {
       const isHydrating = Boolean(root?.h)
       const value =
         isHydrating && getServerSnapshot ? getServerSnapshot() : getSnapshot()
+      if (!Object.is(hook.s, value)) hookFlags |= 1
       hook.s = value
 
       const deps = [subscribe]
-      if (hook.d === undefined || !depsEqual(hook.d, deps)) {
+      const changed = hook.d === undefined || !depsEqual(hook.d, deps)
+      if (changed || fiber.root?.a) {
+        const previous = hook.d
         hook.d = deps
         const effect: Effect = {
           t: 1,
+          s: true,
           c: () => {
-            if (hook.c) {
-              try {
-                hook.c()
-              } catch {
-                // ignore cleanup failures
-              }
-              if (fiber.cu) {
-                const i = fiber.cu.indexOf(hook.c)
-                if (i >= 0) fiber.cu.splice(i, 1)
-              }
-              hook.c = null
-            }
+            cleanupEffect(hook, fiber)
 
             let unsubscribed = false
             const cleanup = () => {
@@ -293,7 +349,6 @@ function makeDispatcherImpl() {
               }
 
               if (!Object.is(hook.s, next)) {
-                hook.s = next
                 scheduleUpdate(fiber)
               }
             }
@@ -311,12 +366,13 @@ function makeDispatcherImpl() {
             return cleanup
           },
         }
-        enqueueEffect(fiber, effect)
+        ;(hookEffects ||= []).push(hook, previous, effect, changed)
       }
       return value
     },
 
     use<T>(resource: any): T {
+      if (resource?.$$typeof === REACT_RECOVERABLE_TYPE) return undefined as T
       if (resource == null) {
         if (process.env.NODE_ENV !== 'production') {
           throw new Error('use() received null or undefined')
@@ -372,7 +428,7 @@ let idCounter = 0
 function findRootFromFiber(fiber: Fiber): FiberRoot | null {
   let f: Fiber | null = fiber
   while (f) {
-    if (f.root) return f.root
+    if (f.root) return fiber.root = f.root
     f = f.parent
   }
   return null

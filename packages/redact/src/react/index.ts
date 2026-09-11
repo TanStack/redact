@@ -39,6 +39,7 @@ export {
   useOptimistic,
   useEffectEvent,
   startTransition,
+  unstable_useCacheRefresh,
 } from './hooks'
 export {
   createContext,
@@ -64,10 +65,18 @@ export {
 } from './suspense'
 export { REACT_PORTAL_TYPE } from './portal'
 export { Children } from './children'
+export { ViewTransition, addTransitionType, REACT_VIEW_TRANSITION_TYPE } from './view-transition'
+export type { ViewTransitionProps, ViewTransitionClass, ViewTransitionInstance, ViewTransitionPseudoElement } from './view-transition'
+export { Activity, REACT_ACTIVITY_TYPE } from './activity'
+export type { ActivityProps } from './activity'
+export type { FragmentInstance } from '../dom/fragment-instance'
 export { ReactSharedInternals } from './shared-internals'
 
 // Stub exports
 export const cache = <T extends Function>(fn: T): T => fn
+// The client/DOM-server entry has no RSC cache lifetime, matching React's
+// client export. The upstream Flight renderer remains responsible for RSC.
+export const cacheSignal = (): AbortSignal | null => null
 export const act = async (fn: () => any) => {
   const r = fn()
   if (r && typeof r.then == 'function') await r
@@ -101,12 +110,15 @@ import {
   useOptimistic,
   useEffectEvent,
   startTransition,
+  unstable_useCacheRefresh,
 } from './hooks'
 import { createContext } from './context'
 import { Component, PureComponent } from './class'
 import { memo, forwardRef, lazy } from './memo'
 import { Suspense, StrictMode, Profiler } from './suspense'
 import { Children } from './children'
+import { ViewTransition, addTransitionType } from './view-transition'
+import { Activity } from './activity'
 
 export default {
   createElement,
@@ -135,6 +147,7 @@ export default {
   useOptimistic,
   useEffectEvent,
   startTransition,
+  unstable_useCacheRefresh,
   createContext,
   Component,
   PureComponent,
@@ -145,5 +158,10 @@ export default {
   StrictMode,
   Profiler,
   Children,
+  ViewTransition,
+  Activity,
+  addTransitionType,
+  cache,
+  cacheSignal,
   version: '19.2.3',
 }

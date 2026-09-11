@@ -1,0 +1,195 @@
+{
+  "schemaVersion": 1,
+  "supersededBy": "ship-chrome-final.json",
+  "completedUtc": "2026-09-11T01:56:24.140Z",
+  "purpose": "Browser correctness, not performance measurement",
+  "environment": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "node": "v24.15.0",
+    "chrome": "152.0.7977.83",
+    "headless": true,
+    "vitest": "2.1.9",
+    "playwright": "1.59.1",
+    "react": "19.3.0",
+    "reactDOM": "19.3.0"
+  },
+  "source": {
+    "head": "2e3c75c483365d26ae326ec0fdae96fa5c690451",
+    "includesUncommittedChanges": true,
+    "runtimeRoot": "packages/redact/src",
+    "runtimeFileCount": 83,
+    "runtimeSha256": "78171630e2953083e3597f3bad27f8c19b400cb3b559e2ecbd6d3d2008ffcfba",
+    "hashMethod": "Sort all runtime file paths. For each file, hash its path relative to runtimeRoot, NUL, file bytes, NUL, using SHA-256.",
+    "scope": "Runtime present when the final browser run completed. Does not cover later Suspense retry candidates or other source edits."
+  },
+  "execution": {
+    "browserCommandsSerialized": true,
+    "browserSlotExclusiveAcrossAgents": true,
+    "otherUnitBuildSizeCommandsAllowed": true,
+    "runtimeChangesDuringThisGate": false,
+    "finalPassed": 590,
+    "finalFailed": 0,
+    "finalSkipped": 0,
+    "redactPassed": 298,
+    "reactPassed": 292,
+    "uniqueSharedCases": 207,
+    "uniqueRedactContractCases": 3,
+    "countsIncludeModeRepeats": true
+  },
+  "runs": [
+    {
+      "command": "pnpm exec vitest run --config scripts/parity-final-resources-browser.config.mjs",
+      "variant": "redact",
+      "passed": 58,
+      "failed": 0,
+      "skipped": 0,
+      "exitCode": 0,
+      "files": {
+        "resource-hints.test.tsx": 29,
+        "resource-hints-render.test.tsx": 19,
+        "resource-hints-browser.test.tsx": 8,
+        "resource-ownership.test.tsx": 2
+      }
+    },
+    {
+      "command": "REACT_REFERENCE=1 pnpm exec vitest run --config scripts/parity-final-resources-browser.config.mjs",
+      "variant": "react",
+      "passed": 58,
+      "failed": 0,
+      "skipped": 0,
+      "exitCode": 0
+    },
+    {
+      "command": "pnpm exec vitest run --config scripts/parity-final-retained-browser.config.mjs",
+      "variant": "redact",
+      "passed": 61,
+      "failed": 0,
+      "skipped": 0,
+      "exitCode": 0,
+      "files": {
+        "activity.test.tsx": 25,
+        "suspense-layout.test.tsx": 12,
+        "retained-resource-class.test.tsx": 14,
+        "layout-ref-order.test.tsx": 10
+      }
+    },
+    {
+      "command": "REACT_REFERENCE=1 pnpm exec vitest run --config scripts/parity-final-retained-browser.config.mjs",
+      "variant": "react",
+      "passed": 61,
+      "failed": 0,
+      "skipped": 0,
+      "exitCode": 0
+    },
+    {
+      "command": "pnpm exec vitest run --config scripts/parity-final-native-browser.config.mjs",
+      "variant": "redact",
+      "reducedMotion": false,
+      "passed": 80,
+      "failed": 0,
+      "skipped": 0,
+      "exitCode": 0,
+      "sharedPassed": 77,
+      "redactContractPassed": 3,
+      "files": {
+        "view-transition.test.tsx": 34,
+        "view-transition-phases.test.tsx": 9,
+        "view-transition-resources.test.tsx": 20,
+        "native-transition-rejections.test.tsx": 14,
+        "view-transition-sync.test.tsx": 3
+      }
+    },
+    {
+      "command": "REACT_REFERENCE=1 pnpm exec vitest run --config scripts/parity-final-native-browser.config.mjs",
+      "variant": "react",
+      "reducedMotion": false,
+      "passed": 77,
+      "failed": 0,
+      "skipped": 0,
+      "exitCode": 0
+    },
+    {
+      "command": "REDUCED_MOTION=1 pnpm exec vitest run --config scripts/parity-final-native-browser.config.mjs",
+      "variant": "redact",
+      "reducedMotion": true,
+      "passed": 80,
+      "failed": 0,
+      "skipped": 0,
+      "exitCode": 0,
+      "sharedPassed": 77,
+      "redactContractPassed": 3
+    },
+    {
+      "command": "REACT_REFERENCE=1 REDUCED_MOTION=1 pnpm exec vitest run --config scripts/parity-final-native-browser.config.mjs",
+      "variant": "react",
+      "reducedMotion": true,
+      "passed": 77,
+      "failed": 0,
+      "skipped": 0,
+      "exitCode": 0
+    },
+    {
+      "command": "node scripts/verify-streamed-resources.mjs",
+      "mode": "production",
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0,
+      "exitCode": 0,
+      "variants": { "react": 3, "redact": 3 },
+      "cases": ["load", "error", "unmatched"]
+    },
+    {
+      "command": "node scripts/verify-security-parity.mjs",
+      "mode": "development",
+      "passed": 16,
+      "failed": 0,
+      "skipped": 0,
+      "exitCode": 0,
+      "variants": { "react": 8, "redact": 8 },
+      "cases": ["trusted-client", "trusted-hydration", "trusted-table-hydration", "trusted-svg-hydration", "trusted-iframe-client", "trusted-iframe-hydration", "nonce-hydration", "nonce-head-hydration"]
+    },
+    {
+      "command": "MODE=production node scripts/verify-security-parity.mjs",
+      "mode": "production",
+      "passed": 16,
+      "failed": 0,
+      "skipped": 0,
+      "exitCode": 0,
+      "variants": { "react": 8, "redact": 8 }
+    }
+  ],
+  "preliminaryRuns": [
+    {
+      "command": "pnpm exec vitest run --config scripts/parity-final-resources-browser.config.mjs",
+      "variant": "redact",
+      "passed": 57,
+      "failed": 1,
+      "exitCode": 1
+    },
+    {
+      "command": "REACT_REFERENCE=1 pnpm exec vitest run --config scripts/parity-final-resources-browser.config.mjs",
+      "variant": "react",
+      "passed": 57,
+      "failed": 1,
+      "exitCode": 1
+    }
+  ],
+  "preliminaryFailure": {
+    "test": "resource hint APIs > creates and deduplicates DNS and connection hints independently",
+    "cause": "The structural test expected an empty head on its first run, but Chrome's Vitest page starts with runner scripts and links. Both renderers failed identically.",
+    "fix": "Add a beforeEach head reset to tests/resource-hints.test.tsx, matching its existing afterEach reset. No expectations or runtime behavior changed.",
+    "rerun": "All 58 resource cases then passed on each renderer."
+  },
+  "limitations": [
+    "This is a source-snapshot browser correctness ledger, not a release-wide parity claim or performance comparison.",
+    "Headless Chrome 152 on macOS arm64 only. Safari, Firefox, mobile hardware, and full application workloads were not exercised.",
+    "Vitest uses development runtime branches. The streamed CSS harness and the second security run use production bundles; native production transition behavior was not separately tested here.",
+    "The three Redact-only native cases assert its synchronous contract and are not counted as shared React parity.",
+    "Native resource tests combine real controlled image/font requests with injected decode and rejection conditions. They do not measure real-world network performance.",
+    "DNS/preconnect tests inspect emitted hints and deduplication, not whether Chrome chooses to open a network connection.",
+    "Trusted Types coverage is TrustedHTML client/hydration and iframe srcDoc, plus nonce hydration. It is not an exhaustive CSP sink audit and does not directly exercise TrustedScriptURL resource sinks.",
+    "Snapshot names, callbacks, CSS state, and browser animation handles are asserted. Visual animation quality was not reviewed with screenshots.",
+    "Passing these cases does not establish concurrent scheduling parity, which Redact intentionally downgrades."
+  ]
+}

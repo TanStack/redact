@@ -1,0 +1,300 @@
+{
+  "verified": true,
+  "auditSHA256": "09a0f2a116804511fae511fd060131d2b24f67f0280a6143b18628ebc9561d74",
+  "timedRuns": 0,
+  "browser": {
+    "ordinary": {
+      "resultSHA256": "2795b77d717fce09259f731956469aa0ebd5dd671e449041a2e91d516d527043",
+      "totals": {
+        "samples": 2400,
+        "operations": 192558450,
+        "recordedChecks": 348150,
+        "reducerActions": 0,
+        "reducerRowCommits": 0,
+        "reducerLayoutDOMChecks": 0,
+        "fallbackReveals": 0,
+        "hiddenPrimaryChecks": 0,
+        "independentSuspensions": 0,
+        "interactionSamples": 720,
+        "interactionRows": 950400,
+        "interactionChecks": 1440,
+        "memoryCycles": 90
+      },
+      "counts": {
+        "passive-effects": {
+          "iterations": 1715,
+          "samples": 150,
+          "operationsPerSample": 171500,
+          "recordedChecksPerSample": 2,
+          "diagnostics": {
+            "creates": 171500,
+            "cleanups": 171500
+          }
+        },
+        "controlled-selects": {
+          "iterations": 646,
+          "samples": 150,
+          "operationsPerSample": 646,
+          "recordedChecksPerSample": 2,
+          "diagnostics": {
+            "commits": 647
+          }
+        },
+        "deep-tree-props": {
+          "iterations": 7500,
+          "samples": 150,
+          "operationsPerSample": 7500,
+          "recordedChecksPerSample": 2,
+          "diagnostics": {
+            "commits": 7501
+          }
+        },
+        "mount-unmount": {
+          "iterations": 543,
+          "samples": 150,
+          "operationsPerSample": 543,
+          "recordedChecksPerSample": 1,
+          "diagnostics": {
+            "renderedCount": 543,
+            "mountedCount": 543,
+            "unmountedCount": 543
+          }
+        },
+        "stable-keyed-rows": {
+          "iterations": 1861,
+          "samples": 150,
+          "operationsPerSample": 1861,
+          "recordedChecksPerSample": 3,
+          "diagnostics": {
+            "commits": 1862
+          }
+        },
+        "mixed-depth-setters": {
+          "iterations": 717,
+          "samples": 150,
+          "operationsPerSample": 129060,
+          "recordedChecksPerSample": 2,
+          "diagnostics": {
+            "renders": 129060
+          }
+        },
+        "jsx-props-updates": {
+          "iterations": 350,
+          "samples": 150,
+          "operationsPerSample": 350,
+          "recordedChecksPerSample": 2,
+          "diagnostics": {
+            "commits": 351
+          }
+        },
+        "context-through-memo": {
+          "iterations": 1412,
+          "samples": 150,
+          "operationsPerSample": 254160,
+          "recordedChecksPerSample": 5,
+          "diagnostics": {
+            "outerRenders": 180,
+            "innerRenders": 180,
+            "staticRenders": 180,
+            "consumerRenders": 254340
+          }
+        },
+        "jsx-stable-keyed-rows": {
+          "iterations": 2000,
+          "samples": 150,
+          "operationsPerSample": 2000,
+          "recordedChecksPerSample": 3,
+          "diagnostics": {
+            "commits": 2001
+          }
+        },
+        "browser-ssr": {
+          "iterations": 2000,
+          "samples": 150,
+          "operationsPerSample": 2000,
+          "recordedChecksPerSample": 1,
+          "diagnostics": {
+            "outputCharacters": 9089
+          }
+        },
+        "props-updates": {
+          "iterations": 327,
+          "samples": 150,
+          "operationsPerSample": 327,
+          "recordedChecksPerSample": 2,
+          "diagnostics": {
+            "commits": 328
+          }
+        },
+        "keyed-reverse": {
+          "iterations": 640,
+          "samples": 150,
+          "operationsPerSample": 640,
+          "recordedChecksPerSample": 3,
+          "diagnostics": {
+            "commits": 641
+          }
+        },
+        "null-siblings": {
+          "iterations": 964,
+          "samples": 150,
+          "operationsPerSample": 964,
+          "recordedChecksPerSample": 2,
+          "diagnostics": {
+            "commits": 965
+          }
+        },
+        "hydration": {
+          "iterations": 762,
+          "samples": 150,
+          "operationsPerSample": 762,
+          "recordedChecksPerSample": 2287,
+          "diagnostics": {
+            "effects": 762
+          }
+        },
+        "batched-setters": {
+          "iterations": 1730,
+          "samples": 150,
+          "operationsPerSample": 311400,
+          "recordedChecksPerSample": 2,
+          "diagnostics": {
+            "renders": 311400
+          }
+        },
+        "sparse-setters": {
+          "iterations": 40001,
+          "samples": 150,
+          "operationsPerSample": 400010,
+          "recordedChecksPerSample": 2,
+          "diagnostics": {
+            "renders": 400010
+          }
+        }
+      }
+    },
+    "reducers": {
+      "resultSHA256": "bec89617389d5f94dc90798e8b89487c49dc32c6d52a603ab97255c02f9ab799",
+      "totals": {
+        "samples": 375,
+        "operations": 120972000,
+        "recordedChecks": 3750,
+        "reducerActions": 120972000,
+        "reducerRowCommits": 42048000,
+        "reducerLayoutDOMChecks": 42048000,
+        "fallbackReveals": 52750,
+        "hiddenPrimaryChecks": 105500,
+        "independentSuspensions": 125,
+        "interactionSamples": 0,
+        "interactionRows": 0,
+        "interactionChecks": 0,
+        "memoryCycles": 0
+      },
+      "counts": {
+        "reducer-suspense-retries": {
+          "iterations": 422,
+          "samples": 125,
+          "operationsPerSample": 81024,
+          "recordedChecksPerSample": 10,
+          "diagnostics": {
+            "layoutCommits": 40608,
+            "layoutCleanups": 40512,
+            "minRowCommits": 423,
+            "maxRowCommits": 423,
+            "layoutDomChecks": 40608,
+            "fallbackMounts": 422,
+            "fallbackUnmounts": 422,
+            "hiddenChecks": 844,
+            "independentSuspensions": 1,
+            "firstRowValue": 917594,
+            "lastRowValue": 124165
+          }
+        },
+        "reducer-batches": {
+          "iterations": 1423,
+          "samples": 125,
+          "operationsPerSample": 409824,
+          "recordedChecksPerSample": 10,
+          "diagnostics": {
+            "layoutCommits": 136704,
+            "layoutCleanups": 136608,
+            "minRowCommits": 1424,
+            "maxRowCommits": 1424,
+            "layoutDomChecks": 136704,
+            "fallbackMounts": 0,
+            "fallbackUnmounts": 0,
+            "hiddenChecks": 0,
+            "independentSuspensions": 0,
+            "firstRowValue": 145436,
+            "lastRowValue": 961912
+          }
+        },
+        "reducer-suspense-updates": {
+          "iterations": 1656,
+          "samples": 125,
+          "operationsPerSample": 476928,
+          "recordedChecksPerSample": 10,
+          "diagnostics": {
+            "layoutCommits": 159072,
+            "layoutCleanups": 158976,
+            "minRowCommits": 1657,
+            "maxRowCommits": 1657,
+            "layoutDomChecks": 159072,
+            "fallbackMounts": 0,
+            "fallbackUnmounts": 0,
+            "hiddenChecks": 0,
+            "independentSuspensions": 0,
+            "firstRowValue": 927241,
+            "lastRowValue": 14964
+          }
+        }
+      }
+    }
+  },
+  "reportSpotChecks": {
+    "reportSHA256": "c31b691a177e5c267fad72718c2e8493c463953b6e15cf50be4ae8e2e017db2b",
+    "sizesSHA256": "3d6ed5be02b5f1cb5b4c594079003d57ccd59aa9aeace788dfa1a84cb9f2ace6",
+    "sourceSizeInputs": 83,
+    "builtSizeInputs": 249,
+    "currentVsExpanded": {
+      "deep-tree-props": {
+        "pairedTimeChangePercent": -25.65997894328399,
+        "blockBootstrap95CI": [
+          -27.060133591558532,
+          -24.922118361551725
+        ],
+        "independentBlocks": 5
+      },
+      "batched-setters": {
+        "pairedTimeChangePercent": -16.666666572727117,
+        "blockBootstrap95CI": [
+          -17.79975275698632,
+          -15.593220285103149
+        ],
+        "independentBlocks": 5
+      },
+      "sparse-setters": {
+        "pairedTimeChangePercent": -16.756272440581277,
+        "blockBootstrap95CI": [
+          -17.34527684086902,
+          -15.812337136328203
+        ],
+        "independentBlocks": 5
+      }
+    },
+    "defaultRetriesVsReact": {
+      "pairedTimeChangePercent": 124.80916054413025,
+      "blockBootstrap95CI": [
+        121.93158922835221,
+        135.13513506815235
+      ],
+      "independentBlocks": 5
+    },
+    "gzipBytes": {
+      "defaultDOMClient": 20134,
+      "defaultClientTotal": 23310,
+      "reactClientTotal": 69162
+    }
+  }
+}
+

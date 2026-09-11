@@ -5,7 +5,7 @@
   "description": "A minimal React-compatible runtime for TanStack Start apps",
   "type": "module",
   "scripts": {
-    "build": "node scripts/build.mjs",
+    "build": "node scripts/build.mjs && node scripts/verify-build.mjs",
     "dev": "pnpm -r --parallel --filter='./packages/*' run dev",
     "test": "pnpm --filter tests test",
     "test:types": "tsc --noEmit",

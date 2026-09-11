@@ -166,8 +166,9 @@ describe('renderToReadableStream', () => {
       return <main>{React.use(promise)}</main>
     }
 
-    const stream = await renderToReadableStream(<App />)
+    const pendingStream = renderToReadableStream(<App />)
     resolve('ready')
+    const stream = await pendingStream
     const out = await streamToString(stream)
     expect(out).toBe('<main>ready</main>')
     await stream.allReady
