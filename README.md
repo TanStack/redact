@@ -170,16 +170,16 @@ redact({ preset: 'nano', features: { context: true } })
 
 ## Verification
 
-`pnpm test:ci` passes 1,564 tests, type checking, the built-package verifier, and all 19 source/dist size budgets. The 91 ordinary-suite skips are not passes. Native Node import order, NodeNext declarations, development/production behavior, and actual Vite feature selection are checked.
+`pnpm test:ci` passes 1,569 tests, type checking, the built-package verifier, and all 19 source/dist size budgets. The 91 ordinary-suite skips are not passes. Native Node import order, NodeNext declarations, development/production behavior, and actual Vite feature selection are checked.
 
 The separate Chrome gate passes 1,266 case executions across Redact and React, including repeated suites/motion modes, not 1,266 unique behaviors. Seven declared exclusions remain: six Node-only stream executions and one known React Activity hydration failure. [Chrome ledger](./benchmarks/SHIP_CHROME_FINAL.md).
 
-| Real app | Final packaged Redact result |
+| Real app | Published Redact 0.1.0 result |
 |---|---|
-| tanstack.com | Production build, 5 Worker SSR routes, navigation/history, controls, portals, and narrow-screen interactions pass with no browser errors. |
-| tannerlinsley.com | 8 Worker SSR routes and browser interactions pass with no browser errors. Prerender startup and mobile overflow still fail, also with published Redact and React controls. |
+| tanstack.com | Production build, 503 tests, 5 local Worker routes, navigation/history, controls, portals, and mobile checks pass. Deployed preview works; production upgrade awaits required review. |
+| tannerlinsley.com | Upgraded in production. Normal build prerenders all 10 pages; 8 live routes and browser interactions pass with no browser errors. Existing mobile header overflow remains. |
 
-These are local integration checks, not deployed production or site-speed measurements. [Site evidence and remaining failures](./benchmarks/SHIP_SITE_INTEGRATION.md).
+These are integration checks, not site-speed measurements or coverage of authenticated flows. [Published-package and deployment evidence](./benchmarks/RELEASE_0_1_0_SITES.md), [earlier renderer controls](./benchmarks/SHIP_SITE_INTEGRATION.md).
 
 ## Releases
 
