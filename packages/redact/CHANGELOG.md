@@ -1,5 +1,11 @@
 # @tanstack/redact
 
+## 0.1.2
+
+### Patch Changes
+
+- Fix updates from undefined state so refs and layout effects commit correctly, including animated dialog cleanup. Match React's TypeScript overload for calling `useState()` without an initial value. Process pending parent updates before propagating context to prevent stale route matches during navigation. ([#33](https://github.com/TanStack/redact/pull/33))
+
 ## 0.1.1
 
 ### Patch Changes
