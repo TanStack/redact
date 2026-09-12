@@ -38,7 +38,7 @@ function depsEqual(
 type BasicStateAction<S> = S | ((p: S) => S)
 
 function initializeReducer(hook: Hook, fiber: Fiber, initialArg: any, init?: (arg: any) => any): void {
-  hook.s = init ? init(initialArg) : initialArg
+  hook.s = hook.d = init ? init(initialArg) : initialArg
   hook.c = null
   hook.q = (action: any) => {
     if (fiber.um || fiber.pd) return
@@ -50,14 +50,15 @@ function initializeReducer(hook: Hook, fiber: Fiber, initialArg: any, init?: (ar
 // Reducer slots reuse the effect-cleanup field for pending actions. Zero marks
 // eager state work, null means no update. Replacing arrays lets retries restore
 // pending actions without copying or shifting them.
-function reducePending(hook: Hook, reducer: (state: any, action: any) => any, previous = hook.s): void {
+// State and reducer slots keep their last rendered value in d, even undefined.
+function reducePending(hook: Hook, reducer: (state: any, action: any) => any): void {
   const actions = hook.c
   if (actions == null) return
   hook.c = null
   let state = hook.s
   if (actions) for (const action of actions) state = reducer(state, action)
-  hookFlags |= Object.is(state, previous) ? 2 : 3
-  hook.s = state
+  hookFlags |= Object.is(state, hook.d) ? 2 : 3
+  hook.s = hook.d = state
 }
 
 let hookEffects: any[] | undefined
@@ -193,8 +194,7 @@ function makeDispatcherImpl() {
           scheduleUpdate(fiber)
         }
       }
-      reducePending(hook, basicReducer, hook.d)
-      hook.d = hook.s
+      reducePending(hook, basicReducer)
       return [hook.s, hook.q]
     },
 
@@ -202,7 +202,6 @@ function makeDispatcherImpl() {
       const hook = nextHook()
       if (hook.q === undefined) initializeReducer(hook, getCurrentFiber(), initialArg, init)
       reducePending(hook, reducer)
-      hook.d = reducer
       return [hook.s, hook.q] as [S, (a: A) => void]
     },
 

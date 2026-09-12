@@ -70,7 +70,8 @@ export function renderContextConsumers(fiber: Fiber): void {
   if (!changingProviders) return
   let child = fiber.child
   while (child) {
-    if (child.tag === FiberTag.Suspense ? hasContextChanged(child) : ownContextChanged(child)) {
+    // Pending parents must reconcile before context reaches their old children.
+    if (child.dy || (child.tag === FiberTag.Suspense ? hasContextChanged(child) : ownContextChanged(child))) {
       const domParent = getHostParent(child)
       renderFiber(child, domParent, getAnchor(child, domParent))
     } else {

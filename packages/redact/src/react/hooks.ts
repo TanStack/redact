@@ -8,7 +8,9 @@ import type { Context } from './context'
 import { getDispatcher, ReactSharedInternals } from './shared-internals'
 import type { BrowserToken } from '../core/browser'
 
-export function useState<S>(initial: S | (() => S)): [S, Dispatch<SetStateAction<S>>] {
+export function useState<S>(initial: S | (() => S)): [S, Dispatch<SetStateAction<S>>]
+export function useState<S = undefined>(): [S | undefined, Dispatch<SetStateAction<S | undefined>>]
+export function useState<S>(initial?: S | (() => S)): [S | undefined, Dispatch<SetStateAction<S | undefined>>] {
   return getDispatcher().useState(initial)
 }
 

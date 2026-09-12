@@ -25,6 +25,7 @@ export default {
       'element-iterable-precedence.test.tsx',
       'upstream-parity.test.tsx',
       'context-suspense-updates.test.tsx',
+      'context-pending-parent.test.tsx',
       'context-as-provider.test.tsx',
       'element-ref-prop.test.tsx',
       'control-updates.test.tsx',
