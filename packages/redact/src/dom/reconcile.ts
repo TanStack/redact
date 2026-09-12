@@ -445,7 +445,7 @@ export function reconcileChildren(
     if (ok && f === null) {
       // Pass 2: render forward with per-child anchors. Identical to the slow
       // path's pass 2.
-      renderChildChain(parent, domParent, anchor, false)
+      renderChildChain(parent, domParent, anchor)
       return
     }
   }
@@ -462,10 +462,7 @@ export function reconcileChildren(
       else parent.child = fiber
       previous = fiber
     }
-    renderChildChain(parent, domParent, anchor, true)
-    if (previous && !currentRoot?.h && domParent.nodeName !== 'HEAD') {
-      placeChildrenInOrder(parent, domParent, anchor)
-    }
+    renderChildChain(parent, domParent, anchor)
     return
   }
 
@@ -577,14 +574,10 @@ export function reconcileChildren(
   }
 
   // Pass 2: walk the sibling chain we just built and render each fiber
-  // forward with the correct per-child anchor. During hydration the cursor
-  // walks DOM forward and each renderFiber adopts the next existing node,
-  // so per-child anchors are moot — fall back to the parent's anchor.
-  const hydrating = !!currentRoot?.h
-  // New siblings have no DOM yet, so searching them for an anchor cannot help.
+  // forward with the correct per-child anchor.
   // An empty replacement has no new chain. The old children remain linked
   // until cleanup below, and must not render again on their way out.
-  if (prevNewFiber) renderChildChain(parent, domParent, anchor, hydrating || existing.length === 0)
+  if (prevNewFiber) renderChildChain(parent, domParent, anchor)
 
   if (!prevNewFiber) parent.child = null
   else prevNewFiber.sibling = null
@@ -624,24 +617,31 @@ export function reconcileChildren(
   }
 }
 
-function renderChildChain(
-  parent: Fiber,
-  domParent: Node,
-  anchor: Node | null,
-  skipAnchors: boolean,
-): void {
+function renderChildChain(parent: Fiber, domParent: Node, anchor: Node | null): void {
+  // The first DOM node a later sibling owns holds until that sibling renders,
+  // so it is cached instead of rescanned for every child — the rescan is O(n²)
+  // on long lists. Anything moving DOM in this parent mid-render (an inline
+  // portal move, a nested flushSync, an immediate insert outside a commit)
+  // leaves that node somewhere other than where this chain left it, and the
+  // next child rescans.
+  let cached: Node | null = null
+  let owner = parent.child
+  let placed: Node | null = null
+
   for (let f = parent.child; f; f = f.sibling) {
-    let nextAnchor = anchor
-    if (!skipAnchors) {
-      for (let sibling = f.sibling; sibling; sibling = sibling.sibling) {
-        const dom = firstDomNode(sibling, domParent)
+    if (f === owner || (cached && (cached.previousSibling !== placed || cached.parentNode !== domParent))) {
+      cached = anchor
+      for (owner = f.sibling; owner; owner = owner.sibling) {
+        const dom = firstDomNode(owner, domParent)
         if (dom) {
-          nextAnchor = dom
+          cached = dom
           break
         }
       }
+      placed = cached && cached.previousSibling
     }
-    renderFiber(f, domParent, nextAnchor)
+
+    renderFiber(f, domParent, cached)
   }
 }
 
