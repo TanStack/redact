@@ -17,7 +17,7 @@ export default {
   } : config.resolve,
   test: {
     ...config.test,
-    include: ['tests/state-ref-bailout.test.tsx'],
+    include: ['tests/state-ref-bailout.test.tsx', 'tests/context-pending-parent.test.tsx'],
     server: { deps: { inline: [/@tanstack\/redact/] } },
   },
 }

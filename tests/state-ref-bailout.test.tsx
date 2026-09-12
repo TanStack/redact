@@ -6,6 +6,47 @@ import { flushSync } from 'react-dom'
 const cleanups: Array<() => void> = []
 afterEach(() => { for (const cleanup of cleanups.splice(0)) cleanup() })
 
+it.each([1, 0, false, null, ''])('commits a state update from undefined to %s', next => {
+  const { container, stats, start } = probe(`undefined-state:${String(next)}`)
+  const commits: unknown[] = []
+  let set!: React.Dispatch<React.SetStateAction<unknown>>
+  function App() {
+    const [value, update] = React.useState<unknown>()
+    set = update
+    React.useLayoutEffect(() => { commits.push(value) }, [value])
+    return <b>{String(value)}</b>
+  }
+  start(<App />)
+  flushSync(() => set(next))
+  expect(container.textContent).toBe(String(next))
+  expect(commits).toEqual([undefined, next])
+  flushSync(() => set(undefined))
+  flushSync(() => set(next))
+  expect(container.textContent).toBe(String(next))
+  expect(commits).toEqual([undefined, next, undefined, next])
+  expect(stats.errors).toEqual([])
+})
+
+it('installs layout effects after an undefined node ref and a no-op reducer update', () => {
+  const { container, stats, start } = probe('undefined-node-ref')
+  const finished = vi.fn()
+  function App() {
+    const [node, setNode] = React.useState<HTMLDivElement | null>()
+    const [, send] = React.useReducer((state: number, _action: string) => state, 0)
+    React.useLayoutEffect(() => {
+      if (!node) { send('animation-end'); return }
+      node.addEventListener('animationend', finished)
+      return () => { node.removeEventListener('animationend', finished) }
+    }, [node, send])
+    return <div ref={setNode}>{node ? 'listening' : 'waiting'}</div>
+  }
+  start(<App />)
+  expect(container.textContent).toBe('listening')
+  container.firstChild!.dispatchEvent(new Event('animationend'))
+  expect(finished).toHaveBeenCalledOnce()
+  expect(stats.errors).toEqual([])
+})
+
 function probe(name: string) {
   const container = document.createElement('div')
   document.body.appendChild(container)
