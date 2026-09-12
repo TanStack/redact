@@ -38,7 +38,7 @@ function depsEqual(
 type BasicStateAction<S> = S | ((p: S) => S)
 
 function initializeReducer(hook: Hook, fiber: Fiber, initialArg: any, init?: (arg: any) => any): void {
-  hook.s = hook.d = init ? init(initialArg) : initialArg
+  hook.d = hook.s = init ? init(initialArg) : initialArg
   hook.c = null
   hook.q = (action: any) => {
     if (fiber.um || fiber.pd) return
@@ -58,7 +58,7 @@ function reducePending(hook: Hook, reducer: (state: any, action: any) => any): v
   let state = hook.s
   if (actions) for (const action of actions) state = reducer(state, action)
   hookFlags |= Object.is(state, hook.d) ? 2 : 3
-  hook.s = hook.d = state
+  hook.d = hook.s = state
 }
 
 let hookEffects: any[] | undefined
