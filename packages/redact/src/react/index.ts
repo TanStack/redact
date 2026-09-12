@@ -104,6 +104,7 @@ import {
   useTransition,
   useDeferredValue,
   useSyncExternalStore,
+  useSyncExternalStoreWithSelector,
   use,
   useActionState,
   useFormStatus,
@@ -141,6 +142,9 @@ export default {
   useTransition,
   useDeferredValue,
   useSyncExternalStore,
+  // `use-sync-external-store/shim/with-selector` aliases here, and zustand
+  // reads it as a CJS default import.
+  useSyncExternalStoreWithSelector,
   use,
   useActionState,
   useFormStatus,
