@@ -155,6 +155,16 @@ export function setProp(
     return
   }
 
+  // React assigns a prop on a dashed tag as a property when the element
+  // declares one — the only way an object value reaches a web component. Its
+  // other dashed exclusions are SVG, already ruled out by `isSvg`.
+  if (!isSvg && name in el && el.localName.indexOf('-') !== -1 && el.localName !== 'annotation-xml') {
+    try {
+      ;(el as any)[name] = next
+      return
+    } catch {}
+  }
+
   if (name === 'className' || name === 'class' || name === 'htmlFor' || STRING_BOOLEAN_ATTRS.has(attr)) {
     if (next == null) el.removeAttribute(attr)
     else el.setAttribute(attr, '' + next)
