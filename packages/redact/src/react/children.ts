@@ -1,51 +1,68 @@
 import { isValidElement, cloneElement } from './element'
 import type { ReactNode, ReactElement } from '../core'
 
-function flatten(node: ReactNode, out: any[], prefix: string): void {
-  if (node == null || typeof node === 'boolean') return
-  if (Array.isArray(node)) {
-    for (let i = 0; i < node.length; i++) flatten(node[i], out, prefix + '.' + i)
+// Keys follow React's Children scheme: '.' separates levels, ':' separates
+// siblings, keyed children use '$' + escaped key instead of their index.
+function escapeKey(key: string): string {
+  return '$' + key.replace(/[=:]/g, (m) => (m === '=' ? '=0' : '=2'))
+}
+
+function escapeUserProvidedKey(key: string): string {
+  return key.replace(/\/+/g, '$&/')
+}
+
+function getElementKey(node: any, index: number): string {
+  if (isValidElement(node) && node.key != null) return escapeKey('' + node.key)
+  return index.toString(36)
+}
+
+const identity = (child: ReactNode) => child
+
+function mapIntoArray(
+  children: ReactNode,
+  out: any[],
+  escapedPrefix: string,
+  nameSoFar: string,
+  fn: (child: ReactNode) => any,
+): void {
+  if (Array.isArray(children)) {
+    const namePrefix = nameSoFar === '' ? '.' : nameSoFar + ':'
+    for (let i = 0; i < children.length; i++) {
+      const child = children[i]
+      mapIntoArray(child, out, escapedPrefix, namePrefix + getElementKey(child, i), fn)
+    }
     return
   }
-  out.push(node)
-}
 
-function getKey(node: any, index: number, prefix: string): string {
-  if (isValidElement(node) && node.key != null) return prefix + '$' + node.key
-  return prefix + ':' + index
-}
-
-function mapChildren(
-  children: ReactNode,
-  fn: (child: ReactNode, index: number) => any,
-  prefix = '',
-): any[] {
-  const flat: any[] = []
-  flatten(children, flat, prefix)
-  const out: any[] = []
-  for (let i = 0; i < flat.length; i++) {
-    const child = flat[i]
-    const mapped = fn(child, i)
-    if (mapped == null) continue
-    if (Array.isArray(mapped)) {
-      for (let j = 0; j < mapped.length; j++) {
-        const m = mapped[j]
-        if (m == null) continue
-        out.push(
-          isValidElement(m) && m.key == null
-            ? cloneElement(m as ReactElement, { key: getKey(child, i, prefix) + '/' + j })
-            : m,
-        )
-      }
-    } else {
-      out.push(
-        isValidElement(mapped) && mapped.key == null
-          ? cloneElement(mapped as ReactElement, { key: getKey(child, i, prefix) })
-          : mapped,
-      )
-    }
+  const child = children === undefined || typeof children === 'boolean' ? null : children
+  const childKey = nameSoFar === '' ? '.' + getElementKey(child, 0) : nameSoFar
+  const mapped = fn(child)
+  if (mapped == null) return
+  if (Array.isArray(mapped)) {
+    mapIntoArray(mapped, out, escapeUserProvidedKey(childKey) + '/', '', identity)
+  } else if (isValidElement(mapped)) {
+    const mappedKey =
+      mapped.key != null && (!isValidElement(child) || child.key !== mapped.key)
+        ? escapeUserProvidedKey('' + mapped.key) + '/'
+        : ''
+    out.push(cloneElement(mapped as ReactElement, { key: escapedPrefix + mappedKey + childKey }))
+  } else {
+    out.push(mapped)
   }
+}
+
+function mapChildren(children: ReactNode, fn: (child: ReactNode, index: number) => any): any[] {
+  const out: any[] = []
+  let index = 0
+  mapIntoArray(children, out, '', '', (child) => fn(child, index++))
   return out
+}
+
+function countChildren(children: ReactNode): number {
+  if (!Array.isArray(children)) return 1
+  let n = 0
+  for (let i = 0; i < children.length; i++) n += countChildren(children[i])
+  return n
 }
 
 export const Children = {
@@ -61,20 +78,12 @@ export const Children = {
     })
   },
   count(children: ReactNode): number {
-    let n = 0
-    const flat: any[] = []
-    flatten(children, flat, '')
-    for (let i = 0; i < flat.length; i++) n++
-    return n
+    if (children == null) return 0
+    return countChildren(children)
   },
   toArray(children: ReactNode): any[] {
-    const flat: any[] = []
-    flatten(children, flat, '')
-    return flat.map((c, i) =>
-      isValidElement(c) && c.key == null
-        ? cloneElement(c as ReactElement, { key: '' + i })
-        : c,
-    )
+    if (children == null) return []
+    return mapChildren(children, identity)
   },
   only(children: ReactNode): ReactElement {
     if (!isValidElement(children)) {
