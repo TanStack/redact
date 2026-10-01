@@ -11,6 +11,7 @@ import {
   getForceRerenderingFiber,
 } from '../../reconcile'
 import { ownContextChanged, renderContextConsumers } from '../context'
+import { resolveRefreshMemo } from '../../refresh'
 
 function shallowEqual(a: any, b: any): boolean {
   if (a === b) return true
@@ -25,7 +26,7 @@ function shallowEqual(a: any, b: any): boolean {
 }
 
 function renderMemo(fiber: Fiber, domParent: Node, anchor: Node | null): void {
-  const { type, compare } = fiber.type as any
+  const { type, compare } = process.env.NODE_ENV !== 'production' ? resolveRefreshMemo(fiber.type) : fiber.type as any
   const props = fiber.pp ?? {}
   const prev = fiber.mp
 

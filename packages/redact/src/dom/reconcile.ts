@@ -23,6 +23,7 @@ import { HOOK_BAILOUT, renderWithHooks } from './dispatcher'
 import { rememberRetainedEffect, setLayoutDisconnected } from './retained-effects'
 import { componentStack } from './error-info'
 import { resourceKind } from '../core/resource-hints'
+import { rememberRefreshRender, scheduleRefreshRoot, commitRefreshRoot, failRefreshRoot, failRefreshBoundary, resolveRefreshType, sameRefreshFamily, needsRefreshRemount } from './refresh'
 import { acquireResource } from './resources'
 import { currentCommit, commitSynchronously, queueMutation, queueText, queueCommitEffects, setCommitCheckpointHook, onCommitRollback, onCommitFailure, checkpointCommit, rewindCommit, rememberChildList } from './commit'
 import { markTransitionUpdate, deferTransition, cancelTransitions, deferTransitionLayout, deferTransitionPassive } from './features/view-transition'
@@ -182,6 +183,7 @@ function flushRoot(root: FiberRoot): void {
 }
 
 export function scheduleRootRender(root: FiberRoot, render: () => void): void {
+  if (process.env.NODE_ENV !== 'production') rememberRefreshRender(root, render)
   markTransitionUpdate(root)
   root.u = render
   pendingRoots.add(root)
@@ -227,6 +229,7 @@ export function findRoot(fiber: Fiber): FiberRoot | null {
 
 export function renderRoot(root: FiberRoot, children: ReactNode): void {
   if (!currentCommit) return commitSynchronously(() => renderRoot(root, children))
+  if (process.env.NODE_ENV !== 'production') scheduleRefreshRoot(root, children)
   const rootFiber = root.r
   rootFiber.pp = { children }
   currentRoot = root
@@ -238,6 +241,7 @@ export function renderRoot(root: FiberRoot, children: ReactNode): void {
     currentRoot = null
   }
   runEffects(root)
+  if (process.env.NODE_ENV !== 'production') queueCommitEffects(() => commitRefreshRoot(root))
 }
 
 function rerenderFiber(fiber: Fiber, root: FiberRoot): void {
@@ -358,6 +362,7 @@ function getKeyOf(child: NormalizedChild, index: number): string {
 function sameType(fiber: Fiber, child: NormalizedChild): boolean {
   if (!child) return false
   if (isTextChild(child)) return fiber.tag === FiberTag.Text
+  if (process.env.NODE_ENV !== 'production' && sameRefreshFamily(fiber.type, child.type)) return sameKey(fiber.key, child.key)
   return fiber.type === child.type && sameKey(fiber.key, child.key)
 }
 
@@ -377,7 +382,7 @@ function fiberFromChild(child: NormalizedChild, parent: Fiber): Fiber {
     f.parent = parent
     return f
   }
-  const type = child.type
+  const type = process.env.NODE_ENV !== 'production' ? resolveRefreshType(child.type) : child.type
   let tag: FiberTag = FiberTag.Host
   const marker = type && (type as any).$$typeof
   if (typeof type === 'string') tag = FiberTag.Host
@@ -436,6 +441,9 @@ export function reconcileChildren(
         f.pp = child
       } else {
         if (!sameKey(f.key, (child as ReactElement).key)) { ok = false; break }
+        if (process.env.NODE_ENV !== 'production' && sameRefreshFamily(f.type, (child as ReactElement).type)) {
+          f.type = (child as ReactElement).type
+        }
         if (f.type !== (child as ReactElement).type) { ok = false; break }
         f.pp = (child as ReactElement).props
         f.ref = (child as any).ref ?? null
@@ -519,6 +527,9 @@ export function reconcileChildren(
     if (child && typeof child === 'object' && !isTextChild(child) && (child as ReactElement).key != null) {
       const k = 'k' + (child as ReactElement).key
       const m = keyed.get(k)
+      if (process.env.NODE_ENV !== 'production' && m && sameRefreshFamily(m.type, (child as ReactElement).type)) {
+        m.type = (child as ReactElement).type
+      }
       if (m && m.type === (child as ReactElement).type) {
         match = m
         keyed.delete(k)
@@ -816,6 +827,10 @@ registerRenderer(FiberTag.Function, renderFunction)
 registerRenderer(FiberTag.Fragment, renderFragment)
 
 export function renderFiber(fiber: Fiber, domParent: Node, anchor: Node | null): void {
+  if (process.env.NODE_ENV !== 'production') {
+    if (needsRefreshRemount(fiber)) fiber = remountRefreshFiber(fiber, domParent)
+    fiber.type = resolveRefreshType(fiber.type)
+  }
   // Memo consumes pending state when it delegates to its inner renderer.
   if (fiber.tag !== FiberTag.Memo) fiber.dy = false
   fiber.root ||= currentRoot || findRoot(fiber)
@@ -832,6 +847,23 @@ export function renderFiber(fiber: Fiber, domParent: Node, anchor: Node | null):
   }
   if (fiber.root?.a) CAPABILITIES.syncActivity(fiber)
   if (lastStagedFiber === fiber) flushFiberCommits(fiber)
+}
+
+function remountRefreshFiber(fiber: Fiber, domParent: Node): Fiber {
+  const parent = fiber.parent!
+  const siblings = collectChildren(parent)
+  rememberChildList(parent, siblings)
+  onCommitRollback(() => {
+    parent.child = siblings[0] ?? null
+    for (let i = 0; i < siblings.length; i++) siblings[i]!.sibling = siblings[i + 1] ?? null
+  })
+  const next = fiberFromChild({ $$typeof: REACT_ELEMENT_TYPE, type: fiber.type, key: fiber.key, ref: fiber.ref, props: fiber.pp }, parent)
+  next.sibling = fiber.sibling
+  const previous = siblings[siblings.indexOf(fiber) - 1]
+  if (previous) previous.sibling = next
+  else parent.child = next
+  unmountFiber(fiber, domParent)
+  return next
 }
 
 function renderText(fiber: Fiber, domParent: Node, anchor: Node | null): void {
@@ -1209,6 +1241,7 @@ export class RenderErrorCapture {
 
 function captureError(capture: RenderErrorCapture): void {
   const fiber = capture.boundary
+  if (process.env.NODE_ENV !== 'production') failRefreshBoundary(fiber)
   fiber.ms = { ...fiber.ms, error: capture }
   scheduleUpdate(fiber)
 }
@@ -1223,6 +1256,7 @@ function findErrorBoundary(fiber: Fiber): Fiber | null {
 }
 
 function captureRootError(root: FiberRoot, stack: string, error: unknown): void {
+  if (process.env.NODE_ENV !== 'production') failRefreshRoot(root)
   const errors = root.er ||= []
   if (!errors.length) root.u = undefined
   errors.push({ error, stack })

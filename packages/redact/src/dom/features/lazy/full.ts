@@ -8,12 +8,14 @@ import {
   handleSuspended,
   deferHydration,
 } from '../../reconcile'
+import { resolveRefreshType } from '../../refresh'
 
 function renderLazy(fiber: Fiber, domParent: Node, anchor: Node | null): void {
   const { _payload, _init } = fiber.type as any
   let resolved: any
   try {
     resolved = _init(_payload)
+    if (process.env.NODE_ENV !== 'production') resolved = resolveRefreshType(resolved)
   } catch (thenable: any) {
     if (isThenable(thenable)) {
       if (deferHydration(fiber, thenable)) return

@@ -1,5 +1,6 @@
 import { FiberTag, type Fiber, type ReactNode } from '../../../core'
 import { checkpointCommit, rewindCommit, queueBeforeMutation, queueMutation } from '../../commit'
+import { failRefreshBoundary } from '../../refresh'
 import {
   registerRenderer,
   reconcileChildren,
@@ -142,6 +143,7 @@ function renderClass(fiber: Fiber, domParent: Node, anchor: Node | null): void {
     }
   }
   if (captured) {
+    if (process.env.NODE_ENV !== 'production') failRefreshBoundary(fiber)
     const error = captured.error
     const info = { componentStack: captured.stack }
     scheduleLifecycle(fiber, () => {

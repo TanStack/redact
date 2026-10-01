@@ -4,6 +4,7 @@ import { scheduleUpdate, enqueueEffect, readContext, rememberActivityEffect, han
 import { REACT_RECOVERABLE_TYPE } from '../core/browser'
 import { queueCommitEffects } from './commit'
 import { deferTransitionPassive } from './features/view-transition'
+import { isRefreshing, finishRefresh, resolveRefreshType } from './refresh'
 
 function getCurrentFiber(): Fiber {
   const f = ReactSharedInternals.F
@@ -26,6 +27,7 @@ function depsEqual(
   a: ReadonlyArray<unknown> | undefined,
   b: ReadonlyArray<unknown> | undefined,
 ): boolean {
+  if (process.env.NODE_ENV !== 'production' && isRefreshing(ReactSharedInternals.F)) return false
   if (a === b) return true
   if (!a || !b) return false
   if (a.length !== b.length) return false
@@ -77,6 +79,10 @@ export function renderWithHooks(
   ref?: any,
   canBail = false,
 ): ReactNode | typeof HOOK_BAILOUT {
+  if (process.env.NODE_ENV !== 'production') {
+    render = resolveRefreshType(render)
+    if (isRefreshing(fiber)) canBail = false
+  }
   const previousDispatcher = ReactSharedInternals.H, previousFiber = ReactSharedInternals.F, previousIndex = ReactSharedInternals.I
   const previousEffects = hookEffects, previousFlags = hookFlags
   hookEffects = undefined
@@ -110,6 +116,7 @@ export function renderWithHooks(
       }
       hookEffects = undefined
     }
+    if (process.env.NODE_ENV !== 'production') finishRefresh(fiber)
     return rendered
   } finally {
     if (hookEffects) resetHookEffects(hookEffects)
