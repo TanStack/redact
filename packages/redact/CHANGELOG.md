@@ -1,5 +1,11 @@
 # @tanstack/redact
 
+## 0.1.3
+
+### Patch Changes
+
+- Support React Fast Refresh in development, preserving component state for compatible edits, remounting incompatible hook signatures, rerunning effects, and recovering from render errors. Works with the normal React Refresh transform used by `@vitejs/plugin-react`. ([#38](https://github.com/TanStack/redact/pull/38))
+
 ## 0.1.2
 
 ### Patch Changes
