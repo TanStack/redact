@@ -556,7 +556,7 @@ export function recoverHydration(root: FiberRoot, error: unknown): boolean {
   try {
     flushSyncWork(() => renderRoot(root, children))
   } catch (clientError) {
-    resetAfterHydrationFailure(root, container)
+    resetAfterHydrationFailure(root, container, recoveryContainer)
     if (recoverRootError(clientError)) return true
     throw clientError
   } finally {
@@ -569,7 +569,7 @@ export function recoverHydration(root: FiberRoot, error: unknown): boolean {
 function resetAfterHydrationFailure(
   root: FiberRoot,
   container: Element | Document,
-  recoveryContainer: Element | Document = container,
+  recoveryContainer: Element | Document,
 ): void {
   // Retire committed subscriptions and portals without removing the document shell.
   unmountFiber(root.r, container, false)

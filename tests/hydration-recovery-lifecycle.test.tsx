@@ -5,6 +5,34 @@ import { createPortal, flushSync } from 'react-dom'
 import { act } from 'react-dom/test-utils'
 
 describe('hydration recovery lifecycle', () => {
+  it('preserves the document shell and head resources when narrowed recovery throws', () => {
+    const doc = new DOMParser().parseFromString(
+      '<!doctype html><html><head><style id="critical">body{color:red}</style></head><body><p>server</p></body></html>',
+      'text/html',
+    )
+    const shell = [doc.documentElement, doc.head, doc.body]
+    const critical = doc.getElementById('critical')
+    const error = new Error('client recovery failed')
+    const recoverable: unknown[] = []
+    function Broken(): React.ReactNode { throw error }
+    function App() {
+      return (
+        <html>
+          <head><style id="critical">{'body{color:red}'}</style></head>
+          <body><p>client</p><Broken /></body>
+        </html>
+      )
+    }
+
+    expect(() => hydrateRoot(doc, <App />, {
+      onRecoverableError: value => recoverable.push(value),
+    })).toThrow(error)
+    expect(recoverable).toHaveLength(1)
+    ;[doc.documentElement, doc.head, doc.body].forEach((node, index) => expect(node).toBe(shell[index]))
+    expect(doc.getElementById('critical')).toBe(critical)
+    expect(doc.body.childNodes).toHaveLength(0)
+  })
+
   it.each(['document', 'element', 'nested'] as const)(
     'preserves provider ancestry and root updates after %s recovery',
     async (kind) => {

@@ -1,9 +1,9 @@
 {
-  "date": "2026-10-04T15:22:28.451Z",
+  "date": "2026-10-04T19:30:32.273Z",
   "node": "v24.15.0",
   "esbuild": "0.28.0",
   "method": "Production es2022 ESM, all entry exports retained, default gzip and brotli. Feature variants assert that disabled full implementations are absent. Not an application bundle.",
-  "packageRoot": "/private/tmp/redact-recovery-release-SArBPy/package",
+  "packageRoot": "/private/tmp/redact-hydration-reviewed-f0677f5/package",
   "sourceFiles": [
     {
       "file": "core/attributes.ts",
@@ -115,7 +115,7 @@
     },
     {
       "file": "dom/features/hydration/full.ts",
-      "sha256": "0c7b81ec85e82931c4c3be5d67878f773627c43b76929e1ad23f5b0e8d8b33a6"
+      "sha256": "72b6f9b5d9c9651ce357875a095aa147254b8e36a2a9758ea6b821daa5c29ab3"
     },
     {
       "file": "dom/features/hydration/index.ts",
@@ -673,11 +673,11 @@
     },
     {
       "file": "dom/features/hydration/full.js",
-      "sha256": "2131816fa99655736735f0720b17063db8338b40b9e2e5a6d7af2705334f09e9"
+      "sha256": "24ce60041f0f50f01951b6e64df486558fc24cf98955da5aa024714f8e668a71"
     },
     {
       "file": "dom/features/hydration/full.js.map",
-      "sha256": "d2ba3d23dac1491d0f7e928bec67c355cd956e5a16af23279874469ef2ba0aa7"
+      "sha256": "3c6b29ab7be1ff49548af7ab8b30164a5703b19d205a4756c0e633ab00d7e83f"
     },
     {
       "file": "dom/features/hydration/index.d.ts",
@@ -1372,15 +1372,15 @@
         "name": "redact/dom",
         "tree": "src",
         "min": 68603,
-        "gz": 24989,
-        "br": 22461
+        "gz": 24985,
+        "br": 22504
       },
       {
         "name": "redact/dom-client",
         "tree": "src",
         "min": 67698,
-        "gz": 24599,
-        "br": 22147
+        "gz": 24595,
+        "br": 22146
       },
       {
         "name": "redact/server",
@@ -1393,85 +1393,85 @@
         "name": "client total",
         "tree": "src",
         "min": 76319,
-        "gz": 27796,
+        "gz": 27794,
         "br": 24861
       },
       {
         "name": "client total (default Vite)",
         "tree": "src",
         "min": 63880,
-        "gz": 22976,
-        "br": 20676
+        "gz": 22972,
+        "br": 20670
       },
       {
         "name": "redact/dom-client (activity=stub)",
         "tree": "src",
         "min": 65652,
-        "gz": 24064,
-        "br": 21699
+        "gz": 24059,
+        "br": 21707
       },
       {
         "name": "redact/dom-client (fragmentRefs=stub)",
         "tree": "src",
         "min": 61216,
-        "gz": 22410,
-        "br": 20340
+        "gz": 22406,
+        "br": 20316
       },
       {
         "name": "redact/dom-client (viewTransitions=stub)",
         "tree": "src",
         "min": 55256,
-        "gz": 19813,
-        "br": 17941
+        "gz": 19809,
+        "br": 17934
       },
       {
         "name": "redact/dom-client (portal=stub)",
         "tree": "src",
         "min": 67611,
-        "gz": 24572,
-        "br": 22139
+        "gz": 24563,
+        "br": 22116
       },
       {
         "name": "redact/dom-client (context=stub)",
         "tree": "src",
         "min": 66825,
-        "gz": 24315,
-        "br": 21932
+        "gz": 24310,
+        "br": 21936
       },
       {
         "name": "redact/dom-client (suspense=stub)",
         "tree": "src",
         "min": 63085,
-        "gz": 23118,
-        "br": 20839
+        "gz": 23115,
+        "br": 20835
       },
       {
         "name": "redact/dom-client (memo=stub)",
         "tree": "src",
         "min": 67428,
-        "gz": 24503,
-        "br": 22077
+        "gz": 24500,
+        "br": 22074
       },
       {
         "name": "redact/dom-client (forwardRef=stub)",
         "tree": "src",
         "min": 67571,
-        "gz": 24571,
-        "br": 22110
+        "gz": 24567,
+        "br": 22109
       },
       {
         "name": "redact/dom-client (lazy=stub)",
         "tree": "src",
         "min": 67680,
-        "gz": 24593,
-        "br": 22209
+        "gz": 24589,
+        "br": 22180
       },
       {
         "name": "redact/dom-client (classComponents=stub)",
         "tree": "src",
         "min": 66049,
-        "gz": 24139,
-        "br": 21763
+        "gz": 24135,
+        "br": 21751
       },
       {
         "name": "redact/dom-client (hydration=stub)",
@@ -1507,15 +1507,15 @@
         "name": "redact/dom",
         "tree": "dist",
         "min": 69928,
-        "gz": 25257,
-        "br": 22694
+        "gz": 25252,
+        "br": 22733
       },
       {
         "name": "redact/dom-client",
         "tree": "dist",
         "min": 69027,
-        "gz": 24897,
-        "br": 22416
+        "gz": 24894,
+        "br": 22418
       },
       {
         "name": "redact/server",
@@ -1528,85 +1528,85 @@
         "name": "client total",
         "tree": "dist",
         "min": 77648,
-        "gz": 28064,
-        "br": 25155
+        "gz": 28061,
+        "br": 25139
       },
       {
         "name": "client total (default Vite)",
         "tree": "dist",
         "min": 65180,
-        "gz": 23232,
-        "br": 20928
+        "gz": 23227,
+        "br": 20931
       },
       {
         "name": "redact/dom-client (activity=stub)",
         "tree": "dist",
         "min": 66892,
-        "gz": 24345,
-        "br": 21976
+        "gz": 24342,
+        "br": 21951
       },
       {
         "name": "redact/dom-client (fragmentRefs=stub)",
         "tree": "dist",
         "min": 62474,
-        "gz": 22704,
-        "br": 20579
+        "gz": 22699,
+        "br": 20593
       },
       {
         "name": "redact/dom-client (viewTransitions=stub)",
         "tree": "dist",
         "min": 56554,
-        "gz": 20081,
-        "br": 18187
+        "gz": 20077,
+        "br": 18186
       },
       {
         "name": "redact/dom-client (portal=stub)",
         "tree": "dist",
         "min": 68935,
-        "gz": 24866,
-        "br": 22403
+        "gz": 24862,
+        "br": 22427
       },
       {
         "name": "redact/dom-client (context=stub)",
         "tree": "dist",
         "min": 68100,
-        "gz": 24603,
-        "br": 22165
+        "gz": 24599,
+        "br": 22199
       },
       {
         "name": "redact/dom-client (suspense=stub)",
         "tree": "dist",
         "min": 64347,
-        "gz": 23390,
-        "br": 21074
+        "gz": 23387,
+        "br": 21063
       },
       {
         "name": "redact/dom-client (memo=stub)",
         "tree": "dist",
         "min": 68757,
-        "gz": 24799,
-        "br": 22329
+        "gz": 24795,
+        "br": 22369
       },
       {
         "name": "redact/dom-client (forwardRef=stub)",
         "tree": "dist",
         "min": 68909,
-        "gz": 24856,
-        "br": 22379
+        "gz": 24852,
+        "br": 22372
       },
       {
         "name": "redact/dom-client (lazy=stub)",
         "tree": "dist",
         "min": 69009,
-        "gz": 24884,
-        "br": 22398
+        "gz": 24881,
+        "br": 22395
       },
       {
         "name": "redact/dom-client (classComponents=stub)",
         "tree": "dist",
         "min": 67375,
-        "gz": 24423,
-        "br": 21974
+        "gz": 24420,
+        "br": 21972
       },
       {
         "name": "redact/dom-client (hydration=stub)",
