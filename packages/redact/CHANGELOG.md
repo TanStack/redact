@@ -1,5 +1,11 @@
 # @tanstack/redact
 
+## 0.1.4
+
+### Patch Changes
+
+- Keep component and context provider ancestry when recovering from a hydration mismatch. Document recovery preserves the existing shell, root renders still update the full app, and abandoned effects are cleaned up. ([#40](https://github.com/TanStack/redact/pull/40))
+
 ## 0.1.3
 
 ### Patch Changes
