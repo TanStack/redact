@@ -5,6 +5,100 @@ import { createPortal, flushSync } from 'react-dom'
 import { act } from 'react-dom/test-utils'
 
 describe('hydration recovery lifecycle', () => {
+  it('preserves the document shell and head resources when narrowed recovery throws', () => {
+    const doc = new DOMParser().parseFromString(
+      '<!doctype html><html><head><style id="critical">body{color:red}</style></head><body><p>server</p></body></html>',
+      'text/html',
+    )
+    const shell = [doc.documentElement, doc.head, doc.body]
+    const critical = doc.getElementById('critical')
+    const error = new Error('client recovery failed')
+    const recoverable: unknown[] = []
+    function Broken(): React.ReactNode { throw error }
+    function App() {
+      return (
+        <html>
+          <head><style id="critical">{'body{color:red}'}</style></head>
+          <body><p>client</p><Broken /></body>
+        </html>
+      )
+    }
+
+    expect(() => hydrateRoot(doc, <App />, {
+      onRecoverableError: value => recoverable.push(value),
+    })).toThrow(error)
+    expect(recoverable).toHaveLength(1)
+    ;[doc.documentElement, doc.head, doc.body].forEach((node, index) => expect(node).toBe(shell[index]))
+    expect(doc.getElementById('critical')).toBe(critical)
+    expect(doc.body.childNodes).toHaveLength(0)
+  })
+
+  it.each(['document', 'element', 'nested'] as const)(
+    'preserves provider ancestry and root updates after %s recovery',
+    async (kind) => {
+      const outer = React.createContext('outer-default')
+      const inner = React.createContext('inner-default')
+      const contents = '<div>Navigation</div><button id="consumer">outer-value/inner-value/0</button>'
+      const doc = new DOMParser().parseFromString(
+        '<!doctype html><html><head><title>Context</title></head><body>' +
+          (kind === 'document' ? contents : '<div id="root">' +
+            (kind === 'nested' ? '<main>' + contents + '</main>' : contents) + '</div>') +
+          '</body></html>',
+        'text/html',
+      )
+      const container = kind === 'document' ? doc : doc.getElementById('root')!
+      const shell = [doc.documentElement, doc.head, doc.body]
+      let subscriptions = 0
+      let mounts = 0
+      let cleanups = 0
+      function Consumer() {
+        const outside = React.useContext(outer), inside = React.useContext(inner)
+        const [count, setCount] = React.useState(0)
+        React.useEffect(() => {
+          subscriptions++; mounts++
+          return () => { subscriptions--; cleanups++ }
+        }, [outside, inside])
+        return <button id="consumer" onClick={() => setCount(x => x + 1)}>{outside}/{inside}/{count}</button>
+      }
+      function Contents() {
+        return <inner.Provider value="inner-value"><a href="#context">Navigation</a><Consumer /></inner.Provider>
+      }
+      function App({ value = 'outer-value' }) {
+        const child = kind === 'document'
+          ? <html><head><title>Context</title></head><body><Contents /></body></html>
+          : kind === 'nested' ? <main><Contents /></main> : <Contents />
+        return <outer.Provider value={value}>{child}</outer.Provider>
+      }
+      const recoverable: unknown[] = [], uncaught: unknown[] = []
+      let root!: ReturnType<typeof hydrateRoot>
+      await act(() => {
+        root = hydrateRoot(container, <App />, {
+          onRecoverableError: e => recoverable.push(e),
+          onUncaughtError: e => uncaught.push(e),
+        })
+      })
+      const text = () => doc.getElementById('consumer')?.textContent
+      try {
+        expect(text()).toBe('outer-value/inner-value/0')
+        expect(subscriptions).toBe(1)
+        await act(() => flushSync(() => doc.getElementById('consumer')!.click()))
+        expect(text()).toBe('outer-value/inner-value/1')
+        await act(() => flushSync(() => root.render(<App value="outer-updated" />)))
+        expect(text()).toBe('outer-updated/inner-value/1')
+        expect(subscriptions).toBe(1)
+        expect(recoverable).toHaveLength(1)
+        expect(uncaught).toEqual([])
+        ;[doc.documentElement, doc.head, doc.body].forEach((node, index) => expect(node).toBe(shell[index]))
+        expect(doc.querySelectorAll('html')).toHaveLength(1)
+        expect(doc.querySelectorAll('body')).toHaveLength(1)
+      } finally {
+        await act(() => root.unmount())
+      }
+      expect(subscriptions).toBe(0)
+      expect(cleanups).toBe(mounts)
+    },
+  )
+
   it.each(['passive', 'layout'] as const)(
     'does not install abandoned %s subscriptions after document recovery',
     async (effectType) => {

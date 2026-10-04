@@ -406,7 +406,7 @@ describe('hydrateRoot(document, <html/>)', () => {
     expect(doc.querySelector('#critical')?.textContent).toBe('body{color:red}')
   })
 
-  it('falls back to body-only client render on document body text mismatch', () => {
+  it('client-renders the document body while preserving the shell on a text mismatch', () => {
     function App() {
       return (
         <html>

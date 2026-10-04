@@ -7,7 +7,10 @@ import { measureSizes } from './measure-size.mjs'
 const BUDGETS = {
   'redact': 2793,
   'redact/jsx-runtime': 217,
-  'redact/dom': 25246,
+  // Recovery preserves provider ancestry. The reviewed built entry grows by
+  // 36 bytes, while the combined client shrinks by 64. Keep the approved budget.
+  // See benchmarks/HYDRATION_RECOVERY.md for the bound source/dist measurements.
+  'redact/dom': 25282,
   'redact/dom-client': 25006,
   'redact/server': 8989,
   'client total': 28183,

@@ -130,6 +130,7 @@ export class HydrationCursor {
 }
 
 const hydrationCursors = new WeakMap<Fiber, HydrationCursor>()
+const recoveryContainers = new WeakMap<FiberRoot, Node>()
 const PROD_HYDRATION_ERROR = 'Hydration mismatch.'
 
 export interface HydrationBailoutError extends Error {
@@ -165,7 +166,6 @@ export function hydrateRootImpl(
 ): HydratedRoot {
   const target = container as any as Element | Document
   const isDocument = (container as Node).nodeType === 9
-  const body = isDocument ? (target as Document).body : null
   const root = createFiberRoot(target, options)
 
   installHydrationScrollGuard()
@@ -190,10 +190,7 @@ export function hydrateRootImpl(
     render(children) {
       scheduleRootRender(root, () => {
         const normalized = isDocument ? normalizeDocumentChildren(children) : children
-        renderRoot(
-          root,
-          root.c === body ? getStaticDocumentBodyChildren(normalized) ?? normalized : normalized,
-        )
+        renderRoot(root, normalized)
       })
     },
     unmount() {
@@ -385,7 +382,11 @@ export function adoptHostDom(fiber: Fiber, parent: Fiber): boolean {
     ) queueProp(candidate as Element, k, props[k], undefined, isSvg)
   }
   // Set up child cursor for this host's children
-  hydrationCursors.set(fiber, new HydrationCursor(candidate))
+  // Recovery keeps the whole component tree, but mounts fresh children inside
+  // the failed host. Hosts outside it still adopt the existing document shell.
+  if (recoveryContainers.get(fiber.root!) !== candidate) {
+    hydrationCursors.set(fiber, new HydrationCursor(candidate))
+  }
   return true
 }
 
@@ -542,27 +543,25 @@ function isSafeHostRecoveryElement(fiber: Fiber): boolean {
 export function recoverHydration(root: FiberRoot, error: unknown): boolean {
   if (!isHydrationBailout(error)) return false
 
-  let container = root.c as Element | Document
-  let children = root.r.pp?.children ?? null
-  const hostRecovery = getRecoverableHostChildren(error)
-  if (hostRecovery) {
-    container = hostRecovery[0]
-    children = hostRecovery[1]
-  } else if (container.nodeType === 9) {
-    const bodyChildren = getRecoverableDocumentBodyChildren(error)
-    if (bodyChildren != null) {
-      container = (container as Document).body
-      children = bodyChildren
-    }
-  }
+  const container = root.c as Element | Document
+  const children = root.r.pp?.children ?? null
+  const recoveryContainer = getRecoveryContainer(container, error.f)
 
-  resetAfterHydrationFailure(root, container)
+  resetAfterHydrationFailure(root, container, recoveryContainer)
+  if (recoveryContainer !== container) {
+    for (const node of container.querySelectorAll('*')) CLAIMED.delete(node)
+    recoveryContainers.set(root, recoveryContainer)
+    beginHydration(root)
+  }
   try {
     flushSyncWork(() => renderRoot(root, children))
   } catch (clientError) {
-    resetAfterHydrationFailure(root, container)
+    resetAfterHydrationFailure(root, container, recoveryContainer)
     if (recoverRootError(clientError)) return true
     throw clientError
+  } finally {
+    endHydration(root)
+    recoveryContainers.delete(root)
   }
   return true
 }
@@ -570,12 +569,13 @@ export function recoverHydration(root: FiberRoot, error: unknown): boolean {
 function resetAfterHydrationFailure(
   root: FiberRoot,
   container: Element | Document,
+  recoveryContainer: Element | Document,
 ): void {
   // Retire committed subscriptions and portals without removing the document shell.
   unmountFiber(root.r, container, false)
   discardPendingWork(root)
   discardPendingEffects(root)
-  clearHydrationContainer(container)
+  clearHydrationContainer(recoveryContainer)
   attachRootFiber(root, container)
   root.h = false
 }
@@ -597,44 +597,25 @@ function clearHydrationContainer(container: Element | Document): void {
   })
 }
 
-function getRecoverableHostChildren(
-  error: HydrationBailoutError,
-): [Element, ReactNode] | null {
-  const host = error.f
+function getRecoveryContainer(
+  container: Element | Document,
+  host: Fiber | null,
+): Element | Document {
   if (
-    host?.tag !== FiberTag.Host ||
-    !host.dom ||
-    !findNearestSafeHostAboveComposite(host.parent)
+    host?.tag === FiberTag.Host &&
+    host.dom &&
+    findNearestSafeHostAboveComposite(host.parent)
   ) {
-    return null
+    return host.dom as Element
   }
-  return [host.dom as Element, (host.pp ?? host.mp)?.children ?? null]
-}
-
-function getRecoverableDocumentBodyChildren(error: HydrationBailoutError): ReactNode | null {
-  const bodyFiber = findBodyAncestor(error.f)
-  if (!bodyFiber) return null
-  return (bodyFiber.pp ?? bodyFiber.mp)?.children ?? null
-}
-
-function findBodyAncestor(fiber: Fiber | null): Fiber | null {
-  let f = fiber
-  while (f) {
-    if (f.tag === FiberTag.Host && f.type === 'body') {
-      return f === fiber ? null : f
+  if (container.nodeType === 9) {
+    for (let fiber = host; fiber; fiber = fiber.parent) {
+      if (fiber.tag === FiberTag.Host && fiber.type === 'body') {
+        return fiber === host ? container : (container as Document).body
+      }
     }
-    f = f.parent
   }
-  return null
-}
-
-function getStaticDocumentBodyChildren(children: ReactNode): ReactNode | null {
-  const list = toChildArray(children)
-  const html = list.find((child) => isHostElement(child, 'html')) as ReactElement | undefined
-  if (!html) return null
-  const htmlChildren = toChildArray(html.props?.children)
-  const body = htmlChildren.find((child) => isHostElement(child, 'body')) as ReactElement | undefined
-  return body ? body.props?.children ?? null : null
+  return container
 }
 
 function normalizeDocumentChildren(children: ReactNode): ReactNode {
