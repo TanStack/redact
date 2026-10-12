@@ -80,3 +80,41 @@ describe('null-sibling DOM order', () => {
     root.unmount()
   })
 })
+
+describe('child-chain anchor reuse', () => {
+  it('rechecks an anchor moved to another parent with its neighbour', () => {
+    const container = document.createElement('div')
+    const elsewhere = document.createElement('div')
+    const root = createRoot(container)
+    function First({ active }: { active: boolean }) {
+      if (active) {
+        // Moves the anchor and the node before it together, so their sibling
+        // relationship survives the move.
+        elsewhere.append(container.firstChild!, container.firstChild!.nextSibling!)
+      }
+      return null
+    }
+    function Middle({ active }: { active: boolean }) {
+      return active ? <span>middle</span> : null
+    }
+    function Tree({ active }: { active: boolean }) {
+      return (
+        <>
+          <First active={active} />
+          <Middle active={active} />
+          <i>one</i>
+          <b>two</b>
+          <u>tail</u>
+        </>
+      )
+    }
+    try {
+      root.render(<Tree active={false} />)
+      root.render(<Tree active />)
+      expect(Array.from(container.children, (node) => node.tagName)).toEqual(['SPAN', 'U'])
+      expect(container.textContent).toBe('middletail')
+    } finally {
+      root.unmount()
+    }
+  })
+})
