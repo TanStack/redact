@@ -7,7 +7,7 @@ import {
   type ReactNode,
 } from '../../../core'
 import { attributeName, STRING_BOOLEAN_ATTRS } from '../../../core/attributes'
-import { createHostNode, setProp, syncTextareaValue } from '../../dom'
+import { setProp, syncTextareaValue } from '../../dom'
 import { queueMutation, queueProp, queueText } from '../../commit'
 import { drainReplayQueue } from '../../event-replay'
 import { discardPendingWork, discardPendingEffects, findRoot, flushSyncWork, renderRoot, scheduleRootRender, recoverRootError, unmountFiber } from '../../reconcile'
@@ -17,53 +17,6 @@ import { componentStack } from '../../error-info'
 // Re-export from event-replay so all hydration concerns live behind one
 // feature boundary — the plugin's stub swap strips drainReplayQueue too.
 export { drainReplayQueue }
-
-/**
- * Preserve the user's scroll position across hydration. If the user scrolled
- * between SSR paint and hydrate (common in dev where JS takes seconds to
- * load), libraries that wire scroll-restoration into a `useLayoutEffect`
- * near the root (e.g. TanStack Router) will run during our synchronous
- * hydrate and call `window.scrollTo(savedFromLastVisit)` — overwriting the
- * user's fresh scroll. We install a short-lived wrapper around scrollTo that
- * suppresses programmatic calls when a user-initiated scroll happened
- * recently. Only runs in the hydration feature — the stub skips it.
- */
-export function installHydrationScrollGuard(): void {
-  if (typeof window === 'undefined') return
-  const w = window as any
-  if (w._r) return
-  const time = Date.now
-  const guardStartedAt = w._r = time()
-  let lastUserScrollAt = 0
-  let programmatic = false
-  w.addEventListener(
-    'scroll',
-    () => {
-      if (!programmatic) {
-        lastUserScrollAt = time()
-      }
-    },
-    { capture: true, passive: true },
-  )
-  const origScrollTo = w.scrollTo
-  w.scrollTo = function (...args: any[]) {
-    const now = time()
-    if (
-      now - guardStartedAt < 3000 &&
-      now - lastUserScrollAt < 1500
-    ) {
-      return
-    }
-    programmatic = true
-    try {
-      return (origScrollTo as any).apply(w, args)
-    } finally {
-      queueMicrotask(() => {
-        programmatic = false
-      })
-    }
-  }
-}
 
 /**
  * Hydration cursor: walks existing DOM children in document order so we can
@@ -167,8 +120,6 @@ export function hydrateRootImpl(
   const target = container as any as Element | Document
   const isDocument = (container as Node).nodeType === 9
   const root = createFiberRoot(target, options)
-
-  installHydrationScrollGuard()
 
   const normalizedInitialChildren =
     isDocument ? normalizeDocumentChildren(initialChildren) : initialChildren
@@ -367,7 +318,7 @@ export function adoptHostDom(fiber: Fiber, parent: Fiber): boolean {
   const syncHydrationProps =
     !props.suppressHydrationWarning &&
     canRecoverHydrationPropMismatch(candidate, tag)
-  validateHydrationProps(fiber, candidate as Element, props, tag, isSvg)
+  const recoverInnerHTML = validateHydrationProps(fiber, candidate as Element, props, tag, isSvg)
   // Form state can change between server paint and hydration. Initialize reset
   // defaults without treating the live value or selection as a mismatch.
   if (tag === 'input' || tag === 'textarea') queueHydrationFormState(candidate as Element, props, tag)
@@ -375,6 +326,7 @@ export function adoptHostDom(fiber: Fiber, parent: Fiber): boolean {
     if (
       (syncHydrationProps &&
         k !== 'children' && k !== 'key' && k !== 'ref' &&
+        (k !== 'dangerouslySetInnerHTML' || recoverInnerHTML) &&
         (k !== 'nonce' || hydrationAttribute(candidate as Element, k) !== props[k]) &&
         k !== 'suppressHydrationWarning' && k !== 'suppressContentEditableWarning' &&
         !isHydrationFormProp(tag, k)) ||
@@ -707,15 +659,32 @@ function isHydrationFormProp(tag: string, key: string): boolean {
   )
 }
 
+// Validation must normalize attributes and markup without starting resource loads
+// or upgrading custom elements in the live document.
+const hydrationProbeDocuments = new WeakMap<Document, Document>()
+function createHydrationProbe(tag: string, isSvg: boolean, owner: Document): Element {
+  let inert = hydrationProbeDocuments.get(owner)
+  if (!inert) {
+    inert = owner.implementation.createHTMLDocument('')
+    hydrationProbeDocuments.set(owner, inert)
+  }
+  return isSvg
+    ? inert.createElementNS('http://www.w3.org/2000/svg', tag)
+    : inert.createElement(tag)
+}
+
 function validateHydrationProps(
   fiber: Fiber,
   el: Element,
   props: Record<string, any>,
   tag: string,
   isSvg: boolean,
-): void {
-  if (props.suppressHydrationWarning) return
+): boolean {
+  if (props.suppressHydrationWarning) return false
 
+  // Head hosts recover prop mismatches in place. A matching opaque subtree
+  // must not be rewritten: resetting a stylesheet restarts font loading.
+  let recoverInnerHTML = false
   const recoverInPlace = canRecoverHydrationPropMismatch(el, tag)
   let expected: Element | undefined
 
@@ -734,11 +703,12 @@ function validateHydrationProps(
       let html = value?.__html
       if (html == null) continue
       if (tag !== 'script' && tag !== 'style') {
-        const probe = createHostNode(tag, isSvg)
+        const probe = createHydrationProbe(tag, isSvg, el.ownerDocument)
         probe.innerHTML = html
         html = probe.innerHTML
       }
       if ((el as HTMLElement).innerHTML !== '' + html) {
+        recoverInnerHTML = true
         failHydration(
           fiber,
           process.env.NODE_ENV !== 'production'
@@ -753,7 +723,7 @@ function validateHydrationProps(
     if (isHydrationFormProp(tag, k)) continue
 
     if (k === 'style') {
-      expected ??= createHostNode(tag, isSvg)
+      expected ??= createHydrationProbe(tag, isSvg, el.ownerDocument)
       setProp(expected, k, value, undefined, isSvg)
       if (
         !hydrationStylesMatch(
@@ -786,7 +756,7 @@ function validateHydrationProps(
       // These attributes use setAttribute string coercion, not DOM property normalization.
       expectedValue = '' + value
     } else {
-      expected ??= createHostNode(tag, isSvg)
+      expected ??= createHydrationProbe(tag, isSvg, el.ownerDocument)
       setProp(expected, k, value, undefined, isSvg)
       expectedValue = expected.getAttribute(attr)
     }
@@ -804,6 +774,7 @@ function validateHydrationProps(
       )
     }
   }
+  return recoverInnerHTML
 }
 
 function hydrationStylesMatch(

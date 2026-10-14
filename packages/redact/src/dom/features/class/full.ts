@@ -7,6 +7,7 @@ import {
   childrenToArray,
   scheduleUpdate,
   scheduleLifecycle,
+  scheduleErrorLifecycle,
   isThenable,
   handleSuspended,
   handleErrorInRender,
@@ -16,6 +17,7 @@ import {
   isActivityHidden,
   layoutIsDisconnected,
   RenderErrorCapture,
+  renderErrorFallback,
   handleCommitError,
 } from '../../reconcile'
 
@@ -28,7 +30,21 @@ function renderClass(fiber: Fiber, domParent: Node, anchor: Node | null): void {
   const previous = fiber.ms?.c
   let didRender = true
   let captured = fiber.ms?.error instanceof RenderErrorCapture ? fiber.ms.error as RenderErrorCapture : undefined
-  if (captured) delete fiber.ms.error
+  if (captured) {
+    delete fiber.ms.error
+    // A reset or new route props abandons a pending recovery render.
+    // Re-evaluate the current children instead of restoring the old error.
+    if (captured.props !== props || captured.state !== instance?.state) {
+      // A memo between this boundary and the throwing child must not hide the
+      // retried read. Only mark a source that still belongs to this boundary.
+      let ancestor: Fiber | null = captured.source
+      while (ancestor && ancestor !== fiber) ancestor = ancestor.parent
+      if (ancestor === fiber && !captured.source.um && !captured.source.pd) {
+        for (let retry = captured.source; retry !== fiber; retry = retry.parent!) retry.dy = true
+      }
+      captured = undefined
+    }
+  }
 
   // Class contextType: read the current value of the subscribed context so
   // `this.context` reflects the nearest Provider. Evaluated every render.
@@ -99,7 +115,8 @@ function renderClass(fiber: Fiber, domParent: Node, anchor: Node | null): void {
   if (canCatch && fiber.root) fiber.root.eb = true
   const checkpoint = canCatch ? checkpointCommit(fiber) : -1
   try {
-    reconcileChildren(fiber, childrenToArray(rendered), domParent, anchor)
+    if (captured) renderErrorFallback(fiber, () => reconcileChildren(fiber, childrenToArray(rendered), domParent, anchor))
+    else reconcileChildren(fiber, childrenToArray(rendered), domParent, anchor)
   } catch (error) {
     if (!(error instanceof RenderErrorCapture) || error.boundary !== fiber) throw error
     rewindCommit(checkpoint)
@@ -114,11 +131,13 @@ function renderClass(fiber: Fiber, domParent: Node, anchor: Node | null): void {
       }
     } else rendered = null
     fiber.ms = { ...(fiber.ms ?? {}), r: rendered }
-    reconcileChildren(fiber, childrenToArray(rendered), domParent, anchor)
+    renderErrorFallback(fiber, () => reconcileChildren(fiber, childrenToArray(rendered), domParent, anchor))
   }
   fiber.mp = props
   const state = instance.state
-  queueMutation(() => { fiber.ms.c = { props, state } })
+  queueMutation(() => {
+    fiber.ms.c = { props, state }
+  })
 
   if (isNew) attachRef(fiber, instance)
   else syncRefIfChanged(fiber, instance)
@@ -146,7 +165,7 @@ function renderClass(fiber: Fiber, domParent: Node, anchor: Node | null): void {
     if (process.env.NODE_ENV !== 'production') failRefreshBoundary(fiber)
     const error = captured.error
     const info = { componentStack: captured.stack }
-    scheduleLifecycle(fiber, () => {
+    scheduleErrorLifecycle(fiber, () => {
       try { fiber.root?.ce?.(error, { ...info, errorBoundary: instance }) }
       catch (callbackError) { setTimeout(() => { throw callbackError }) }
       instance.componentDidCatch?.(error, info)

@@ -24,6 +24,7 @@ import {
   enqueueEffect,
   flushFiberCommits,
   scheduleLifecycle,
+  reconnectErrorLifecycles,
   handleCommitError,
 } from '../../reconcile'
 import { cleanupEffect } from '../../dispatcher'
@@ -253,6 +254,7 @@ function reconnectLayout(fiber: Fiber): void {
     if (effect.t === 1 && !effect.s) enqueueEffect(fiber, effect)
   }
   if (instance?.componentDidMount) scheduleLifecycle(fiber, () => instance.componentDidMount())
+  reconnectErrorLifecycles(fiber)
   flushFiberCommits(fiber)
 }
 
