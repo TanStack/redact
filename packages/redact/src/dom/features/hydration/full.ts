@@ -7,7 +7,7 @@ import {
   type ReactNode,
 } from '../../../core'
 import { attributeName, STRING_BOOLEAN_ATTRS } from '../../../core/attributes'
-import { createHostNode, setProp, syncTextareaValue } from '../../dom'
+import { setProp, syncTextareaValue } from '../../dom'
 import { queueMutation, queueProp, queueText } from '../../commit'
 import { drainReplayQueue } from '../../event-replay'
 import { discardPendingWork, discardPendingEffects, findRoot, flushSyncWork, renderRoot, scheduleRootRender, recoverRootError, unmountFiber } from '../../reconcile'
@@ -707,6 +707,29 @@ function isHydrationFormProp(tag: string, key: string): boolean {
   )
 }
 
+const HYDRATION_URL_ATTRIBUTES = new Set([
+  'src', 'srcset', 'href', 'poster', 'data', 'background', 'xlink:href', 'xlinkhref',
+])
+
+function stringifyHydrationUrl(value: unknown): string {
+  // Match setAttribute coercion without assigning a resource URL.
+  // https://github.com/react/react/blob/v19.2.3/packages/react-dom-bindings/src/client/ReactDOMComponent.js#L2295-L2336
+  return value === true ? '' : `${value}`
+}
+
+function createHydrationAttributeProbe(el: Element): Element {
+  const tag = el.localName.includes('-') ? 'div' : el.localName
+  return el.ownerDocument.createElementNS(el.namespaceURI, tag)
+}
+
+function normalizeHydrationHtml(el: Element, html: string): string {
+  // React uses the page's document to preserve its noscript parsing behavior.
+  // https://github.com/react/react/blob/v19.2.3/packages/react-dom-bindings/src/client/ReactDOMComponent.js#L276-L293
+  const probe = el.ownerDocument.createElementNS(el.namespaceURI, el.localName)
+  probe.innerHTML = html
+  return probe.innerHTML
+}
+
 function validateHydrationProps(
   fiber: Fiber,
   el: Element,
@@ -734,11 +757,9 @@ function validateHydrationProps(
       let html = value?.__html
       if (html == null) continue
       if (tag !== 'script' && tag !== 'style') {
-        const probe = createHostNode(tag, isSvg)
-        probe.innerHTML = html
-        html = probe.innerHTML
+        html = normalizeHydrationHtml(el, html)
       }
-      if ((el as HTMLElement).innerHTML !== '' + html) {
+      if (el.innerHTML !== '' + html) {
         failHydration(
           fiber,
           process.env.NODE_ENV !== 'production'
@@ -753,7 +774,7 @@ function validateHydrationProps(
     if (isHydrationFormProp(tag, k)) continue
 
     if (k === 'style') {
-      expected ??= createHostNode(tag, isSvg)
+      expected ??= createHydrationAttributeProbe(el)
       setProp(expected, k, value, undefined, isSvg)
       if (
         !hydrationStylesMatch(
@@ -785,8 +806,10 @@ function validateHydrationProps(
     } else if (stringifiedBoolean && k.length > 5) {
       // These attributes use setAttribute string coercion, not DOM property normalization.
       expectedValue = '' + value
+    } else if (HYDRATION_URL_ATTRIBUTES.has(attr)) {
+      expectedValue = stringifyHydrationUrl(value)
     } else {
-      expected ??= createHostNode(tag, isSvg)
+      expected ??= createHydrationAttributeProbe(el)
       setProp(expected, k, value, undefined, isSvg)
       expectedValue = expected.getAttribute(attr)
     }
