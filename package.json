@@ -8,6 +8,7 @@
     "build": "node scripts/build.mjs && node scripts/verify-build.mjs",
     "dev": "pnpm -r --parallel --filter='./packages/*' run dev",
     "test": "pnpm --filter tests test",
+    "test:hydration-browser": "node scripts/hydration-probe-browser.mjs",
     "test:types": "tsc --noEmit",
     "size": "node scripts/size.mjs",
     "size:check": "node scripts/size-check.mjs",

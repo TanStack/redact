@@ -7,24 +7,23 @@ import { measureSizes } from './measure-size.mjs'
 const BUDGETS = {
   'redact': 2793,
   'redact/jsx-runtime': 217,
-  // Recovery preserves provider ancestry. The reviewed built entry grows by
-  // 36 bytes, while the combined client shrinks by 64. Keep the approved budget.
-  // See benchmarks/HYDRATION_RECOVERY.md for the bound source/dist measurements.
-  'redact/dom': 25282,
-  'redact/dom-client': 25006,
+  // Direct URL comparison adds 120 gzip bytes to DOM and 134 to DOM-client
+  // versus upstream main. Budgets cover the measured source and built entries.
+  'redact/dom': 25372,
+  'redact/dom-client': 25028,
   'redact/server': 8989,
-  'client total': 28183,
+  'client total': 28187,
   'client total (default Vite)': 23335,
-  'redact/dom-client (activity=stub)': 24438,
-  'redact/dom-client (fragmentRefs=stub)': 22814,
-  'redact/dom-client (viewTransitions=stub)': 20159,
-  'redact/dom-client (portal=stub)': 24972,
-  'redact/dom-client (context=stub)': 24719,
-  'redact/dom-client (suspense=stub)': 23479,
-  'redact/dom-client (memo=stub)': 24912,
-  'redact/dom-client (forwardRef=stub)': 24973,
-  'redact/dom-client (lazy=stub)': 24983,
-  'redact/dom-client (classComponents=stub)': 24512,
+  'redact/dom-client (activity=stub)': 24467,
+  'redact/dom-client (fragmentRefs=stub)': 22839,
+  'redact/dom-client (viewTransitions=stub)': 20198,
+  'redact/dom-client (portal=stub)': 24996,
+  'redact/dom-client (context=stub)': 24739,
+  'redact/dom-client (suspense=stub)': 23505,
+  'redact/dom-client (memo=stub)': 24931,
+  'redact/dom-client (forwardRef=stub)': 24990,
+  'redact/dom-client (lazy=stub)': 25020,
+  'redact/dom-client (classComponents=stub)': 24547,
   'redact/dom-client (hydration=stub)': 22400,
   'redact/dom-client (nano)': 12491,
 }
