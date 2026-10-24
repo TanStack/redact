@@ -62,7 +62,6 @@ export function findHostParent(fiber: Fiber): Fiber {
   return fiber
 }
 
-export function installHydrationScrollGuard(): void {}
 
 export function drainReplayQueue(): void {}
 

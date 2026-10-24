@@ -25,3 +25,7 @@ jobs:
         uses: TanStack/config/.github/setup@e4b48f16568324f76f467aa4c2aac2f05db632c3
       - name: Run Checks
         run: pnpm run test:pr
+      - name: Install regression test browser
+        run: pnpm exec playwright install --with-deps chromium
+      - name: Run browser recovery regressions
+        run: pnpm run test:recovery:browser

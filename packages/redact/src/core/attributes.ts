@@ -5,6 +5,7 @@ export const STRING_BOOLEAN_ATTRS = new Set([
 ])
 
 export function attributeName(name: string, isSvg = false): string {
+  if (isSvg && SVG_CASE_SENSITIVE_ATTRS.has(name)) return name
   if (isSvg && name !== 'viewBox' && SVG_KEBAB_PREFIX.test(name)) {
     return name.replace(/[A-Z]/g, (m) => '-' + m.toLowerCase())
   }
@@ -22,3 +23,67 @@ export function attributeName(name: string, isSvg = false): string {
 }
 
 const SVG_KEBAB_PREFIX = /^(?:clip|fill|stroke)/
+
+
+// SVG attributes adjusted to mixed case by the HTML parser must retain that
+// spelling during hydration and DOM updates. clipPathUnits is not clip-path-units.
+const SVG_CASE_SENSITIVE_ATTRS = new Set([
+  'attributeName',
+  'attributeType',
+  'baseFrequency',
+  'baseProfile',
+  'calcMode',
+  'clipPathUnits',
+  'diffuseConstant',
+  'edgeMode',
+  'filterUnits',
+  'glyphRef',
+  'gradientTransform',
+  'gradientUnits',
+  'kernelMatrix',
+  'kernelUnitLength',
+  'keyPoints',
+  'keySplines',
+  'keyTimes',
+  'lengthAdjust',
+  'limitingConeAngle',
+  'markerHeight',
+  'markerUnits',
+  'markerWidth',
+  'maskContentUnits',
+  'maskUnits',
+  'numOctaves',
+  'pathLength',
+  'patternContentUnits',
+  'patternTransform',
+  'patternUnits',
+  'pointsAtX',
+  'pointsAtY',
+  'pointsAtZ',
+  'preserveAlpha',
+  'preserveAspectRatio',
+  'primitiveUnits',
+  'refX',
+  'refY',
+  'repeatCount',
+  'repeatDur',
+  'requiredExtensions',
+  'requiredFeatures',
+  'specularConstant',
+  'specularExponent',
+  'spreadMethod',
+  'startOffset',
+  'stdDeviation',
+  'stitchTiles',
+  'surfaceScale',
+  'systemLanguage',
+  'tableValues',
+  'targetX',
+  'targetY',
+  'textLength',
+  'viewBox',
+  'viewTarget',
+  'xChannelSelector',
+  'yChannelSelector',
+  'zoomAndPan',
+]);
