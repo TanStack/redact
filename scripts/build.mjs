@@ -219,6 +219,7 @@ declare module 'node:fs' {
   export const existsSync: any
   export const readFileSync: any
   export const realpathSync: any
+  export const writeFileSync: any
 }
 declare module 'node:path' {
   export const dirname: any

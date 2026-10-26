@@ -51,6 +51,9 @@
       "types": "./dist/dom/features/*.d.ts",
       "default": "./dist/dom/features/*.js"
     },
+    "./disabled/*": {
+      "types": "./disabled/*.d.ts"
+    },
     "./_all": {
       "types": "./dist/dom/_all.d.ts",
       "default": "./dist/dom/_all.js"
@@ -70,6 +73,7 @@
   },
   "files": [
     "dist",
+    "disabled",
     "src",
     "vendor"
   ],
@@ -84,12 +88,20 @@
     "./dist/dom/_all.js"
   ],
   "peerDependencies": {
+    "@types/react": ">=19",
+    "@types/react-dom": ">=19",
     "next": "~15.5.0 || ~16.0.0 || ~16.1.0 || ~16.2.0 || ~16.3.0 || ~16.4.0",
     "vite": ">=5",
     "vinext": "~1.3.0",
     "@cloudflare/vite-plugin": "1.65.0"
   },
   "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    },
+    "@types/react-dom": {
+      "optional": true
+    },
     "next": {
       "optional": true
     },

@@ -17,6 +17,7 @@ redact({
 | --- | --- | --- |
 | `preset` | `'full'` or `'nano'` | Defaults to `full`. Full enables every optional feature except native animation. Nano disables all optional features. |
 | `features` | `RedactFeatures` | Boolean overrides merged with the preset. See [Feature Flags](./feature-flags.md). |
+| `dts` | `boolean` or `string` | Defaults to `true`, which writes `src/redact.gen.d.ts` under the Vite root when `src/` exists. The file makes TypeScript report errors where your code uses a disabled feature. Pass a path relative to the root to change the file, or `false` to skip it. Your tsconfig must include the file. |
 | `skip` | `ReadonlyArray<string>` | Import specifiers to exclude from aliasing. |
 | `resolveFrom` | `string` | Package resolution root, defaults to the Vite config root. Useful in monorepos. |
 | `packageRoots` | `Record<string, string>` | Explicit package names mapped to absolute package directories, bypassing node_modules lookup for local builds. |
