@@ -7,7 +7,7 @@ export const nextRenderings = version => Number(version.split('.')[0]) >= 16 ? [
 export function nextScenarios(version, mode, deployment, rendering) {
   if (deployment === 'static-export') return ['static-export']
   return [
-    'hydration', 'ids', 'actions', 'direct-actions', 'progressive-actions', 'streaming',
+    'hydration', 'ids', 'actions', 'direct-actions', 'progressive-actions', 'streaming', 'flight-promise',
     ...(rendering === 'cache-components' ? ['cache-components'] : []),
     'pages-router', ...(mode === 'development' ? ['fast-refresh'] : []),
     'routing', 'boundaries', 'loading-cancellation', 'navigation-cancellation',

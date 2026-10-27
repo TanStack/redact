@@ -197,7 +197,7 @@ try {
           result.scenarios.push(await sharedCacheInvalidation(browser, origin))
         }
         else result.scenarios.push(await pagesHydration(browser, origin, reference))
-        result.passed = result.scenarios.length === (router === 'pages-only' ? 4 : 21 + Number(cacheComponents)) && result.scenarios.every(s => s.passed)
+        result.passed = result.scenarios.length === (router === 'pages-only' ? 4 : 22 + Number(cacheComponents)) && result.scenarios.every(s => s.passed)
       } catch (error) { Object.assign(result, { passed: false, error: error.stack || String(error) }) }
       finally { await browser.close(); report.results.push(result); await save(); console.log(result.passed ? 'PASS' : 'FAIL', name, engine) }
     }
