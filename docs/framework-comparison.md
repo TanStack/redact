@@ -30,7 +30,7 @@ The separate official `next-plugin-preact` 3.0.7 setup, including its recommende
 
 **React Router 8.5.0 with Preact:** the framework imports `useOptimistic` internally. Preact compat does not export it, so both the data-mode and framework-mode fixtures fail before interaction. Your own components do not have to use that hook to hit the failure.
 
-**React Router framework mode with Redact:** 0.2.3 passes development and production, including preservation of the server-rendered button, state updates, server form actions, and navigation. Version 0.2.1 replaced the button during production hydration because it did not adopt module-preload links left in the body. That fix is now published. [0.2.3 production result](https://github.com/TanStack/redact/blob/main/benchmarks/results/framework-comparison/release-0.2.3/router-framework-redact-production.json), [native React control](https://github.com/TanStack/redact/blob/main/benchmarks/results/framework-comparison/release-0.2.3/router-framework-react-production.json).
+**React Router framework mode with Redact:** 0.2.3 passes development and production, including preservation of the server-rendered button, state updates, server form actions, and navigation. Version 0.2.1 replaced the button during production hydration because it did not adopt module-preload links left in the body. That fix is now published. [0.2.3 production result](https://github.com/TanStack/redact/blob/6a2ca15ed0c9453aebf013645381b334fe0fa13d/benchmarks/results/framework-comparison/release-0.2.3/router-framework-redact-production.json), [native React control](https://github.com/TanStack/redact/blob/6a2ca15ed0c9453aebf013645381b334fe0fa13d/benchmarks/results/framework-comparison/release-0.2.3/router-framework-react-production.json).
 
 **TanStack Start with Preact:** the standard Preact Vite preset does not provide the React Refresh runtime Start expects in development. Production builds and sends server HTML, but a pending Promise escapes during client startup and the counter never becomes interactive. This happened in both the React 18 and React 19 fixtures. A custom framework integration was not built to bypass these failures.
 
@@ -40,7 +40,7 @@ The separate official `next-plugin-preact` 3.0.7 setup, including its recommende
 
 **Vinext App Router with Preact:** browser-only aliases preserve native React on the server, but client hydration raises a pending Promise and does not become interactive. Native React and Redact pass the same fixture.
 
-[Exact errors, repeat runs, configurations, and raw results](https://github.com/TanStack/redact/blob/main/benchmarks/FRAMEWORK_COMPARISON.md).
+[Exact errors, repeat runs, configurations, and raw results](https://github.com/TanStack/redact/blob/6a2ca15ed0c9453aebf013645381b334fe0fa13d/benchmarks/FRAMEWORK_COMPARISON.md).
 
 ## A working Vite app does not establish React behavior parity
 
@@ -54,9 +54,9 @@ A separate fixture suspends a transition and a search result. These results hold
 
 Preact's transition renders the loading fallback and reports pending as `false`. Its deferred-value hook immediately supplies the new value, so the old search results disappear into the loading fallback. React and Redact retain the previous results until the new content is ready.
 
-With React 19, we also executed `useActionState`: React and Redact tracked pending work and committed the result. Preact does not export the hook. These are behavioral checks, separate from simply checking whether an API name exists. [Behavior results](https://github.com/TanStack/redact/blob/main/benchmarks/results/framework-comparison/modern.json).
+With React 19, we also executed `useActionState`: React and Redact tracked pending work and committed the result. Preact does not export the hook. These are behavioral checks, separate from simply checking whether an API name exists. [Behavior results](https://github.com/TanStack/redact/blob/6a2ca15ed0c9453aebf013645381b334fe0fa13d/benchmarks/results/framework-comparison/modern.json).
 
-The deeper core fixture also checks context, refs, keyed identity, portals, effects, string SSR, hydration, external stores, and lazy loading. Preact matched those rendering checks, but differed from React in some `react-is` element and context detection checks. That can matter for libraries that inspect React element types. [Core results](https://github.com/TanStack/redact/blob/main/benchmarks/results/framework-comparison/core.json).
+The deeper core fixture also checks context, refs, keyed identity, portals, effects, string SSR, hydration, external stores, and lazy loading. Preact matched those rendering checks, but differed from React in some `react-is` element and context detection checks. That can matter for libraries that inspect React element types. [Core results](https://github.com/TanStack/redact/blob/6a2ca15ed0c9453aebf013645381b334fe0fa13d/benchmarks/results/framework-comparison/core.json).
 
 ## What this table does not cover
 
@@ -68,4 +68,4 @@ Next and Vinext retain native React on the server in these replacement tests. St
 
 Use these results to narrow your choices, then test your actual app. Preact works in some modern React setups. Redact passes more of these particular framework and behavior checks. Neither is a universal React replacement.
 
-[Reproduce the matrix](https://github.com/TanStack/redact/blob/main/scripts/framework-comparison/README.md), [broader API and size comparison](./preact.md), [Redact compatibility limits](./compatibility.md).
+[Reproduce the matrix](https://github.com/TanStack/redact/blob/6a2ca15ed0c9453aebf013645381b334fe0fa13d/scripts/framework-comparison/README.md), [broader API and size comparison](./preact.md), [Redact compatibility limits](./compatibility.md).

@@ -6,7 +6,7 @@ title: Redact vs Preact
 
 Preact is the smaller choice. Redact is worth considering when you want to keep more of modern React's behavior, including pending transitions, deferred results, form actions, optimistic updates, and hidden state. That extra behavior costs bytes. Neither runtime provides React's interruptible concurrent rendering.
 
-This comparison checks Preact **11.0.2**, including `preact/compat`, against Redact main at commit `6a6bea7`, version **0.2.0**, on **October 26, 2026**. It is not a claim about every Preact release or every published Redact version. The [research record](https://github.com/TanStack/redact/blob/main/benchmarks/PREACT_COMPARISON.md) includes sources, measurements, and checks.
+This comparison checks Preact **11.0.2**, including `preact/compat`, against Redact main at commit `6a6bea7`, version **0.2.0**, on **October 26, 2026**. It is not a claim about every Preact release or every published Redact version. The [research record](https://github.com/TanStack/redact/blob/6a2ca15ed0c9453aebf013645381b334fe0fa13d/benchmarks/PREACT_COMPARISON.md) includes sources, measurements, and checks.
 
 For current framework results, see the [tested compatibility matrix](./framework-comparison.md). It checks Preact 11.1.0 and Redact 0.2.1, with a published 0.2.3 React Router SSR follow-up, across React 18, React 19, Vite, React Router, TanStack Start, Next.js, and Vinext. The API and size snapshot below uses the earlier pinned versions above.
 
@@ -58,7 +58,7 @@ The migration-oriented comparison is **11,179 vs 23,315 bytes**, about 12.1 kB m
 
 These are runtime retention fixtures, not application downloads. Real apps tree-shake different APIs and have different chunk boundaries. The Preact measurements use the published package; Redact uses an archive of the pinned main commit. They do not replace the [published Redact release measurements](./performance.md). The rows use the same bundler settings but do not offer identical functionality.
 
-Redact's `nano` preset removes features such as hydration, context, and normal Suspense fallback behavior. It is not a full-compatibility size comparison. Standalone entry sizes overlap and must not be added together. [Raw results and reproduction script](https://github.com/TanStack/redact/blob/main/benchmarks/PREACT_COMPARISON.md#bundle-size).
+Redact's `nano` preset removes features such as hydration, context, and normal Suspense fallback behavior. It is not a full-compatibility size comparison. Standalone entry sizes overlap and must not be added together. [Raw results and reproduction script](https://github.com/TanStack/redact/blob/6a2ca15ed0c9453aebf013645381b334fe0fa13d/benchmarks/PREACT_COMPARISON.md#bundle-size).
 
 ## Events and forms
 
