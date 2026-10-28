@@ -1,0 +1,19 @@
+▲ Next.js 16.4.3 (webpack)
+- Local:         http://localhost:4629
+- Network:       http://192.168.1.188:4629
+✓ Ready in 144ms
+⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of /private/tmp/redact-framework-matrix/package-lock.json as the root directory.
+ To silence this warning, set `outputFileTracingRoot` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/output#caveats for more information.
+ Detected additional lockfiles: 
+   * /private/tmp/redact-framework-matrix/react18/package-lock.json
+
+⚠ React 18 support is deprecated in Next.js 16 and will be removed in Next.js 17. Please upgrade to React 19. Learn more: https://nextjs.org/docs/messages/react-version
+✓ Running next.config.mjs took 16ms
+- Experiments (use with caution):
+  · cpus: 2
+
+ GET / 200 in 44ms (next.js: 33ms, application-code: 11ms)
+ GET / 200 in 2ms (next.js: 0.6ms, application-code: 1.7ms)
+[?25h

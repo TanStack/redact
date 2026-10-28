@@ -1,0 +1,9 @@
+
+  VITE v8.3.5  ready in 245 ms
+
+  ➜  Local:   http://127.0.0.1:4447/
+11:16:47 AM [vite] (ssr) connected.
+11:16:47 AM [vite] Internal server error: TanStack Start React dev mode requires the React Refresh runtime, but /@react-refresh could not be resolved. Add @vitejs/plugin-react or another compatible React Refresh Vite plugin to your Vite config.
+      at LoadPluginContext.load (file:///private/tmp/redact-framework-matrix/node_modules/@tanstack/start-plugin-core/dist/esm/vite/plugins.js:20:30)
+      at async EnvironmentPluginContainer.load (file:///private/tmp/redact-framework-matrix/node_modules/vite/dist/node/chunks/node.js:8540:19)
+      at async loadAndTransform (file:///private/tmp/redact-framework-matrix/node_modules/vite/dist/node/chunks/node.js:20108:21)

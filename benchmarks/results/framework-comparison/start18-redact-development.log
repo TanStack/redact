@@ -1,0 +1,20 @@
+
+  VITE v8.3.5  ready in 232 ms
+
+  ➜  Local:   http://127.0.0.1:4455/
+11:17:46 AM [vite] (ssr) connected.
+Warning: React does not recognize the `fetchPriority` prop on a DOM element. If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase `fetchpriority` instead. If you accidentally passed it from a parent component, remove it from the DOM element.
+    at link
+    at Asset (/private/tmp/redact-framework-matrix/react18/node_modules/@tanstack/react-router/src/Asset.tsx:44:11)
+    at HeadContent (/private/tmp/redact-framework-matrix/react18/node_modules/@tanstack/react-router/src/HeadContent.dev.tsx:21:30)
+    at head
+    at html
+    at component
+    at MatchInnerImpl (/private/tmp/redact-framework-matrix/react18/node_modules/@tanstack/react-router/src/Match.tsx:187:3)
+    at MatchImpl (/private/tmp/redact-framework-matrix/react18/node_modules/@tanstack/react-router/src/Match.tsx:63:3)
+    at CatchBoundary (/private/tmp/redact-framework-matrix/react18/node_modules/@tanstack/react-router/src/CatchBoundary.tsx:13:4)
+    at MatchesInner (/private/tmp/redact-framework-matrix/react18/node_modules/@tanstack/react-router/src/Matches.tsx:83:18)
+    at Matches (/private/tmp/redact-framework-matrix/react18/node_modules/@tanstack/react-router/src/Matches.tsx:48:18)
+    at RouterContextProvider (/private/tmp/redact-framework-matrix/react18/node_modules/@tanstack/react-router/src/RouterProvider.tsx:21:3)
+    at RouterProvider (/private/tmp/redact-framework-matrix/react18/node_modules/@tanstack/react-router/src/RouterProvider.tsx:64:5)
+    at StartServer (/private/tmp/redact-framework-matrix/react18/node_modules/@tanstack/react-start-server/src/StartServer.tsx:8:40)

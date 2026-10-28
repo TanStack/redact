@@ -1,0 +1,12 @@
+▲ Next.js 16.4.3 (Turbopack)
+- Local:         http://localhost:5421
+- Network:       http://192.168.1.188:5421
+✓ Ready in 138ms
+✓ Running next.config.mjs took 8ms
+- Experiments (use with caution):
+  · cpus: 2
+
+ GET / 200 in 40ms (next.js: 28ms, application-code: 11ms)
+ GET / 200 in 3ms (next.js: 0.4ms, application-code: 2ms)
+ GET /_next/data/development/index.json 200 in 3ms (next.js: 1.5ms, application-code: 1.5ms)
+[?25h

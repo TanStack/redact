@@ -1,0 +1,34 @@
+▲ Next.js 16.4.3 (webpack)
+⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of /private/tmp/redact-framework-matrix/package-lock.json as the root directory.
+ To silence this warning, set `outputFileTracingRoot` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/output#caveats for more information.
+ Detected additional lockfiles: 
+   * /private/tmp/redact-framework-matrix/official-preact/package-lock.json
+
+✓ Running next.config.mjs took 85ms
+- Experiments (use with caution):
+  · cpus: 2
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 3.5s
+  Running TypeScript ...
+  Finished TypeScript in 1ms ...
+  Collecting page data using 2 workers ...
+TypeError: (0 , i.cache) is not a function
+    at 9810 (.next/server/chunks/894.js:183:14473)
+    at g (.next/server/webpack-runtime.js:1:135)
+    at 8993 (.next/server/chunks/894.js:156:58265)
+    at g (.next/server/webpack-runtime.js:1:135)
+    at 798 (.next/server/chunks/894.js:25:22902)
+    at g (.next/server/webpack-runtime.js:1:135)
+    at 8045 (.next/server/chunks/894.js:156:29345)
+    at g (.next/server/webpack-runtime.js:1:135)
+    at 1305 (.next/server/chunks/894.js:25:31364)
+    at g (.next/server/webpack-runtime.js:1:135)
+
+> Build error occurred
+Error: Failed to collect page data for /other
+    at ignore-listed frames {
+  type: 'Error'
+}

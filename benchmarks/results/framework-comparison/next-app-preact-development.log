@@ -1,0 +1,12 @@
+▲ Next.js 16.4.3 (webpack)
+- Local:         http://localhost:4635
+- Network:       http://192.168.1.188:4635
+✓ Ready in 150ms
+✓ Running next.config.mjs took 8ms
+- Experiments (use with caution):
+  · cpus: 2
+
+ GET / 200 in 197ms (next.js: 124ms, application-code: 73ms)
+ GET / 200 in 11ms (next.js: 0.6ms, application-code: 10ms)
+[browser] ⨯ unhandledRejection: TypeError: Failed to execute 'observe' on 'MutationObserver': parameter 1 is not of type 'Node'.
+[?25h

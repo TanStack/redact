@@ -1,0 +1,32 @@
+Using Vite Environment API
+vite v8.3.5 building client environment for production...
+transforming...
+✓ 100 modules transformed.
+rendering chunks...
+computing gzip size...
+build/client/.vite/manifest.json                1.47 kB │ gzip:  0.36 kB
+build/client/assets/other-B3XVZgcm.js           0.27 kB │ gzip:  0.21 kB
+build/client/assets/root-C12_tmkx.js            0.36 kB │ gzip:  0.22 kB
+build/client/assets/home-CjOuYroJ.js            0.74 kB │ gzip:  0.44 kB
+build/client/assets/lib-BoRyTzJT.js             9.94 kB │ gzip:  3.96 kB
+build/client/assets/jsx-runtime-DYoC7VeE.js   122.42 kB │ gzip: 40.08 kB
+build/client/assets/entry.client-DdfnaCp9.js  223.03 kB │ gzip: 69.76 kB
+
+✓ built in 92ms
+vite v8.3.5 building ssr environment for production...
+transforming...
+✓ 69 modules transformed.
+rendering chunks...
+computing gzip size...
+build/server/.vite/manifest.json    0.16 kB │ gzip:  0.12 kB
+build/server/index.js             153.66 kB │ gzip: 37.72 kB
+
+✓ built in 34ms
+[react-router-serve] http://localhost:6012 (http://192.168.1.133:6012)
+GET / 200 - - 19.018 ms
+GET / 200 - - 2.269 ms
+GET /__manifest?paths=%2F%2C%2Fother&version=483f08fe 200 - - 0.705 ms
+POST /_.data?index 200 - - 1.302 ms
+GET /_.data 200 - - 0.534 ms
+
+GET /_.data 200 - - 0.819 ms
