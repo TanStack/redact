@@ -26,6 +26,18 @@
           "to": "compatibility"
         },
         {
+          "label": "React vs Redact vs Preact",
+          "to": "comparison"
+        },
+        {
+          "label": "Redact vs Preact",
+          "to": "preact"
+        },
+        {
+          "label": "Framework Compatibility Matrix",
+          "to": "framework-comparison"
+        },
+        {
           "label": "TanStack Start",
           "to": "start"
         },

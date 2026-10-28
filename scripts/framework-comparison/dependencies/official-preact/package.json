@@ -1,0 +1,1 @@
+{"private":true,"type":"module","dependencies":{"next":"16.4.3","next-plugin-preact":"3.0.7","preact":"11.1.0","react":"npm:@preact/compat@18.3.2","react-dom":"npm:@preact/compat@18.3.2","react-ssr-prepass":"npm:preact-ssr-prepass@1.2.2","preact-ssr-prepass":"1.2.2","preact-render-to-string":"6.8.2"}}

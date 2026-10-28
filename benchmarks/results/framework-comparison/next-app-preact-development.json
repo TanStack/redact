@@ -1,0 +1,21 @@
+{
+  "name": "next-app",
+  "runtime": "preact",
+  "mode": "development",
+  "bundler": "webpack",
+  "node": "v24.15.0",
+  "configSha256": "90a850efef8c7c05fef18b4b70721b2b055a32346e47f0fe0fb4870544a31079",
+  "passed": false,
+  "checks": [
+    "SSR HTML"
+  ],
+  "browser": "156.0.8078.4",
+  "started": "2026-10-27T17:17:11.893Z",
+  "browserErrors": [
+    "TypeError: Failed to execute 'observe' on 'MutationObserver': parameter 1 is not of type 'Node'.\n    at linkGc (webpack-internal:///(app-pages-browser)/../node_modules/next/dist/client/app-link-gc.js:63:18)\n    at hydrate (webpack-internal:///(app-pages-browser)/../node_modules/next/dist/client/app-index.js:286:9)"
+  ],
+  "consoleErrors": [],
+  "error": "page.waitForFunction: Timeout 12000ms exceeded.\n    at /Users/tannerlinsley/GitHub/redact/scripts/framework-comparison/run.mjs:38:14",
+  "body": "This page couldn’t load\n\nReload to try again, or go back.\n\nReload\nBack",
+  "finished": "2026-10-27T17:17:26.451Z"
+}

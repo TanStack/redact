@@ -1,0 +1,41 @@
+{
+  "name": "next-pages18",
+  "runtime": "react",
+  "mode": "production",
+  "bundler": "turbopack",
+  "node": "v24.15.0",
+  "configSha256": "90a850efef8c7c05fef18b4b70721b2b055a32346e47f0fe0fb4870544a31079",
+  "passed": true,
+  "checks": [
+    "production build",
+    "SSR HTML",
+    "server DOM adoption",
+    "browser runtime identity",
+    "interactive state",
+    "client navigation and history",
+    "no uncaught browser errors"
+  ],
+  "browser": "156.0.8078.4",
+  "started": "2026-10-27T17:19:31.612Z",
+  "browserErrors": [],
+  "consoleErrors": [],
+  "hydration": {
+    "captured": true,
+    "same": true,
+    "originalConnected": true,
+    "original": "<button id=\"counter\">Count <!-- -->0</button>",
+    "current": "<button id=\"counter\">Count <!-- -->0</button>"
+  },
+  "identity": {
+    "version": "18.3.1",
+    "elementKeys": [
+      "$$typeof",
+      "type",
+      "key",
+      "ref",
+      "props",
+      "_owner"
+    ]
+  },
+  "finished": "2026-10-27T17:19:33.599Z"
+}

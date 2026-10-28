@@ -1,0 +1,14 @@
+{
+  "name": "next-app",
+  "runtime": "preact",
+  "mode": "production",
+  "bundler": "webpack",
+  "node": "v24.15.0",
+  "configSha256": "7c25b0d45fd1880470f36599fe6872dafb898f4146daf892237b3114a78f69a0",
+  "passed": false,
+  "checks": [],
+  "browser": "156.0.8078.4",
+  "started": "2026-10-27T17:28:03.318Z",
+  "error": "AssertionError [ERR_ASSERTION]: Build failed\n\n1 !== 0\n\n    at finish (file:///Users/tannerlinsley/GitHub/redact/scripts/framework-comparison/run.mjs:54:10)\n    at async file:///Users/tannerlinsley/GitHub/redact/scripts/framework-comparison/run.mjs:131:13",
+  "finished": "2026-10-27T17:28:08.810Z"
+}

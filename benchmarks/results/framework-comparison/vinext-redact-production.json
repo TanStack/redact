@@ -1,0 +1,33 @@
+{
+  "name": "vinext",
+  "runtime": "redact",
+  "mode": "production",
+  "bundler": null,
+  "node": "v24.15.0",
+  "configSha256": "7cd1c0ee15e27e08f79272dd97edf180aa0859321110bed60f4119c7c2ccf9bf",
+  "passed": true,
+  "checks": [
+    "production build",
+    "SSR HTML",
+    "server DOM adoption",
+    "browser runtime identity",
+    "interactive state",
+    "client navigation and history",
+    "no uncaught browser errors"
+  ],
+  "browser": "156.0.8078.4",
+  "started": "2026-10-27T17:18:25.229Z",
+  "browserErrors": [],
+  "consoleErrors": [],
+  "identity": {
+    "version": "19.2.3",
+    "elementKeys": [
+      "$$typeof",
+      "type",
+      "key",
+      "ref",
+      "props"
+    ]
+  },
+  "finished": "2026-10-27T17:18:27.484Z"
+}

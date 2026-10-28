@@ -1,0 +1,50 @@
+{
+  "redactRevision": "6a6bea7cf2a39ea9609b0c13667c9890e0594e57",
+  "preactVersion": "11.0.2",
+  "node": "v24.15.0",
+  "esbuild": "0.28.0",
+  "method": "Production browser ESM, es2022, all entry exports retained; bytes, not kB. Redact source tree specified by SIZE_PACKAGE_ROOT; see redactRevision. Server, debug tools and signals excluded.",
+  "preact": [
+    {
+      "name": "Preact core",
+      "min": 12119,
+      "gz": 5029,
+      "br": 4587
+    },
+    {
+      "name": "Preact core + hooks + JSX",
+      "min": 17339,
+      "gz": 7026,
+      "br": 6418
+    },
+    {
+      "name": "Preact compat + JSX + client",
+      "min": 29533,
+      "gz": 11179,
+      "br": 10216
+    }
+  ],
+  "redact": [
+    {
+      "name": "client total",
+      "tree": "src",
+      "min": 72289,
+      "gz": 27912,
+      "br": 25267
+    },
+    {
+      "name": "client total (default Vite)",
+      "tree": "src",
+      "min": 61045,
+      "gz": 23315,
+      "br": 21264
+    },
+    {
+      "name": "redact/dom-client (nano)",
+      "tree": "src",
+      "min": 30248,
+      "gz": 12496,
+      "br": 11442
+    }
+  ]
+}

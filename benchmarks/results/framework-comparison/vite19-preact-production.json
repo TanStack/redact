@@ -1,0 +1,39 @@
+{
+  "name": "vite19",
+  "runtime": "preact",
+  "mode": "production",
+  "bundler": null,
+  "node": "v24.15.0",
+  "configSha256": "e215383f3d1f392e0b7021321868110d8865594875f8085b403a6c183bfe5a68",
+  "passed": true,
+  "checks": [
+    "production build",
+    "browser runtime identity",
+    "interactive state",
+    "no uncaught browser errors"
+  ],
+  "browser": "156.0.8078.4",
+  "started": "2026-10-27T17:16:28.650Z",
+  "browserErrors": [],
+  "consoleErrors": [],
+  "identity": {
+    "version": "19.0.0",
+    "elementKeys": [
+      "type",
+      "props",
+      "key",
+      "ref",
+      "__k",
+      "__",
+      "__b",
+      "__e",
+      "__c",
+      "constructor",
+      "__v",
+      "__i",
+      "__u",
+      "$$typeof"
+    ]
+  },
+  "finished": "2026-10-27T17:16:29.775Z"
+}

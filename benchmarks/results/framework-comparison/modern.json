@@ -1,0 +1,438 @@
+[
+  {
+    "version": "18",
+    "mode": "development",
+    "runtime": "react",
+    "passed": true,
+    "observed": {
+      "transitionRetention": {
+        "pending": "true0",
+        "settled": "false1",
+        "passed": true
+      },
+      "deferredRetention": {
+        "pending": "beta:alpha",
+        "settled": "beta:beta",
+        "passed": true
+      },
+      "useActionState": {
+        "available": false
+      },
+      "useOptimistic": {
+        "available": false
+      },
+      "Activity": {
+        "available": false
+      },
+      "ViewTransition": {
+        "available": false
+      }
+    },
+    "errors": [],
+    "differences": []
+  },
+  {
+    "version": "18",
+    "mode": "development",
+    "runtime": "preact",
+    "passed": false,
+    "observed": {
+      "transitionRetention": {
+        "pending": "falseLoading",
+        "settled": "false1",
+        "passed": false
+      },
+      "deferredRetention": {
+        "pending": "beta:Loading",
+        "settled": "beta:beta",
+        "passed": false
+      },
+      "useActionState": {
+        "available": false
+      },
+      "useOptimistic": {
+        "available": false
+      },
+      "Activity": {
+        "available": false
+      },
+      "ViewTransition": {
+        "available": false
+      }
+    },
+    "errors": [],
+    "differences": [
+      "transitionRetention",
+      "deferredRetention"
+    ]
+  },
+  {
+    "version": "18",
+    "mode": "development",
+    "runtime": "redact",
+    "passed": true,
+    "observed": {
+      "transitionRetention": {
+        "pending": "true0",
+        "settled": "false1",
+        "passed": true
+      },
+      "deferredRetention": {
+        "pending": "beta:alpha",
+        "settled": "beta:beta",
+        "passed": true
+      },
+      "useActionState": {
+        "available": true
+      },
+      "useOptimistic": {
+        "available": true
+      },
+      "Activity": {
+        "available": true
+      },
+      "ViewTransition": {
+        "available": true
+      },
+      "actionState": {
+        "pending": "0:true",
+        "settled": "2:false",
+        "passed": true
+      }
+    },
+    "errors": [],
+    "differences": []
+  },
+  {
+    "version": "18",
+    "mode": "production",
+    "runtime": "react",
+    "passed": true,
+    "observed": {
+      "transitionRetention": {
+        "pending": "true0",
+        "settled": "false1",
+        "passed": true
+      },
+      "deferredRetention": {
+        "pending": "beta:alpha",
+        "settled": "beta:beta",
+        "passed": true
+      },
+      "useActionState": {
+        "available": false
+      },
+      "useOptimistic": {
+        "available": false
+      },
+      "Activity": {
+        "available": false
+      },
+      "ViewTransition": {
+        "available": false
+      }
+    },
+    "errors": [],
+    "differences": []
+  },
+  {
+    "version": "18",
+    "mode": "production",
+    "runtime": "preact",
+    "passed": false,
+    "observed": {
+      "transitionRetention": {
+        "pending": "falseLoading",
+        "settled": "false1",
+        "passed": false
+      },
+      "deferredRetention": {
+        "pending": "beta:Loading",
+        "settled": "beta:beta",
+        "passed": false
+      },
+      "useActionState": {
+        "available": false
+      },
+      "useOptimistic": {
+        "available": false
+      },
+      "Activity": {
+        "available": false
+      },
+      "ViewTransition": {
+        "available": false
+      }
+    },
+    "errors": [],
+    "differences": [
+      "transitionRetention",
+      "deferredRetention"
+    ]
+  },
+  {
+    "version": "18",
+    "mode": "production",
+    "runtime": "redact",
+    "passed": true,
+    "observed": {
+      "transitionRetention": {
+        "pending": "true0",
+        "settled": "false1",
+        "passed": true
+      },
+      "deferredRetention": {
+        "pending": "beta:alpha",
+        "settled": "beta:beta",
+        "passed": true
+      },
+      "useActionState": {
+        "available": true
+      },
+      "useOptimistic": {
+        "available": true
+      },
+      "Activity": {
+        "available": true
+      },
+      "ViewTransition": {
+        "available": true
+      },
+      "actionState": {
+        "pending": "0:true",
+        "settled": "2:false",
+        "passed": true
+      }
+    },
+    "errors": [],
+    "differences": []
+  },
+  {
+    "version": "19",
+    "mode": "development",
+    "runtime": "react",
+    "passed": true,
+    "observed": {
+      "transitionRetention": {
+        "pending": "true0",
+        "settled": "false1",
+        "passed": true
+      },
+      "deferredRetention": {
+        "pending": "beta:alpha",
+        "settled": "beta:beta",
+        "passed": true
+      },
+      "useActionState": {
+        "available": true
+      },
+      "useOptimistic": {
+        "available": true
+      },
+      "Activity": {
+        "available": true
+      },
+      "ViewTransition": {
+        "available": true
+      },
+      "actionState": {
+        "pending": "0:true",
+        "settled": "2:false",
+        "passed": true
+      }
+    },
+    "errors": [],
+    "differences": []
+  },
+  {
+    "version": "19",
+    "mode": "development",
+    "runtime": "preact",
+    "passed": false,
+    "observed": {
+      "transitionRetention": {
+        "pending": "falseLoading",
+        "settled": "false1",
+        "passed": false
+      },
+      "deferredRetention": {
+        "pending": "beta:Loading",
+        "settled": "beta:beta",
+        "passed": false
+      },
+      "useActionState": {
+        "available": false
+      },
+      "useOptimistic": {
+        "available": false
+      },
+      "Activity": {
+        "available": false
+      },
+      "ViewTransition": {
+        "available": false
+      }
+    },
+    "errors": [],
+    "differences": [
+      "transitionRetention",
+      "deferredRetention",
+      "useActionState",
+      "useOptimistic",
+      "Activity",
+      "ViewTransition",
+      "actionState"
+    ]
+  },
+  {
+    "version": "19",
+    "mode": "development",
+    "runtime": "redact",
+    "passed": true,
+    "observed": {
+      "transitionRetention": {
+        "pending": "true0",
+        "settled": "false1",
+        "passed": true
+      },
+      "deferredRetention": {
+        "pending": "beta:alpha",
+        "settled": "beta:beta",
+        "passed": true
+      },
+      "useActionState": {
+        "available": true
+      },
+      "useOptimistic": {
+        "available": true
+      },
+      "Activity": {
+        "available": true
+      },
+      "ViewTransition": {
+        "available": true
+      },
+      "actionState": {
+        "pending": "0:true",
+        "settled": "2:false",
+        "passed": true
+      }
+    },
+    "errors": [],
+    "differences": []
+  },
+  {
+    "version": "19",
+    "mode": "production",
+    "runtime": "react",
+    "passed": true,
+    "observed": {
+      "transitionRetention": {
+        "pending": "true0",
+        "settled": "false1",
+        "passed": true
+      },
+      "deferredRetention": {
+        "pending": "beta:alpha",
+        "settled": "beta:beta",
+        "passed": true
+      },
+      "useActionState": {
+        "available": true
+      },
+      "useOptimistic": {
+        "available": true
+      },
+      "Activity": {
+        "available": true
+      },
+      "ViewTransition": {
+        "available": true
+      },
+      "actionState": {
+        "pending": "0:true",
+        "settled": "2:false",
+        "passed": true
+      }
+    },
+    "errors": [],
+    "differences": []
+  },
+  {
+    "version": "19",
+    "mode": "production",
+    "runtime": "preact",
+    "passed": false,
+    "observed": {
+      "transitionRetention": {
+        "pending": "falseLoading",
+        "settled": "false1",
+        "passed": false
+      },
+      "deferredRetention": {
+        "pending": "beta:Loading",
+        "settled": "beta:beta",
+        "passed": false
+      },
+      "useActionState": {
+        "available": false
+      },
+      "useOptimistic": {
+        "available": false
+      },
+      "Activity": {
+        "available": false
+      },
+      "ViewTransition": {
+        "available": false
+      }
+    },
+    "errors": [],
+    "differences": [
+      "transitionRetention",
+      "deferredRetention",
+      "useActionState",
+      "useOptimistic",
+      "Activity",
+      "ViewTransition",
+      "actionState"
+    ]
+  },
+  {
+    "version": "19",
+    "mode": "production",
+    "runtime": "redact",
+    "passed": true,
+    "observed": {
+      "transitionRetention": {
+        "pending": "true0",
+        "settled": "false1",
+        "passed": true
+      },
+      "deferredRetention": {
+        "pending": "beta:alpha",
+        "settled": "beta:beta",
+        "passed": true
+      },
+      "useActionState": {
+        "available": true
+      },
+      "useOptimistic": {
+        "available": true
+      },
+      "Activity": {
+        "available": true
+      },
+      "ViewTransition": {
+        "available": true
+      },
+      "actionState": {
+        "pending": "0:true",
+        "settled": "2:false",
+        "passed": true
+      }
+    },
+    "errors": [],
+    "differences": []
+  }
+]

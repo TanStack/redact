@@ -1,0 +1,22 @@
+{
+  "name": "start18",
+  "runtime": "preact",
+  "mode": "production",
+  "bundler": null,
+  "node": "v24.15.0",
+  "configSha256": "0fdf7777cd23873d4b0bf2ca8259518516cf445ea5e3c8d124829dd2a614ddf0",
+  "passed": false,
+  "checks": [
+    "production build",
+    "SSR HTML"
+  ],
+  "browser": "156.0.8078.4",
+  "started": "2026-10-27T17:17:32.473Z",
+  "browserErrors": [
+    "Promise"
+  ],
+  "consoleErrors": [],
+  "error": "page.waitForFunction: Timeout 12000ms exceeded.\n    at /Users/tannerlinsley/GitHub/redact/scripts/framework-comparison/run.mjs:38:14",
+  "body": "server function worked\nCount 0Other",
+  "finished": "2026-10-27T17:17:45.953Z"
+}

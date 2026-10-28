@@ -1,0 +1,21 @@
+{
+  "name": "start",
+  "runtime": "preact",
+  "mode": "development",
+  "bundler": null,
+  "node": "v24.15.0",
+  "configSha256": "0fdf7777cd23873d4b0bf2ca8259518516cf445ea5e3c8d124829dd2a614ddf0",
+  "passed": false,
+  "checks": [
+    "SSR HTML"
+  ],
+  "browser": "156.0.8078.4",
+  "started": "2026-10-27T17:16:46.794Z",
+  "browserErrors": [],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+  ],
+  "error": "page.waitForFunction: Timeout 12000ms exceeded.\n    at /Users/tannerlinsley/GitHub/redact/scripts/framework-comparison/run.mjs:38:14",
+  "body": "server function worked\nCount 0Other",
+  "finished": "2026-10-27T17:16:59.772Z"
+}

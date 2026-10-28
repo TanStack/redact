@@ -1,0 +1,60 @@
+[
+  {
+    "name": "next-pages",
+    "runtime": "preact",
+    "mode": "development",
+    "bundler": "webpack",
+    "node": "v24.15.0",
+    "configSha256": "7c25b0d45fd1880470f36599fe6872dafb898f4146daf892237b3114a78f69a0",
+    "passed": false,
+    "checks": [],
+    "browser": "156.0.8078.4",
+    "started": "2026-10-27T17:25:39.813Z",
+    "error": "AssertionError [ERR_ASSERTION]: HTTP startup failed: 500\n    at file:///Users/tannerlinsley/GitHub/redact/scripts/framework-comparison/run.mjs:161:18",
+    "finished": "2026-10-27T17:26:25.326Z"
+  },
+  {
+    "name": "next-pages",
+    "runtime": "preact",
+    "mode": "production",
+    "bundler": "webpack",
+    "node": "v24.15.0",
+    "configSha256": "7c25b0d45fd1880470f36599fe6872dafb898f4146daf892237b3114a78f69a0",
+    "passed": false,
+    "checks": [
+      "production build"
+    ],
+    "browser": "156.0.8078.4",
+    "started": "2026-10-27T17:26:25.328Z",
+    "error": "AssertionError [ERR_ASSERTION]: HTTP startup failed: 500\n    at file:///Users/tannerlinsley/GitHub/redact/scripts/framework-comparison/run.mjs:161:18",
+    "finished": "2026-10-27T17:27:17.963Z"
+  },
+  {
+    "name": "next-app",
+    "runtime": "preact",
+    "mode": "development",
+    "bundler": "webpack",
+    "node": "v24.15.0",
+    "configSha256": "7c25b0d45fd1880470f36599fe6872dafb898f4146daf892237b3114a78f69a0",
+    "passed": false,
+    "checks": [],
+    "browser": "156.0.8078.4",
+    "started": "2026-10-27T17:27:17.965Z",
+    "error": "AssertionError [ERR_ASSERTION]: HTTP startup failed: 500\n    at file:///Users/tannerlinsley/GitHub/redact/scripts/framework-comparison/run.mjs:161:18",
+    "finished": "2026-10-27T17:28:03.315Z"
+  },
+  {
+    "name": "next-app",
+    "runtime": "preact",
+    "mode": "production",
+    "bundler": "webpack",
+    "node": "v24.15.0",
+    "configSha256": "7c25b0d45fd1880470f36599fe6872dafb898f4146daf892237b3114a78f69a0",
+    "passed": false,
+    "checks": [],
+    "browser": "156.0.8078.4",
+    "started": "2026-10-27T17:28:03.318Z",
+    "error": "AssertionError [ERR_ASSERTION]: Build failed\n\n1 !== 0\n\n    at finish (file:///Users/tannerlinsley/GitHub/redact/scripts/framework-comparison/run.mjs:54:10)\n    at async file:///Users/tannerlinsley/GitHub/redact/scripts/framework-comparison/run.mjs:131:13",
+    "finished": "2026-10-27T17:28:08.810Z"
+  }
+]

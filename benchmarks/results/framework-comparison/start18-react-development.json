@@ -1,0 +1,36 @@
+{
+  "name": "start18",
+  "runtime": "react",
+  "mode": "development",
+  "bundler": null,
+  "node": "v24.15.0",
+  "configSha256": "0fdf7777cd23873d4b0bf2ca8259518516cf445ea5e3c8d124829dd2a614ddf0",
+  "passed": true,
+  "checks": [
+    "SSR HTML",
+    "server DOM adoption",
+    "browser runtime identity",
+    "interactive state",
+    "client navigation and history",
+    "no uncaught browser errors"
+  ],
+  "browser": "156.0.8078.4",
+  "started": "2026-10-27T17:17:16.672Z",
+  "browserErrors": [],
+  "consoleErrors": [
+    "Warning: React does not recognize the `%s` prop on a DOM element. If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase `%s` instead. If you accidentally passed it from a parent component, remove it from the DOM element.%s fetchPriority fetchpriority \n    at link\n    at Asset (http://127.0.0.1:4451/@fs/private/tmp/redact-framework-matrix/react18/node_modules/@tanstack/react-router/dist/esm/Asset.js?v=ce675700:15:10)\n    at HeadContent (http://127.0.0.1:4451/@fs/private/tmp/redact-framework-matrix/react18/node_modules/@tanstack/react-router/dist/esm/HeadContent.dev.js?v=ce675700:21:29)\n    at head\n    at html\n    at TSRComponent\n    at MatchInnerImpl (http://127.0.0.1:4451/@fs/private/tmp/redact-framework-matrix/react18/node_modules/@tanstack/react-router/dist/esm/Match.js?v=ce675700:79:57)\n    at MatchImpl (http://127.0.0.1:4451/@fs/private/tmp/redact-framework-matrix/react18/node_modules/@tanstack/react-router/dist/esm/Match.js?v=ce675700:24:47)\n    at CatchBoundary (http://127.0.0.1:4451/@fs/private/tmp/redact-framework-matrix/react18/node_modules/@tanstack/react-router/dist/esm/CatchBoundary.js?v=ce675700:8:3)\n    at MatchesInner (http://127.0.0.1:4451/@fs/private/tmp/redact-framework-matrix/react18/node_modules/@tanstack/react-router/dist/esm/Matches.js?v=ce675700:30:17)\n    at Matches (http://127.0.0.1:4451/@fs/private/tmp/redact-framework-matrix/react18/node_modules/@tanstack/react-router/dist/esm/Matches.js?v=ce675700:20:17)\n    at RouterContextProvider (http://127.0.0.1:4451/@fs/private/tmp/redact-framework-matrix/react18/node_modules/@tanstack/react-router/dist/esm/RouterProvider.js?v=ce675700:12:34)\n    at RouterProvider (http://127.0.0.1:4451/@fs/private/tmp/redact-framework-matrix/react18/node_modules/@tanstack/react-router/dist/esm/RouterProvider.js?v=ce675700:37:27)\n    at AwaitInner (http://127.0.0.1:4451/@fs/private/tmp/redact-framework-matrix/react18/node_modules/@tanstack/react-router/dist/esm/awaited.js?v=ce675700:27:15)\n    at Await (http://127.0.0.1:4451/@fs/private/tmp/redact-framework-matrix/react18/node_modules/@tanstack/react-router/dist/esm/awaited.js?v=ce675700:20:12)\n    at StartClient"
+  ],
+  "identity": {
+    "version": "18.3.1",
+    "elementKeys": [
+      "$$typeof",
+      "type",
+      "key",
+      "ref",
+      "props",
+      "_owner",
+      "_store"
+    ]
+  },
+  "finished": "2026-10-27T17:17:17.924Z"
+}
