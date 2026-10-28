@@ -1,0 +1,40 @@
+{
+  "name": "router-framework",
+  "runtime": "redact",
+  "mode": "development",
+  "bundler": null,
+  "node": "v24.22.0",
+  "configSha256": "640a2e8b1960c8587b8ca96be25e14f23b37ab28be9963bea7494e5f05a9a681",
+  "passed": true,
+  "checks": [
+    "SSR HTML",
+    "server DOM adoption",
+    "browser runtime identity",
+    "interactive state",
+    "server form action",
+    "client navigation and history",
+    "no uncaught browser errors"
+  ],
+  "browser": "156.0.8078.4",
+  "started": "2026-10-28T04:21:23.713Z",
+  "browserErrors": [],
+  "consoleErrors": [],
+  "hydration": {
+    "captured": true,
+    "same": true,
+    "originalConnected": true,
+    "original": "<button id=\"counter\">Count <!-- -->0</button>",
+    "current": "<button id=\"counter\">Count <!-- -->0</button>"
+  },
+  "identity": {
+    "version": "19.2.3",
+    "elementKeys": [
+      "$$typeof",
+      "type",
+      "key",
+      "ref",
+      "props"
+    ]
+  },
+  "finished": "2026-10-28T04:21:25.057Z"
+}

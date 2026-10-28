@@ -1,0 +1,767 @@
+{
+  "node": "v24.22.0",
+  "base": "89f2bfc58135fdf5fcb29af4c346680e0eda2763",
+  "method": "Same checkout and build path, baseline hydration source restored from HEAD, then fixed source rebuilt",
+  "rows": [
+    {
+      "tree": "src",
+      "name": "redact",
+      "before": {
+        "name": "redact",
+        "tree": "src",
+        "min": 7042,
+        "gz": 2759,
+        "br": 2536
+      },
+      "after": {
+        "name": "redact",
+        "tree": "src",
+        "min": 7042,
+        "gz": 2759,
+        "br": 2536
+      },
+      "gzipDelta": 0,
+      "minDelta": 0
+    },
+    {
+      "tree": "src",
+      "name": "redact/jsx-runtime",
+      "before": {
+        "name": "redact/jsx-runtime",
+        "tree": "src",
+        "min": 247,
+        "gz": 190,
+        "br": 180
+      },
+      "after": {
+        "name": "redact/jsx-runtime",
+        "tree": "src",
+        "min": 247,
+        "gz": 190,
+        "br": 180
+      },
+      "gzipDelta": 0,
+      "minDelta": 0
+    },
+    {
+      "tree": "src",
+      "name": "redact/dom",
+      "before": {
+        "name": "redact/dom",
+        "tree": "src",
+        "min": 57964,
+        "gz": 22971,
+        "br": 20897
+      },
+      "after": {
+        "name": "redact/dom",
+        "tree": "src",
+        "min": 57917,
+        "gz": 22971,
+        "br": 20906
+      },
+      "gzipDelta": 0,
+      "minDelta": -47
+    },
+    {
+      "tree": "src",
+      "name": "redact/dom-client",
+      "before": {
+        "name": "redact/dom-client",
+        "tree": "src",
+        "min": 64307,
+        "gz": 25111,
+        "br": 22727
+      },
+      "after": {
+        "name": "redact/dom-client",
+        "tree": "src",
+        "min": 64260,
+        "gz": 25107,
+        "br": 22760
+      },
+      "gzipDelta": -4,
+      "minDelta": -47
+    },
+    {
+      "tree": "src",
+      "name": "redact/server",
+      "before": {
+        "name": "redact/server",
+        "tree": "src",
+        "min": 22803,
+        "gz": 8973,
+        "br": 8119
+      },
+      "after": {
+        "name": "redact/server",
+        "tree": "src",
+        "min": 22803,
+        "gz": 8973,
+        "br": 8119
+      },
+      "gzipDelta": 0,
+      "minDelta": 0
+    },
+    {
+      "tree": "src",
+      "name": "client total",
+      "before": {
+        "name": "client total",
+        "tree": "src",
+        "min": 72504,
+        "gz": 28012,
+        "br": 25432
+      },
+      "after": {
+        "name": "client total",
+        "tree": "src",
+        "min": 72457,
+        "gz": 28005,
+        "br": 25404
+      },
+      "gzipDelta": -7,
+      "minDelta": -47
+    },
+    {
+      "tree": "src",
+      "name": "client total (default Vite)",
+      "before": {
+        "name": "client total (default Vite)",
+        "tree": "src",
+        "min": 61263,
+        "gz": 23447,
+        "br": 21351
+      },
+      "after": {
+        "name": "client total (default Vite)",
+        "tree": "src",
+        "min": 61213,
+        "gz": 23441,
+        "br": 21417
+      },
+      "gzipDelta": -6,
+      "minDelta": -50
+    },
+    {
+      "tree": "src",
+      "name": "redact/dom-client (activity=stub)",
+      "before": {
+        "name": "redact/dom-client (activity=stub)",
+        "tree": "src",
+        "min": 62818,
+        "gz": 24699,
+        "br": 22363
+      },
+      "after": {
+        "name": "redact/dom-client (activity=stub)",
+        "tree": "src",
+        "min": 62771,
+        "gz": 24695,
+        "br": 22362
+      },
+      "gzipDelta": -4,
+      "minDelta": -47
+    },
+    {
+      "tree": "src",
+      "name": "redact/dom-client (fragmentRefs=stub)",
+      "before": {
+        "name": "redact/dom-client (fragmentRefs=stub)",
+        "tree": "src",
+        "min": 58179,
+        "gz": 22996,
+        "br": 20868
+      },
+      "after": {
+        "name": "redact/dom-client (fragmentRefs=stub)",
+        "tree": "src",
+        "min": 58134,
+        "gz": 22992,
+        "br": 20906
+      },
+      "gzipDelta": -4,
+      "minDelta": -45
+    },
+    {
+      "tree": "src",
+      "name": "redact/dom-client (viewTransitions=stub)",
+      "before": {
+        "name": "redact/dom-client (viewTransitions=stub)",
+        "tree": "src",
+        "min": 53073,
+        "gz": 20503,
+        "br": 18746
+      },
+      "after": {
+        "name": "redact/dom-client (viewTransitions=stub)",
+        "tree": "src",
+        "min": 53028,
+        "gz": 20500,
+        "br": 18734
+      },
+      "gzipDelta": -3,
+      "minDelta": -45
+    },
+    {
+      "tree": "src",
+      "name": "redact/dom-client (portal=stub)",
+      "before": {
+        "name": "redact/dom-client (portal=stub)",
+        "tree": "src",
+        "min": 64249,
+        "gz": 25093,
+        "br": 22770
+      },
+      "after": {
+        "name": "redact/dom-client (portal=stub)",
+        "tree": "src",
+        "min": 64202,
+        "gz": 25090,
+        "br": 22808
+      },
+      "gzipDelta": -3,
+      "minDelta": -47
+    },
+    {
+      "tree": "src",
+      "name": "redact/dom-client (context=stub)",
+      "before": {
+        "name": "redact/dom-client (context=stub)",
+        "tree": "src",
+        "min": 63528,
+        "gz": 24864,
+        "br": 22528
+      },
+      "after": {
+        "name": "redact/dom-client (context=stub)",
+        "tree": "src",
+        "min": 63481,
+        "gz": 24867,
+        "br": 22541
+      },
+      "gzipDelta": 3,
+      "minDelta": -47
+    },
+    {
+      "tree": "src",
+      "name": "redact/dom-client (suspense=stub)",
+      "before": {
+        "name": "redact/dom-client (suspense=stub)",
+        "tree": "src",
+        "min": 58725,
+        "gz": 23114,
+        "br": 20999
+      },
+      "after": {
+        "name": "redact/dom-client (suspense=stub)",
+        "tree": "src",
+        "min": 58678,
+        "gz": 23119,
+        "br": 20966
+      },
+      "gzipDelta": 5,
+      "minDelta": -47
+    },
+    {
+      "tree": "src",
+      "name": "redact/dom-client (memo=stub)",
+      "before": {
+        "name": "redact/dom-client (memo=stub)",
+        "tree": "src",
+        "min": 64030,
+        "gz": 25024,
+        "br": 22657
+      },
+      "after": {
+        "name": "redact/dom-client (memo=stub)",
+        "tree": "src",
+        "min": 63983,
+        "gz": 25019,
+        "br": 22657
+      },
+      "gzipDelta": -5,
+      "minDelta": -47
+    },
+    {
+      "tree": "src",
+      "name": "redact/dom-client (forwardRef=stub)",
+      "before": {
+        "name": "redact/dom-client (forwardRef=stub)",
+        "tree": "src",
+        "min": 64274,
+        "gz": 25093,
+        "br": 22779
+      },
+      "after": {
+        "name": "redact/dom-client (forwardRef=stub)",
+        "tree": "src",
+        "min": 64227,
+        "gz": 25091,
+        "br": 22728
+      },
+      "gzipDelta": -2,
+      "minDelta": -47
+    },
+    {
+      "tree": "src",
+      "name": "redact/dom-client (lazy=stub)",
+      "before": {
+        "name": "redact/dom-client (lazy=stub)",
+        "tree": "src",
+        "min": 64286,
+        "gz": 25089,
+        "br": 22711
+      },
+      "after": {
+        "name": "redact/dom-client (lazy=stub)",
+        "tree": "src",
+        "min": 64239,
+        "gz": 25086,
+        "br": 22722
+      },
+      "gzipDelta": -3,
+      "minDelta": -47
+    },
+    {
+      "tree": "src",
+      "name": "redact/dom-client (classComponents=stub)",
+      "before": {
+        "name": "redact/dom-client (classComponents=stub)",
+        "tree": "src",
+        "min": 62696,
+        "gz": 24570,
+        "br": 22279
+      },
+      "after": {
+        "name": "redact/dom-client (classComponents=stub)",
+        "tree": "src",
+        "min": 62649,
+        "gz": 24565,
+        "br": 22285
+      },
+      "gzipDelta": -5,
+      "minDelta": -47
+    },
+    {
+      "tree": "src",
+      "name": "redact/dom-client (hydration=stub)",
+      "before": {
+        "name": "redact/dom-client (hydration=stub)",
+        "tree": "src",
+        "min": 57300,
+        "gz": 22578,
+        "br": 20486
+      },
+      "after": {
+        "name": "redact/dom-client (hydration=stub)",
+        "tree": "src",
+        "min": 57300,
+        "gz": 22578,
+        "br": 20486
+      },
+      "gzipDelta": 0,
+      "minDelta": 0
+    },
+    {
+      "tree": "src",
+      "name": "redact/dom-client (nano)",
+      "before": {
+        "name": "redact/dom-client (nano)",
+        "tree": "src",
+        "min": 30305,
+        "gz": 12532,
+        "br": 11447
+      },
+      "after": {
+        "name": "redact/dom-client (nano)",
+        "tree": "src",
+        "min": 30305,
+        "gz": 12532,
+        "br": 11447
+      },
+      "gzipDelta": 0,
+      "minDelta": 0
+    },
+    {
+      "tree": "dist",
+      "name": "redact",
+      "before": {
+        "name": "redact",
+        "tree": "dist",
+        "min": 7042,
+        "gz": 2759,
+        "br": 2510
+      },
+      "after": {
+        "name": "redact",
+        "tree": "dist",
+        "min": 7042,
+        "gz": 2759,
+        "br": 2510
+      },
+      "gzipDelta": 0,
+      "minDelta": 0
+    },
+    {
+      "tree": "dist",
+      "name": "redact/jsx-runtime",
+      "before": {
+        "name": "redact/jsx-runtime",
+        "tree": "dist",
+        "min": 247,
+        "gz": 190,
+        "br": 172
+      },
+      "after": {
+        "name": "redact/jsx-runtime",
+        "tree": "dist",
+        "min": 247,
+        "gz": 190,
+        "br": 172
+      },
+      "gzipDelta": 0,
+      "minDelta": 0
+    },
+    {
+      "tree": "dist",
+      "name": "redact/dom",
+      "before": {
+        "name": "redact/dom",
+        "tree": "dist",
+        "min": 57966,
+        "gz": 22966,
+        "br": 20906
+      },
+      "after": {
+        "name": "redact/dom",
+        "tree": "dist",
+        "min": 57919,
+        "gz": 22956,
+        "br": 20896
+      },
+      "gzipDelta": -10,
+      "minDelta": -47
+    },
+    {
+      "tree": "dist",
+      "name": "redact/dom-client",
+      "before": {
+        "name": "redact/dom-client",
+        "tree": "dist",
+        "min": 64307,
+        "gz": 25095,
+        "br": 22718
+      },
+      "after": {
+        "name": "redact/dom-client",
+        "tree": "dist",
+        "min": 64260,
+        "gz": 25095,
+        "br": 22752
+      },
+      "gzipDelta": 0,
+      "minDelta": -47
+    },
+    {
+      "tree": "dist",
+      "name": "redact/server",
+      "before": {
+        "name": "redact/server",
+        "tree": "dist",
+        "min": 22803,
+        "gz": 8975,
+        "br": 8104
+      },
+      "after": {
+        "name": "redact/server",
+        "tree": "dist",
+        "min": 22803,
+        "gz": 8975,
+        "br": 8104
+      },
+      "gzipDelta": 0,
+      "minDelta": 0
+    },
+    {
+      "tree": "dist",
+      "name": "client total",
+      "before": {
+        "name": "client total",
+        "tree": "dist",
+        "min": 72506,
+        "gz": 28008,
+        "br": 25414
+      },
+      "after": {
+        "name": "client total",
+        "tree": "dist",
+        "min": 72459,
+        "gz": 28004,
+        "br": 25416
+      },
+      "gzipDelta": -4,
+      "minDelta": -47
+    },
+    {
+      "tree": "dist",
+      "name": "client total (default Vite)",
+      "before": {
+        "name": "client total (default Vite)",
+        "tree": "dist",
+        "min": 61263,
+        "gz": 23446,
+        "br": 21363
+      },
+      "after": {
+        "name": "client total (default Vite)",
+        "tree": "dist",
+        "min": 61213,
+        "gz": 23446,
+        "br": 21425
+      },
+      "gzipDelta": 0,
+      "minDelta": -50
+    },
+    {
+      "tree": "dist",
+      "name": "redact/dom-client (activity=stub)",
+      "before": {
+        "name": "redact/dom-client (activity=stub)",
+        "tree": "dist",
+        "min": 62820,
+        "gz": 24691,
+        "br": 22361
+      },
+      "after": {
+        "name": "redact/dom-client (activity=stub)",
+        "tree": "dist",
+        "min": 62773,
+        "gz": 24688,
+        "br": 22376
+      },
+      "gzipDelta": -3,
+      "minDelta": -47
+    },
+    {
+      "tree": "dist",
+      "name": "redact/dom-client (fragmentRefs=stub)",
+      "before": {
+        "name": "redact/dom-client (fragmentRefs=stub)",
+        "tree": "dist",
+        "min": 58181,
+        "gz": 22988,
+        "br": 20863
+      },
+      "after": {
+        "name": "redact/dom-client (fragmentRefs=stub)",
+        "tree": "dist",
+        "min": 58134,
+        "gz": 22989,
+        "br": 20879
+      },
+      "gzipDelta": 1,
+      "minDelta": -47
+    },
+    {
+      "tree": "dist",
+      "name": "redact/dom-client (viewTransitions=stub)",
+      "before": {
+        "name": "redact/dom-client (viewTransitions=stub)",
+        "tree": "dist",
+        "min": 53073,
+        "gz": 20488,
+        "br": 18736
+      },
+      "after": {
+        "name": "redact/dom-client (viewTransitions=stub)",
+        "tree": "dist",
+        "min": 53028,
+        "gz": 20487,
+        "br": 18734
+      },
+      "gzipDelta": -1,
+      "minDelta": -45
+    },
+    {
+      "tree": "dist",
+      "name": "redact/dom-client (portal=stub)",
+      "before": {
+        "name": "redact/dom-client (portal=stub)",
+        "tree": "dist",
+        "min": 64249,
+        "gz": 25077,
+        "br": 22740
+      },
+      "after": {
+        "name": "redact/dom-client (portal=stub)",
+        "tree": "dist",
+        "min": 64202,
+        "gz": 25076,
+        "br": 22771
+      },
+      "gzipDelta": -1,
+      "minDelta": -47
+    },
+    {
+      "tree": "dist",
+      "name": "redact/dom-client (context=stub)",
+      "before": {
+        "name": "redact/dom-client (context=stub)",
+        "tree": "dist",
+        "min": 63528,
+        "gz": 24833,
+        "br": 22525
+      },
+      "after": {
+        "name": "redact/dom-client (context=stub)",
+        "tree": "dist",
+        "min": 63481,
+        "gz": 24833,
+        "br": 22543
+      },
+      "gzipDelta": 0,
+      "minDelta": -47
+    },
+    {
+      "tree": "dist",
+      "name": "redact/dom-client (suspense=stub)",
+      "before": {
+        "name": "redact/dom-client (suspense=stub)",
+        "tree": "dist",
+        "min": 58727,
+        "gz": 23110,
+        "br": 20929
+      },
+      "after": {
+        "name": "redact/dom-client (suspense=stub)",
+        "tree": "dist",
+        "min": 58680,
+        "gz": 23118,
+        "br": 20935
+      },
+      "gzipDelta": 8,
+      "minDelta": -47
+    },
+    {
+      "tree": "dist",
+      "name": "redact/dom-client (memo=stub)",
+      "before": {
+        "name": "redact/dom-client (memo=stub)",
+        "tree": "dist",
+        "min": 64030,
+        "gz": 25001,
+        "br": 22657
+      },
+      "after": {
+        "name": "redact/dom-client (memo=stub)",
+        "tree": "dist",
+        "min": 63983,
+        "gz": 24999,
+        "br": 22660
+      },
+      "gzipDelta": -2,
+      "minDelta": -47
+    },
+    {
+      "tree": "dist",
+      "name": "redact/dom-client (forwardRef=stub)",
+      "before": {
+        "name": "redact/dom-client (forwardRef=stub)",
+        "tree": "dist",
+        "min": 64274,
+        "gz": 25074,
+        "br": 22721
+      },
+      "after": {
+        "name": "redact/dom-client (forwardRef=stub)",
+        "tree": "dist",
+        "min": 64227,
+        "gz": 25072,
+        "br": 22733
+      },
+      "gzipDelta": -2,
+      "minDelta": -47
+    },
+    {
+      "tree": "dist",
+      "name": "redact/dom-client (lazy=stub)",
+      "before": {
+        "name": "redact/dom-client (lazy=stub)",
+        "tree": "dist",
+        "min": 64286,
+        "gz": 25085,
+        "br": 22738
+      },
+      "after": {
+        "name": "redact/dom-client (lazy=stub)",
+        "tree": "dist",
+        "min": 64239,
+        "gz": 25082,
+        "br": 22730
+      },
+      "gzipDelta": -3,
+      "minDelta": -47
+    },
+    {
+      "tree": "dist",
+      "name": "redact/dom-client (classComponents=stub)",
+      "before": {
+        "name": "redact/dom-client (classComponents=stub)",
+        "tree": "dist",
+        "min": 62696,
+        "gz": 24565,
+        "br": 22286
+      },
+      "after": {
+        "name": "redact/dom-client (classComponents=stub)",
+        "tree": "dist",
+        "min": 62649,
+        "gz": 24557,
+        "br": 22276
+      },
+      "gzipDelta": -8,
+      "minDelta": -47
+    },
+    {
+      "tree": "dist",
+      "name": "redact/dom-client (hydration=stub)",
+      "before": {
+        "name": "redact/dom-client (hydration=stub)",
+        "tree": "dist",
+        "min": 57300,
+        "gz": 22576,
+        "br": 20524
+      },
+      "after": {
+        "name": "redact/dom-client (hydration=stub)",
+        "tree": "dist",
+        "min": 57300,
+        "gz": 22576,
+        "br": 20524
+      },
+      "gzipDelta": 0,
+      "minDelta": 0
+    },
+    {
+      "tree": "dist",
+      "name": "redact/dom-client (nano)",
+      "before": {
+        "name": "redact/dom-client (nano)",
+        "tree": "dist",
+        "min": 30307,
+        "gz": 12534,
+        "br": 11450
+      },
+      "after": {
+        "name": "redact/dom-client (nano)",
+        "tree": "dist",
+        "min": 30307,
+        "gz": 12534,
+        "br": 11450
+      },
+      "gzipDelta": 0,
+      "minDelta": 0
+    }
+  ]
+}

@@ -69,10 +69,10 @@ export class HydrationCursor {
      * name/property for meta, src for script). Non-matching nodes stay in
      * place so the SSR'd stylesheet/script order is preserved.
      */
-    head(tag: string, props: Record<string, any>): ChildNode | null {
+    head(tag: string, props: Record<string, any>, parent: Node = this.p): ChildNode | null {
         const target = tag.toLowerCase();
         const keyAttrs = HEAD_KEY_ATTRS[target];
-        let scan = this.p.firstChild;
+        let scan = parent.firstChild;
         while (scan) {
             if (scan.nodeType === 1 &&
                 (scan as Element).tagName.toLowerCase() === target &&
@@ -266,26 +266,26 @@ export function adoptHostDom(fiber: Fiber, parent: Fiber): boolean {
     if (!cursor)
         return false;
     const tag = (fiber.type as string).toLowerCase();
+    const props = fiber.v ?? {};
     const documentHeadParent = documentMetadataParent(fiber) || (cursor.p.nodeType === 9 && DOCUMENT_HEAD_TAGS.test(tag)
         ? (cursor.p as Document).head
         : null);
-    const parentEl = cursor.p as Element;
-    const parentTag = parentEl.nodeType === 1 ? (parentEl as Element).tagName.toLowerCase() : '';
+    const parentTag = (cursor.p as Element).localName;
     const isHeadish = parentTag === 'head' || parentTag === 'html' || !!documentHeadParent;
     let candidate: ChildNode | null;
-    if (documentHeadParent) {
-        // Adopt projected metadata from the same head used for client updates.
-        candidate = new HydrationCursor(documentHeadParent).head(tag, fiber.v ?? {});
-    }
-    else if (cursor.p.nodeType === 9 && tag !== 'html') {
-        candidate = new HydrationCursor((cursor.p as Document).body).head(tag, fiber.v ?? {});
+    if (documentHeadParent || cursor.p.nodeType === 9 && tag !== 'html') {
+        candidate = cursor.head(tag, props, documentHeadParent || (cursor.p as Document).body);
+        // Adopt metadata left at its original host position when the server
+        // has not hoisted it. Claiming it keeps later siblings aligned.
+        if (!candidate && documentHeadParent)
+            candidate = cursor.head(tag, props);
     }
     else if (isHeadish) {
         // Head/html children are position-insensitive — server may emit them in
         // a different order than the React tree (React 19 head hoisting, etc.).
         // Scan forward without removing non-matching nodes; match on attribute
         // signature so we don't adopt the wrong <link> and clobber its props.
-        candidate = cursor.head(tag, fiber.v ?? {});
+        candidate = cursor.head(tag, props);
     }
     else {
         candidate = cursor.take();
@@ -308,7 +308,6 @@ export function adoptHostDom(fiber: Fiber, parent: Fiber): boolean {
     }
     fiber.n = candidate;
     // Apply props (attach events, sync IDL props). Don't re-set existing attrs.
-    const props = fiber.v ?? {};
     const isSvg = tag === 'svg' ||
         ((candidate as Element).namespaceURI === 'http://www.w3.org/2000/svg' &&
             tag !== 'foreignobject');

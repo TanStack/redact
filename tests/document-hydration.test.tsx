@@ -84,6 +84,33 @@ describe('hydrateRoot(document, <html/>)', () => {
     expect(errors).toEqual([])
   })
 
+  it('adopts metadata emitted in the body without replacing following content', () => {
+    function App() {
+      return <html><head /><body>
+        <button id="counter">Count {0}</button>
+        <link rel="modulepreload" href="/entry.js" />
+        <link rel="modulepreload" href="/route.js" />
+        <script suppressHydrationWarning dangerouslySetInnerHTML={{ __html: ' ' }} />
+      </body></html>
+    }
+    const doc = buildDocumentFrom(renderToString(<App />))
+    const button = doc.querySelector('button')
+    const links = Array.from(doc.querySelectorAll('link'))
+    const script = doc.querySelector('script')
+    const errors: unknown[] = []
+    const root = hydrateRoot(doc as any, <App />, {
+      onRecoverableError: (error) => errors.push(error),
+    })
+    expect(errors).toEqual([])
+    expect(doc.querySelector('button')).toBe(button)
+    expect(Array.from(doc.querySelectorAll('link'))).toEqual(links)
+    expect(doc.querySelector('script')).toBe(script)
+    flushSync(() => root.render(<App />))
+    expect(doc.querySelector('button')).toBe(button)
+    expect(doc.querySelectorAll('link')).toHaveLength(2)
+    root.unmount()
+  })
+
   it('preserves foreign nodes after expected document body children', () => {
     function App() {
       return (
