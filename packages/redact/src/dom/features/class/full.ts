@@ -1,6 +1,6 @@
 import { devToolsMetadata } from '../../../core/devtools';
 import { resolveClassProps } from '../../../core/class-props';
-import { invokeCommit, stageCommit } from '../../reconcile';
+import { invokeCommit, stageCommit, recoveringBoundaries } from '../../reconcile';
 import { installRenderer, reconcileRaw, childrenToArray, scheduleUpdate, scheduleLifecycle, isThenable, handleSuspended, handleErrorInRender, readContext, attachRef, syncRefIfChanged, isActivityHidden, layoutIsDisconnected, RenderErrorCapture, handleCommitError, } from '../../reconcile';
 import { checkpointCommit, rewindCommit, queueBeforeMutation, queueMutation } from '../../commit';
 import { FiberTag, type Fiber, type ReactNode } from '../../../core';
@@ -98,38 +98,47 @@ function renderClass(fiber: Fiber): void {
         }
         instance.props = props;
     }
-    if (captured && Ctor.getDerivedStateFromError) {
-        const update = Ctor.getDerivedStateFromError(captured.e);
-        if (update != null)
-            instance.state = { ...instance.state, ...update };
-    }
-    let rendered: ReactNode = captured && !Ctor.getDerivedStateFromError ? null : didRender ? instance.render() : fiber.b?.r;
-    fiber.b = { ...(fiber.b ?? {}), r: rendered };
-    const canCatch = Ctor.getDerivedStateFromError || instance.componentDidCatch;
-    if (canCatch)
-        fiber.b.b = Ctor;
-    if (canCatch && fiber.r)
-        fiber.r.eb = true;
-    const checkpoint = canCatch ? checkpointCommit(fiber) : -1;
+    // Errors from a recovery tree belong to an enclosing boundary. A nested
+    // boundary introduced by that recovery remains eligible to catch them.
+    if (captured) recoveringBoundaries.add(fiber);
     try {
-        reconcileRaw(fiber, rendered);
-    }
-    catch (error) {
-        if (!(error instanceof RenderErrorCapture) || error.b !== fiber)
-            throw error;
-        rewindCommit(checkpoint);
-        captured = error;
-        didRender = true;
-        if (Ctor.getDerivedStateFromError) {
-            const update = Ctor.getDerivedStateFromError(error.e);
+        if (captured && Ctor.getDerivedStateFromError) {
+            const update = Ctor.getDerivedStateFromError(captured.e);
             if (update != null)
                 instance.state = { ...instance.state, ...update };
-            rendered = instance.render();
         }
-        else
-            rendered = null;
+        let rendered: ReactNode = captured && !Ctor.getDerivedStateFromError ? null : didRender ? instance.render() : fiber.b?.r;
         fiber.b = { ...(fiber.b ?? {}), r: rendered };
-        reconcileRaw(fiber, rendered);
+        const canCatch = Ctor.getDerivedStateFromError || instance.componentDidCatch;
+        if (canCatch)
+            fiber.b.b = Ctor;
+        if (canCatch && fiber.r)
+            fiber.r.eb = true;
+        const checkpoint = canCatch ? checkpointCommit(fiber) : -1;
+        try {
+            reconcileRaw(fiber, rendered);
+        }
+        catch (error) {
+            if (!(error instanceof RenderErrorCapture) || error.b !== fiber)
+                throw error;
+            rewindCommit(checkpoint);
+            captured = error;
+            recoveringBoundaries.add(fiber);
+            didRender = true;
+            if (Ctor.getDerivedStateFromError) {
+                const update = Ctor.getDerivedStateFromError(error.e);
+                if (update != null)
+                    instance.state = { ...instance.state, ...update };
+                rendered = instance.render();
+            }
+            else
+                rendered = null;
+            fiber.b = { ...(fiber.b ?? {}), r: rendered };
+            reconcileRaw(fiber, rendered);
+        }
+    }
+    finally {
+        recoveringBoundaries.delete(fiber);
     }
     fiber.m = props;
     const state = instance.state;
