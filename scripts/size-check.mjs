@@ -51,11 +51,35 @@ const QUEUE_SIZE_ALLOWANCE = {
   'redact/dom-client (hydration=stub)': [18, 18],
 }
 
+// Measured cost of mapping camelCase SVG presentation props to their hyphenated
+// attribute names (shapeRendering, fontSize, stopColor, ...), [source, built]
+// gzip bytes. React applies the same table; without it the browser ignores the
+// attributes. The prefix pattern lives in src/core/attributes.ts.
+const SVG_ATTRIBUTE_ALLOWANCE = {
+  'redact/dom': [169, 178],
+  'redact/dom-client': [178, 175],
+  'redact/server': [172, 170],
+  'client total': [172, 178],
+  'client total (default Vite)': [222, 203],
+  'redact/dom-client (activity=stub)': [175, 171],
+  'redact/dom-client (fragmentRefs=stub)': [176, 179],
+  'redact/dom-client (viewTransitions=stub)': [181, 182],
+  'redact/dom-client (portal=stub)': [179, 174],
+  'redact/dom-client (context=stub)': [177, 173],
+  'redact/dom-client (suspense=stub)': [195, 198],
+  'redact/dom-client (memo=stub)': [169, 176],
+  'redact/dom-client (forwardRef=stub)': [177, 175],
+  'redact/dom-client (lazy=stub)': [175, 173],
+  'redact/dom-client (classComponents=stub)': [174, 175],
+  'redact/dom-client (hydration=stub)': [191, 191],
+  'redact/dom-client (nano)': [180, 185],
+}
+
 let failed = false
 for (const tree of ['src', 'dist']) {
   for (const row of await measureSizes(tree)) {
     const baseBudget = BUDGETS[row.name]
-    const budget = baseBudget === undefined ? undefined : baseBudget + (QUEUE_SIZE_ALLOWANCE[row.name]?.[tree === 'src' ? 0 : 1] ?? 0)
+    const budget = baseBudget === undefined ? undefined : baseBudget + (QUEUE_SIZE_ALLOWANCE[row.name]?.[tree === 'src' ? 0 : 1] ?? 0) + (SVG_ATTRIBUTE_ALLOWANCE[row.name]?.[tree === 'src' ? 0 : 1] ?? 0)
     const ok = budget !== undefined && row.gz <= budget
     failed ||= !ok
     console.log(`${ok ? 'PASS' : 'FAIL'} ${tree} ${row.name}: ${row.gz} B gzip, budget ${budget ?? 'missing'}`)
