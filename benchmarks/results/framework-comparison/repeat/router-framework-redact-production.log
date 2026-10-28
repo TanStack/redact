@@ -29,4 +29,3 @@ GET /__manifest?paths=%2F%2C%2Fother&version=8967a859 200 - - 1.173 ms
 POST /_.data?index 200 - - 1.573 ms
 GET /_.data 200 - - 0.613 ms
 GET /_.data 200 - - 0.510 ms
-

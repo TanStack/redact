@@ -8,4 +8,3 @@
  GET / 200 in 811ms (compile: 559ms, render: 249ms)
  GET / 200 in 9ms (compile: 1ms, render: 6ms)
 11:17:57 AM [vite] (client) [Unhandled rejection] Unknown Error: [object Promise]
-
