@@ -34,6 +34,7 @@ import {
   popContext,
   snapshotContexts,
   recordHostResource,
+  recordHoisted,
   currentSSRFrame,
   type ContextSnapshot,
 } from './dispatcher'
@@ -68,7 +69,7 @@ export interface WalkOptions {
   bootstrapped?: boolean | undefined
   isBoundaryResolution?: boolean | undefined
   resourceScope?: ResourceScope | undefined
-  // Shared traversal flags: SVG = 1, adjacent text = 2.
+  // Shared traversal flags: SVG = 1, adjacent text = 2, inside <picture> or <noscript> = 4.
   // Host children restore previous flags on return or throw.
   textState?: { bits: number }
 }
@@ -247,6 +248,13 @@ function walkHost(
 ): void {
   const isSvg = !!(opts.textState!.bits & 1) || tag === 'svg'
   if (!isSvg && resourceKind(tag, props) && recordHostResource(tag, props, opts.resourceScope)) return
+  // In a document render React's server renderer preloads the images it renders eagerly and
+  // opens <head> with the charset and viewport metas. Neither applies inside <svg>, <picture>
+  // or <noscript>.
+  if (!isSvg && !(opts.textState!.bits & 4) && /^(img|meta)$/.test(tag)) {
+    const emit = recordHoisted(tag, props)
+    if (emit) opts = { ...opts, emit }
+  }
   // <textarea value="..."> serializes its value as a TEXT CHILD, not an
   // attribute. `defaultValue` is the fallback when `value` is absent. This
   // matches React and the HTML spec — `<textarea value="x">` is not valid
@@ -322,18 +330,18 @@ function walkHost(
 
   if (VOID_ELEMENTS.has(tag)) {
     opts.emit('/>')
-    opts.textState!.bits &= 1
+    opts.textState!.bits &= 5
     return
   }
   opts.emit('>')
-  if (tag === 'head') opts.onHead?.()
+  if (tag === 'head') openHead(opts)
   // Opening a host element starts a fresh text flow context for its children.
   // Children's text separator tracking is independent of the outer context.
   const parentTextState = opts.textState
 
   if (tag === 'html' && !hasHeadChild(props.children)) {
     opts.emit('<head>')
-    opts.onHead?.()
+    openHead(opts)
     opts.emit('</head>')
   }
 
@@ -342,7 +350,7 @@ function walkHost(
   if (isTextarea && textareaValue != null) {
     opts.emit(escapeText(String(textareaValue)))
     opts.emit(`</${tag}>`)
-    parentTextState!.bits &= 1
+    parentTextState!.bits &= 5
     return
   }
 
@@ -360,7 +368,7 @@ function walkHost(
       }
     }
     opts.emit(`</${tag}>`)
-    parentTextState!.bits &= 1
+    parentTextState!.bits &= 5
     return
   }
 
@@ -368,7 +376,7 @@ function walkHost(
     opts.emit(String(dangerouslyHtml))
   } else {
     const previousState = parentTextState!.bits
-    parentTextState!.bits = +(isSvg && tag !== 'foreignObject')
+    parentTextState!.bits = +(isSvg && tag !== 'foreignObject') | previousState & 4 | (/^(picture|noscript)$/.test(tag) ? 4 : 0)
     try {
       walkNode(props.children, opts)
     } finally {
@@ -377,10 +385,15 @@ function walkHost(
   }
   opts.emit(`</${tag}>`)
   // Host element closing resets outer flow — next sibling text starts fresh.
-  parentTextState!.bits &= 1
+  parentTextState!.bits &= 5
   } finally {
     if (isSelect) popSelectContext()
   }
+}
+
+function openHead(opts: WalkOptions): void {
+  currentSSRFrame().document = true
+  opts.onHead?.()
 }
 
 function hasHeadChild(children: unknown): boolean {

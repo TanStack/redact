@@ -13,13 +13,18 @@ export interface SSRFrame {
   resources?: ReturnType<typeof createResourceHints>
   shellFlushed?: boolean
   styleNonce?: string | undefined
+  // Set once the walk has opened <head>. Image preloads and hoisted metas only belong to
+  // document renders, where the head is position-insensitive for hydration.
+  document?: boolean
 }
 
 let frame: SSRFrame | null = null
 
+const resources = () => frame!.resources ||= createResourceHints(!!frame!.shellFlushed, frame!.styleNonce)
+
 resourceHintDispatcher.emit = (kind, href, options) => {
   if (!frame) return false
-  ;(frame.resources ||= createResourceHints(!!frame.shellFlushed, frame.styleNonce)).add(kind, href, options)
+  resources().add(kind, href, options)
   return true
 }
 
@@ -35,7 +40,13 @@ export function currentSSRFrame(): SSRFrame {
 }
 
 export function recordHostResource(type: string, props: any, scope?: ResourceScope): boolean {
-  return !!frame && (frame.resources ||= createResourceHints(!!frame.shellFlushed, frame.styleNonce)).addHost(type, props, scope)
+  return !!frame && resources().addHost(type, props, scope)
+}
+
+// An <img> adds its preload. A charset or viewport <meta> in the shell returns the sink that
+// hoists its markup.
+export function recordHoisted(tag: string, props: any): ((chunk: string) => void) | null | void {
+  if (frame?.document) return tag === 'img' ? resources().addImage(props) : resources().addMeta(props)
 }
 
 export function endSSR(previous?: ReturnType<typeof beginSSR>): void {
