@@ -143,16 +143,12 @@ describe('image preloads', () => {
   it('emits the metas of a retried shell once', async () => {
     let value: string | undefined
     const pending = Promise.resolve('ready').then(result => { value = result })
-    function Root() {
+    function Late() {
+      // Suspends outside any boundary after the head was walked, so the shell is rendered twice.
       if (value === undefined) throw pending
-      return <Page><img src="/hero.png" alt="" /><p>{value}</p></Page>
+      return <p>{value}</p>
     }
-    function Shell() {
-      // Suspends at the root on the first attempt, outside any boundary.
-      if (value === undefined) throw pending
-      return <Root />
-    }
-    const html = await streamed(<Shell />)
+    const html = await streamed(<Page><img src="/hero.png" alt="" /><Late /></Page>)
     expect(head(html)).toEqual([expectedHead[0], expectedHead[1], { tag: 'link', rel: 'preload', as: 'image', href: '/hero.png' }, ...expectedHead.slice(5)])
     expect(html).toContain('<p>ready</p>')
   })
