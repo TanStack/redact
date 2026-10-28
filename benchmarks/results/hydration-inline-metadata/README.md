@@ -8,6 +8,8 @@ The only application integration change is the Vite plugin's packageRoots option
 
 Validation uses Node 24.22.0 from .nvmrc: 1,966 tests passed, 91 skipped; type checks, build verification and all original size limits passed. No size allowance was added.
 
-The final implementation shares the metadata props, reuses the cursor's scan for another parent, and reads the parent's localName directly. These remove duplicated lookup work while preserving the fallback to metadata emitted in place.
+The final implementation uses one metadata scan over element children and the optional original host location. It shares props, removes redundant tag normalization, and folds two single-use recovery helpers into their callers without changing recovery decisions.
 
-The size comparison rebuilds baseline and fixed sources at the same checkout path with the same toolchain. The built default Vite client stays at 23,446 gzip bytes and shrinks by 50 minified bytes. The full client shrinks by 4 gzip bytes and 47 minified bytes. Source bundles shrink by 6 and 7 gzip bytes respectively. Brotli is recorded separately and increases by 62 bytes for the default built bundle; the repository's enforced bundle metric is gzip.
+The size comparison rebuilds baseline and fixed sources at the same checkout path with the same toolchain. The built default Vite client shrinks from 23,446 to 23,385 gzip bytes (-61), by 233 minified bytes and 7 Brotli bytes. The full built client shrinks by 45 gzip bytes, 230 minified bytes and 13 Brotli bytes. Source default Brotli increases by 19 bytes, recorded separately; source gzip shrinks by 66 bytes.
+
+The independent React compatibility gate passes all 36 profile/entry/protocol comparisons with no growth in minified, gzip or Brotli output. It bundles published entries through Vite for React 18 and 19 in full, default and nano configurations. Its complete output is saved in react-compatibility-size.txt. No size budget or test was relaxed.

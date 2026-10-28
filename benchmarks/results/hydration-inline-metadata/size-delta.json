@@ -1,7 +1,7 @@
 {
   "node": "v24.22.0",
   "base": "89f2bfc58135fdf5fcb29af4c346680e0eda2763",
-  "method": "Same checkout and build path, baseline hydration source restored from HEAD, then fixed source rebuilt",
+  "method": "Same checkout and build path, baseline source from origin/main, then final source rebuilt",
   "rows": [
     {
       "tree": "src",
@@ -21,7 +21,8 @@
         "br": 2536
       },
       "gzipDelta": 0,
-      "minDelta": 0
+      "minDelta": 0,
+      "brotliDelta": 0
     },
     {
       "tree": "src",
@@ -41,7 +42,8 @@
         "br": 180
       },
       "gzipDelta": 0,
-      "minDelta": 0
+      "minDelta": 0,
+      "brotliDelta": 0
     },
     {
       "tree": "src",
@@ -56,12 +58,13 @@
       "after": {
         "name": "redact/dom",
         "tree": "src",
-        "min": 57917,
-        "gz": 22971,
-        "br": 20906
+        "min": 57734,
+        "gz": 22924,
+        "br": 20825
       },
-      "gzipDelta": 0,
-      "minDelta": -47
+      "gzipDelta": -47,
+      "minDelta": -230,
+      "brotliDelta": -72
     },
     {
       "tree": "src",
@@ -76,12 +79,13 @@
       "after": {
         "name": "redact/dom-client",
         "tree": "src",
-        "min": 64260,
-        "gz": 25107,
-        "br": 22760
+        "min": 64077,
+        "gz": 25062,
+        "br": 22703
       },
-      "gzipDelta": -4,
-      "minDelta": -47
+      "gzipDelta": -49,
+      "minDelta": -230,
+      "brotliDelta": -24
     },
     {
       "tree": "src",
@@ -101,7 +105,8 @@
         "br": 8119
       },
       "gzipDelta": 0,
-      "minDelta": 0
+      "minDelta": 0,
+      "brotliDelta": 0
     },
     {
       "tree": "src",
@@ -116,12 +121,13 @@
       "after": {
         "name": "client total",
         "tree": "src",
-        "min": 72457,
-        "gz": 28005,
-        "br": 25404
+        "min": 72274,
+        "gz": 27965,
+        "br": 25387
       },
-      "gzipDelta": -7,
-      "minDelta": -47
+      "gzipDelta": -47,
+      "minDelta": -230,
+      "brotliDelta": -45
     },
     {
       "tree": "src",
@@ -136,12 +142,13 @@
       "after": {
         "name": "client total (default Vite)",
         "tree": "src",
-        "min": 61213,
-        "gz": 23441,
-        "br": 21417
+        "min": 61030,
+        "gz": 23381,
+        "br": 21370
       },
-      "gzipDelta": -6,
-      "minDelta": -50
+      "gzipDelta": -66,
+      "minDelta": -233,
+      "brotliDelta": 19
     },
     {
       "tree": "src",
@@ -156,12 +163,13 @@
       "after": {
         "name": "redact/dom-client (activity=stub)",
         "tree": "src",
-        "min": 62771,
-        "gz": 24695,
-        "br": 22362
+        "min": 62588,
+        "gz": 24654,
+        "br": 22332
       },
-      "gzipDelta": -4,
-      "minDelta": -47
+      "gzipDelta": -45,
+      "minDelta": -230,
+      "brotliDelta": -31
     },
     {
       "tree": "src",
@@ -176,12 +184,13 @@
       "after": {
         "name": "redact/dom-client (fragmentRefs=stub)",
         "tree": "src",
-        "min": 58134,
-        "gz": 22992,
-        "br": 20906
+        "min": 57949,
+        "gz": 22954,
+        "br": 20847
       },
-      "gzipDelta": -4,
-      "minDelta": -45
+      "gzipDelta": -42,
+      "minDelta": -230,
+      "brotliDelta": -21
     },
     {
       "tree": "src",
@@ -196,12 +205,13 @@
       "after": {
         "name": "redact/dom-client (viewTransitions=stub)",
         "tree": "src",
-        "min": 53028,
-        "gz": 20500,
-        "br": 18734
+        "min": 52845,
+        "gz": 20456,
+        "br": 18703
       },
-      "gzipDelta": -3,
-      "minDelta": -45
+      "gzipDelta": -47,
+      "minDelta": -228,
+      "brotliDelta": -43
     },
     {
       "tree": "src",
@@ -216,12 +226,13 @@
       "after": {
         "name": "redact/dom-client (portal=stub)",
         "tree": "src",
-        "min": 64202,
-        "gz": 25090,
-        "br": 22808
+        "min": 64019,
+        "gz": 25046,
+        "br": 22689
       },
-      "gzipDelta": -3,
-      "minDelta": -47
+      "gzipDelta": -47,
+      "minDelta": -230,
+      "brotliDelta": -81
     },
     {
       "tree": "src",
@@ -236,12 +247,13 @@
       "after": {
         "name": "redact/dom-client (context=stub)",
         "tree": "src",
-        "min": 63481,
-        "gz": 24867,
-        "br": 22541
+        "min": 63298,
+        "gz": 24815,
+        "br": 22494
       },
-      "gzipDelta": 3,
-      "minDelta": -47
+      "gzipDelta": -49,
+      "minDelta": -230,
+      "brotliDelta": -34
     },
     {
       "tree": "src",
@@ -256,12 +268,13 @@
       "after": {
         "name": "redact/dom-client (suspense=stub)",
         "tree": "src",
-        "min": 58678,
-        "gz": 23119,
-        "br": 20966
+        "min": 58495,
+        "gz": 23049,
+        "br": 20958
       },
-      "gzipDelta": 5,
-      "minDelta": -47
+      "gzipDelta": -65,
+      "minDelta": -230,
+      "brotliDelta": -41
     },
     {
       "tree": "src",
@@ -276,12 +289,13 @@
       "after": {
         "name": "redact/dom-client (memo=stub)",
         "tree": "src",
-        "min": 63983,
-        "gz": 25019,
-        "br": 22657
+        "min": 63800,
+        "gz": 24979,
+        "br": 22699
       },
-      "gzipDelta": -5,
-      "minDelta": -47
+      "gzipDelta": -45,
+      "minDelta": -230,
+      "brotliDelta": 42
     },
     {
       "tree": "src",
@@ -296,12 +310,13 @@
       "after": {
         "name": "redact/dom-client (forwardRef=stub)",
         "tree": "src",
-        "min": 64227,
-        "gz": 25091,
-        "br": 22728
+        "min": 64044,
+        "gz": 25045,
+        "br": 22687
       },
-      "gzipDelta": -2,
-      "minDelta": -47
+      "gzipDelta": -48,
+      "minDelta": -230,
+      "brotliDelta": -92
     },
     {
       "tree": "src",
@@ -316,12 +331,13 @@
       "after": {
         "name": "redact/dom-client (lazy=stub)",
         "tree": "src",
-        "min": 64239,
-        "gz": 25086,
-        "br": 22722
+        "min": 64056,
+        "gz": 25050,
+        "br": 22683
       },
-      "gzipDelta": -3,
-      "minDelta": -47
+      "gzipDelta": -39,
+      "minDelta": -230,
+      "brotliDelta": -28
     },
     {
       "tree": "src",
@@ -336,12 +352,13 @@
       "after": {
         "name": "redact/dom-client (classComponents=stub)",
         "tree": "src",
-        "min": 62649,
-        "gz": 24565,
-        "br": 22285
+        "min": 62466,
+        "gz": 24523,
+        "br": 22225
       },
-      "gzipDelta": -5,
-      "minDelta": -47
+      "gzipDelta": -47,
+      "minDelta": -230,
+      "brotliDelta": -54
     },
     {
       "tree": "src",
@@ -361,7 +378,8 @@
         "br": 20486
       },
       "gzipDelta": 0,
-      "minDelta": 0
+      "minDelta": 0,
+      "brotliDelta": 0
     },
     {
       "tree": "src",
@@ -381,7 +399,8 @@
         "br": 11447
       },
       "gzipDelta": 0,
-      "minDelta": 0
+      "minDelta": 0,
+      "brotliDelta": 0
     },
     {
       "tree": "dist",
@@ -401,7 +420,8 @@
         "br": 2510
       },
       "gzipDelta": 0,
-      "minDelta": 0
+      "minDelta": 0,
+      "brotliDelta": 0
     },
     {
       "tree": "dist",
@@ -421,7 +441,8 @@
         "br": 172
       },
       "gzipDelta": 0,
-      "minDelta": 0
+      "minDelta": 0,
+      "brotliDelta": 0
     },
     {
       "tree": "dist",
@@ -436,12 +457,13 @@
       "after": {
         "name": "redact/dom",
         "tree": "dist",
-        "min": 57919,
-        "gz": 22956,
-        "br": 20896
+        "min": 57736,
+        "gz": 22907,
+        "br": 20830
       },
-      "gzipDelta": -10,
-      "minDelta": -47
+      "gzipDelta": -59,
+      "minDelta": -230,
+      "brotliDelta": -76
     },
     {
       "tree": "dist",
@@ -456,12 +478,13 @@
       "after": {
         "name": "redact/dom-client",
         "tree": "dist",
-        "min": 64260,
-        "gz": 25095,
-        "br": 22752
+        "min": 64077,
+        "gz": 25053,
+        "br": 22737
       },
-      "gzipDelta": 0,
-      "minDelta": -47
+      "gzipDelta": -42,
+      "minDelta": -230,
+      "brotliDelta": 19
     },
     {
       "tree": "dist",
@@ -481,7 +504,8 @@
         "br": 8104
       },
       "gzipDelta": 0,
-      "minDelta": 0
+      "minDelta": 0,
+      "brotliDelta": 0
     },
     {
       "tree": "dist",
@@ -496,12 +520,13 @@
       "after": {
         "name": "client total",
         "tree": "dist",
-        "min": 72459,
-        "gz": 28004,
-        "br": 25416
+        "min": 72276,
+        "gz": 27963,
+        "br": 25401
       },
-      "gzipDelta": -4,
-      "minDelta": -47
+      "gzipDelta": -45,
+      "minDelta": -230,
+      "brotliDelta": -13
     },
     {
       "tree": "dist",
@@ -516,12 +541,13 @@
       "after": {
         "name": "client total (default Vite)",
         "tree": "dist",
-        "min": 61213,
-        "gz": 23446,
-        "br": 21425
+        "min": 61030,
+        "gz": 23385,
+        "br": 21356
       },
-      "gzipDelta": 0,
-      "minDelta": -50
+      "gzipDelta": -61,
+      "minDelta": -233,
+      "brotliDelta": -7
     },
     {
       "tree": "dist",
@@ -536,12 +562,13 @@
       "after": {
         "name": "redact/dom-client (activity=stub)",
         "tree": "dist",
-        "min": 62773,
-        "gz": 24688,
-        "br": 22376
+        "min": 62588,
+        "gz": 24624,
+        "br": 22313
       },
-      "gzipDelta": -3,
-      "minDelta": -47
+      "gzipDelta": -67,
+      "minDelta": -232,
+      "brotliDelta": -48
     },
     {
       "tree": "dist",
@@ -556,12 +583,13 @@
       "after": {
         "name": "redact/dom-client (fragmentRefs=stub)",
         "tree": "dist",
-        "min": 58134,
-        "gz": 22989,
-        "br": 20879
+        "min": 57947,
+        "gz": 22945,
+        "br": 20820
       },
-      "gzipDelta": 1,
-      "minDelta": -47
+      "gzipDelta": -43,
+      "minDelta": -234,
+      "brotliDelta": -43
     },
     {
       "tree": "dist",
@@ -576,12 +604,13 @@
       "after": {
         "name": "redact/dom-client (viewTransitions=stub)",
         "tree": "dist",
-        "min": 53028,
-        "gz": 20487,
-        "br": 18734
+        "min": 52845,
+        "gz": 20443,
+        "br": 18693
       },
-      "gzipDelta": -1,
-      "minDelta": -45
+      "gzipDelta": -45,
+      "minDelta": -228,
+      "brotliDelta": -43
     },
     {
       "tree": "dist",
@@ -596,12 +625,13 @@
       "after": {
         "name": "redact/dom-client (portal=stub)",
         "tree": "dist",
-        "min": 64202,
-        "gz": 25076,
-        "br": 22771
+        "min": 64019,
+        "gz": 25034,
+        "br": 22697
       },
-      "gzipDelta": -1,
-      "minDelta": -47
+      "gzipDelta": -43,
+      "minDelta": -230,
+      "brotliDelta": -43
     },
     {
       "tree": "dist",
@@ -616,12 +646,13 @@
       "after": {
         "name": "redact/dom-client (context=stub)",
         "tree": "dist",
-        "min": 63481,
-        "gz": 24833,
-        "br": 22543
+        "min": 63298,
+        "gz": 24789,
+        "br": 22465
       },
-      "gzipDelta": 0,
-      "minDelta": -47
+      "gzipDelta": -44,
+      "minDelta": -230,
+      "brotliDelta": -60
     },
     {
       "tree": "dist",
@@ -636,12 +667,13 @@
       "after": {
         "name": "redact/dom-client (suspense=stub)",
         "tree": "dist",
-        "min": 58680,
-        "gz": 23118,
-        "br": 20935
+        "min": 58497,
+        "gz": 23047,
+        "br": 20944
       },
-      "gzipDelta": 8,
-      "minDelta": -47
+      "gzipDelta": -63,
+      "minDelta": -230,
+      "brotliDelta": 15
     },
     {
       "tree": "dist",
@@ -656,12 +688,13 @@
       "after": {
         "name": "redact/dom-client (memo=stub)",
         "tree": "dist",
-        "min": 63983,
-        "gz": 24999,
-        "br": 22660
+        "min": 63800,
+        "gz": 24962,
+        "br": 22612
       },
-      "gzipDelta": -2,
-      "minDelta": -47
+      "gzipDelta": -39,
+      "minDelta": -230,
+      "brotliDelta": -45
     },
     {
       "tree": "dist",
@@ -676,12 +709,13 @@
       "after": {
         "name": "redact/dom-client (forwardRef=stub)",
         "tree": "dist",
-        "min": 64227,
-        "gz": 25072,
-        "br": 22733
+        "min": 64044,
+        "gz": 25034,
+        "br": 22687
       },
-      "gzipDelta": -2,
-      "minDelta": -47
+      "gzipDelta": -40,
+      "minDelta": -230,
+      "brotliDelta": -34
     },
     {
       "tree": "dist",
@@ -696,12 +730,13 @@
       "after": {
         "name": "redact/dom-client (lazy=stub)",
         "tree": "dist",
-        "min": 64239,
-        "gz": 25082,
-        "br": 22730
+        "min": 64056,
+        "gz": 25036,
+        "br": 22694
       },
-      "gzipDelta": -3,
-      "minDelta": -47
+      "gzipDelta": -49,
+      "minDelta": -230,
+      "brotliDelta": -44
     },
     {
       "tree": "dist",
@@ -716,12 +751,13 @@
       "after": {
         "name": "redact/dom-client (classComponents=stub)",
         "tree": "dist",
-        "min": 62649,
-        "gz": 24557,
-        "br": 22276
+        "min": 62466,
+        "gz": 24512,
+        "br": 22262
       },
-      "gzipDelta": -8,
-      "minDelta": -47
+      "gzipDelta": -53,
+      "minDelta": -230,
+      "brotliDelta": -24
     },
     {
       "tree": "dist",
@@ -741,7 +777,8 @@
         "br": 20524
       },
       "gzipDelta": 0,
-      "minDelta": 0
+      "minDelta": 0,
+      "brotliDelta": 0
     },
     {
       "tree": "dist",
@@ -761,7 +798,8 @@
         "br": 11450
       },
       "gzipDelta": 0,
-      "minDelta": 0
+      "minDelta": 0,
+      "brotliDelta": 0
     }
   ]
 }

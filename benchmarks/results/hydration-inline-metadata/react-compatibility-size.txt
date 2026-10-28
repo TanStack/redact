@@ -1,0 +1,77 @@
+
+> tanstack-react@0.0.0 test:compatibility:size /Users/tannerlinsley/.codex/worktrees/hydration-inline-metadata/redact
+> pnpm build && node scripts/test-react-compatibility-size.mjs
+
+
+> tanstack-react@0.0.0 build /Users/tannerlinsley/.codex/worktrees/hydration-inline-metadata/redact
+> node scripts/build.mjs && node scripts/verify-build.mjs
+
+Verified @cloudflare/vite-plugin@1.65.0, 13 owned files.
+Building @tanstack/redact: 112 entries...
+
+
+  ✓ @tanstack/redact
+
+Done.
+Build verification passed: 546 explicit module imports, 112 NodeNext declarations, 8 native import orders, 4 published feature bundles, 23 environment-sensitive modules, and 16 matching source/dist consumer bundles.
+{"consumerIifeGzip":[{"entry":"react/index","tree":"src","gzip":2927},{"entry":"react/index","tree":"dist","gzip":2927},{"entry":"dom/client","tree":"src","gzip":25280},{"entry":"dom/client","tree":"dist","gzip":25272},{"entry":"dom/index","tree":"src","gzip":23251},{"entry":"dom/index","tree":"dist","gzip":23233},{"entry":"server/index","tree":"src","gzip":9159},{"entry":"server/index","tree":"dist","gzip":9161}]}
+Verified @cloudflare/vite-plugin@1.65.0, 13 owned files.
+Building @tanstack/redact: 112 entries...
+
+
+  ✓ @tanstack/redact
+
+Done.
+Size baseline: 89f2bfc58135fdf5fcb29af4c346680e0eda2763
+Conflicting namespaces: "../../../../../../private/var/folders/41/xlbt3gw14jd2hqhrrg0q_0jh0000gn/T/redact-react-size-uOI4fz/client-total.js" re-exports "version" from one of the modules "../../../../../../private/var/folders/41/xlbt3gw14jd2hqhrrg0q_0jh0000gn/T/redact-react-size-uOI4fz/baseline/packages/redact/dist/react/index.js" and "../../../../../../private/var/folders/41/xlbt3gw14jd2hqhrrg0q_0jh0000gn/T/redact-react-size-uOI4fz/baseline/packages/redact/dist/dom/index.js" (will be ignored).
+Conflicting namespaces: "../../../../../../private/var/folders/41/xlbt3gw14jd2hqhrrg0q_0jh0000gn/T/redact-react-size-uOI4fz/client-total.js" re-exports "version" from one of the modules "../../../../../../private/var/folders/41/xlbt3gw14jd2hqhrrg0q_0jh0000gn/T/redact-react-size-uOI4fz/baseline/packages/redact/dist/react/index.js" and "../../../../../../private/var/folders/41/xlbt3gw14jd2hqhrrg0q_0jh0000gn/T/redact-react-size-uOI4fz/baseline/packages/redact/dist/dom/index.js" (will be ignored).
+Conflicting namespaces: "../../../../../../private/var/folders/41/xlbt3gw14jd2hqhrrg0q_0jh0000gn/T/redact-react-size-uOI4fz/client-total.js" re-exports "version" from one of the modules "packages/redact/dist/react/index.js" and "packages/redact/dist/dom/index.js" (will be ignored).
+Conflicting namespaces: "../../../../../../private/var/folders/41/xlbt3gw14jd2hqhrrg0q_0jh0000gn/T/redact-react-size-uOI4fz/client-total.js" re-exports "version" from one of the modules "packages/redact/dist/react/index.js" and "packages/redact/dist/dom/index.js" (will be ignored).
+Conflicting namespaces: "../../../../../../private/var/folders/41/xlbt3gw14jd2hqhrrg0q_0jh0000gn/T/redact-react-size-uOI4fz/client-total.js" re-exports "version" from one of the modules "../../../../../../private/var/folders/41/xlbt3gw14jd2hqhrrg0q_0jh0000gn/T/redact-react-size-uOI4fz/baseline/packages/redact/dist/react/index.js" and "../../../../../../private/var/folders/41/xlbt3gw14jd2hqhrrg0q_0jh0000gn/T/redact-react-size-uOI4fz/baseline/packages/redact/dist/dom/index.js" (will be ignored).
+Conflicting namespaces: "../../../../../../private/var/folders/41/xlbt3gw14jd2hqhrrg0q_0jh0000gn/T/redact-react-size-uOI4fz/client-total.js" re-exports "version" from one of the modules "../../../../../../private/var/folders/41/xlbt3gw14jd2hqhrrg0q_0jh0000gn/T/redact-react-size-uOI4fz/baseline/packages/redact/dist/react/index.js" and "../../../../../../private/var/folders/41/xlbt3gw14jd2hqhrrg0q_0jh0000gn/T/redact-react-size-uOI4fz/baseline/packages/redact/dist/dom/index.js" (will be ignored).
+Conflicting namespaces: "../../../../../../private/var/folders/41/xlbt3gw14jd2hqhrrg0q_0jh0000gn/T/redact-react-size-uOI4fz/client-total.js" re-exports "version" from one of the modules "packages/redact/dist/react/index.js" and "packages/redact/dist/dom/index.js" (will be ignored).
+Conflicting namespaces: "../../../../../../private/var/folders/41/xlbt3gw14jd2hqhrrg0q_0jh0000gn/T/redact-react-size-uOI4fz/client-total.js" re-exports "version" from one of the modules "packages/redact/dist/react/index.js" and "packages/redact/dist/dom/index.js" (will be ignored).
+Conflicting namespaces: "../../../../../../private/var/folders/41/xlbt3gw14jd2hqhrrg0q_0jh0000gn/T/redact-react-size-uOI4fz/client-total.js" re-exports "version" from one of the modules "../../../../../../private/var/folders/41/xlbt3gw14jd2hqhrrg0q_0jh0000gn/T/redact-react-size-uOI4fz/baseline/packages/redact/dist/react/index.js" and "../../../../../../private/var/folders/41/xlbt3gw14jd2hqhrrg0q_0jh0000gn/T/redact-react-size-uOI4fz/baseline/packages/redact/dist/dom/index.js" (will be ignored).
+Conflicting namespaces: "../../../../../../private/var/folders/41/xlbt3gw14jd2hqhrrg0q_0jh0000gn/T/redact-react-size-uOI4fz/client-total.js" re-exports "version" from one of the modules "../../../../../../private/var/folders/41/xlbt3gw14jd2hqhrrg0q_0jh0000gn/T/redact-react-size-uOI4fz/baseline/packages/redact/dist/react/index.js" and "../../../../../../private/var/folders/41/xlbt3gw14jd2hqhrrg0q_0jh0000gn/T/redact-react-size-uOI4fz/baseline/packages/redact/dist/dom/index.js" (will be ignored).
+Conflicting namespaces: "../../../../../../private/var/folders/41/xlbt3gw14jd2hqhrrg0q_0jh0000gn/T/redact-react-size-uOI4fz/client-total.js" re-exports "version" from one of the modules "packages/redact/dist/react/index.js" and "packages/redact/dist/dom/index.js" (will be ignored).
+Conflicting namespaces: "../../../../../../private/var/folders/41/xlbt3gw14jd2hqhrrg0q_0jh0000gn/T/redact-react-size-uOI4fz/client-total.js" re-exports "version" from one of the modules "packages/redact/dist/react/index.js" and "packages/redact/dist/dom/index.js" (will be ignored).
+┌─────────┬───────────┬─────────────────────┬───────────┬──────┬──────┬────────┐
+│ (index) │ profile   │ entry               │ target    │ min  │ gzip │ brotli │
+├─────────┼───────────┼─────────────────────┼───────────┼──────┼──────┼────────┤
+│ 0       │ 'full'    │ 'react/index'       │ 'react19' │ 0    │ 0    │ 0      │
+│ 1       │ 'full'    │ 'react/index'       │ 'react18' │ 0    │ 0    │ 0      │
+│ 2       │ 'full'    │ 'react/jsx-runtime' │ 'react19' │ 0    │ 0    │ 0      │
+│ 3       │ 'full'    │ 'react/jsx-runtime' │ 'react18' │ 0    │ 0    │ 0      │
+│ 4       │ 'full'    │ 'dom/index'         │ 'react19' │ -218 │ -39  │ -48    │
+│ 5       │ 'full'    │ 'dom/index'         │ 'react18' │ -218 │ -38  │ -69    │
+│ 6       │ 'full'    │ 'dom/client'        │ 'react19' │ -216 │ -34  │ -23    │
+│ 7       │ 'full'    │ 'dom/client'        │ 'react18' │ -216 │ -39  │ -22    │
+│ 8       │ 'full'    │ 'server/index'      │ 'react19' │ 0    │ 0    │ 0      │
+│ 9       │ 'full'    │ 'server/index'      │ 'react18' │ 0    │ 0    │ 0      │
+│ 10      │ 'full'    │ 'client-total'      │ 'react19' │ -218 │ -18  │ -11    │
+│ 11      │ 'full'    │ 'client-total'      │ 'react18' │ -218 │ -14  │ -48    │
+│ 12      │ 'default' │ 'react/index'       │ 'react19' │ 0    │ 0    │ 0      │
+│ 13      │ 'default' │ 'react/index'       │ 'react18' │ 0    │ 0    │ 0      │
+│ 14      │ 'default' │ 'react/jsx-runtime' │ 'react19' │ 0    │ 0    │ 0      │
+│ 15      │ 'default' │ 'react/jsx-runtime' │ 'react18' │ 0    │ 0    │ 0      │
+│ 16      │ 'default' │ 'dom/index'         │ 'react19' │ -218 │ -41  │ -51    │
+│ 17      │ 'default' │ 'dom/index'         │ 'react18' │ -218 │ -41  │ -54    │
+│ 18      │ 'default' │ 'dom/client'        │ 'react19' │ -220 │ -37  │ -44    │
+│ 19      │ 'default' │ 'dom/client'        │ 'react18' │ -220 │ -37  │ -16    │
+│ 20      │ 'default' │ 'server/index'      │ 'react19' │ 0    │ 0    │ 0      │
+│ 21      │ 'default' │ 'server/index'      │ 'react18' │ 0    │ 0    │ 0      │
+│ 22      │ 'default' │ 'client-total'      │ 'react19' │ -218 │ -42  │ -57    │
+│ 23      │ 'default' │ 'client-total'      │ 'react18' │ -218 │ -51  │ -40    │
+│ 24      │ 'nano'    │ 'react/index'       │ 'react19' │ 0    │ 0    │ 0      │
+│ 25      │ 'nano'    │ 'react/index'       │ 'react18' │ 0    │ 0    │ 0      │
+│ 26      │ 'nano'    │ 'react/jsx-runtime' │ 'react19' │ 0    │ 0    │ 0      │
+│ 27      │ 'nano'    │ 'react/jsx-runtime' │ 'react18' │ 0    │ 0    │ 0      │
+│ 28      │ 'nano'    │ 'dom/index'         │ 'react19' │ 0    │ 0    │ 0      │
+│ 29      │ 'nano'    │ 'dom/index'         │ 'react18' │ 0    │ 0    │ 0      │
+│ 30      │ 'nano'    │ 'dom/client'        │ 'react19' │ 0    │ 0    │ 0      │
+│ 31      │ 'nano'    │ 'dom/client'        │ 'react18' │ 0    │ 0    │ 0      │
+│ 32      │ 'nano'    │ 'server/index'      │ 'react19' │ 0    │ 0    │ 0      │
+│ 33      │ 'nano'    │ 'server/index'      │ 'react18' │ 0    │ 0    │ 0      │
+│ 34      │ 'nano'    │ 'client-total'      │ 'react19' │ 0    │ 0    │ 0      │
+│ 35      │ 'nano'    │ 'client-total'      │ 'react18' │ 0    │ 0    │ 0      │
+└─────────┴───────────┴─────────────────────┴───────────┴──────┴──────┴────────┘
