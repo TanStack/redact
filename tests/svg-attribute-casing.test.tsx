@@ -41,6 +41,15 @@ it.each([
  const root = hydrateRoot(container, tree, { onRecoverableError: error => errors.push(error) })
  try { expect(container.querySelector('main')).toBe(main); expect(errors).toEqual([]); expect(container.querySelector('main > svg > ' + tag)!.getAttribute(attr)).toBe(value) }
  finally { flushSync(() => root.unmount()); container.remove() }
+ if (name !== attr) {
+  // Markup from a server that still spelled the attribute camelCase hydrates with a reported mismatch and the hyphenated attribute set.
+  const legacy = document.createElement('div'); legacy.innerHTML = html.replace(' ' + attr + '="', ' ' + name + '="'); document.body.append(legacy)
+  expect(legacy.querySelector('main > svg > ' + tag)!.getAttribute(attr)).toBeNull()
+  const legacyMain = legacy.querySelector('main'), legacyErrors: unknown[] = []
+  const legacyRoot = hydrateRoot(legacy, tree, { onRecoverableError: error => legacyErrors.push(error) })
+  try { expect(legacy.querySelector('main')).toBe(legacyMain); expect(legacyErrors.length).toBeGreaterThanOrEqual(1); expect(legacy.querySelector('main > svg > ' + tag)!.getAttribute(attr)).toBe(value) }
+  finally { flushSync(() => legacyRoot.unmount()); legacy.remove() }
+ }
  const fresh = document.createElement('div'); document.body.append(fresh)
  const clean = createRoot(fresh)
  try { flushSync(() => clean.render(tree)); expect(fresh.querySelector('main > svg > ' + tag)!.getAttribute(attr)).toBe(value) }
