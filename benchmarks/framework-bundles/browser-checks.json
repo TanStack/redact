@@ -1,0 +1,118 @@
+{
+  "version": "0.2.0",
+  "verifiedAt": "2026-10-26T00:07:36.528Z",
+  "browser": "in-app browser",
+  "consoleErrors": [],
+  "results": [
+    {
+      "framework": "Start",
+      "renderer": "react",
+      "passed": true,
+      "checks": [
+        "hydration",
+        "counter update",
+        "controlled input",
+        "renderer identity"
+      ]
+    },
+    {
+      "framework": "Start",
+      "renderer": "redact",
+      "passed": true,
+      "checks": [
+        "hydration",
+        "counter update",
+        "controlled input",
+        "renderer identity"
+      ]
+    },
+    {
+      "framework": "Start",
+      "renderer": "redact-lean",
+      "passed": true,
+      "checks": [
+        "hydration",
+        "counter update",
+        "controlled input",
+        "renderer identity"
+      ]
+    },
+    {
+      "framework": "Vite",
+      "renderer": "react",
+      "passed": true,
+      "checks": [
+        "client mount",
+        "counter update",
+        "controlled input",
+        "renderer identity"
+      ]
+    },
+    {
+      "framework": "Vite",
+      "renderer": "redact",
+      "passed": true,
+      "checks": [
+        "client mount",
+        "counter update",
+        "controlled input",
+        "renderer identity"
+      ]
+    },
+    {
+      "framework": "Vite",
+      "renderer": "redact-lean",
+      "passed": true,
+      "checks": [
+        "client mount",
+        "counter update",
+        "controlled input",
+        "renderer identity"
+      ]
+    },
+    {
+      "framework": "Vinext",
+      "renderer": "react",
+      "passed": true,
+      "checks": [
+        "hydration",
+        "counter update",
+        "controlled input",
+        "renderer identity"
+      ]
+    },
+    {
+      "framework": "Vinext",
+      "renderer": "redact",
+      "passed": true,
+      "checks": [
+        "hydration",
+        "counter update",
+        "controlled input",
+        "renderer identity"
+      ]
+    },
+    {
+      "framework": "Next.js",
+      "renderer": "react",
+      "passed": true,
+      "checks": [
+        "hydration",
+        "counter update",
+        "controlled input",
+        "renderer identity"
+      ]
+    },
+    {
+      "framework": "Next.js",
+      "renderer": "redact",
+      "passed": true,
+      "checks": [
+        "hydration",
+        "counter update",
+        "controlled input",
+        "renderer identity"
+      ]
+    }
+  ]
+}

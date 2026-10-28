@@ -1,0 +1,55 @@
+{
+  "version": "0.2.0",
+  "verifiedAt": "2026-10-26T00:06:32.480Z",
+  "results": [
+    {
+      "framework": "Start",
+      "renderer": "react",
+      "status": 200,
+      "passed": true,
+      "checks": ["server-rendered greeting", "counter", "controlled input"]
+    },
+    {
+      "framework": "Start",
+      "renderer": "redact",
+      "status": 200,
+      "passed": true,
+      "checks": ["server-rendered greeting", "counter", "controlled input"]
+    },
+    {
+      "framework": "Start",
+      "renderer": "redact-lean",
+      "status": 200,
+      "passed": true,
+      "checks": ["server-rendered greeting", "counter", "controlled input"]
+    },
+    {
+      "framework": "Vinext",
+      "renderer": "react",
+      "status": 200,
+      "passed": true,
+      "checks": ["server-rendered greeting", "counter", "controlled input"]
+    },
+    {
+      "framework": "Vinext",
+      "renderer": "redact",
+      "status": 200,
+      "passed": true,
+      "checks": ["server-rendered greeting", "counter", "controlled input"]
+    },
+    {
+      "framework": "Next.js",
+      "renderer": "react",
+      "status": 200,
+      "passed": true,
+      "checks": ["server-rendered greeting", "counter", "controlled input"]
+    },
+    {
+      "framework": "Next.js",
+      "renderer": "redact",
+      "status": 200,
+      "passed": true,
+      "checks": ["server-rendered greeting", "counter", "controlled input"]
+    }
+  ]
+}
