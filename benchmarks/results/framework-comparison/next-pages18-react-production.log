@@ -3,7 +3,7 @@
  We detected multiple lockfiles and selected the directory of /private/tmp/redact-framework-matrix/package-lock.json as the root directory.
  To silence this warning, set `outputFileTracingRoot` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
    See https://nextjs.org/docs/app/api-reference/config/next-config-js/output#caveats for more information.
- Detected additional lockfiles: 
+ Detected additional lockfiles:
    * /private/tmp/redact-framework-matrix/react18/package-lock.json
 
 ⚠ React 18 support is deprecated in Next.js 16 and will be removed in Next.js 17. Please upgrade to React 19. Learn more: https://nextjs.org/docs/messages/react-version
@@ -37,7 +37,7 @@ Route (pages)
  We detected multiple lockfiles and selected the directory of /private/tmp/redact-framework-matrix/package-lock.json as the root directory.
  To silence this warning, set `outputFileTracingRoot` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
    See https://nextjs.org/docs/app/api-reference/config/next-config-js/output#caveats for more information.
- Detected additional lockfiles: 
+ Detected additional lockfiles:
    * /private/tmp/redact-framework-matrix/react18/package-lock.json
 
 ✓ Running next.config.mjs took 6ms

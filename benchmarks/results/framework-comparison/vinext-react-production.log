@@ -113,7 +113,7 @@ dist/server/ssr/index.js                                            82.41 kB │
 ✓ built in 87ms
 
   Route (app)
-  ┌ ? /     
+  ┌ ? /
   └ ? /other
 
   ? Unknown
