@@ -1,3 +1,4 @@
+import { isTextContent } from '../core/functions';
 import { isFunction, isThenable } from '../core/functions'
 import { resolveClassProps } from '../core/class-props'
 import {
@@ -104,7 +105,7 @@ function optionChildText(children: unknown): string {
   // flat string/number child content. Matches DOM semantics (`option.value`
   // defaults to `textContent` when no attribute is set).
   if (children == null) return ''
-  if (typeof children === 'string' || typeof children === 'number') return '' + children
+  if (isTextContent(children)) return '' + children
   if (Array.isArray(children)) return children.map(optionChildText).join('')
   return ''
 }
@@ -121,12 +122,8 @@ function emitText(text: string, opts: WalkOptions): void {
 function walkNode(node: ReactNode, opts: WalkOptions): void {
   if (node == null || node === false || node === true) return
 
-  if (typeof node === 'string') {
-    emitText(node, opts)
-    return
-  }
-  if (typeof node === 'number') {
-    emitText(String(node), opts)
+  if (isTextContent(node)) {
+    emitText('' + node, opts)
     return
   }
   if (Array.isArray(node)) {

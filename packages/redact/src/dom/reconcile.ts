@@ -1,3 +1,4 @@
+import { isTextContent } from '../core/functions';
 import { devToolsMetadata, readOwnerStack, runWithOwnerStack } from '../core/devtools';
 import { getRootContainer } from './root-internal';
 export { getHostParent, findRoot, getAnchor, firstDomNode } from './tree';
@@ -13,13 +14,13 @@ export { deferHydration } from './features/hydration';
 import { m as markTransitionUpdate, d as deferTransition, c as cancelTransitions, l as deferTransitionLayout, p as deferTransitionPassive } from './features/view-transition';
 import { clearAttributes, clearHostContainer, documentMetadataParent, documentSingleton, DOCUMENT_HEAD_TAGS } from './document-metadata';
 import { acquireResource } from './resources';
-import { a as transitionRender, p as hasTransition, t as flushTransitions, c as cancelPendingTransitions } from './features/suspense-runtime';
+import { a as transitionRender, p as hasTransition, t as flushTransitions, c as cancelPendingTransitions, s as scheduleTransitionRoot } from './features/suspense-runtime';
 import { commitFragmentRef, placeFragmentCommits, updateFragmentHost, refreshFragmentInstances } from './features/fragment-refs';
 import { isObject } from '../core/functions';
 import { FiberTag, createFiber, REACT_ELEMENT_TYPE, REACT_LEGACY_ELEMENT_TYPE, REACT_FRAGMENT_TYPE, type Fiber, type FiberRoot, type ReactElement, type ReactNode, type Effect, type Hook, } from '../core';
 import { createHostNode, setProp } from './dom';
 import { rememberRefreshRender, scheduleRefreshRoot, commitRefreshRoot, failRefreshRoot, failRefreshBoundary, resolveRefreshType, sameRefreshFamily, needsRefreshRemount } from './refresh';
-import { forkId, assignReactIds, deferHydration, finishHydration, adoptHostDom, adoptTextDom, setHydrationCursor, getHydrationCursor, clearHydrationCursor, findHostParent as findHydrationHost, abortHydration, recoverHydration, isHydrationBailout, resumeHydration, } from './features/hydration';
+import { forkId, assignReactIds, deferHydration, queueHydrationEnd, finishHydration, adoptHostDom, adoptTextDom, setHydrationCursor, getHydrationCursor, clearHydrationCursor, findHostParent as findHydrationHost, abortHydration, recoverHydration, isHydrationBailout, resumeHydration, } from './features/hydration';
 import { rememberRetainedEffect, setRetainedFlag, disconnectClass } from './retained-effects';
 import { readThenable } from '../react/thenable';
 import { bindForm } from './form-actions';
@@ -127,7 +128,7 @@ function pushChildren(node: ReactNode, out: NormalizedChild[], ids?: bigint[], p
         ids?.push(path);
         return;
     }
-    if (isString(node) || typeof node === 'number') {
+    if (isTextContent(node)) {
         if (node !== '') {
             out.push('' + node);
             ids?.push(path);
@@ -333,14 +334,20 @@ const ACCEPTED_ELEMENT_MARKERS = new Set<symbol>([
 // fallback branch. Features register here for element types that aren't
 // marker-based (e.g. Portal, where element.type IS the symbol).
 const TYPE_MATCHERS: TypeMatcher[] = [];
-function renderUpdates(root: FiberRoot, pending: Fiber[]): void {
+function renderUpdates(root: FiberRoot, pending: Fiber[], update?: () => void): void {
     pending.sort((a, b) => fiberDepth(a) - fiberDepth(b));
     if (transitionRender)
         for (const fiber of pending)
             fiber.g = true;
+    update?.();
     for (const fiber of pending) {
         if (!fiber.g || fiber.u || fiber.pd)
             continue;
+        // An ancestor earlier in this batch may have retained this subscriber.
+        if (fiber.su) {
+            scheduleUpdate(fiber);
+            continue;
+        }
         if (!transitionRender) {
             if (fiber.bt && hasTransition?.(fiber))
                 continue;
@@ -578,9 +585,6 @@ function renderText(fiber: Fiber): void {
     if (fiber.n && fiber.m !== null && !fiber.n.parentNode &&
         domParent.firstChild?.nodeType === 3 && !domParent.firstChild.nextSibling) {
         fiber.n = domParent.firstChild;
-        queueText(fiber.n as Text, text);
-        fiber.m = text;
-        return;
     }
     // Identity-unchanged fast path: skip the native Text.data write entirely.
     if (fiber.n && fiber.m === text)
@@ -650,7 +654,7 @@ export function scheduleRootRender(root: FiberRoot, render: () => void): void {
     if (process.env.NODE_ENV !== 'production')
         rememberRefreshRender(root, render);
     markTransitionUpdate && markTransitionUpdate(root);
-    root.u = render;
+    if (!scheduleTransitionRoot?.(root, render)) root.u = render;
     pendingRoots.add(root);
     if (isBatching)
         return;
@@ -846,6 +850,8 @@ export function runEffects(root: FiberRoot): void {
                 if (batch.length) {
                     const passive = () => {
                         for (const [fiber, effect] of batch)
+                            if (!fiber.u && !isActivityHidden(fiber) && !activityIsDisconnected(fiber)) effect.d?.();
+                        for (const [fiber, effect] of batch)
                             runEffect(fiber, effect);
                     };
                     if (process.env.NODE_ENV !== 'production') {
@@ -898,6 +904,8 @@ export function renderRoot(root: FiberRoot, children: ReactNode): void {
     finally {
         currentRoot = null;
     }
+    // Layout effects can synchronously update stores, after hydration has ended.
+    queueHydrationEnd?.(root);
     runEffects(root);
     if (process.env.NODE_ENV !== 'production')
         commitRefreshRoot(root);

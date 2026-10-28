@@ -166,7 +166,7 @@ describe('hydration recovery lifecycle', () => {
     },
   )
 
-  it('cleans up committed subscriptions and portals before delayed recovery', async () => {
+  it('does not commit subscriptions or portals before initial suspended hydration finishes', async () => {
     const doc = new DOMParser().parseFromString(
       '<!doctype html><html><head><title>Search</title></head><body><p>server</p></body></html>',
       'text/html',
@@ -212,25 +212,23 @@ describe('hydration recovery lifecycle', () => {
     try {
       await act(() => {})
       expect(errors).toEqual([])
-      expect(subscriptions.size).toBe(1)
-      flushSync(abandonedOpen)
-      expect(portalTarget.querySelectorAll('input')).toHaveLength(1)
+      expect(subscriptions.size).toBe(0)
+      expect(abandonedOpen).toBeUndefined()
+      expect(portalTarget.querySelectorAll('input')).toHaveLength(0)
 
       await act(() => resolve('client'))
       expect(errors).toHaveLength(1)
-      expect(cleanups).toHaveLength(1)
+      expect(cleanups).toHaveLength(0)
       expect(subscriptions.size).toBe(1)
       expect(portalTarget.querySelectorAll('input')).toHaveLength(0)
 
-      flushSync(abandonedOpen)
-      expect(portalTarget.querySelectorAll('input')).toHaveLength(0)
       flushSync(() => { for (const open of subscriptions) open() })
       expect(portalTarget.querySelectorAll('input')).toHaveLength(1)
     } finally {
       await act(() => root.unmount())
     }
     expect(subscriptions.size).toBe(0)
-    expect(cleanups).toHaveLength(2)
+    expect(cleanups).toHaveLength(1)
     expect(portalTarget.querySelectorAll('input')).toHaveLength(0)
   })
 

@@ -12,7 +12,7 @@ function renderLazy(fiber: Fiber): void {
     }
     catch (thenable: any) {
         if (isThenable(thenable)) {
-            if (deferHydration(fiber, thenable, true))
+            if (deferHydration(fiber, thenable))
                 return;
             handleSuspended(fiber, thenable);
             // reconcile would be called here if we were rendering children,

@@ -35,9 +35,10 @@ export function c(root: FiberRoot): void {
         complete(pending.s);
         pending.s.clear();
         pending.clear();
+        pending.u = undefined;
     }
 }
-export function t(root: FiberRoot, render: (root: FiberRoot, fibers: Fiber[]) => void): void {
+export function t(root: FiberRoot, render: (root: FiberRoot, fibers: Fiber[], update?: () => void) => void): void {
     const pending = root.tr;
     if (!pending?.size)
         return;
@@ -45,7 +46,9 @@ export function t(root: FiberRoot, render: (root: FiberRoot, fibers: Fiber[]) =>
     const fibers = [...pending];
     a = true;
     try {
-        render(root, fibers);
+        const update = pending.u;
+        render(root, fibers, update);
+        if (pending.u === update) pending.u = undefined;
         for (const fiber of fibers) {
             pending.delete(fiber);
         }
@@ -60,7 +63,7 @@ export function t(root: FiberRoot, render: (root: FiberRoot, fibers: Fiber[]) =>
             throw error;
         rewindCommit(checkpoint);
         for (const scope of pending.s)
-            scope.n?.();
+            scope.n?.(scope);
         if (pending.w !== error) {
             pending.w = error;
             const retry = () => transitionScope(() => {
@@ -102,6 +105,16 @@ function enqueue(fiber: Fiber, scope?: ActionScope | null): void {
     }
     else
         scheduleUpdate(fiber);
+}
+export function s(root: FiberRoot, render: () => void): boolean {
+    if (!ReactSharedInternals.T) {
+        if (root.tr) root.tr.u = undefined;
+        return false;
+    }
+    const scope = ReactSharedInternals.B;
+    enqueue(root.r, scope?.o === root ? scope : undefined);
+    root.tr!.u = render;
+    return true;
 }
 export function r(hook: Hook, reducer: (state: any, action: any) => any): boolean {
     if (!hook.t)

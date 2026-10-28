@@ -67,6 +67,22 @@ globalThis.react18Result = (async () => {
   container.firstChild.click()
   result.hydration = { reused: container.firstChild === serverNode, clicked }
   flushSync(() => hydrated.unmount())
+  container.innerHTML = '<output>server</output>'
+  const storeServerNode = container.firstChild
+  const hydrationSnapshots = []
+  function HydratingStore() {
+    const value = React.useSyncExternalStore(() => () => {}, () => 'client', () => 'server')
+    hydrationSnapshots.push(value)
+    return h('output', null, value)
+  }
+  const storeHydrationRoot = hydrateRoot(container, h(HydratingStore))
+  await tick()
+  result.storeHydration = {
+    snapshots: hydrationSnapshots,
+    text: container.textContent,
+    reused: container.firstChild === storeServerNode,
+  }
+  flushSync(() => storeHydrationRoot.unmount())
   const storeListeners = new Set()
   let snapshot = 'initial'
   function Store() {

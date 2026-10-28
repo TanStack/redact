@@ -30,3 +30,23 @@ Use `createRoot` and `hydrateRoot` from `react-dom/client`. The deprecated `Reac
 | Debugging | Fast Refresh preserves state for compatible edits. React DevTools supports component and hook inspection, edits, owners, error and Suspense controls, and commit profiling in development. `useDebugValue` labels appear in DevTools. All DevTools code is removed in production. `StrictMode` still avoids double invocation, and the `<Profiler>` callback remains a no-op. [DevTools checks and timings](https://github.com/TanStack/redact/blob/main/docs/devtools-implementation-status.md). |
 
 Native animation is not exhaustive visual parity. Production animation, hidden-tab behavior, broader resource/navigation races, and Safari/Firefox remain unverified. [API details](https://github.com/TanStack/redact/blob/main/docs/REACT_19_3_SUPPORT.md), [upstream audit](https://github.com/TanStack/redact/blob/main/docs/REACT_19_3_AUDIT.md), [native animation limits](https://github.com/TanStack/redact/blob/main/docs/VIEW_TRANSITION_EXPERIMENT.md).
+
+## Waiting for hydration in tests
+
+Redact does not expose React DOM's private `__reactFiber$` or `__reactProps$` node properties. Use a marker your application owns, set in an effect on the component your test will use:
+
+```jsx
+import { useEffect, useRef } from 'react'
+
+function ReadyButton({ onClick, children }) {
+  const ref = useRef(null)
+  useEffect(() => {
+    const node = ref.current
+    node.dataset.appReady = 'true'
+    return () => { delete node.dataset.appReady }
+  }, [])
+  return <button ref={ref} onClick={onClick}>{children}</button>
+}
+```
+
+For example, Playwright can wait for `button[data-app-ready="true"]` before clicking that button. This works with React and Redact. The marker means this component committed, it does not mean every Suspense boundary on the page has hydrated. Put the signal inside a deferred component when the test needs to wait for that component.

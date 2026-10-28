@@ -37,6 +37,8 @@ export function beginHydration(_root: FiberRoot): never {
 
 export function endHydration(_root: FiberRoot): void {}
 
+export const queueHydrationEnd = undefined
+
 export const tryConsumeBoundary = (_parent: Fiber): BoundaryInfo | null => (null)
 
 export function advanceCursorPast(_parent: Fiber, _node: Node): void {}
@@ -79,6 +81,6 @@ export const forkId: (base: bigint, _count: number, _index: number) => bigint = 
 
 export function assignReactIds(_parent: Fiber, _children: object): void {}
 
-export const deferHydration: (_f: Fiber, _thenable: Promise<any>, _restartInitial?: boolean) => boolean = () => false
+export const deferHydration: (_f: Fiber, _thenable: Promise<any>) => boolean = () => false
 
 export function finishHydration(_f: Fiber, _isTextarea: boolean): void {}

@@ -1,4 +1,4 @@
-import type { Fiber, ReactElement } from './index'
+import type { Fiber, FiberRoot, ReactElement } from './index'
 
 // Development metadata lives outside elements and fibers, so the production
 // object layouts stay unchanged. Owner metadata also supports captureOwnerStack
@@ -11,6 +11,7 @@ export const devToolsMetadata = {
   stackBudget: 10000,
   stackResetTime: 0,
   hosts: /* @__PURE__ */ new WeakMap<Node, Fiber>(),
+  hydratedRoots: /* @__PURE__ */ new WeakSet<FiberRoot>(),
   elements: /* @__PURE__ */ new WeakMap<object, { owner: Fiber | null; stack: Error | null; source: any }>(),
   fibers: /* @__PURE__ */ new WeakMap<Fiber, { owner: Fiber | null; stack: Error | null; source: any }>(),
 }

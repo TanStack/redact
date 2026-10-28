@@ -1,3 +1,4 @@
+import { compatibilitySizeAllowance } from './compatibility-size-budget.mjs'
 import assert from 'node:assert/strict'
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync, symlinkSync } from 'node:fs'
 import { execFileSync } from 'node:child_process'
@@ -13,9 +14,11 @@ const root = mkdtempSync(resolve(tmpdir(), 'redact-react-size-'))
 mkdirSync(resolve(root, 'node_modules/react'), { recursive: true })
 const rows = []
 try {
+  let baselineRevision
   let baseline = process.env.REACT_SIZE_BASELINE
   if (!baseline) {
     const base = process.env.REACT_SIZE_BASE_REF || 'origin/main'
+    baselineRevision = execFileSync('git', ['rev-parse', base], { encoding: 'utf8' }).trim()
     const checkout = resolve(root, 'baseline')
     mkdirSync(checkout)
     const archive = execFileSync('git', ['archive', base, 'packages/redact'], { maxBuffer: 128 * 1024 * 1024 })
@@ -61,7 +64,8 @@ try {
   }
   console.table(rows)
   for (const row of rows) for (const metric of ['min', 'gzip', 'brotli']) {
-    assert(row[metric] <= 0, `${row.target} ${row.profile} ${row.entry}: ${metric} grew by ${row[metric]} bytes`)
+    const allowance = compatibilitySizeAllowance(baselineRevision, row, metric)
+    assert(row[metric] <= allowance, `${row.target} ${row.profile} ${row.entry}: ${metric} grew by ${row[metric]} bytes, approved allowance ${allowance}`)
   }
 } finally {
   rmSync(root, { recursive: true, force: true })

@@ -1,5 +1,21 @@
 # @tanstack/redact
 
+## 0.2.2
+
+### Patch Changes
+
+- Render bigint children in client and server output, preserve them during hydration, and use their full text when selecting an option by its default value. ([#95](https://github.com/TanStack/redact/pull/95))
+
+- Run passive effect cleanup before new effects so overlay listeners hand off in the same order as React. ([#95](https://github.com/TanStack/redact/pull/95))
+
+- Preserve browser changes to unchanged text, including document.title, while keeping later text updates attached to the current text node. ([#95](https://github.com/TanStack/redact/pull/95))
+
+- Fix hydration loops when useSyncExternalStore reads different server and client snapshots. Keep queued store updates inside their active Suspense boundary. ([#95](https://github.com/TanStack/redact/pull/95))
+
+- Preserve visible content and pending ownership when a root render suspends inside a transition. Keep urgent updates, retries, replacement transitions and unmount cancellation ordered correctly. ([#91](https://github.com/TanStack/redact/pull/91))
+
+- Preserve matching server DOM when a component suspends during hydration. Retry at the root or nearest marked Suspense boundary, keep outside siblings interactive, and avoid committing unfinished effects. ([#95](https://github.com/TanStack/redact/pull/95))
+
 ## 0.2.1
 
 ### Patch Changes

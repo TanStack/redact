@@ -38,10 +38,10 @@ export function acquireResource(type: string, props: any, container: Node): Elem
     for (const name in next) {
         setProp(node, name, name === 'href' || name === 'src' ? resourceURL(next[name]) : next[name], undefined, false);
     }
-    if (style && next.dangerouslySetInnerHTML == null && (isString(next.children) || typeof next.children === 'number' || typeof next.children === 'bigint'))
+    if (style && next.dangerouslySetInnerHTML == null && isTextContent(next.children))
         node.textContent = '' + next.children;
     resources.i.set(key, node);
     insertResource(node, script ? undefined : props.precedence, root);
     return node;
 }
-import { isString } from "../core/functions";
+import { isTextContent } from '../core/functions';

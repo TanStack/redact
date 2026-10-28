@@ -410,7 +410,7 @@ export function commitDevTools(root: FiberRoot, adapter: any, hook: any, id: num
   const snapshot = project(root.r, null, 0, seen, deferred)
   const pendingUpdaters = updaters.get(root) || new Set()
   updaters.delete(root)
-  adapter._debugRootType ||= root.h ? 'hydrateRoot()' : 'createRoot()'
+  adapter._debugRootType ||= devToolsMetadata.hydratedRoots.has(root) ? 'hydrateRoot()' : 'createRoot()'
   notifyDevToolsCommit(root, (layout, passive) => {
     const view = deferred ? materialize(snapshot, null) : snapshot
     view.stateNode = adapter

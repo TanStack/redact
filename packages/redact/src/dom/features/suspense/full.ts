@@ -1,7 +1,7 @@
 import { readOwnerStack, runWithOwnerStack } from '../../../core/devtools';
 import { a as transitionRender } from '../suspense-runtime';
 import { cleanupEffect } from '../../dispatcher';
-import { checkpointCommit, rewindCommit, queueMutation, onCommitFailure } from '../../commit';
+import { checkpointCommit, rewindCommit, queueMutation, onCommitFailure, commitSynchronously } from '../../commit';
 import { REACT_SUSPENSE_TYPE, ReactSharedInternals, startTransition } from '../../../react';
 import { FiberTag, createFiber, type Fiber } from '../../../core';
 import { disconnectClass, inSuspensePrimary, setRetainedFlag, walkRetained } from '../../retained-effects';
@@ -29,7 +29,7 @@ function rehydrateBoundary(fiber: Fiber): void {
     if (!(root && parent))
         return;
     // Both initial hydration and a streamed reveal adopt the same marked range.
-    withCurrentRoot(root, () => {
+    commitSynchronously(() => withCurrentRoot(root, () => {
         const previous = root.h;
         try {
             const kind = state.b.data.startsWith('$E') ? 3 : state.b.data.startsWith('$!') ? 2 : 0;
@@ -42,7 +42,7 @@ function rehydrateBoundary(fiber: Fiber): void {
             root.h = previous;
         }
         runEffects(root);
-    });
+    }));
 }
 // React's Suspense semantics: when a re-render of an already-committed
 // boundary suspends, the previously-committed children are kept in the DOM
@@ -62,7 +62,6 @@ interface SuspenseState {
     e?: Comment;
     r?: any;
     w?: boolean;
-    a?: boolean;
     u?: boolean;
     // Re-suspend preservation:
     d?: Array<[
@@ -126,6 +125,10 @@ function scheduleRetry(fiber: Fiber): void {
         ReactSharedInternals.T = previous;
     }
 }
+function retryHydration(fiber: Fiber, thenable: Promise<any>): void {
+    const retry = () => { if (!fiber.u) scheduleRetry(fiber); };
+    thenable.then(retry, retry);
+}
 function hydrateSuspenseBoundary(fiber: Fiber, props: any, boundary: [
     0 | 1 | 2 | 3,
     number,
@@ -148,6 +151,7 @@ function hydrateSuspenseBoundary(fiber: Fiber, props: any, boundary: [
     }
     if (!pendingBoundary) {
         // Real DOM is inline between startMark and endMark. Hydrate into it.
+        const checkpoint = checkpointCommit(fiber);
         const parent = startMark.parentNode!;
         try {
             setHydrationCursor(fiber, new HydrationCursor(parent, startMark.nextSibling, endMark));
@@ -155,18 +159,22 @@ function hydrateSuspenseBoundary(fiber: Fiber, props: any, boundary: [
             advanceCursorPast(fiber.p!, endMark);
         }
         catch (e) {
-            // A lazy module can pause the initial root pass. Keep its server range
-            // intact while the hydration owner waits and retries the whole tree.
-            if (!reveal && isThenable(e))
-                throw e;
-            if (!isHydrationBailout(e)) {
+            // A marked boundary owns a known server range. Roll back only its
+            // unfinished preparation so siblings can hydrate while it waits.
+            if (isThenable(e)) {
+                rewindCommit(checkpoint);
+                fiber.b.w = true;
+                retryHydration(fiber, e);
+                advanceCursorPast(fiber.p!, endMark);
+            }
+            else if (!isHydrationBailout(e)) {
                 onCommitFailure(() => {
                     clearBoundaryRange(startMark, endMark);
                     unmountAllChildren(fiber);
                 });
                 throw e;
             }
-            recoverBoundaryHydration(fiber, props.children, parent, startMark, endMark);
+            else recoverBoundaryHydration(fiber, props.children, parent, startMark, endMark);
         }
         finally {
             clearHydrationCursor(fiber);
@@ -328,27 +336,11 @@ function renderSuspense(fiber: Fiber): void {
                 throw error;
             rewindCommit(checkpoint);
             fiber.b = state;
-            error.then(() => {
-                if (!fiber.u)
-                    scheduleRetry(fiber);
-            }, () => {
-                if (!fiber.u)
-                    scheduleRetry(fiber);
-            });
+            retryHydration(fiber, error);
         }
         finally {
             root!.h = wasHydrating;
         }
-        return;
-    }
-    // A descendant Lazy deferred its hydration (see renderLazy's hydrating
-    // branch). Its SSR-rendered content is still in the DOM and cursor-bound
-    // via the Lazy fiber — we just haven't swapped it into a fiber subtree
-    // yet. Until the Lazy's resume fires, skip our own tryChildren pass so
-    // an unrelated re-render can't accidentally flip us into the suspended
-    // path and mount a duplicate fallback on top of the SSR content.
-    if (state.a) {
-        fiber.m = props;
         return;
     }
     // New primary children or context can unblock a boundary before its old

@@ -73,6 +73,7 @@ export interface FiberRoot {
     tr?: Set<Fiber> & {
         s: Set<import('../react/action-scope').ActionScope>;
         w?: PromiseLike<unknown>;
+        u?: (() => void) | undefined;
     };
     hr?: Node | undefined; // Hydration recovery container.
     ri?: boolean; // React-compatible hydration IDs.
