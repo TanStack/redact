@@ -1,3 +1,4 @@
+import { childInsertionContext, type InsertionContext } from './insertion-context'
 import { isTextContent } from '../core/functions';
 import { isFunction, isThenable } from '../core/functions'
 import { resolveClassProps } from '../core/class-props'
@@ -49,6 +50,7 @@ export type BrowserBailoutCallback = (error: Error, errorInfo: ServerErrorInfo) 
 
 export interface SuspendedBoundary {
   id: number
+  insertionContext: InsertionContext
   fallbackHTML: string
   children: ReactNode
   thenable: Promise<any>
@@ -57,6 +59,7 @@ export interface SuspendedBoundary {
 }
 
 export interface WalkOptions {
+  insertionContext?: InsertionContext | undefined
   emit: (chunk: string) => void
   onHead?: () => void
   onSuspend?: ((boundary: SuspendedBoundary) => void) | undefined
@@ -81,7 +84,7 @@ export interface WalkOptions {
 export function walk(node: ReactNode, opts: WalkOptions): void {
   // Seed a text state if the caller didn't provide one so the separator logic
   // is active for the whole tree.
-  if (!opts.textState) opts = { ...opts, textState: { bits: 0 } }
+  if (!opts.textState) opts = { ...opts, textState: { bits: +(opts.insertionContext === 'svg') } }
   walkNode(node, opts)
 }
 
@@ -370,7 +373,7 @@ function walkHost(
     const previousState = parentTextState!.bits
     parentTextState!.bits = +(isSvg && tag !== 'foreignObject')
     try {
-      walkNode(props.children, opts)
+      walkNode(props.children, { ...opts, insertionContext: childInsertionContext(tag, props, opts.insertionContext ?? 'html') })
     } finally {
       parentTextState!.bits = previousState
     }
@@ -484,11 +487,11 @@ function walkSuspense(
       nextBoundaryId: opts.nextBoundaryId,
     })
     if (!suspended) {
-      opts.emit(`<!--${isBrowserError(thenable) ? '$!' : '$E'}${id}-->${fallbackParts.join('')}<!--/$-->`)
+      emitBoundary(opts, id, fallbackParts.join(''), isBrowserError(thenable) ? '$!' : '$E')
     } else emitBoundary(opts, id, fallbackParts.join(''))
     for (const boundary of nested) opts.onSuspend?.(boundary)
     if (suspended) opts.onSuspend?.({
-      id, fallbackHTML: fallbackParts.join(''), children: props.children, thenable, contextSnapshot,
+      id, insertionContext: opts.insertionContext ?? 'html', fallbackHTML: fallbackParts.join(''), children: props.children, thenable, contextSnapshot,
       componentStack: thrownInfo.componentStack || opts.componentStack || '',
     })
     return
@@ -503,17 +506,18 @@ function walkSuspense(
   // range to adopt on resolve — it creates fresh DOM next to the SSR content,
   // producing visible duplicates (e.g. double navbar logos). Markers let the
   // client treat this as a resolved boundary and hydrate in-place.
-  opts.emit(`<!--$${id}-->`)
-  opts.emit(childParts.join(''))
-  opts.emit(`<!--/$-->`)
+  emitBoundary(opts, id, childParts.join(''), '$')
   for (const boundary of nested) opts.onSuspend?.(boundary)
 }
 
-function emitBoundary(opts: WalkOptions, id: number, fallbackHTML: string): void {
-  // Visible div wrapper so the fallback UI shows; B: id lets $RC locate it on
-  // reveal. The leading/trailing comments let hydration detect a pending
-  // boundary and register a reveal callback.
-  opts.emit(`<!--$?${id}--><div id="B:${id}">`)
-  opts.emit(fallbackHTML)
-  opts.emit(`</div><!--/$-->`)
+function emitBoundary(opts: WalkOptions, id: number, content: string, marker = '$?'): void {
+  // A pending template is allowed in table insertion modes and does not break
+  // out of SVG/MathML. The visible fallback is a sibling, not an HTML div wrapper.
+  // Bare rows/columns create implicit containers. Close them on both sides so
+  // neither preceding rows nor the fallback can move a marker inside one.
+  // These end tags are ignored when no such container is open.
+  const close = opts.insertionContext === 'table' ? '</tbody></colgroup>' : ''
+  opts.emit(`${close}<!--${marker}${id}-->${marker === '$?' ? `<template id="B:${id}"></template>` : ''}`)
+  opts.emit(content)
+  opts.emit(`${close}<!--/$-->`)
 }

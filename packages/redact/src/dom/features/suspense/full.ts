@@ -194,27 +194,8 @@ function hydrateSuspenseBoundary(fiber: Fiber, props: any, boundary: [
         fiber.m = props;
         return;
     }
-    // Pending: fallback DOM lives inside <div id="B:ID">. Hydrate the fallback
-    // React subtree against that div's children.
-    const bDiv = document.getElementById(`B:${id}`);
-    try {
-        if (bDiv) {
-            setHydrationCursor(fiber, new HydrationCursor(bDiv));
-            reconcileRaw(fiber, props.fallback);
-        }
-        else {
-            // Couldn't find fallback container — render fresh (non-adopting)
-            reconcileRaw(fiber, props.fallback);
-        }
-    }
-    catch (e) {
-        if (!isHydrationBailout(e) || !bDiv)
-            throw e;
-        recoverBoundaryHydration(fiber, props.fallback, bDiv, null, null);
-    }
-    finally {
-        clearHydrationCursor(fiber);
-    }
+    // Pending transport owns this range until reveal. A template placeholder
+    // and sibling fallback cannot be hydrated as a div's children.
     advanceCursorPast(fiber.p!, endMark);
     (globalThis as any).$RH?.(id, () => rehydrateBoundary(fiber));
     // If the inline runtime isn't present, nothing external will mark us dy.
