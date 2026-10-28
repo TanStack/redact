@@ -1,15 +1,20 @@
 # Inline metadata hydration fix
 
-Base: main commit `89f2bfc58135fdf5fcb29af4c346680e0eda2763`.
+Release base: `0c7274e17a3fade8396169bc6ed024903cd1252d` (0.2.2).
 
-Before the change, the added document-hydration regression fails with `expected <script> but found LINK`. The React Router 8.5.0 production fixture also replaces the original counter button. After the change, native React and Redact both preserve it in development and production. The fixture also checks state, server form actions, client navigation, and browser history. Saved JSON records contain the checks and DOM identity results.
+Before this fix, the document-hydration regression fails with `expected <script> but found LINK`. The before/ directory preserves the original production React Router reproduction on main 89f2bfc. The after/ results use the final local build on the release base and React Router 8.5.0. Native React and Redact both pass development and production, including original server DOM identity, state, form actions, navigation and history. The fixture points the Vite plugin's packageRoots option at the local package; no framework source is patched.
 
-The only application integration change is the Vite plugin's packageRoots option pointing to this built worktree package. No React Router source is patched.
+The metadata scan adopts nodes left in their original host location and preserves main's rollback-aware claim tracking. Shared scanning and small recovery cleanups offset the size of the fallback.
 
-Validation uses Node 24.22.0 from .nvmrc: 1,966 tests passed, 91 skipped; type checks, build verification and all original size limits passed. No size allowance was added.
+Validation on Node 24.22.0: 2,002 tests passed, 91 skipped. Types, build verification, existing source/dist size limits and all 36 compatibility size comparisons pass with the explicitly approved exception below.
 
-The final implementation uses one metadata scan over element children and the optional original host location. It shares props, removes redundant tag normalization, and folds two single-use recovery helpers into their callers without changing recovery decisions.
+| Published client bundle | Minified delta | Gzip delta | Brotli delta |
+|---|---:|---:|---:|
+| Full, React 19 | -212 | -26 | +16 |
+| Full, React 18 | -212 | -17 | -18 |
+| Default, React 19 | -212 | -31 | -35 |
+| Default, React 18 | -212 | -34 | -27 |
 
-The size comparison rebuilds baseline and fixed sources at the same checkout path with the same toolchain. The built default Vite client shrinks from 23,446 to 23,385 gzip bytes (-61), by 233 minified bytes and 7 Brotli bytes. The full built client shrinks by 45 gzip bytes, 230 minified bytes and 13 Brotli bytes. Source default Brotli increases by 19 bytes, recorded separately; source gzip shrinks by 66 bytes.
+All values are bytes relative to the release base, with matching React protocol/version settings. The complete measurements are in react-compatibility-size.txt. The user approved the 16-byte full React 19 Brotli cost. Its allowance is restricted to that exact base, profile, entry, runtime and metric; regression tests keep other comparisons at zero growth. No gzip or fixed source/dist budget was raised.
 
-The independent React compatibility gate passes all 36 profile/entry/protocol comparisons with no growth in minified, gzip or Brotli output. It bundles published entries through Vite for React 18 and 19 in full, default and nano configurations. Its complete output is saved in react-compatibility-size.txt. No size budget or test was relaxed.
+Reproduction: run `pnpm test:ci` and `pnpm test:compatibility:size` using the Node version in .nvmrc. The latter builds its own baseline from origin/main; use REACT_SIZE_BASE_REF=0c7274e17a3fade8396169bc6ed024903cd1252d after main moves.
