@@ -140,6 +140,23 @@ describe('image preloads', () => {
     expect(body).toContain('<meta name="viewport" content="late"/><img src="/late.png" alt=""/>')
   })
 
+  it('emits the metas of a retried shell once', async () => {
+    let value: string | undefined
+    const pending = Promise.resolve('ready').then(result => { value = result })
+    function Root() {
+      if (value === undefined) throw pending
+      return <Page><img src="/hero.png" alt="" /><p>{value}</p></Page>
+    }
+    function Shell() {
+      // Suspends at the root on the first attempt, outside any boundary.
+      if (value === undefined) throw pending
+      return <Root />
+    }
+    const html = await streamed(<Shell />)
+    expect(head(html)).toEqual([expectedHead[0], expectedHead[1], { tag: 'link', rel: 'preload', as: 'image', href: '/hero.png' }, ...expectedHead.slice(5)])
+    expect(html).toContain('<p>ready</p>')
+  })
+
   it('hydrates the reordered head without recoverable errors', () => {
     const html = renderToString(<Page>{images}</Page>)
     const doc = new (globalThis as any).DOMParser().parseFromString('<!doctype html>' + html, 'text/html') as Document

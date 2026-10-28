@@ -109,6 +109,10 @@ export function createResourceHints(shellFlushed = false, styleNonce?: string) {
       const isCharset = isString(props.charSet)
       return !shellFlushed && (isCharset || props.name === 'viewport') && props.itemProp == null ? chunk => { isCharset ? charset += chunk : viewport += chunk } : null
     },
+    // An abandoned shell attempt re-walks its metas; the hints it registered stay deduplicated.
+    discardMetas(): void {
+      charset = viewport = ''
+    },
     addHost(type: string, props: any, scope?: ResourceScope): boolean {
       const kind = resourceKind(type, props)
       if (!kind) return false
