@@ -10,7 +10,7 @@ import { componentStack } from '../../error-info';
 export { reactId, forkId, assignReactIds } from '../../react-ids';
 import { FiberTag, type Fiber, type FiberRoot, type ReactNode, } from '../../../core';
 import { hydratedFormStates } from '../../../react/form-state';
-import { queueBeforeMutation, queueMutation, queueProp, queueText, onCommitRollback } from '../../commit';
+import { queueBeforeMutation, queueMutation, queueProp, queueText, onCommitRollback, onCommitFailure } from '../../commit';
 import { syncTextareaValue } from '../../form-controls';
 // Re-export from event-replay so all hydration concerns live behind one
 // feature boundary — the plugin's stub swap strips drainReplayQueue too.
@@ -76,11 +76,13 @@ export class HydrationCursor {
  * name/property for meta, src for script). Non-matching nodes stay in
  * place so the SSR'd stylesheet/script order is preserved.
  */
-function findMetadata(parent: Node | undefined, tag: string, props: Record<string, any>, fallback?: Node): ChildNode | null {
+function findMetadata(parent: Node | undefined, tag: string, props: Record<string, any>, fallback?: HydrationCursor): ChildNode | null {
     const keys = HEAD_KEY_ATTRS[tag] ?? [];
     for (const location of [parent, fallback]) {
         if (!location) continue;
-        scan: for (const el of (location as Element).children) {
+        const cursor = location instanceof HydrationCursor ? location : null;
+        scan: for (let node = cursor ? cursor.n : (location as Node).firstChild; node && node !== cursor?.e; node = node.nextSibling) {
+            const el = node as Element;
             if (el.localName !== tag || CLAIMED.has(el))
                 continue;
             for (const key of keys) {
@@ -137,7 +139,9 @@ const HEAD_KEY_ATTRS: Record<string, ReadonlyArray<string>> = {
 const CLAIMED = new WeakSet<Node>();
 function claimHydrationNode(node: Node): void {
     CLAIMED.add(node);
-    onCommitRollback(() => CLAIMED.delete(node));
+    const release = () => { CLAIMED.delete(node); };
+    onCommitRollback(release);
+    onCommitFailure(release);
 }
 const hydrationAttribute = (el: Element, name: string): string | null => (name === 'nonce' && 'nonce' in el && el.hasAttribute(name)
     ? (el as HTMLElement).nonce ?? ''
@@ -262,7 +266,7 @@ export function adoptHostDom(fiber: Fiber, parent: Fiber): boolean {
     const metadataParent = documentHeadParent || (isHeadish ? cursor.p
         : cursor.p.nodeType === 9 && tag !== 'html' ? (cursor.p as Document).body : null);
     // Prefer hoisted metadata, then claim its original host position.
-    const candidate = metadataParent ? findMetadata(metadataParent, tag, props, documentHeadParent ? cursor.p : undefined) : cursor.take();
+    const candidate = metadataParent ? findMetadata(metadataParent, tag, props, documentHeadParent ? cursor : undefined) : cursor.take();
     if (!candidate) {
         // Client expected a host here but the cursor is exhausted — server gave
         // fewer children than the client tree. Report the structural gap (React

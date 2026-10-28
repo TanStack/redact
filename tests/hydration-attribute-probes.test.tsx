@@ -129,7 +129,9 @@ describe('hydration attribute comparison', () => {
     })
     const { original, errors, container } = hydrate()
     expect(errors).toEqual([])
-    expect(container.firstChild).toBe(original)
+    // Metadata follows React's head placement, preserving the existing node
+    // even when Redact's server renderer emitted it inline.
+    expect(tag === 'link' ? document.head.querySelector('link[href="/preload.gif"]') : container.firstChild).toBe(original)
     const matchingWrites = writes.filter(write => write.name === attr)
     expect(matchingWrites.filter(write => write.element.ownerDocument.defaultView !== null)).toEqual([])
     expect(matchingWrites).toEqual([])
