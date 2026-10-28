@@ -124,7 +124,7 @@ export async function streamHtml(
         shellChunks.length = chunkCount
         boundaries.length = boundaryCount
         state.nextId = nextId
-        currentSSRFrame().resources?.discardMetas()
+        currentSSRFrame().resources?.metas(['', ''])
         if (!isThenable(err)) throw err
         if (++rootRetries > 50) {
           throw new Error('renderToReadableStream exceeded 50 root suspension retries.')

@@ -473,6 +473,7 @@ function walkSuspense(
   const thrownInfo: { componentStack?: string | undefined } = {}
   const childEmit = (s: string) => childParts.push(s)
   const resourceScope: ResourceScope | undefined = currentSSRFrame().shellFlushed ? {} : undefined
+  const metas = currentSSRFrame().resources?.metas()
   try {
     walkNode(props.children, {
       ...opts,
@@ -484,6 +485,7 @@ function walkSuspense(
     })
   } catch (thenable: any) {
     nested.length = 0
+    currentSSRFrame().resources?.metas(metas || ['', ''])
     const suspended = isThenable(thenable)
     if (!suspended) {
       if (isBrowserError(thenable)) opts.onBrowserBailout?.(thenable, { componentStack: (thenable as any).componentStack || opts.componentStack || '' })

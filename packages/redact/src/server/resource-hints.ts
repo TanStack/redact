@@ -109,9 +109,12 @@ export function createResourceHints(shellFlushed = false, styleNonce?: string) {
       const isCharset = isString(props.charSet)
       return !shellFlushed && (isCharset || props.name === 'viewport') && props.itemProp == null ? chunk => { isCharset ? charset += chunk : viewport += chunk } : null
     },
-    // An abandoned shell attempt re-walks its metas; the hints it registered stay deduplicated.
-    discardMetas(): void {
-      charset = viewport = ''
+    // Snapshot the hoisted metas, or restore a snapshot when the content that added them is
+    // discarded (a suspended boundary, an abandoned shell attempt). Hints stay: they deduplicate.
+    metas(restore?: string[]): string[] {
+      const saved = [charset, viewport]
+      if (restore) [charset, viewport] = restore as [string, string]
+      return saved
     },
     addHost(type: string, props: any, scope?: ResourceScope): boolean {
       const kind = resourceKind(type, props)

@@ -121,7 +121,37 @@ describe('image preloads', () => {
     expect(head(html).filter(tag => tag.charset)).toEqual([{ tag: 'meta', charset: 'utf-8' }])
   })
 
-  it('renders late boundary images with their own preloads and no hoisting', async () => {
+  it('drops the metas of a boundary that suspends and keeps its preload', async () => {
+    let resolve!: () => void
+    const ready = new Promise<void>(next => { resolve = next })
+    let done = false
+    function Late() {
+      if (!done) throw ready.then(() => { done = true })
+      return <p>late</p>
+    }
+    const { Suspense } = await import('react')
+    const stream = await renderToReadableStream(
+      <Page>
+        <Suspense fallback={<p>loading</p>}>
+          <meta name="viewport" content="late" />
+          <img src="/late.png" alt="" />
+          <Late />
+        </Suspense>
+      </Page>,
+    )
+    resolve()
+    await stream.allReady
+    const html = await new Response(stream).text()
+    // The shell keeps only the head's viewport; the boundary's meta arrives in place with its content.
+    expect(html.match(/<meta name="viewport"/g)).toHaveLength(2)
+    expect(head(html).filter(tag => tag.name === 'viewport')).toEqual([{ tag: 'meta', name: 'viewport', content: 'width=device-width' }])
+    expect(html).toContain('<meta name="viewport" content="late"/><img src="/late.png" alt=""/><p>late</p>')
+    // The preload registered by the discarded attempt stays in the shell and is not repeated.
+    expect(html.match(/rel="preload" href="\/late.png"/g)).toHaveLength(1)
+    expect(head(html).some(tag => tag.href === '/late.png')).toBe(true)
+  })
+
+  it('renders the preloads of a boundary that streams later with its content', async () => {
     let resolve!: () => void
     const ready = new Promise<void>(next => { resolve = next })
     let done = false
