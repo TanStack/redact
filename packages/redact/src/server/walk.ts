@@ -1,3 +1,4 @@
+import { boundaryId } from './stream-ids'
 import { isTextContent } from '../core/functions';
 import { isFunction, isThenable } from '../core/functions'
 import { resolveClassProps } from '../core/class-props'
@@ -23,6 +24,7 @@ import {
   REACT_VIEW_TRANSITION_TYPE,
 } from '../react'
 import {
+  escapeAttr,
   attrToHtml,
   escapeText,
   escapeScript,
@@ -513,7 +515,7 @@ function emitBoundary(opts: WalkOptions, id: number, fallbackHTML: string): void
   // Visible div wrapper so the fallback UI shows; B: id lets $RC locate it on
   // reveal. The leading/trailing comments let hydration detect a pending
   // boundary and register a reveal callback.
-  opts.emit(`<!--$?${id}--><div id="B:${id}">`)
+  opts.emit(`<!--$?${id}--><div id="${escapeAttr(boundaryId(id, currentSSRFrame().transportPrefix))}">`)
   opts.emit(fallbackHTML)
   opts.emit(`</div><!--/$-->`)
 }

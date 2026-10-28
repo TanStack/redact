@@ -196,7 +196,8 @@ function hydrateSuspenseBoundary(fiber: Fiber, props: any, boundary: [
     }
     // Pending: fallback DOM lives inside <div id="B:ID">. Hydrate the fallback
     // React subtree against that div's children.
-    const bDiv = document.getElementById(`B:${id}`);
+    const boundaryId = (findRoot(fiber)?.i ?? '') + 'B:' + id.toString(16);
+    const bDiv = document.getElementById(boundaryId);
     try {
         if (bDiv) {
             setHydrationCursor(fiber, new HydrationCursor(bDiv));
@@ -216,7 +217,7 @@ function hydrateSuspenseBoundary(fiber: Fiber, props: any, boundary: [
         clearHydrationCursor(fiber);
     }
     advanceCursorPast(fiber.p!, endMark);
-    (globalThis as any).$RH?.(id, () => rehydrateBoundary(fiber));
+    (globalThis as any).$RH?.(boundaryId, () => rehydrateBoundary(fiber));
     // If the inline runtime isn't present, nothing external will mark us dy.
     fiber.m = props;
 }

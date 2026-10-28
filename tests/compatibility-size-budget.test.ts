@@ -17,3 +17,14 @@ it('keeps unapproved profiles and targets at zero growth', () => {
   expect(compatibilitySizeAllowance(base, { ...nano, target: 'react18' }, 'brotli')).toBe(11)
   expect(compatibilitySizeAllowance(base, { ...nano, entry: 'react/index' }, 'brotli')).toBe(0)
 })
+
+it('bounds the SSR correctness allowance to its measured base, entry and metric', () => {
+  const base = '0c7274e17a3fade8396169bc6ed024903cd1252d'
+  const server = { profile: 'full', entry: 'server/index', target: 'react19' }
+  expect(compatibilitySizeAllowance(base, server, 'min')).toBe(323)
+  expect(compatibilitySizeAllowance(base, server, 'gzip')).toBe(109)
+  expect(compatibilitySizeAllowance(base, server, 'brotli')).toBe(112)
+  expect(compatibilitySizeAllowance(base, server, 'constructor')).toBe(0)
+  expect(compatibilitySizeAllowance(base, { ...server, entry: 'react/index' }, 'gzip')).toBe(0)
+  expect(compatibilitySizeAllowance('another-base', server, 'gzip')).toBe(0)
+})

@@ -9,6 +9,7 @@ import { createResourceHints, type ResourceScope } from './resource-hints'
 export interface SSRFrame {
   idCounter: number
   identifierPrefix: string
+  transportPrefix?: string
   contextStack: Array<{ context: any; prev: any }>
   resources?: ReturnType<typeof createResourceHints>
   shellFlushed?: boolean
@@ -23,9 +24,9 @@ resourceHintDispatcher.emit = (kind, href, options) => {
   return true
 }
 
-export function beginSSR(identifierPrefix = ':R', nextFrame?: SSRFrame) {
+export function beginSSR(identifierPrefix?: string, nextFrame?: SSRFrame) {
   const previous = { frame, dispatcher: ReactSharedInternals.H }
-  frame = nextFrame ?? { idCounter: 0, identifierPrefix, contextStack: [] }
+  frame = nextFrame ?? { idCounter: 0, identifierPrefix: identifierPrefix ?? ':R', transportPrefix: identifierPrefix ?? '', contextStack: [] }
   ReactSharedInternals.H = ssrDispatcher as any
   return previous
 }
