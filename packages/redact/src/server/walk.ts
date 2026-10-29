@@ -55,7 +55,7 @@ export interface SuspendedBoundary {
   thenable: Promise<any>
   contextSnapshot: ContextSnapshot
   componentStack: string
-  // SVG and picture/noscript flags of the parent, so a boundary rendered later keeps its exclusions.
+  // SVG, picture, noscript and document flags of the parent, so a boundary rendered later keeps them.
   textBits: number
 }
 
@@ -71,7 +71,8 @@ export interface WalkOptions {
   bootstrapped?: boolean | undefined
   isBoundaryResolution?: boolean | undefined
   resourceScope?: ResourceScope | undefined
-  // Shared traversal flags: SVG = 1, adjacent text = 2, inside <picture> or <noscript> = 4.
+  // Shared traversal flags: SVG = 1, adjacent text = 2, inside <picture> = 4, inside <noscript> = 8,
+  // inside <html> = 16.
   // Host children restore previous flags on return or throw.
   textState?: { bits: number }
 }
@@ -251,9 +252,11 @@ function walkHost(
   const isSvg = !!(opts.textState!.bits & 1) || tag === 'svg'
   if (!isSvg && resourceKind(tag, props) && recordHostResource(tag, props, opts.resourceScope)) return
   // In a document render React's server renderer preloads the images it renders eagerly and
-  // opens <head> with the charset and viewport metas. Neither applies inside <svg>, <picture>
-  // or <noscript>.
-  if (!isSvg && !(opts.textState!.bits & 4) && /^(img|meta)$/.test(tag)) {
+  // opens <head> with the charset and viewport metas. Only document renders do this here, since
+  // their head is position-insensitive for hydration. Neither applies inside <svg> or <noscript>,
+  // and images inside <picture> are not preloaded.
+  const bits = opts.textState!.bits
+  if (!isSvg && bits & 16 && !(bits & 8) && (tag === 'meta' || tag === 'img' && !(bits & 4))) {
     const emit = recordHoisted(tag, props)
     if (emit) opts = { ...opts, emit }
   }
@@ -300,11 +303,7 @@ function walkHost(
   // CSS sizing (documentElement.clientHeight returns the content height, not
   // the viewport) — and Floating-UI-based libraries (Radix dropdowns etc.)
   // then compute off-screen positions for overlays.
-  if (tag === 'html') {
-    // Only document renders hoist image preloads and metas: their head is position-insensitive for hydration.
-    currentSSRFrame().document = true
-    opts.emit('<!DOCTYPE html>')
-  }
+  if (tag === 'html') opts.emit('<!DOCTYPE html>')
 
   opts.emit('<' + tag)
   for (const k in props) {
@@ -336,7 +335,7 @@ function walkHost(
 
   if (VOID_ELEMENTS.has(tag)) {
     opts.emit('/>')
-    opts.textState!.bits &= 5
+    opts.textState!.bits &= 29
     return
   }
   opts.emit('>')
@@ -356,7 +355,7 @@ function walkHost(
   if (isTextarea && textareaValue != null) {
     opts.emit(escapeText(String(textareaValue)))
     opts.emit(`</${tag}>`)
-    parentTextState!.bits &= 5
+    parentTextState!.bits &= 29
     return
   }
 
@@ -374,7 +373,7 @@ function walkHost(
       }
     }
     opts.emit(`</${tag}>`)
-    parentTextState!.bits &= 5
+    parentTextState!.bits &= 29
     return
   }
 
@@ -382,7 +381,7 @@ function walkHost(
     opts.emit(String(dangerouslyHtml))
   } else {
     const previousState = parentTextState!.bits
-    parentTextState!.bits = +(isSvg && tag !== 'foreignObject') | previousState & 4 | (/^(picture|noscript)$/.test(tag) ? 4 : 0)
+    parentTextState!.bits = +(isSvg && tag !== 'foreignObject') | previousState & 28 | (tag === 'picture' ? 4 : tag === 'noscript' ? 8 : tag === 'html' ? 16 : 0)
     try {
       walkNode(props.children, opts)
     } finally {
@@ -391,7 +390,7 @@ function walkHost(
   }
   opts.emit(`</${tag}>`)
   // Host element closing resets outer flow — next sibling text starts fresh.
-  parentTextState!.bits &= 5
+  parentTextState!.bits &= 29
   } finally {
     if (isSelect) popSelectContext()
   }
@@ -478,7 +477,6 @@ function walkSuspense(
   const resourceScope: ResourceScope | undefined = currentSSRFrame().shellFlushed ? {} : undefined
   const frame = currentSSRFrame()
   const metas = frame.resources?.metas()
-  const document = !!frame.document
   try {
     walkNode(props.children, {
       ...opts,
@@ -491,8 +489,6 @@ function walkSuspense(
     })
   } catch (thenable: any) {
     nested.length = 0
-    // The discarded children may have opened <html>; the fallback and later siblings keep the outer mode.
-    frame.document = document
     frame.resources?.metas(metas || ['', ''])
     const suspended = isThenable(thenable)
     if (!suspended) {
@@ -508,7 +504,6 @@ function walkSuspense(
       onSuspend: opts.onSuspend ? (boundary) => nested.push(boundary) : undefined,
       nextBoundaryId: opts.nextBoundaryId,
     })
-    frame.document = document
     // A fallback's charset and viewport metas are omitted, as React omits hoistables from fallbacks.
     frame.resources?.metas(metas || ['', ''])
     // Visible div wrapper for a pending boundary so the fallback UI shows; B: id lets $RC locate it on
@@ -521,7 +516,7 @@ function walkSuspense(
     if (suspended) opts.onSuspend?.({
       id, fallbackHTML: fallbackParts.join(''), children: props.children, thenable, contextSnapshot,
       componentStack: thrownInfo.componentStack || opts.componentStack || '',
-      textBits: opts.textState!.bits & 5,
+      textBits: opts.textState!.bits & 29,
     })
     return
   }

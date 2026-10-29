@@ -157,6 +157,34 @@ describe('image preloads', () => {
     expect(html).toMatch(/<meta charset="utf-8"\/>$/)
   })
 
+  it('hoists the metas inside a picture, as React does, but not its images', () => {
+    const html = renderToString(<html><head /><body><picture><meta name="viewport" content="pic" /><img src="/pic.png" alt="" /></picture></body></html>)
+    expect(html).toBe('<!DOCTYPE html><html><head><meta name="viewport" content="pic"/></head><body><picture><img src="/pic.png" alt=""/></picture></body></html>')
+  })
+
+  it('preloads the images of a boundary nested in a document fallback when it streams later', async () => {
+    const { Suspense } = await import('react')
+    let resolve!: () => void
+    const ready = new Promise<void>(next => { resolve = next })
+    let done = false
+    function Late() {
+      if (!done) throw ready.then(() => { done = true })
+      return <img src="/late.png" alt="" />
+    }
+    function Broken(): null {
+      throw new Error('broken')
+    }
+    const stream = await renderToReadableStream(
+      <Suspense fallback={<Page><Suspense fallback={null}><Late /></Suspense></Page>}><Broken /></Suspense>,
+      { onError() {} },
+    )
+    resolve()
+    await stream.allReady
+    const html = await new Response(stream).text()
+    expect(html).toContain('<img src="/late.png" alt=""/>')
+    expect(html).toContain('rel="preload" href="/late.png"')
+  })
+
   it('synthesises the head of an html tree that omits it', () => {
     const html = renderToString(<html><body><img src="/hero.png" fetchPriority="high" alt="" /></body></html>)
     expect(html).toBe('<!DOCTYPE html><html><head><link rel="preload" href="/hero.png" as="image" fetchpriority="high"/></head><body><img src="/hero.png" fetchpriority="high" alt=""/></body></html>')
