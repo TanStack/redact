@@ -1,4 +1,4 @@
-import { isFunction } from '../core/functions'
+import { isFunction, isString } from '../core/functions'
 import { resourceKind, resourceURL, type ResourceHintKind, type ResourceHintOptions } from '../core/resource-hints'
 import { attrToHtml, escapeAttr } from './escape'
 import { attributeName } from '../core/attributes'
@@ -56,8 +56,9 @@ export function createResourceHints(shellFlushed = false, styleNonce?: string) {
   const styles = new Map<string, Resource[]>()
   const dependencies = new Map<string, string[]>()
   const visibleInline = new Set<string>()
+  let charset = '', viewport = ''
   const collector = {
-    add(kind: ResourceHintKind | 'style', href: string, options: ResourceHintOptions): Resource {
+    add(kind: ResourceHintKind | 'style', href: string, options: ResourceHintOptions, eager?: boolean): Resource {
       let type: string = kind
       let source = href
       const init = kind === 'style' || kind === 'stylesheet' || kind === 'script' || kind === 'module-script'
@@ -69,7 +70,15 @@ export function createResourceHints(shellFlushed = false, styleNonce?: string) {
       else if (kind === 'preconnect') type += ':' + (options.crossOrigin ?? 'default')
       const key = JSON.stringify([type, source])
       const prior = resources.get(key)
-      if (prior && (!init || prior.kind !== 'preload' && prior.kind !== 'modulepreload')) return prior
+      // Image preloads that go ahead of the stylesheets: every fetchPriority="high" one and the
+      // first ten eager <img> per flush, as in React.
+      const high = kind === 'preload' && options.as === 'image' && (options.fetchPriority === 'high' || eager && groups[2]!.length < 10)
+      if (prior && (!init || prior.kind !== 'preload' && prior.kind !== 'modulepreload')) {
+        // An eager <img> also moves the preload() of the same image ahead, keeping its attributes.
+        const index = eager && high ? groups[4]!.indexOf(prior) : -1
+        if (index >= 0) groups[2]!.push(...groups[4]!.splice(index, 1))
+        return prior
+      }
 
       const resource: Resource = { kind, href, options: { ...options } }
       if (kind === 'style' && (!styleNonce || options.nonce === styleNonce)) resource.css = styleText(options)
@@ -89,11 +98,31 @@ export function createResourceHints(shellFlushed = false, styleNonce?: string) {
       } else {
         const group = kind === 'dns-prefetch' || kind === 'preconnect' ? 0
           : kind === 'preload' && options.as === 'font' ? 1
-          : kind === 'preload' && options.as === 'image' && options.fetchPriority === 'high' ? 2
+          : high ? 2
           : init ? 3 : 4
         groups[group]!.push(resource)
       }
       return resource
+    },
+    // Preload an eagerly rendered <img> as React does: the first ten per flush and every
+    // fetchPriority="high" image go ahead of the stylesheets, the rest after the scripts.
+    addImage(props: any): void {
+      const { srcSet } = props, source = srcSet || props.src
+      if (props.loading === 'lazy' || props.fetchPriority === 'low' || !source || !isString(source) || /^data:/i.test(source)) return
+      collector.add('preload', source, { as: 'image', imageSrcSet: srcSet, imageSizes: props.sizes, crossOrigin: props.crossOrigin, integrity: props.integrity, type: props.type, fetchPriority: props.fetchPriority, referrerPolicy: props.referrerPolicy } as any, true)
+    },
+    // Hoist <meta charSet> and <meta name="viewport"> to the start of the head. Content streamed
+    // after the shell keeps its metas in place.
+    addMeta(props: any): ((chunk: string) => void) | null {
+      const isCharset = isString(props.charSet)
+      return !shellFlushed && (isCharset || props.name === 'viewport') && props.itemProp == null ? chunk => { isCharset ? charset += chunk : viewport += chunk } : null
+    },
+    // Snapshot the hoisted metas, or restore a snapshot when the content that added them is
+    // discarded (a suspended boundary, an abandoned shell attempt). Hints stay: they deduplicate.
+    metas(restore?: string[]): string[] {
+      const saved = [charset, viewport]
+      if (restore) [charset, viewport] = restore as [string, string]
+      return saved
     },
     addHost(type: string, props: any, scope?: ResourceScope): boolean {
       const kind = resourceKind(type, props)
@@ -127,7 +156,8 @@ export function createResourceHints(shellFlushed = false, styleNonce?: string) {
       return result
     },
     drain(): string {
-      let output = ''
+      let output = charset + viewport
+      charset = viewport = ''
       function flush(group: Resource[], precedence?: string) {
         let remaining = 0
         let inline = false, hasStylesheets = false

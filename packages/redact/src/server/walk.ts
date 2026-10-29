@@ -34,6 +34,7 @@ import {
   popContext,
   snapshotContexts,
   recordHostResource,
+  recordHoisted,
   currentSSRFrame,
   type ContextSnapshot,
 } from './dispatcher'
@@ -54,6 +55,8 @@ export interface SuspendedBoundary {
   thenable: Promise<any>
   contextSnapshot: ContextSnapshot
   componentStack: string
+  // SVG, picture, noscript and document flags of the parent, so a boundary rendered later keeps them.
+  textBits: number
 }
 
 export interface WalkOptions {
@@ -68,7 +71,8 @@ export interface WalkOptions {
   bootstrapped?: boolean | undefined
   isBoundaryResolution?: boolean | undefined
   resourceScope?: ResourceScope | undefined
-  // Shared traversal flags: SVG = 1, adjacent text = 2.
+  // Shared traversal flags: SVG = 1, adjacent text = 2, inside <picture> = 4, inside <noscript> = 8,
+  // inside <html> = 16.
   // Host children restore previous flags on return or throw.
   textState?: { bits: number }
 }
@@ -247,6 +251,19 @@ function walkHost(
 ): void {
   const isSvg = !!(opts.textState!.bits & 1) || tag === 'svg'
   if (!isSvg && resourceKind(tag, props) && recordHostResource(tag, props, opts.resourceScope)) return
+  // In a document render React's server renderer preloads the images it renders eagerly and
+  // opens <head> with the charset and viewport metas. Only document renders do this here, since
+  // their head is position-insensitive for hydration. Neither applies inside <svg> or <noscript>,
+  // and images inside <picture> are not preloaded.
+  const bits = opts.textState!.bits
+  if (!isSvg && bits & 16 && !(bits & 8) && (tag === 'meta' || tag === 'img' && !(bits & 4))) {
+    const emit = recordHoisted(tag, props)
+    if (emit) {
+      // The hoisted meta leaves the body, so keep the text around it apart as React does.
+      if (bits & 2) opts.emit('<!-- -->')
+      opts = { ...opts, emit }
+    }
+  }
   // <textarea value="..."> serializes its value as a TEXT CHILD, not an
   // attribute. `defaultValue` is the fallback when `value` is absent. This
   // matches React and the HTML spec — `<textarea value="x">` is not valid
@@ -322,7 +339,7 @@ function walkHost(
 
   if (VOID_ELEMENTS.has(tag)) {
     opts.emit('/>')
-    opts.textState!.bits &= 1
+    opts.textState!.bits &= 29
     return
   }
   opts.emit('>')
@@ -342,7 +359,7 @@ function walkHost(
   if (isTextarea && textareaValue != null) {
     opts.emit(escapeText(String(textareaValue)))
     opts.emit(`</${tag}>`)
-    parentTextState!.bits &= 1
+    parentTextState!.bits &= 29
     return
   }
 
@@ -360,7 +377,7 @@ function walkHost(
       }
     }
     opts.emit(`</${tag}>`)
-    parentTextState!.bits &= 1
+    parentTextState!.bits &= 29
     return
   }
 
@@ -368,7 +385,7 @@ function walkHost(
     opts.emit(String(dangerouslyHtml))
   } else {
     const previousState = parentTextState!.bits
-    parentTextState!.bits = +(isSvg && tag !== 'foreignObject')
+    parentTextState!.bits = +(isSvg && tag !== 'foreignObject') | previousState & 28 | (tag === 'picture' ? 4 : tag === 'noscript' ? 8 : tag === 'html' ? 16 : 0)
     try {
       walkNode(props.children, opts)
     } finally {
@@ -377,7 +394,7 @@ function walkHost(
   }
   opts.emit(`</${tag}>`)
   // Host element closing resets outer flow — next sibling text starts fresh.
-  parentTextState!.bits &= 1
+  parentTextState!.bits &= 29
   } finally {
     if (isSelect) popSelectContext()
   }
@@ -459,37 +476,51 @@ function walkSuspense(
   const nested: SuspendedBoundary[] = []
   const thrownInfo: { componentStack?: string | undefined } = {}
   const childEmit = (s: string) => childParts.push(s)
+  // Where <head> opened inside the buffered children, reported to the renderer once they commit.
+  let head = -1
   const resourceScope: ResourceScope | undefined = currentSSRFrame().shellFlushed ? {} : undefined
+  const frame = currentSSRFrame()
+  const metas = frame.resources?.metas()
   try {
     walkNode(props.children, {
       ...opts,
       resourceScope,
       thrownInfo,
       emit: childEmit,
+      onHead: () => { head = childParts.length },
       onSuspend: opts.onSuspend ? (boundary) => nested.push(boundary) : undefined,
       nextBoundaryId: opts.nextBoundaryId,
     })
   } catch (thenable: any) {
     nested.length = 0
+    frame.resources?.metas(metas || ['', ''])
     const suspended = isThenable(thenable)
     if (!suspended) {
       if (isBrowserError(thenable)) opts.onBrowserBailout?.(thenable, { componentStack: (thenable as any).componentStack || opts.componentStack || '' })
       else opts.onError?.(thenable)
     }
     const fallbackParts: string[] = []
+    head = -1
     walkNode(props.fallback, {
       ...opts,
       emit: (s) => fallbackParts.push(s),
+      onHead: () => { head = fallbackParts.length },
       onSuspend: opts.onSuspend ? (boundary) => nested.push(boundary) : undefined,
       nextBoundaryId: opts.nextBoundaryId,
     })
-    if (!suspended) {
-      opts.emit(`<!--${isBrowserError(thenable) ? '$!' : '$E'}${id}-->${fallbackParts.join('')}<!--/$-->`)
-    } else emitBoundary(opts, id, fallbackParts.join(''))
+    // A fallback's charset and viewport metas are omitted, as React omits hoistables from fallbacks.
+    frame.resources?.metas(metas || ['', ''])
+    // Visible div wrapper for a pending boundary so the fallback UI shows; B: id lets $RC locate it on
+    // reveal. The leading/trailing comments let hydration detect a pending boundary and register a
+    // reveal callback.
+    opts.emit(suspended ? `<!--$?${id}--><div id="B:${id}">` : `<!--${isBrowserError(thenable) ? '$!' : '$E'}${id}-->`)
+    emitParts(opts, fallbackParts, head)
+    opts.emit(suspended ? '</div><!--/$-->' : '<!--/$-->')
     for (const boundary of nested) opts.onSuspend?.(boundary)
     if (suspended) opts.onSuspend?.({
       id, fallbackHTML: fallbackParts.join(''), children: props.children, thenable, contextSnapshot,
       componentStack: thrownInfo.componentStack || opts.componentStack || '',
+      textBits: opts.textState!.bits & 29,
     })
     return
   }
@@ -504,16 +535,15 @@ function walkSuspense(
   // producing visible duplicates (e.g. double navbar logos). Markers let the
   // client treat this as a resolved boundary and hydrate in-place.
   opts.emit(`<!--$${id}-->`)
-  opts.emit(childParts.join(''))
+  emitParts(opts, childParts, head)
   opts.emit(`<!--/$-->`)
   for (const boundary of nested) opts.onSuspend?.(boundary)
 }
 
-function emitBoundary(opts: WalkOptions, id: number, fallbackHTML: string): void {
-  // Visible div wrapper so the fallback UI shows; B: id lets $RC locate it on
-  // reveal. The leading/trailing comments let hydration detect a pending
-  // boundary and register a reveal callback.
-  opts.emit(`<!--$?${id}--><div id="B:${id}">`)
-  opts.emit(fallbackHTML)
-  opts.emit(`</div><!--/$-->`)
+// Emit buffered output, reporting where <head> opened in it so the renderer inserts its hints there.
+function emitParts(opts: WalkOptions, parts: string[], head: number): void {
+  if (head < 0) return opts.emit(parts.join(''))
+  opts.emit(parts.slice(0, head).join(''))
+  opts.onHead?.()
+  opts.emit(parts.slice(head).join(''))
 }

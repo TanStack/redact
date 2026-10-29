@@ -17,9 +17,11 @@ export interface SSRFrame {
 
 let frame: SSRFrame | null = null
 
+const resources = () => frame!.resources ||= createResourceHints(!!frame!.shellFlushed, frame!.styleNonce)
+
 resourceHintDispatcher.emit = (kind, href, options) => {
   if (!frame) return false
-  ;(frame.resources ||= createResourceHints(!!frame.shellFlushed, frame.styleNonce)).add(kind, href, options)
+  resources().add(kind, href, options)
   return true
 }
 
@@ -35,7 +37,13 @@ export function currentSSRFrame(): SSRFrame {
 }
 
 export function recordHostResource(type: string, props: any, scope?: ResourceScope): boolean {
-  return !!frame && (frame.resources ||= createResourceHints(!!frame.shellFlushed, frame.styleNonce)).addHost(type, props, scope)
+  return !!frame && resources().addHost(type, props, scope)
+}
+
+// An <img> adds its preload. A charset or viewport <meta> in the shell returns the sink that
+// hoists its markup.
+export function recordHoisted(tag: string, props: any): ((chunk: string) => void) | null | void {
+  if (frame) return tag === 'img' ? resources().addImage(props) : resources().addMeta(props)
 }
 
 export function endSSR(previous?: ReturnType<typeof beginSSR>): void {
