@@ -139,6 +139,24 @@ describe('image preloads', () => {
     }
   })
 
+  it('inserts the head hints after the doctype of a document fallback', async () => {
+    const { Suspense } = await import('react')
+    function Broken(): null {
+      throw new Error('broken')
+    }
+    const html = renderToString(<Suspense fallback={<Page><img src="/hero.png" alt="" /></Page>}><Broken /></Suspense>)
+    expect(html.startsWith('<!--$E0--><!DOCTYPE html><html><head><link rel="preload" href="/hero.png" as="image"/>')).toBe(true)
+  })
+
+  it('keeps a fragment out of document mode after a fallback that opened html', async () => {
+    const { Suspense } = await import('react')
+    function Never(): null {
+      throw new Promise(() => {})
+    }
+    const html = renderToString(<><Suspense fallback={<html><body /></html>}><Never /></Suspense><meta charSet="utf-8" /></>)
+    expect(html).toMatch(/<meta charset="utf-8"\/>$/)
+  })
+
   it('synthesises the head of an html tree that omits it', () => {
     const html = renderToString(<html><body><img src="/hero.png" fetchPriority="high" alt="" /></body></html>)
     expect(html).toBe('<!DOCTYPE html><html><head><link rel="preload" href="/hero.png" as="image" fetchpriority="high"/></head><body><img src="/hero.png" fetchpriority="high" alt=""/></body></html>')

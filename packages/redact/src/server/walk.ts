@@ -500,17 +500,23 @@ function walkSuspense(
       else opts.onError?.(thenable)
     }
     const fallbackParts: string[] = []
+    head = -1
     walkNode(props.fallback, {
       ...opts,
       emit: (s) => fallbackParts.push(s),
+      onHead: () => { head = fallbackParts.length },
       onSuspend: opts.onSuspend ? (boundary) => nested.push(boundary) : undefined,
       nextBoundaryId: opts.nextBoundaryId,
     })
+    frame.document = document
     // A fallback's charset and viewport metas are omitted, as React omits hoistables from fallbacks.
     frame.resources?.metas(metas || ['', ''])
-    if (!suspended) {
-      opts.emit(`<!--${isBrowserError(thenable) ? '$!' : '$E'}${id}-->${fallbackParts.join('')}<!--/$-->`)
-    } else emitBoundary(opts, id, fallbackParts.join(''))
+    // Visible div wrapper for a pending boundary so the fallback UI shows; B: id lets $RC locate it on
+    // reveal. The leading/trailing comments let hydration detect a pending boundary and register a
+    // reveal callback.
+    opts.emit(suspended ? `<!--$?${id}--><div id="B:${id}">` : `<!--${isBrowserError(thenable) ? '$!' : '$E'}${id}-->`)
+    emitParts(opts, fallbackParts, head)
+    opts.emit(suspended ? '</div><!--/$-->' : '<!--/$-->')
     for (const boundary of nested) opts.onSuspend?.(boundary)
     if (suspended) opts.onSuspend?.({
       id, fallbackHTML: fallbackParts.join(''), children: props.children, thenable, contextSnapshot,
@@ -530,21 +536,15 @@ function walkSuspense(
   // producing visible duplicates (e.g. double navbar logos). Markers let the
   // client treat this as a resolved boundary and hydrate in-place.
   opts.emit(`<!--$${id}-->`)
-  if (head < 0) opts.emit(childParts.join(''))
-  else {
-    opts.emit(childParts.slice(0, head).join(''))
-    opts.onHead?.()
-    opts.emit(childParts.slice(head).join(''))
-  }
+  emitParts(opts, childParts, head)
   opts.emit(`<!--/$-->`)
   for (const boundary of nested) opts.onSuspend?.(boundary)
 }
 
-function emitBoundary(opts: WalkOptions, id: number, fallbackHTML: string): void {
-  // Visible div wrapper so the fallback UI shows; B: id lets $RC locate it on
-  // reveal. The leading/trailing comments let hydration detect a pending
-  // boundary and register a reveal callback.
-  opts.emit(`<!--$?${id}--><div id="B:${id}">`)
-  opts.emit(fallbackHTML)
-  opts.emit(`</div><!--/$-->`)
+// Emit buffered output, reporting where <head> opened in it so the renderer inserts its hints there.
+function emitParts(opts: WalkOptions, parts: string[], head: number): void {
+  if (head < 0) return opts.emit(parts.join(''))
+  opts.emit(parts.slice(0, head).join(''))
+  opts.onHead?.()
+  opts.emit(parts.slice(head).join(''))
 }
