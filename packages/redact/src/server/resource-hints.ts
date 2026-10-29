@@ -70,7 +70,15 @@ export function createResourceHints(shellFlushed = false, styleNonce?: string) {
       else if (kind === 'preconnect') type += ':' + (options.crossOrigin ?? 'default')
       const key = JSON.stringify([type, source])
       const prior = resources.get(key)
-      if (prior && (!init || prior.kind !== 'preload' && prior.kind !== 'modulepreload')) return prior
+      // Image preloads that go ahead of the stylesheets: every fetchPriority="high" one and the
+      // first ten eager <img> per flush, as in React.
+      const high = kind === 'preload' && options.as === 'image' && (options.fetchPriority === 'high' || eager && groups[2]!.length < 10)
+      if (prior && (!init || prior.kind !== 'preload' && prior.kind !== 'modulepreload')) {
+        // An eager <img> also moves the preload() of the same image ahead, keeping its attributes.
+        const index = eager && high ? groups[4]!.indexOf(prior) : -1
+        if (index >= 0) groups[2]!.push(...groups[4]!.splice(index, 1))
+        return prior
+      }
 
       const resource: Resource = { kind, href, options: { ...options } }
       if (kind === 'style' && (!styleNonce || options.nonce === styleNonce)) resource.css = styleText(options)
@@ -90,7 +98,7 @@ export function createResourceHints(shellFlushed = false, styleNonce?: string) {
       } else {
         const group = kind === 'dns-prefetch' || kind === 'preconnect' ? 0
           : kind === 'preload' && options.as === 'font' ? 1
-          : kind === 'preload' && options.as === 'image' && (options.fetchPriority === 'high' || eager && groups[2]!.length < 10) ? 2
+          : high ? 2
           : init ? 3 : 4
         groups[group]!.push(resource)
       }

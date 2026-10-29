@@ -97,11 +97,12 @@ describe('image preloads', () => {
       return <><img src="/explicit.png" alt="" /><img src="/high.png" alt="" /><img src="/other.png" alt="" /></>
     }
     const links = head(renderToString(<Page><App /></Page>)).filter(link => link.rel !== undefined)
+    // The explicit preload moves ahead of the stylesheet once its image renders, keeping its own attributes.
     expect(links).toEqual([
       { tag: 'link', rel: 'preload', as: 'image', href: '/high.png', fetchpriority: 'high' },
+      { tag: 'link', rel: 'preload', as: 'image', href: '/explicit.png' },
       { tag: 'link', rel: 'preload', as: 'image', href: '/other.png' },
       { tag: 'link', rel: 'stylesheet', href: '/app.css', 'data-precedence': 'default' },
-      { tag: 'link', rel: 'preload', as: 'image', href: '/explicit.png' },
     ])
   })
 
@@ -173,6 +174,26 @@ describe('image preloads', () => {
     const html = await new Response(stream).text()
     expect(html).toContain('<img src="/late.png" alt=""/>')
     expect(html).not.toContain('rel="preload" href="/late.png"')
+  })
+
+  it('omits the charset and viewport metas of a fallback and preloads its images', async () => {
+    let resolve!: () => void
+    const ready = new Promise<void>(next => { resolve = next })
+    let done = false
+    function Late() {
+      if (!done) throw ready.then(() => { done = true })
+      return <p>late</p>
+    }
+    const { Suspense } = await import('react')
+    const fallback = <><meta name="viewport" content="fallback" /><meta name="robots" content="noindex" /><img src="/fallback.png" alt="" /></>
+    const stream = await renderToReadableStream(<Page><Suspense fallback={fallback}><Late /></Suspense></Page>)
+    resolve()
+    await stream.allReady
+    const html = await new Response(stream).text()
+    expect(html).not.toContain('content="fallback"')
+    expect(html).toContain('<meta name="robots" content="noindex"/><img src="/fallback.png" alt=""/>')
+    expect(head(html).filter(tag => tag.name === 'viewport')).toEqual([{ tag: 'meta', name: 'viewport', content: 'width=device-width' }])
+    expect(head(html).some(tag => tag.href === '/fallback.png')).toBe(true)
   })
 
   it('renders the preloads of a boundary that streams later with its content', async () => {

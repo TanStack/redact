@@ -499,6 +499,8 @@ function walkSuspense(
       onSuspend: opts.onSuspend ? (boundary) => nested.push(boundary) : undefined,
       nextBoundaryId: opts.nextBoundaryId,
     })
+    // A fallback's charset and viewport metas are omitted, as React omits hoistables from fallbacks.
+    currentSSRFrame().resources?.metas(metas || ['', ''])
     if (!suspended) {
       opts.emit(`<!--${isBrowserError(thenable) ? '$!' : '$E'}${id}-->${fallbackParts.join('')}<!--/$-->`)
     } else emitBoundary(opts, id, fallbackParts.join(''))

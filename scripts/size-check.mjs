@@ -66,7 +66,7 @@ const STORE_HYDRATION_SIZE_ALLOWANCE = {
 // Approved image preload and head meta hoisting cost on main 0c7274e, [source, built].
 // Only the server bundle changes; the client entries are untouched.
 const IMAGE_PRELOAD_SIZE_ALLOWANCE = {
-  'redact/server': [354, 351],
+  'redact/server': [401, 400],
 }
 
 let failed = false
