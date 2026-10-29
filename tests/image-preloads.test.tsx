@@ -130,6 +130,15 @@ describe('image preloads', () => {
     expect(html).toMatch(/<img src="\/after.png" alt=""\/>$/)
   })
 
+  it('inserts the head hints after the doctype of a document wrapped in a resolved boundary', async () => {
+    const { Suspense } = await import('react')
+    const page = <Suspense fallback={null}><Page><img src="/hero.png" alt="" /></Page></Suspense>
+    for (const html of [renderToString(page), await streamed(page)]) {
+      expect(html.startsWith('<!--$0--><!DOCTYPE html><html><head><meta charset="utf-8"/>')).toBe(true)
+      expect(head(html)[2]).toEqual({ tag: 'link', rel: 'preload', as: 'image', href: '/hero.png' })
+    }
+  })
+
   it('synthesises the head of an html tree that omits it', () => {
     const html = renderToString(<html><body><img src="/hero.png" fetchPriority="high" alt="" /></body></html>)
     expect(html).toBe('<!DOCTYPE html><html><head><link rel="preload" href="/hero.png" as="image" fetchpriority="high"/></head><body><img src="/hero.png" fetchpriority="high" alt=""/></body></html>')

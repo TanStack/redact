@@ -473,6 +473,8 @@ function walkSuspense(
   const nested: SuspendedBoundary[] = []
   const thrownInfo: { componentStack?: string | undefined } = {}
   const childEmit = (s: string) => childParts.push(s)
+  // Where <head> opened inside the buffered children, reported to the renderer once they commit.
+  let head = -1
   const resourceScope: ResourceScope | undefined = currentSSRFrame().shellFlushed ? {} : undefined
   const frame = currentSSRFrame()
   const metas = frame.resources?.metas()
@@ -483,6 +485,7 @@ function walkSuspense(
       resourceScope,
       thrownInfo,
       emit: childEmit,
+      onHead: () => { head = childParts.length },
       onSuspend: opts.onSuspend ? (boundary) => nested.push(boundary) : undefined,
       nextBoundaryId: opts.nextBoundaryId,
     })
@@ -527,7 +530,12 @@ function walkSuspense(
   // producing visible duplicates (e.g. double navbar logos). Markers let the
   // client treat this as a resolved boundary and hydrate in-place.
   opts.emit(`<!--$${id}-->`)
-  opts.emit(childParts.join(''))
+  if (head < 0) opts.emit(childParts.join(''))
+  else {
+    opts.emit(childParts.slice(0, head).join(''))
+    opts.onHead?.()
+    opts.emit(childParts.slice(head).join(''))
+  }
   opts.emit(`<!--/$-->`)
   for (const boundary of nested) opts.onSuspend?.(boundary)
 }
