@@ -185,6 +185,14 @@ describe('image preloads', () => {
     expect(html).toContain('rel="preload" href="/late.png"')
   })
 
+  it('keeps the text around a hoisted meta apart', () => {
+    const page = <html><head /><body><p>{'a'}<meta charSet="utf-8" />{'b'}</p></body></html>
+    const html = renderToString(page)
+    expect(html).toBe('<!DOCTYPE html><html><head><meta charset="utf-8"/></head><body><p>a<!-- -->b</p></body></html>')
+    const doc = new (globalThis as any).DOMParser().parseFromString(html, 'text/html') as Document
+    expect(doc.querySelector('p')!.childNodes).toHaveLength(3)
+  })
+
   it('synthesises the head of an html tree that omits it', () => {
     const html = renderToString(<html><body><img src="/hero.png" fetchPriority="high" alt="" /></body></html>)
     expect(html).toBe('<!DOCTYPE html><html><head><link rel="preload" href="/hero.png" as="image" fetchpriority="high"/></head><body><img src="/hero.png" fetchpriority="high" alt=""/></body></html>')

@@ -258,7 +258,11 @@ function walkHost(
   const bits = opts.textState!.bits
   if (!isSvg && bits & 16 && !(bits & 8) && (tag === 'meta' || tag === 'img' && !(bits & 4))) {
     const emit = recordHoisted(tag, props)
-    if (emit) opts = { ...opts, emit }
+    if (emit) {
+      // The hoisted meta leaves the body, so keep the text around it apart as React does.
+      if (bits & 2) opts.emit('<!-- -->')
+      opts = { ...opts, emit }
+    }
   }
   // <textarea value="..."> serializes its value as a TEXT CHILD, not an
   // attribute. `defaultValue` is the fallback when `value` is absent. This
