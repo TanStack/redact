@@ -116,6 +116,20 @@ describe('image preloads', () => {
     expect(html).toBe('<head><meta charset="utf-8"/></head><img src="/inline.png" alt=""/>')
   })
 
+  it('keeps a fragment out of document mode when its suspended child opened html', async () => {
+    const { Suspense } = await import('react')
+    function Doc() {
+      return <html><body><Never /></body></html>
+    }
+    function Never(): null {
+      throw new Promise(() => {})
+    }
+    const html = renderToString(<><Suspense fallback={<><meta charSet="utf-8" /><img src="/fallback.png" alt="" /></>}><Doc /></Suspense><img src="/after.png" alt="" /></>)
+    expect(html).not.toContain('rel="preload"')
+    expect(html).toContain('<meta charset="utf-8"/><img src="/fallback.png" alt=""/>')
+    expect(html).toMatch(/<img src="\/after.png" alt=""\/>$/)
+  })
+
   it('synthesises the head of an html tree that omits it', () => {
     const html = renderToString(<html><body><img src="/hero.png" fetchPriority="high" alt="" /></body></html>)
     expect(html).toBe('<!DOCTYPE html><html><head><link rel="preload" href="/hero.png" as="image" fetchpriority="high"/></head><body><img src="/hero.png" fetchpriority="high" alt=""/></body></html>')

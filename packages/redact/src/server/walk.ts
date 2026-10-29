@@ -474,7 +474,9 @@ function walkSuspense(
   const thrownInfo: { componentStack?: string | undefined } = {}
   const childEmit = (s: string) => childParts.push(s)
   const resourceScope: ResourceScope | undefined = currentSSRFrame().shellFlushed ? {} : undefined
-  const metas = currentSSRFrame().resources?.metas()
+  const frame = currentSSRFrame()
+  const metas = frame.resources?.metas()
+  const document = !!frame.document
   try {
     walkNode(props.children, {
       ...opts,
@@ -486,7 +488,9 @@ function walkSuspense(
     })
   } catch (thenable: any) {
     nested.length = 0
-    currentSSRFrame().resources?.metas(metas || ['', ''])
+    // The discarded children may have opened <html>; the fallback and later siblings keep the outer mode.
+    frame.document = document
+    frame.resources?.metas(metas || ['', ''])
     const suspended = isThenable(thenable)
     if (!suspended) {
       if (isBrowserError(thenable)) opts.onBrowserBailout?.(thenable, { componentStack: (thenable as any).componentStack || opts.componentStack || '' })
@@ -500,7 +504,7 @@ function walkSuspense(
       nextBoundaryId: opts.nextBoundaryId,
     })
     // A fallback's charset and viewport metas are omitted, as React omits hoistables from fallbacks.
-    currentSSRFrame().resources?.metas(metas || ['', ''])
+    frame.resources?.metas(metas || ['', ''])
     if (!suspended) {
       opts.emit(`<!--${isBrowserError(thenable) ? '$!' : '$E'}${id}-->${fallbackParts.join('')}<!--/$-->`)
     } else emitBoundary(opts, id, fallbackParts.join(''))
