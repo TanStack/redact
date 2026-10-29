@@ -222,6 +222,7 @@ function streamBoundary(
           onError: options.onError,
         componentStack: b.componentStack,
         resourceScope,
+        textState: { bits: b.textBits },
       })
       state.frame?.resources?.mergeScope(resourceScope)
     } catch (err) {

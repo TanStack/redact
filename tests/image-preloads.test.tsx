@@ -110,6 +110,11 @@ describe('image preloads', () => {
     expect(html).toBe('<p>intro</p><meta charset="utf-8"/><img src="/inline.png" alt=""/>')
   })
 
+  it('leaves a fragment that renders its own head alone', () => {
+    const html = renderToString(<><head><meta charSet="utf-8" /></head><img src="/inline.png" alt="" /></>)
+    expect(html).toBe('<head><meta charset="utf-8"/></head><img src="/inline.png" alt=""/>')
+  })
+
   it('synthesises the head of an html tree that omits it', () => {
     const html = renderToString(<html><body><img src="/hero.png" fetchPriority="high" alt="" /></body></html>)
     expect(html).toBe('<!DOCTYPE html><html><head><link rel="preload" href="/hero.png" as="image" fetchpriority="high"/></head><body><img src="/hero.png" fetchpriority="high" alt=""/></body></html>')
@@ -149,6 +154,25 @@ describe('image preloads', () => {
     // The preload registered by the discarded attempt stays in the shell and is not repeated.
     expect(html.match(/rel="preload" href="\/late.png"/g)).toHaveLength(1)
     expect(head(html).some(tag => tag.href === '/late.png')).toBe(true)
+  })
+
+  it('keeps excluding the images of a picture whose boundary streams later', async () => {
+    let resolve!: () => void
+    const ready = new Promise<void>(next => { resolve = next })
+    let done = false
+    function Late() {
+      if (!done) throw ready.then(() => { done = true })
+      return <img src="/late.png" alt="" />
+    }
+    const { Suspense } = await import('react')
+    const stream = await renderToReadableStream(
+      <Page><picture><source srcSet="/late.webp" type="image/webp" /><Suspense fallback={null}><Late /></Suspense></picture></Page>,
+    )
+    resolve()
+    await stream.allReady
+    const html = await new Response(stream).text()
+    expect(html).toContain('<img src="/late.png" alt=""/>')
+    expect(html).not.toContain('rel="preload" href="/late.png"')
   })
 
   it('renders the preloads of a boundary that streams later with its content', async () => {

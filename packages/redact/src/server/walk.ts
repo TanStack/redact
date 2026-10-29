@@ -55,6 +55,8 @@ export interface SuspendedBoundary {
   thenable: Promise<any>
   contextSnapshot: ContextSnapshot
   componentStack: string
+  // SVG and picture/noscript flags of the parent, so a boundary rendered later keeps its exclusions.
+  textBits: number
 }
 
 export interface WalkOptions {
@@ -298,7 +300,11 @@ function walkHost(
   // CSS sizing (documentElement.clientHeight returns the content height, not
   // the viewport) — and Floating-UI-based libraries (Radix dropdowns etc.)
   // then compute off-screen positions for overlays.
-  if (tag === 'html') opts.emit('<!DOCTYPE html>')
+  if (tag === 'html') {
+    // Only document renders hoist image preloads and metas: their head is position-insensitive for hydration.
+    currentSSRFrame().document = true
+    opts.emit('<!DOCTYPE html>')
+  }
 
   opts.emit('<' + tag)
   for (const k in props) {
@@ -334,14 +340,14 @@ function walkHost(
     return
   }
   opts.emit('>')
-  if (tag === 'head') openHead(opts)
+  if (tag === 'head') opts.onHead?.()
   // Opening a host element starts a fresh text flow context for its children.
   // Children's text separator tracking is independent of the outer context.
   const parentTextState = opts.textState
 
   if (tag === 'html' && !hasHeadChild(props.children)) {
     opts.emit('<head>')
-    openHead(opts)
+    opts.onHead?.()
     opts.emit('</head>')
   }
 
@@ -389,11 +395,6 @@ function walkHost(
   } finally {
     if (isSelect) popSelectContext()
   }
-}
-
-function openHead(opts: WalkOptions): void {
-  currentSSRFrame().document = true
-  opts.onHead?.()
 }
 
 function hasHeadChild(children: unknown): boolean {
@@ -505,6 +506,7 @@ function walkSuspense(
     if (suspended) opts.onSuspend?.({
       id, fallbackHTML: fallbackParts.join(''), children: props.children, thenable, contextSnapshot,
       componentStack: thrownInfo.componentStack || opts.componentStack || '',
+      textBits: opts.textState!.bits & 5,
     })
     return
   }
