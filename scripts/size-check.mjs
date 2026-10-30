@@ -63,11 +63,25 @@ const STORE_HYDRATION_SIZE_ALLOWANCE = {
   'redact/dom-client (hydration=stub)': [3, 0],
 }
 
+// Controlled input restore cost (#115) on main 37c051c, [source, built].
+// Pending maintainer approval. Only entries exceeding existing limits receive
+// their measured increment.
+const CONTROLLED_RESTORE_SIZE_ALLOWANCE = {
+  'client total (default Vite)': [235, 259],
+  'redact/dom-client (activity=stub)': [242, 224],
+  'redact/dom-client (fragmentRefs=stub)': [241, 256],
+  'redact/dom-client (viewTransitions=stub)': [273, 268],
+  'redact/dom-client (context=stub)': [224, 0],
+  'redact/dom-client (forwardRef=stub)': [229, 0],
+  'redact/dom-client (hydration=stub)': [240, 237],
+  'redact/dom-client (nano)': [200, 207],
+}
+
 let failed = false
 for (const tree of ['src', 'dist']) {
   for (const row of await measureSizes(tree)) {
     const baseBudget = BUDGETS[row.name]
-    const budget = baseBudget === undefined ? undefined : baseBudget + (STORE_HYDRATION_SIZE_ALLOWANCE[row.name]?.[tree === 'src' ? 0 : 1] ?? 0) + (ROOT_TRANSITION_SIZE_ALLOWANCE[row.name]?.[tree === 'src' ? 0 : 1] ?? 0) + (QUEUE_SIZE_ALLOWANCE[row.name]?.[tree === 'src' ? 0 : 1] ?? 0)
+    const budget = baseBudget === undefined ? undefined : baseBudget + (CONTROLLED_RESTORE_SIZE_ALLOWANCE[row.name]?.[tree === 'src' ? 0 : 1] ?? 0) + (STORE_HYDRATION_SIZE_ALLOWANCE[row.name]?.[tree === 'src' ? 0 : 1] ?? 0) + (ROOT_TRANSITION_SIZE_ALLOWANCE[row.name]?.[tree === 'src' ? 0 : 1] ?? 0) + (QUEUE_SIZE_ALLOWANCE[row.name]?.[tree === 'src' ? 0 : 1] ?? 0)
     const ok = budget !== undefined && row.gz <= budget
     failed ||= !ok
     console.log(`${ok ? 'PASS' : 'FAIL'} ${tree} ${row.name}: ${row.gz} B gzip, budget ${budget ?? 'missing'}`)
