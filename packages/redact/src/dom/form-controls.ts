@@ -1,5 +1,7 @@
 import { trackInputValue } from './dom';
+import { ReactSharedInternals } from '../react';
 export function syncTextareaValue(el: HTMLTextAreaElement, props: any, mounting?: boolean): void {
+    (el as any).__p = props;
     if (mounting) {
         const children = props.children;
         const initial = props.value ?? props.defaultValue ?? (Array.isArray(children) ? children[0] : children) ?? '';
@@ -12,15 +14,14 @@ export function syncTextareaValue(el: HTMLTextAreaElement, props: any, mounting?
         return;
     }
     const value = props.value;
-    if (value != null && el.value !== '' + value) {
-        el.value = '' + value;
-        trackInputValue(el);
-    }
+    if (value != null)
+        writeInputValue(el, value);
     const fallback = props.defaultValue ?? value ?? '';
     if (el.defaultValue !== '' + fallback)
         el.defaultValue = '' + fallback;
 }
 export function syncInputValue(el: HTMLInputElement, props: any, prev?: any): void {
+    (el as any).__p = props;
     if (!prev) {
         el.checked = el.defaultChecked = !!(props.checked ?? props.defaultChecked);
     }
@@ -46,11 +47,7 @@ export function syncInputValue(el: HTMLInputElement, props: any, prev?: any): vo
         return;
     }
     if (value != null) {
-        // Number inputs keep equivalent user spelling, including trailing zeroes.
-        if (el.type === 'number' ? (value === 0 && el.value === '') || el.value != value : el.value !== '' + value) {
-            el.value = '' + value;
-            trackInputValue(el);
-        }
+        writeInputValue(el, value);
         const nextDefault = el.type === 'number' && el.value == value ? el.value : '' + value;
         if (el.defaultValue !== nextDefault)
             el.defaultValue = nextDefault;
@@ -63,7 +60,63 @@ export function syncInputValue(el: HTMLInputElement, props: any, prev?: any): vo
         el.removeAttribute('value');
     }
 }
+function writeInputValue(el: HTMLInputElement | HTMLTextAreaElement, value: any): void {
+    // Number inputs keep equivalent user spelling, including trailing zeroes.
+    if (el.type === 'number' ? (value === 0 && el.value === '') || el.value != value : el.value !== '' + value) {
+        el.value = '' + value;
+        trackInputValue(el);
+    }
+}
+// Like React, restore from the root and portal containers, after every listener
+// on the control and its ancestors has read the edit. A checkbox, radio or
+// select fires input before change, so with a change listener it restores
+// after change.
+export function queueRestore(e: any, el: any): void {
+    if (el.__p && (e.type === 'change' || e.type === 'input' && !(/^(checkbox|radio|select|file)/.test(el.type) && Object.values(el.__h).some((other: any) => other?.e.includes('change')))))
+        e.__r = el;
+    // A stopped or non-bubbling event never reaches the container.
+    if (e.cancelBubble || !e.bubbles)
+        restorePending(e);
+}
+export function listenForRestores(container: Node): void {
+    container.addEventListener('input', restorePending);
+    container.addEventListener('change', restorePending);
+}
+function restorePending(e: any): void {
+    if (e.__r)
+        scheduleControlledRestore(e.__r);
+    e.__r = null;
+}
+// Like React, write the rendered value and checked state back after onChange,
+// so an edit or click the app did not accept never stays in the DOM. Updates
+// from the handler flush in a microtask (or act's queue) queued before this
+// one, so the restore reads the props they render.
+function scheduleControlledRestore(el: HTMLInputElement): void {
+    if (!(el as any).__p)
+        return;
+    const restore = () => {
+        // Clicking a radio unchecks the rest of its group.
+        for (const input of el.type === 'radio' && el.name ? (el.getRootNode() as ParentNode).querySelectorAll<HTMLInputElement>('input[type=radio]') : [el]) {
+            const props = (input as any).__p;
+            if (!props || input.name !== el.name)
+                continue;
+            if (input.tagName === 'SELECT')
+                syncSelectValue(input as any, props, props);
+            else {
+                if (props.value != null)
+                    writeInputValue(input, props.value);
+                if (props.checked != null)
+                    input.checked = !!props.checked;
+            }
+        }
+    };
+    if (process.env.NODE_ENV !== 'production' && ReactSharedInternals.A)
+        ReactSharedInternals.A.push(restore);
+    else
+        queueMicrotask(restore);
+}
 export function syncSelectValue(select: HTMLSelectElement, props: any, prev?: any): void {
+    (select as any).__p = props;
     const multiple = select.multiple;
     const value = props.value ?? ((!prev || !!prev.multiple !== multiple) ? props.defaultValue ?? (prev && []) : null);
     if (value == null)
