@@ -2,6 +2,7 @@ import { createSyntheticEvent } from './synthetic-event';
 import { UNITLESS_STYLE } from '../core/unitless-style';
 import { devToolsMetadata } from '../core/devtools';
 import { formActions } from './form-actions';
+import { queueRestore, scheduleControlledRestore } from './form-controls';
 import { attributeName, attributeValue } from '../core/attributes';
 import { isString } from "../core/functions";
 const SVG_NS = 'http://www.w3.org/2000/svg';
@@ -112,10 +113,13 @@ function setEventHandler(el: Element, name: string, next: any): void {
     const enabled = isFunction(next);
     const capture = name.endsWith('Capture') && !name.endsWith('PointerCapture');
     const lower = name.slice(2, capture ? -7 : undefined).toLowerCase();
-    const events = lower === 'change' && (el.tagName === 'TEXTAREA' ||
-        (el.tagName === 'INPUT' && !/^(checkbox|radio|file)$/.test((el as HTMLInputElement).type)))
-        ? ['input', 'change']
-        : [lower === 'focus' ? 'focusin' : lower === 'blur' ? 'focusout' : lower === 'doubleclick' ? 'dblclick' : lower];
+    const type = (el as HTMLInputElement).type;
+    // Browsers fire no `change` for a checkbox or radio clicked outside a
+    // document; React listens for `click` there, so onChange still runs.
+    const events = lower !== 'change' ? [lower === 'focus' ? 'focusin' : lower === 'blur' ? 'focusout' : lower === 'doubleclick' ? 'dblclick' : lower]
+        : /^(checkbox|radio)$/.test(type) ? ['click', 'change']
+        : el.tagName === 'TEXTAREA' || el.tagName === 'INPUT' && type !== 'file' ? ['input', 'change']
+        : ['change'];
     // Key by the React prop name (not DOM event name) so `onChange` and
     // `onInput` on the same text input — which both dispatch from the native
     // `input` event — can coexist without clobbering each other's handlers.
@@ -132,7 +136,15 @@ function setEventHandler(el: Element, name: string, next: any): void {
         return;
     if (!existing) {
         const entry = ((e: Event) => {
-            if (events.length > 1) {
+            const click = e.type === 'click' && events[1];
+            if (click) {
+                // Only a click that checked a detached radio or toggled a
+                // detached checkbox; attached ones get their `change` event.
+                const props = (el as any).__p || {};
+                if (el.isConnected || (el as HTMLInputElement).type === 'radio' && (props.checked ?? (el as any).__k ?? props.defaultChecked))
+                    return;
+            }
+            else if (events[0] === 'input') {
                 const value = (el as HTMLInputElement).value;
                 if (e.type === 'change' && (el as any).__v === value)
                     return;
@@ -145,7 +157,14 @@ function setEventHandler(el: Element, name: string, next: any): void {
                     devToolsMetadata.current = devToolsMetadata.hosts.get(el) || null;
                     try { entry.c(event); } finally { devToolsMetadata.current = previous; }
                 } else entry.c(event);
-            } finally { event.currentTarget = null; }
+            } finally {
+                event.currentTarget = null;
+                // A detached click has no container to reach, so it restores here.
+                if (click)
+                    scheduleControlledRestore(el as HTMLInputElement);
+                else
+                    queueRestore(e, el);
+            }
         }) as ((e: Event) => void) & {
             c: Function;
             e: string[];
