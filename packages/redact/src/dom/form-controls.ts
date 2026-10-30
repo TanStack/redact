@@ -1,7 +1,17 @@
 import { trackInputValue } from './dom';
 import { ReactSharedInternals } from '../react';
+// Record the latest props for controlled restores. Like React, a controlled
+// control restores even without an input or change handler, so it listens
+// like a handler once it is controlled.
+export function recordProps(el: any, props: any): void {
+    el.__p = props;
+    if ((/^(checkbox|radio)$/.test(el.type) ? props.checked : props.value) != null) {
+        el.addEventListener('input', queueRestore);
+        el.addEventListener('change', queueRestore);
+    }
+}
 export function syncTextareaValue(el: HTMLTextAreaElement, props: any, mounting?: boolean): void {
-    (el as any).__p = props;
+    recordProps(el, props);
     if (mounting) {
         const children = props.children;
         const initial = props.value ?? props.defaultValue ?? (Array.isArray(children) ? children[0] : children) ?? '';
@@ -21,7 +31,7 @@ export function syncTextareaValue(el: HTMLTextAreaElement, props: any, mounting?
         el.defaultValue = '' + fallback;
 }
 export function syncInputValue(el: HTMLInputElement, props: any, prev?: any): void {
-    (el as any).__p = props;
+    recordProps(el, props);
     if (!prev) {
         el.checked = el.defaultChecked = !!(props.checked ?? props.defaultChecked);
     }
@@ -71,8 +81,8 @@ function writeInputValue(el: HTMLInputElement | HTMLTextAreaElement, value: any)
 // on the control and its ancestors has read the edit. A checkbox, radio or
 // select fires input before change, so with a change listener it restores
 // after change.
-export function queueRestore(e: any, el: any): void {
-    if (el.__p && (e.type === 'change' || e.type === 'input' && !(/^(checkbox|radio|select|file)/.test(el.type) && Object.values(el.__h).some((other: any) => other?.e.includes('change')))))
+export function queueRestore(this: any, e: any, el: any = this): void {
+    if (el.__p && (e.type === 'change' || e.type === 'input' && !(/^(checkbox|radio|select|file)/.test(el.type) && Object.values(el.__h || {}).some((other: any) => other?.e.includes('change')))))
         e.__r = el;
     // A stopped or non-bubbling event never reaches the container.
     if (e.cancelBubble || !e.bubbles)
@@ -116,7 +126,7 @@ function scheduleControlledRestore(el: HTMLInputElement): void {
         queueMicrotask(restore);
 }
 export function syncSelectValue(select: HTMLSelectElement, props: any, prev?: any): void {
-    (select as any).__p = props;
+    recordProps(select, props);
     const multiple = select.multiple;
     const value = props.value ?? ((!prev || !!prev.multiple !== multiple) ? props.defaultValue ?? (prev && []) : null);
     if (value == null)

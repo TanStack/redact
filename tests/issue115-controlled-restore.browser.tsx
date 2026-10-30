@@ -83,3 +83,40 @@ it('keeps an edit that an ancestor\'s onInput accepts', async () => {
   } finally { cleanup() }
 })
 
+it('keeps a controlled input without a change handler read-only', async () => {
+  const [container, cleanup] = render(h('input', { value: 'x' }))
+  const field = container.querySelector('input')!
+  try {
+    await userEvent.type(field, 'y')
+    expect(field.value).toBe('x')
+  } finally { cleanup() }
+})
+
+it('restores the group when a radio without onChange is clicked', async () => {
+  const [container, cleanup] = render(h('div', null,
+    h('input', { type: 'radio', name: 'size', value: 's', checked: true, onChange: () => {} }),
+    h('input', { type: 'radio', name: 'size', value: 'm', checked: false }),
+  ))
+  const [small, medium] = [...container.querySelectorAll('input')]
+  try {
+    await userEvent.click(medium!)
+    expect(small!.checked).toBe(true)
+    expect(medium!.checked).toBe(false)
+  } finally { cleanup() }
+})
+
+// A checkbox fires input before change.
+it('lets onChange on a controlled checkbox read the click', async () => {
+  const seen: boolean[] = []
+  const [container, cleanup] = render(h('input', {
+    type: 'checkbox',
+    checked: false,
+    onChange: (event: any) => seen.push(event.target.checked),
+  }))
+  const box = container.querySelector('input')!
+  try {
+    await userEvent.click(box)
+    expect(seen).toEqual([true])
+    expect(box.checked).toBe(false)
+  } finally { cleanup() }
+})

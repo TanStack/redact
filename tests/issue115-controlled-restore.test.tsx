@@ -287,3 +287,51 @@ it('restores a checkbox whose only handler is onInput', async () => {
   await click(box)
   expect(box.checked).toBe(false)
 })
+
+it.each(['input', 'textarea'])('keeps a controlled %s without a change handler read-only', async tag => {
+  const field = mount(h(tag, { value: 'x' })).firstChild as HTMLInputElement
+  await type(field, 'xy')
+  expect(field.value).toBe('x')
+})
+
+it.each([false, true])('keeps checked=%s on a checkbox without onChange', async checked => {
+  const box = mount(h('input', { type: 'checkbox', checked, onClick: () => {} })).firstChild as HTMLInputElement
+  await click(box)
+  expect(box.checked).toBe(checked)
+})
+
+it('keeps a controlled select without onChange', async () => {
+  const select = mount(h('select', { value: 'a' },
+    h('option', { value: 'a' }, 'A'),
+    h('option', { value: 'b' }, 'B'),
+  )).firstChild as HTMLSelectElement
+  select.value = 'b'
+  select.dispatchEvent(new Event('change', { bubbles: true }))
+  await settle()
+  expect(select.value).toBe('a')
+})
+
+it('restores the group when a radio without onChange is clicked', async () => {
+  const seen: string[] = []
+  const container = mount(h('div', null,
+    h('input', { type: 'radio', name: 'size', value: 's', checked: true, onChange: () => seen.push('s') }),
+    h('input', { type: 'radio', name: 'size', value: 'm', checked: false }),
+  ))
+  const [small, medium] = [...container.querySelectorAll('input')] as [HTMLInputElement, HTMLInputElement]
+  await click(medium)
+  expect(small.checked).toBe(true)
+  expect(medium.checked).toBe(false)
+  expect(seen).toEqual([])
+})
+
+it('keeps a hydrated controlled input without a change handler read-only', async () => {
+  const field = (await hydrate(h('input', { value: 'x' }))).firstChild as HTMLInputElement
+  await type(field, 'xy')
+  expect(field.value).toBe('x')
+})
+
+it('leaves an uncontrolled input without a change handler alone', async () => {
+  const field = mount(h('input', { defaultValue: '' })).firstChild as HTMLInputElement
+  await type(field, 'a')
+  expect(field.value).toBe('a')
+})

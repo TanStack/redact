@@ -11,7 +11,7 @@ export { reactId, forkId, assignReactIds } from '../../react-ids';
 import { FiberTag, type Fiber, type FiberRoot, type ReactNode, } from '../../../core';
 import { hydratedFormStates } from '../../../react/form-state';
 import { queueBeforeMutation, queueMutation, queueProp, queueText, onCommitRollback } from '../../commit';
-import { syncTextareaValue } from '../../form-controls';
+import { recordProps, syncTextareaValue } from '../../form-controls';
 // Re-export from event-replay so all hydration concerns live behind one
 // feature boundary — the plugin's stub swap strips drainReplayQueue too.
 export { drainReplayQueue };
@@ -289,7 +289,7 @@ export function adoptHostDom(fiber: Fiber, parent: Fiber): boolean {
         queueHydrationFormState(candidate as Element, props, tag);
     // Hydration skips the form syncs, which record props for controlled restores.
     if (tag === 'input' || tag === 'textarea' || tag === 'select')
-        (candidate as any).__p = props;
+        recordProps(candidate, props);
     hydrateProps(fiber, candidate as Element, props, tag, isSvg);
     // React SSR adds transport fields for progressively enhanced Server Actions.
     // They have no corresponding client fibers and must not consume child slots.
