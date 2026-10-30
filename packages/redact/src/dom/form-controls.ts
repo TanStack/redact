@@ -67,11 +67,31 @@ function writeInputValue(el: HTMLInputElement | HTMLTextAreaElement, value: any)
         trackInputValue(el);
     }
 }
+// Like React, restore from the root and portal containers, after every listener
+// on the control and its ancestors has read the edit. A checkbox, radio or
+// select fires input before change, so with a change listener it restores
+// after change.
+export function queueRestore(e: any, el: any): void {
+    if (el.__p && (e.type === 'change' || e.type === 'input' && !(/^(checkbox|radio|select|file)/.test(el.type) && Object.values(el.__h).some((other: any) => other?.e.includes('change')))))
+        e.__r = el;
+    // A stopped or non-bubbling event never reaches the container.
+    if (e.cancelBubble || !e.bubbles)
+        restorePending(e);
+}
+export function listenForRestores(container: Node): void {
+    container.addEventListener('input', restorePending);
+    container.addEventListener('change', restorePending);
+}
+function restorePending(e: any): void {
+    if (e.__r)
+        scheduleControlledRestore(e.__r);
+    e.__r = null;
+}
 // Like React, write the rendered value and checked state back after onChange,
 // so an edit or click the app did not accept never stays in the DOM. Updates
 // from the handler flush in a microtask (or act's queue) queued before this
 // one, so the restore reads the props they render.
-export function scheduleControlledRestore(el: HTMLInputElement): void {
+function scheduleControlledRestore(el: HTMLInputElement): void {
     if (!(el as any).__p)
         return;
     const restore = () => {

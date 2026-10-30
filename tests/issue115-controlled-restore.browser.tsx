@@ -1,6 +1,6 @@
 import { expect, it } from 'vitest'
 import { userEvent } from '@vitest/browser/context'
-import { createElement as h } from 'react'
+import { createElement as h, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { flushSync } from 'react-dom'
 
@@ -47,3 +47,39 @@ it('lets onChange on a checkbox with onInput read the click', async () => {
     container.remove()
   }
 })
+
+function render(element: any): [HTMLElement, () => void] {
+  const container = document.createElement('div')
+  document.body.appendChild(container)
+  const root = createRoot(container)
+  flushSync(() => root.render(element))
+  return [container, () => { flushSync(() => root.unmount()); container.remove() }]
+}
+
+// React restores after its root listener, which runs after the control's own.
+it('lets a native listener added after Redact\'s read the typed edit', async () => {
+  const seen: string[] = []
+  const [container, cleanup] = render(h('input', { value: '', onChange: () => {} }))
+  const field = container.querySelector('input')!
+  field.addEventListener('input', () => seen.push(field.value))
+  try {
+    await userEvent.type(field, 'a')
+    expect(seen).toEqual(['a'])
+    expect(field.value).toBe('')
+  } finally { cleanup() }
+})
+
+it('keeps an edit that an ancestor\'s onInput accepts', async () => {
+  function Form() {
+    const [value, setValue] = useState('')
+    return h('div', { onInput: (event: any) => setValue(event.target.value) },
+      h('input', { value, onChange: () => {} }))
+  }
+  const [container, cleanup] = render(h(Form))
+  const field = container.querySelector('input')!
+  try {
+    await userEvent.type(field, 'ab')
+    expect(field.value).toBe('ab')
+  } finally { cleanup() }
+})
+

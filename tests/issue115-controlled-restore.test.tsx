@@ -1,7 +1,7 @@
 import { afterEach, expect, it } from 'vitest'
 import { act, createElement as h, useState } from 'react'
 import { createRoot, hydrateRoot } from 'react-dom/client'
-import { flushSync } from 'react-dom'
+import { createPortal, flushSync } from 'react-dom'
 import { renderToString } from 'react-dom/server'
 
 const cleanups: Array<() => void> = []
@@ -213,4 +213,77 @@ it('restores a controlled select when onChange ignores the choice', async () => 
   select.dispatchEvent(new Event('change', { bubbles: true }))
   await settle()
   expect(select.value).toBe('a')
+})
+
+it('restores when onChange stops propagation', async () => {
+  const field = mount(h('input', { value: 'x', onChange: (event: any) => event.stopPropagation() })).firstChild as HTMLInputElement
+  await type(field, 'xy')
+  expect(field.value).toBe('x')
+})
+
+it('restores when onChangeCapture stops propagation before onChange', async () => {
+  const seen: string[] = []
+  const field = mount(h('input', {
+    value: 'x',
+    onChangeCapture: (event: any) => event.stopPropagation(),
+    onChange: () => seen.push('bubble'),
+  })).firstChild as HTMLInputElement
+  await type(field, 'xy')
+  expect(seen).toEqual([])
+  expect(field.value).toBe('x')
+})
+
+it('restores when an ancestor\'s onInput stops propagation', async () => {
+  const container = mount(h('div', { onInput: (event: any) => event.stopPropagation() },
+    h('input', { value: 'x', onChange: () => {} }),
+  ))
+  const field = container.querySelector('input')!
+  await type(field, 'xy')
+  expect(field.value).toBe('x')
+})
+
+it('restores when a native listener on the container stops propagation', async () => {
+  const container = document.createElement('div')
+  document.body.appendChild(container)
+  const root = createRoot(container)
+  container.addEventListener('input', event => event.stopPropagation())
+  flushSync(() => root.render(h('input', { value: 'x', onChange: () => {} })))
+  cleanups.push(() => { flushSync(() => root.unmount()); container.remove() })
+  const field = container.firstChild as HTMLInputElement
+  await type(field, 'xy')
+  expect(field.value).toBe('x')
+})
+
+it('restores after an input event that does not bubble', async () => {
+  const field = mount(h('input', { value: 'x', onChange: () => {} })).firstChild as HTMLInputElement
+  field.value = 'xy'
+  field.dispatchEvent(new Event('input'))
+  await settle()
+  expect(field.value).toBe('x')
+})
+
+it('restores a checkbox rendered in a shadow root', async () => {
+  const host = document.createElement('div')
+  document.body.appendChild(host)
+  const container = host.attachShadow({ mode: 'open' }).appendChild(document.createElement('div'))
+  const root = createRoot(container)
+  flushSync(() => root.render(h('input', { type: 'checkbox', checked: false, onChange: () => {} })))
+  cleanups.push(() => { flushSync(() => root.unmount()); host.remove() })
+  const box = container.firstChild as HTMLInputElement
+  await click(box)
+  expect(box.checked).toBe(false)
+})
+
+it('restores an input portaled into a detached container', async () => {
+  const target = document.createElement('div')
+  mount(createPortal(h('input', { value: 'x', onChange: () => {} }), target))
+  const field = target.firstChild as HTMLInputElement
+  await type(field, 'xy')
+  expect(field.value).toBe('x')
+})
+
+it('restores a checkbox whose only handler is onInput', async () => {
+  const box = mount(h('input', { type: 'checkbox', checked: false, onInput: () => {} })).firstChild as HTMLInputElement
+  await click(box)
+  expect(box.checked).toBe(false)
 })

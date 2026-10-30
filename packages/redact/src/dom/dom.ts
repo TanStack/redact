@@ -2,7 +2,7 @@ import { createSyntheticEvent } from './synthetic-event';
 import { UNITLESS_STYLE } from '../core/unitless-style';
 import { devToolsMetadata } from '../core/devtools';
 import { formActions } from './form-actions';
-import { scheduleControlledRestore } from './form-controls';
+import { queueRestore } from './form-controls';
 import { attributeName, attributeValue } from '../core/attributes';
 import { isString } from "../core/functions";
 const SVG_NS = 'http://www.w3.org/2000/svg';
@@ -105,7 +105,6 @@ function setStyle(el: HTMLElement, next: any, prev: any): void {
         }
     }
 }
-let listenerCount = 0;
 function setEventHandler(el: Element, name: string, next: any): void {
     // Only function handlers are accepted. Reject strings/objects/etc — the
     // legacy `onclick="..."` HTML attribute (string handler) is a known XSS
@@ -149,31 +148,13 @@ function setEventHandler(el: Element, name: string, next: any): void {
                 } else entry.c(event);
             } finally {
                 event.currentTarget = null;
-                // Restore a controlled control after its last listener for this
-                // event, so every handler reads the edit.
-                if ((e.type === 'input' || e.type === 'change') && (el as any).__p) {
-                    let last: any, change = false;
-                    for (const key in handlers) {
-                        const other = handlers[key];
-                        if (other?.e.includes(e.type) && (!last || other.o > last.o))
-                            last = other;
-                        // A checkbox, radio or select fires input before change, so
-                        // its change listener restores after both.
-                        change ||= e.type === 'input' && other?.e[0] === 'change';
-                    }
-                    if (last === entry && !change)
-                        scheduleControlledRestore(el as HTMLInputElement);
-                }
+                queueRestore(e, el);
             }
         }) as ((e: Event) => void) & {
             c: Function;
             e: string[];
-            o: number;
         };
         entry.e = events;
-        // Dispatch order: capture listeners run first at the target, then
-        // bubble ones, each in the order they were added.
-        entry.o = ++listenerCount + (capture ? 0 : 2 ** 30);
         existing = handlers[name] = entry;
         for (const event of events)
             el.addEventListener(event, entry, capture);
