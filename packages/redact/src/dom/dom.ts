@@ -152,13 +152,16 @@ function setEventHandler(el: Element, name: string, next: any): void {
                 // Restore a controlled control after its last listener for this
                 // event, so every handler reads the edit.
                 if ((e.type === 'input' || e.type === 'change') && (el as any).__p) {
-                    let last: any;
+                    let last: any, change = false;
                     for (const key in handlers) {
                         const other = handlers[key];
                         if (other?.e.includes(e.type) && (!last || other.o > last.o))
                             last = other;
+                        // A checkbox, radio or select fires input before change, so
+                        // its change listener restores after both.
+                        change ||= e.type === 'input' && other?.e[0] === 'change';
                     }
-                    if (last === entry)
+                    if (last === entry && !change)
                         scheduleControlledRestore(el as HTMLInputElement);
                 }
             }

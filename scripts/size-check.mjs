@@ -67,14 +67,16 @@ const STORE_HYDRATION_SIZE_ALLOWANCE = {
 // Pending maintainer approval. Only entries exceeding existing limits receive
 // their measured increment.
 const CONTROLLED_RESTORE_SIZE_ALLOWANCE = {
-  'client total (default Vite)': [235, 259],
-  'redact/dom-client (activity=stub)': [242, 224],
-  'redact/dom-client (fragmentRefs=stub)': [241, 256],
-  'redact/dom-client (viewTransitions=stub)': [273, 268],
-  'redact/dom-client (context=stub)': [224, 0],
-  'redact/dom-client (forwardRef=stub)': [229, 0],
-  'redact/dom-client (hydration=stub)': [240, 237],
-  'redact/dom-client (nano)': [200, 207],
+  'client total (default Vite)': [260, 279],
+  'redact/dom-client (activity=stub)': [257, 239],
+  'redact/dom-client (fragmentRefs=stub)': [251, 268],
+  'redact/dom-client (viewTransitions=stub)': [294, 292],
+  'redact/dom-client (portal=stub)': [232, 0],
+  'redact/dom-client (context=stub)': [240, 0],
+  'redact/dom-client (memo=stub)': [258, 0],
+  'redact/dom-client (forwardRef=stub)': [245, 253],
+  'redact/dom-client (hydration=stub)': [253, 250],
+  'redact/dom-client (nano)': [221, 223],
 }
 
 let failed = false

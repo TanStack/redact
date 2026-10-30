@@ -25,3 +25,25 @@ it('lets every listener on a controlled input read the typed edit', async () => 
     container.remove()
   }
 })
+
+it('lets onChange on a checkbox with onInput read the click', async () => {
+  const container = document.createElement('div')
+  document.body.appendChild(container)
+  const root = createRoot(container)
+  const seen: boolean[] = []
+  flushSync(() => root.render(h('input', {
+    type: 'checkbox',
+    checked: false,
+    onInput: () => {},
+    onChange: (event: any) => seen.push(event.target.checked),
+  })))
+  const box = container.querySelector('input')!
+  try {
+    await userEvent.click(box)
+    expect(seen).toEqual([true])
+    expect(box.checked).toBe(false)
+  } finally {
+    flushSync(() => root.unmount())
+    container.remove()
+  }
+})
