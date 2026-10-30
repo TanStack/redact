@@ -91,7 +91,7 @@ function restorePending(e: any): void {
 // so an edit or click the app did not accept never stays in the DOM. Updates
 // from the handler flush in a microtask (or act's queue) queued before this
 // one, so the restore reads the props they render.
-function scheduleControlledRestore(el: HTMLInputElement): void {
+export function scheduleControlledRestore(el: HTMLInputElement): void {
     if (!(el as any).__p)
         return;
     const restore = () => {
@@ -107,6 +107,8 @@ function scheduleControlledRestore(el: HTMLInputElement): void {
                     writeInputValue(input, props.value);
                 if (props.checked != null)
                     input.checked = !!props.checked;
+                // Detached radios compare a click against this.
+                (input as any).__k = input.checked;
             }
         }
     };
