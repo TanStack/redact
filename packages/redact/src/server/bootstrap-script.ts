@@ -12,6 +12,8 @@
  *              The fallback div is visible (it's the user-visible loading
  *              state); only the resolved-content staging div is `hidden`
  *              before $RC moves its children inline.
+ *   Inside <svg>, the fallback wrapper is <g> and the staging element is a
+ *   hidden <svg>, so the parser keeps the content in the SVG namespace.
  *
  * Client hydration calls $RH(ID, cb) to register a callback invoked once the
  * boundary has been revealed (or immediately, if it was already revealed).

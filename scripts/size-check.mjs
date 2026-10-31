@@ -63,11 +63,17 @@ const STORE_HYDRATION_SIZE_ALLOWANCE = {
   'redact/dom-client (hydration=stub)': [3, 0],
 }
 
+// Measured overage of the SVG vectorEffect and streamed Suspense context fix, [source, built] gzip bytes.
+const SVG_CONTEXT_SIZE_ALLOWANCE = {
+  'redact/server': [45, 47],
+  'redact/dom-client (hydration=stub)': [6, 7],
+}
+
 let failed = false
 for (const tree of ['src', 'dist']) {
   for (const row of await measureSizes(tree)) {
     const baseBudget = BUDGETS[row.name]
-    const budget = baseBudget === undefined ? undefined : baseBudget + (STORE_HYDRATION_SIZE_ALLOWANCE[row.name]?.[tree === 'src' ? 0 : 1] ?? 0) + (ROOT_TRANSITION_SIZE_ALLOWANCE[row.name]?.[tree === 'src' ? 0 : 1] ?? 0) + (QUEUE_SIZE_ALLOWANCE[row.name]?.[tree === 'src' ? 0 : 1] ?? 0)
+    const budget = baseBudget === undefined ? undefined : baseBudget + (SVG_CONTEXT_SIZE_ALLOWANCE[row.name]?.[tree === 'src' ? 0 : 1] ?? 0) + (STORE_HYDRATION_SIZE_ALLOWANCE[row.name]?.[tree === 'src' ? 0 : 1] ?? 0) + (ROOT_TRANSITION_SIZE_ALLOWANCE[row.name]?.[tree === 'src' ? 0 : 1] ?? 0) + (QUEUE_SIZE_ALLOWANCE[row.name]?.[tree === 'src' ? 0 : 1] ?? 0)
     const ok = budget !== undefined && row.gz <= budget
     failed ||= !ok
     console.log(`${ok ? 'PASS' : 'FAIL'} ${tree} ${row.name}: ${row.gz} B gzip, budget ${budget ?? 'missing'}`)

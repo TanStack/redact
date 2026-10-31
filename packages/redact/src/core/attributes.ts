@@ -4,7 +4,7 @@ export const STRING_BOOLEAN_ATTRS = /^(contenteditable|draggable|spellcheck)$/
 export function attributeName(name: string, isSvg?: boolean): string {
   if (name === 'className') return 'class'
   if (name === 'htmlFor') return 'for'
-  if ((isSvg && /^(clip|fill|stroke)/.test(name)) || /^(httpEquiv|acceptCharset|maskType)$/.test(name)) {
+  if ((isSvg && /^(clip|fill|stroke|vector)/.test(name)) ||/^(httpEquiv|acceptCharset|maskType)$/.test(name)) {
     return name.replace(/[A-Z]/g, m => '-' + m.toLowerCase())
   }
   if (name === 'tabIndex' || name === 'crossOrigin') return name.toLowerCase()
