@@ -221,6 +221,7 @@ function streamBoundary(
           onError: options.onError,
         componentStack: b.componentStack,
         resourceScope,
+        textState: { bits: b.svg },
       })
       state.frame?.resources?.mergeScope(resourceScope)
     } catch (err) {
@@ -236,7 +237,9 @@ function streamBoundary(
       if (hints) emit(hints)
     }
 
-    emit(`<div hidden id="S:${b.id}">${parts.join('')}</div>${revealScript(b.id, nonce, styles)}`)
+    // SVG content must stage inside <svg> to be parsed in the SVG namespace.
+    const tag = b.svg ? 'svg' : 'div'
+    emit(`<${tag} ${b.svg ? 'style="display:none"' : 'hidden'} id="S:${b.id}">${parts.join('')}</${tag}>${revealScript(b.id, nonce, styles)}`)
 
     // Recurse: any nested suspensions inside the now-revealed content
     for (const s of sub) streamBoundary(s, emit, options, state)

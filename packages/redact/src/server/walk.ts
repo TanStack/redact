@@ -54,6 +54,8 @@ export interface SuspendedBoundary {
   thenable: Promise<any>
   contextSnapshot: ContextSnapshot
   componentStack: string
+  // SVG bit of the parent's traversal flags, restored when the boundary streams.
+  svg: number
 }
 
 export interface WalkOptions {
@@ -490,6 +492,7 @@ function walkSuspense(
     if (suspended) opts.onSuspend?.({
       id, fallbackHTML: fallbackParts.join(''), children: props.children, thenable, contextSnapshot,
       componentStack: thrownInfo.componentStack || opts.componentStack || '',
+      svg: opts.textState!.bits & 1,
     })
     return
   }
@@ -512,8 +515,10 @@ function walkSuspense(
 function emitBoundary(opts: WalkOptions, id: number, fallbackHTML: string): void {
   // Visible div wrapper so the fallback UI shows; B: id lets $RC locate it on
   // reveal. The leading/trailing comments let hydration detect a pending
-  // boundary and register a reveal callback.
-  opts.emit(`<!--$?${id}--><div id="B:${id}">`)
+  // boundary and register a reveal callback. A div would make the HTML parser
+  // break out of an enclosing <svg>, so SVG boundaries wrap with g instead.
+  const tag = opts.textState!.bits & 1 ? 'g' : 'div'
+  opts.emit(`<!--$?${id}--><${tag} id="B:${id}">`)
   opts.emit(fallbackHTML)
-  opts.emit(`</div><!--/$-->`)
+  opts.emit(`</${tag}><!--/$-->`)
 }
