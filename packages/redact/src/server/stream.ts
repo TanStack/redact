@@ -40,7 +40,6 @@ export interface OrchestratorState {
   nextId: number
   pending: (task?: Promise<void>) => Promise<void> | undefined
   closed: boolean
-  errored: unknown | null
   aborted: boolean
   reason: unknown
   abort: (reason?: unknown) => void
@@ -51,16 +50,17 @@ export interface OrchestratorState {
 
 function createState(): OrchestratorState {
   let wake!: () => void
-  let count = 0, notify: ((task: Promise<void>) => void) | undefined
+  let count = 0, notify: (() => void) | undefined, failed: unknown[] | undefined
   const state: OrchestratorState = {
     nextId: 0, pending(task) {
       if (task) {
         count++
-        // Adopt the settled task so sink failures still reject the drain.
-        const done = () => { count--; notify?.(task) }
-        task.then(done, done)
-      } else if (count) return new Promise<void>(resolve => { notify = resolve })
-    }, closed: false, errored: null,
+        const done = () => { count--; notify?.() }
+        // The empty box marks a consumed failure without retaining it or accepting later failures.
+        task.then(done, error => { failed ||= [error]; done() })
+      } else if (failed?.length) return Promise.reject(failed.pop())
+      else if (count) return new Promise<void>(resolve => { notify = resolve })
+    }, closed: false,
     aborted: false, reason: undefined,
     cancelled: new Promise<void>((resolve) => { wake = resolve }),
     abort(reason) {
@@ -183,7 +183,6 @@ export async function streamHtml(
       err = new Error('The server render could not complete because client rendering was requested outside a Suspense boundary.',
         Object.hasOwn(err, 'cause') ? { cause: err.cause } : undefined)
     }
-    state.errored = err
     if (options.onError) options.onError(err)
     throw err
   } finally {

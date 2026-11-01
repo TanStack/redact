@@ -1,51 +1,75 @@
 # Counted SSR completion
 
-Repeated Promise.race calls over all remaining boundary tasks add work whenever a streamed Suspense boundary settles. The ECMAScript [PerformPromiseRace algorithm](https://tc39.es/ecma262/multipage/control-abstraction-objects.html#sec-performpromiserace) visits every input and invokes its then method. That motivates replacing repeated scans with a pending count and one waiter. Resolving that waiter with the settled task preserves sink-error rejection.
+Repeated Promise.race scans visit every outstanding boundary task whenever a streamed Suspense boundary settles. The ECMAScript [PerformPromiseRace algorithm](https://tc39.es/ecma262/multipage/control-abstraction-objects.html#sec-performpromiserace) motivates replacing those repeated scans with a pending count and a wake signal. A one-slot box stores the first rejection reason separately from that signal. Consuming its value releases the error, and the empty box prevents later failures from being stored.
 
-The production candidate also uses a fixed private suspension record, omits the unused fallback copy, and updates the pending thenable in place on retry. No application authoring or public API changes. Baseline: `37c051c9`, Node 24.22.0 on macOS arm64.
+The candidate also uses a fixed private suspension record, removes an unused fallback copy and updates the pending thenable in place on retry. No public API or application authoring changes. Baseline: `37c051c9`, Node 24.22.0 on macOS arm64. Exact source hashes are included in `data/source-hashes.json`.
 
-## Current-main results
+## Repeated measurements
 
-Two fresh-process timing series, each with five independent blocks and three balanced rounds, compare completed streams with identical HTML hashes, byte counts and chunk counts. An independently bundled identical baseline is the control. These are workload-specific results, not a general SSR speed claim.
+Each timing series uses five independent blocks and three balanced rounds with an independently bundled identical control. Completed HTML hashes, byte counts and chunk counts match. These are workload-specific results, not a general SSR speed claim.
 
 | Staggered boundaries | First time change | Repeat time change |
 | --- | ---: | ---: |
-| 8 | -6.64% | -7.69% |
-| 32 | -20.95% | -20.89% |
-| 128 | -36.79% | -36.36% |
-| 512 | -49.98% | -50.11% |
+| 8 | -9.58% | -9.10% |
+| 32 | -20.29% | -24.35% |
+| 128 | -36.10% | -36.71% |
+| 512 | -50.50% | -49.66% |
 
-At 128 boundaries, two independent allocation series, each five samples per variant, report 28.74% and 28.90% fewer sampled bytes. Identical controls differ by +0.12% and -0.26%. Sampling includes collected objects and uses a 4 KiB interval. This is allocation pressure, not retained heap. Completed-stream probes retain the streams but release all twelve captured payloads in every run, three runs per variant.
+At 128 boundaries, two independent allocation series use five samples per variant and a 4 KiB sampling interval, including collected objects. This measures allocation pressure, not retained heap.
 
-Ordinary Node string-ready, stream-ready and stream-delayed workloads remain near their identical controls. Firefox and WebKit also show no material regression relative to the identical control. Short ready-rendering cases are noisy: Firefox stream-ready is +3.20% against baseline while the control is +6.92%; WebKit stream-ready is +1.69% while its control is +3.39%. WebKit root-retry is unchanged against baseline while its control is -2.53%. Do not interpret these as precise small wins or losses. Raw block samples and bootstrap intervals are in `data/summary.json`.
+- notifier-staggered-allocation: candidate -29.09%, identical control -0.03%.
+- notifier-repeat-allocation: candidate -28.94%, identical control -0.02%.
 
-## Gates and negative findings
+Ordinary-workload results below include identical controls. Short cases are noisy, so these estimates should not be interpreted as precise small wins or losses. Firefox string-ready is +3.49% against baseline while its control is +1.37%; its 95% block interval spans -2.74% to +20.27%, so this short case does not establish a precise cost. Raw block samples and bootstrap intervals are in `data/summary.json`.
 
-2,009 tests pass, 91 skipped. Types, build verification, all existing absolute size budgets, and the separate zero-growth React compatibility size gate pass. Chrome, Firefox and WebKit completion traces match baseline, including abort, boundary errors, reverse completion, reentrant SSR and throwing output sinks. Added regressions cover nested registration during completion and captured context across a second suspension.
+| Engine/workload | Candidate time change | Identical control |
+| --- | ---: | ---: |
+| Node / stream-delayed | -2.22% | 1.10% |
+| Node / string-ready | 0.09% | 0.33% |
+| Node / stream-ready | 0.23% | 0.88% |
+| firefox / stream-delayed | -1.07% | -1.31% |
+| firefox / stream-ready | -3.15% | 2.33% |
+| firefox / string-ready | 3.49% | 1.37% |
+| firefox / string-fallback | -0.80% | 2.52% |
+| firefox / root-retry | -5.92% | -0.55% |
+| webkit / stream-delayed | -3.03% | 1.20% |
+| webkit / stream-ready | 0.00% | -1.49% |
+| webkit / string-ready | -1.64% | 0.00% |
+| webkit / string-fallback | 0.95% | -0.48% |
+| webkit / root-retry | 1.39% | 0.00% |
 
-Source and built server gzip are 8,957 and 8,953 bytes, versus baseline 8,975 and 8,974. React 18 and 19 compatibility server bundles shrink 157 minified bytes and 28 gzip bytes across all three profiles. Brotli shrinks 16 bytes for React 19 and 9 for React 18. Client bundles are unchanged. No budgets were raised.
+## Compatibility, memory and size
 
-The notifier alone passed absolute caps but failed the zero-growth CI gate by 4 gzip bytes. Removing only the unused fallback field fixed gzip but still grew React 19 Brotli by 9 bytes. Both incomplete compositions are rejected for delivery. The fixed-record composition passes every size metric. No unrelated local SSR or lifecycle experiments are included.
+2,014 tests pass, 91 skipped. Types, build verification, all absolute size budgets and the separate zero-growth React compatibility size gate pass. All 15 sink-failure release spacings match baseline in Chrome, Firefox and WebKit. Regression tests also cover nested registration during completion, context captured across retries, aborts, reentrant SSR and throwing sinks.
+
+The failed-stream retention probe runs three fresh processes per variant across eight release spacings. Error events match baseline, and each retained handle retains only the first error, as baseline does. A second three-process probe confirms original recoverable errors are released across all eight spacings, with matching error events. The completed-success probe retains twelve streams and releases every captured payload in each of three repeats per variant.
+
+Source server gzip is 8,978 bytes versus baseline 8,975, a 3-byte increase; built server gzip is 8,973 versus 8,974. The unchanged cap is 8,989. React 19/18 compatibility server bundles save 110 minified bytes and 2 gzip bytes; Brotli is unchanged for React 19 and 4 bytes smaller for React 18 across all three profiles. Clients are unchanged. No budgets were raised.
+
+## Rejected revisions
+
+The notifier-only implementation failed the zero-growth gzip gate by 4 bytes. Removing only the unused fallback field still grew React 19 Brotli by 9 bytes. Composing the fixed private suspension record passed size gates. Review then found that resolving a wake with the settled task could swallow a second sink failure at promise-chain spacings 0 and 1. A separate buffer fixed the traces, but clearing it let a later rejection retain a second error. That revision failed the repeated memory probe and was rejected. Permanently latching the task fixed ordinary-error retention but retained original recoverable errors after streamHtml transformed them. That revision was also rejected. Consumed-marker encodings passed behavior but exceeded a Brotli gate by 5 to 15 bytes. The current one-slot box releases its value on consumption while its empty state prevents recapture. It allocates one box and one rejected promise only on the failure path.
+
+Contended preflights and conservatively excluded timing attempts are archived separately and do not contribute to these results. Raw heap profiles and their hashes are preserved in the shared `benchmarks/results/rd-notifier-failurebox` archive.
 
 ## Reproduce
 
-From this revision with dependencies installed, use Node 24.22.0. Set `RD_ROOT` to a new temporary directory and keep it exported for all commands:
+Use Node 24.22.0 with repository dependencies installed and a fresh output directory. Run sequentially with no overlapping tests, builds or benchmarks. Browser checks require Playwright browsers and Chrome.
 
 ```sh
 export RD_ROOT=/tmp/redact-completion-reproduction
 node benchmarks/results/ssr-completion-notifier/prepare.mjs
+node benchmarks/results/ssr-completion-notifier/review-comparison.mjs
+node benchmarks/results/ssr-completion-notifier/error-retention.mjs
+node benchmarks/results/ssr-completion-notifier/recoverable-error-retention.mjs
+node benchmarks/results/ssr-completion-notifier/browser-semantics.mjs
 node benchmarks/results/ssr-completion-notifier/timing.mjs
 node benchmarks/results/ssr-completion-notifier/timing-repeat.mjs
 node benchmarks/results/ssr-completion-notifier/allocation.mjs
 node benchmarks/results/ssr-completion-notifier/allocation-repeat.mjs
 node benchmarks/results/ssr-completion-notifier/broad.mjs
 ENGINES=firefox,webkit node benchmarks/results/ssr-completion-notifier/browsers.mjs
-node benchmarks/results/ssr-completion-notifier/browser-semantics.mjs
 node benchmarks/results/ssr-completion-notifier/retention.mjs
 ```
 
-Run these sequentially with no other benchmarks, tests or builds active. Browser checks require Playwright browsers and Chrome. Raw results include input hashes, per-block timing and allocation samples. Original heap profiles remain in the archived research evidence, with hashes recorded alongside the results.
-
-Decision: adopt the fixed-record composition for delivery. Local gates are complete. PR #123 still requires CI and review, then merge and the normal Changesets release. It is not yet merged or released.
-
-Raw heap profiles are retained in the shared `benchmarks/results/rd-notifier-delivery` research archive; `data/heap-profile-hashes.json` identifies them. Public sample summaries and reproducible profiling scripts are included here.
+Decision: local validation complete, adopt for delivery. PR #123 still requires CI and review on the corrected head, then merge and the normal Changesets release. It has not merged or released.

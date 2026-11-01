@@ -7,15 +7,16 @@ const fixtures = path.dirname(fileURLToPath(import.meta.url))
 const repo = path.resolve(fixtures, '../../..')
 const output = process.env.RD_ROOT
 if (!output || fs.existsSync(output)) throw new Error('Set RD_ROOT to a new output directory')
-const baseline = '37c051c9'
 const prefix = 'packages/redact/src/'
-const files = execFileSync('git', ['ls-tree', '-r', '--name-only', baseline, prefix], { cwd: repo, encoding: 'utf8' }).trim().split('\n')
-for (const file of files) {
-  const target = path.join(output, 'base/src', file.slice(prefix.length))
-  fs.mkdirSync(path.dirname(target), { recursive: true })
-  fs.writeFileSync(target, execFileSync('git', ['show', `${baseline}:${file}`], { cwd: repo }))
+for (const [variant, revision] of [['base', '37c051c9'], ['rejected', '9f59c78f']]) {
+  const files = execFileSync('git', ['ls-tree', '-r', '--name-only', revision, prefix], { cwd: repo, encoding: 'utf8' }).trim().split('\n')
+  for (const file of files) {
+    const target = path.join(output, variant, 'src', file.slice(prefix.length))
+    fs.mkdirSync(path.dirname(target), { recursive: true })
+    fs.writeFileSync(target, execFileSync('git', ['show', `${revision}:${file}`], { cwd: repo }))
+  }
 }
 fs.cpSync(path.join(repo, prefix), path.join(output, 'notifier-reuse/src'), { recursive: true })
-for (const file of ['staggered-workload.ts', 'nested-workload.ts', 'notifier-semantics.ts', 'completed-retention.ts', 'rope-workload.ts']) {
+for (const file of ['staggered-workload.ts', 'nested-workload.ts', 'notifier-semantics.ts', 'completed-retention.ts', 'rope-workload.ts', 'review-probe.ts', 'error-retention.ts', 'recoverable-error-retention.ts']) {
   fs.copyFileSync(path.join(fixtures, file), path.join(output, file))
 }

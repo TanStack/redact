@@ -1,27 +1,39 @@
 {
   "baseline": "37c051c92cb2cda0f5b609aa29745c164e258d72",
-  "productionSourceCommit": "4bf480c8",
+  "candidate": "Consumed one-slot failure box",
   "tests": {
-    "passed": 2009,
-    "skipped": 91,
-    "exitCode": 0
+    "passed": 2014,
+    "skipped": 91
   },
-  "typesExitCode": 0,
-  "buildAndVerifyExitCode": 0,
-  "absoluteSizeExitCode": 0,
-  "compatibilityZeroGrowthExitCode": 0,
+  "types": "pass",
+  "buildVerification": "pass",
+  "absoluteSize": "pass",
+  "compatibilityZeroGrowth": "pass",
   "serverGzip": {
     "baselineSource": 8975,
-    "candidateSource": 8957,
+    "candidateSource": 8978,
     "baselineBuilt": 8974,
-    "candidateBuilt": 8953,
+    "candidateBuilt": 8973,
     "budget": 8989
+  },
+  "compatibilityServerDelta": {
+    "minified": -110,
+    "gzipReact19": -2,
+    "gzipReact18": -2,
+    "brotliReact19": 0,
+    "brotliReact18": -4
   },
   "browserTraceParity": [
     "chromium",
     "firefox",
     "webkit"
   ],
+  "sinkFailureReleaseSpacings": 15,
+  "errorRetention": "pass: three repeats/eight spacings, same event traces and one retained error per handle as baseline",
+  "performance": "pass: both timing/allocation repeats and Node/Firefox/WebKit ordinary controls, short-case uncertainty disclosed",
   "merge": null,
-  "release": null
+  "release": null,
+  "recoverableErrorRetention": "pass: three repeats/eight spacings, original transformed errors released as baseline",
+  "completedStreamRetention": "pass: all12 payloads released in3 repeats per variant",
+  "decision": "adopt for delivery, pending corrected-head CI/review"
 }

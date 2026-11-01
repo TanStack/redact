@@ -4,72 +4,72 @@
     "comparisons": {
       "staggered-128": {
         "control": {
-          "pairedTimeChangePercent": -0.23715998147445516,
+          "pairedTimeChangePercent": 0.7138776002211022,
           "blockBootstrap95CI": [
-            -1.2501981171567644,
-            1.1066619032952696
+            -1.3364984802739177,
+            1.048333314470118
           ],
           "independentBlocks": 5
         },
         "notifier-reuse": {
-          "pairedTimeChangePercent": -36.78883179892595,
+          "pairedTimeChangePercent": -36.09971445049901,
           "blockBootstrap95CI": [
-            -39.581392707949036,
-            -35.35883510933166
+            -37.46152870386267,
+            -35.701063373446104
           ],
           "independentBlocks": 5
         }
       },
       "staggered-512": {
         "control": {
-          "pairedTimeChangePercent": -0.3690622456320569,
+          "pairedTimeChangePercent": 0.5690983734158106,
           "blockBootstrap95CI": [
-            -0.6598467562483834,
-            0.9989578442986424
+            -0.8782965155488376,
+            2.5618640137655913
           ],
           "independentBlocks": 5
         },
         "notifier-reuse": {
-          "pairedTimeChangePercent": -49.98152552571046,
+          "pairedTimeChangePercent": -50.49750951993377,
           "blockBootstrap95CI": [
-            -50.11836872416458,
-            -49.60908342873578
+            -51.31521049936239,
+            -49.17295000101615
           ],
           "independentBlocks": 5
         }
       },
       "staggered-8": {
         "control": {
-          "pairedTimeChangePercent": 0.15645773677419594,
+          "pairedTimeChangePercent": -2.4820882954754375,
           "blockBootstrap95CI": [
-            -0.4581950206632657,
-            5.209742895833114
+            -4.8217882564870145,
+            -1.3545572578719023
           ],
           "independentBlocks": 5
         },
         "notifier-reuse": {
-          "pairedTimeChangePercent": -6.639065021442658,
+          "pairedTimeChangePercent": -9.578265068122882,
           "blockBootstrap95CI": [
-            -8.016326625567938,
-            -5.242146499029355
+            -13.970119090633926,
+            -7.86938785811202
           ],
           "independentBlocks": 5
         }
       },
       "staggered-32": {
         "control": {
-          "pairedTimeChangePercent": -0.20629305641902684,
+          "pairedTimeChangePercent": 2.242390301688313,
           "blockBootstrap95CI": [
-            -3.61691043464627,
-            0.1919194111207334
+            1.4557131389056233,
+            3.9228792286273295
           ],
           "independentBlocks": 5
         },
         "notifier-reuse": {
-          "pairedTimeChangePercent": -20.95075865716227,
+          "pairedTimeChangePercent": -20.28801044944084,
           "blockBootstrap95CI": [
-            -22.95501774886325,
-            -19.52120405308879
+            -21.87088627999375,
+            -19.976514740703553
           ],
           "independentBlocks": 5
         }
@@ -81,72 +81,72 @@
     "comparisons": {
       "staggered-128": {
         "control": {
-          "pairedTimeChangePercent": -0.12222122673788416,
+          "pairedTimeChangePercent": 0.6851527559706971,
           "blockBootstrap95CI": [
-            -0.37106887555475865,
-            0.8264084045407127
+            0.04744771084110866,
+            1.475512564619641
           ],
           "independentBlocks": 5
         },
         "notifier-reuse": {
-          "pairedTimeChangePercent": -36.36389606360818,
+          "pairedTimeChangePercent": -36.70608490040266,
           "blockBootstrap95CI": [
-            -37.36625596943611,
-            -35.87123869310275
+            -37.868596149190104,
+            -35.53234106157079
           ],
           "independentBlocks": 5
         }
       },
       "staggered-8": {
         "control": {
-          "pairedTimeChangePercent": 0.601530328264932,
+          "pairedTimeChangePercent": -0.40108103390640304,
           "blockBootstrap95CI": [
-            -1.1708491756652561,
-            5.262962696113416
+            -3.8711913986341107,
+            1.7516125016650008
           ],
           "independentBlocks": 5
         },
         "notifier-reuse": {
-          "pairedTimeChangePercent": -7.692274685421719,
+          "pairedTimeChangePercent": -9.097657199701082,
           "blockBootstrap95CI": [
-            -10.62873247002505,
-            -3.101572835503963
+            -12.508816553734869,
+            -4.86445025515625
           ],
           "independentBlocks": 5
         }
       },
       "staggered-512": {
         "control": {
-          "pairedTimeChangePercent": -0.9386017811299108,
+          "pairedTimeChangePercent": 1.3812882801163884,
           "blockBootstrap95CI": [
-            -1.4203674378190367,
-            -0.3435109939841863
+            0.4639532788681455,
+            1.7454003145552122
           ],
           "independentBlocks": 5
         },
         "notifier-reuse": {
-          "pairedTimeChangePercent": -50.11175348972054,
+          "pairedTimeChangePercent": -49.655755465660775,
           "blockBootstrap95CI": [
-            -50.248215322049774,
-            -49.49253168540376
+            -50.49290131836097,
+            -48.96427335145992
           ],
           "independentBlocks": 5
         }
       },
       "staggered-32": {
         "control": {
-          "pairedTimeChangePercent": 0.44133462096733744,
+          "pairedTimeChangePercent": -0.32824031230850315,
           "blockBootstrap95CI": [
-            -1.604049845219302,
-            4.70972584856908
+            -2.620191843273101,
+            1.617664691730969
           ],
           "independentBlocks": 5
         },
         "notifier-reuse": {
-          "pairedTimeChangePercent": -20.89207736857904,
+          "pairedTimeChangePercent": -24.346826462512638,
           "blockBootstrap95CI": [
-            -22.292036553529393,
-            -20.06431901047693
+            -25.976432909979952,
+            -19.779024587623585
           ],
           "independentBlocks": 5
         }
@@ -158,54 +158,54 @@
     "comparisons": {
       "stream-delayed": {
         "control": {
-          "pairedTimeChangePercent": -2.574973615924825,
+          "pairedTimeChangePercent": 1.0997890153311207,
           "blockBootstrap95CI": [
-            -4.582751339669066,
-            -1.642741687770688
+            -0.04583805177016398,
+            2.203574564314681
           ],
           "independentBlocks": 5
         },
         "notifier-reuse": {
-          "pairedTimeChangePercent": -2.1931938641449378,
+          "pairedTimeChangePercent": -2.2242387226192095,
           "blockBootstrap95CI": [
-            -3.777787654988851,
-            0.24410018695497637
+            -3.071558047028722,
+            1.0227321635193354
           ],
           "independentBlocks": 5
         }
       },
       "string-ready": {
         "control": {
-          "pairedTimeChangePercent": 0.4005925262660526,
+          "pairedTimeChangePercent": 0.33493874001189194,
           "blockBootstrap95CI": [
-            -1.4065890889890187,
-            1.8013365833254413
+            -0.25416394367657746,
+            1.185329483651243
           ],
           "independentBlocks": 5
         },
         "notifier-reuse": {
-          "pairedTimeChangePercent": -0.4384810340039569,
+          "pairedTimeChangePercent": 0.09026532318048286,
           "blockBootstrap95CI": [
-            -1.9876341468654468,
-            1.3762037941929428
+            -0.8929929956851046,
+            0.8234949768411992
           ],
           "independentBlocks": 5
         }
       },
       "stream-ready": {
         "control": {
-          "pairedTimeChangePercent": 0.9165412588926225,
+          "pairedTimeChangePercent": 0.8776090705804762,
           "blockBootstrap95CI": [
-            -0.06931362292695864,
-            1.5571297823746333
+            -0.2959043170829845,
+            2.2272288299304277
           ],
           "independentBlocks": 5
         },
         "notifier-reuse": {
-          "pairedTimeChangePercent": 0.6190757073060604,
+          "pairedTimeChangePercent": 0.23051666401887605,
           "blockBootstrap95CI": [
-            -0.715911104270095,
-            0.7669956521277443
+            -1.6386452788257788,
+            1.9452128251762124
           ],
           "independentBlocks": 5
         }
@@ -217,90 +217,90 @@
     "comparisons": {
       "stream-delayed": {
         "control": {
-          "pairedTimeChangePercent": -0.1242236024844745,
+          "pairedTimeChangePercent": -1.3125000000000053,
           "blockBootstrap95CI": [
-            -0.8717310087173136,
-            1.0519801980197974
+            -2.2072348252605734,
+            3.015075376884413
           ],
           "independentBlocks": 5
         },
         "notifier-reuse": {
-          "pairedTimeChangePercent": -1.5470297029702929,
+          "pairedTimeChangePercent": -1.0739102969046121,
           "blockBootstrap95CI": [
-            -2.7177269919703484,
-            -1.3504823151125445
+            -2.5246305418719195,
+            0.8124999999999938
           ],
           "independentBlocks": 5
         }
       },
       "stream-ready": {
         "control": {
-          "pairedTimeChangePercent": 6.923076923076921,
+          "pairedTimeChangePercent": 2.3255813953488413,
           "blockBootstrap95CI": [
-            1.6528925619834656,
-            12.903225806451623
+            1.388888888888884,
+            7.751937984496116
           ],
           "independentBlocks": 5
         },
         "notifier-reuse": {
-          "pairedTimeChangePercent": 3.200000000000003,
+          "pairedTimeChangePercent": -3.149606299212604,
           "blockBootstrap95CI": [
-            -3.3057851239669422,
-            5.645161290322576
+            -6.25,
+            6.299212598425208
           ],
           "independentBlocks": 5
         }
       },
       "string-ready": {
         "control": {
-          "pairedTimeChangePercent": 3.703703703703698,
+          "pairedTimeChangePercent": 1.3698630136986356,
           "blockBootstrap95CI": [
-            -2.8169014084507005,
-            22.535211267605625
+            -4.109589041095896,
+            16.216216216216207
           ],
           "independentBlocks": 5
         },
         "notifier-reuse": {
-          "pairedTimeChangePercent": 2.8169014084507005,
+          "pairedTimeChangePercent": 3.488372093023262,
           "blockBootstrap95CI": [
-            0,
-            18.055555555555557
+            -2.73972602739726,
+            20.270270270270263
           ],
           "independentBlocks": 5
         }
       },
       "string-fallback": {
         "control": {
-          "pairedTimeChangePercent": 0.20387359836901986,
+          "pairedTimeChangePercent": 2.5227043390514625,
           "blockBootstrap95CI": [
-            -1.7821782178217838,
-            3.571428571428581
+            -4.267701260911738,
+            4.276985743380846
           ],
           "independentBlocks": 5
         },
         "notifier-reuse": {
-          "pairedTimeChangePercent": 0.5035246727089548,
+          "pairedTimeChangePercent": -0.8032128514056214,
           "blockBootstrap95CI": [
-            -1.0901883052527261,
-            2.0387359836901098
+            -4.267701260911738,
+            1.5857284440039754
           ],
           "independentBlocks": 5
         }
       },
       "root-retry": {
         "control": {
-          "pairedTimeChangePercent": 1.8404907975460016,
+          "pairedTimeChangePercent": -0.5464480874316946,
           "blockBootstrap95CI": [
-            -4.968944099378881,
-            8.7248322147651
+            -3.3898305084745783,
+            8.387096774193559
           ],
           "independentBlocks": 5
         },
         "notifier-reuse": {
-          "pairedTimeChangePercent": -3.9735099337748325,
+          "pairedTimeChangePercent": -5.921052631578949,
           "blockBootstrap95CI": [
-            -7.975460122699385,
-            5.263157894736836
+            -7.909604519774016,
+            3.2258064516129004
           ],
           "independentBlocks": 5
         }
@@ -312,90 +312,90 @@
     "comparisons": {
       "stream-delayed": {
         "control": {
-          "pairedTimeChangePercent": 2.7190332326284095,
+          "pairedTimeChangePercent": 1.2048192771084265,
           "blockBootstrap95CI": [
-            0.29239766081872176,
-            4.692082111436946
+            -2.608695652173909,
+            3.7681159420289934
           ],
           "independentBlocks": 5
         },
         "notifier-reuse": {
-          "pairedTimeChangePercent": -2.5139664804469275,
+          "pairedTimeChangePercent": -3.0303030303030276,
           "blockBootstrap95CI": [
-            -4.0229885057471275,
-            -0.28985507246376274
+            -4.142011834319526,
+            -1.9774011299435013
           ],
           "independentBlocks": 5
         }
       },
       "stream-ready": {
         "control": {
-          "pairedTimeChangePercent": 3.3898305084745672,
+          "pairedTimeChangePercent": -1.4925373134328401,
           "blockBootstrap95CI": [
-            -1.4925373134328401,
-            6.944444444444442
-          ],
-          "independentBlocks": 5
-        },
-        "notifier-reuse": {
-          "pairedTimeChangePercent": 1.6949152542372836,
-          "blockBootstrap95CI": [
-            -5.970149253731338,
-            11.428571428571432
-          ],
-          "independentBlocks": 5
-        }
-      },
-      "string-ready": {
-        "control": {
-          "pairedTimeChangePercent": -4.918032786885251,
-          "blockBootstrap95CI": [
-            -7.272727272727275,
-            -1.6393442622950838
-          ],
-          "independentBlocks": 5
-        },
-        "notifier-reuse": {
-          "pairedTimeChangePercent": -4.1666666666666625,
-          "blockBootstrap95CI": [
-            -14.28571428571429,
-            2.3255813953488413
-          ],
-          "independentBlocks": 5
-        }
-      },
-      "string-fallback": {
-        "control": {
-          "pairedTimeChangePercent": 0.48076923076922906,
-          "blockBootstrap95CI": [
-            -1.9138755980861233,
-            0.8474576271186418
-          ],
-          "independentBlocks": 5
-        },
-        "notifier-reuse": {
-          "pairedTimeChangePercent": 0.4854368932038833,
-          "blockBootstrap95CI": [
-            -0.4784688995215336,
-            4.4334975369458185
-          ],
-          "independentBlocks": 5
-        }
-      },
-      "root-retry": {
-        "control": {
-          "pairedTimeChangePercent": -2.5316455696202556,
-          "blockBootstrap95CI": [
-            -4.1666666666666625,
-            0
+            -3.8961038961038974,
+            5.882352941176472
           ],
           "independentBlocks": 5
         },
         "notifier-reuse": {
           "pairedTimeChangePercent": 0,
           "blockBootstrap95CI": [
-            -7.57575757575758,
-            4.477611940298498
+            -5.714285714285716,
+            4.4117647058823595
+          ],
+          "independentBlocks": 5
+        }
+      },
+      "string-ready": {
+        "control": {
+          "pairedTimeChangePercent": 0,
+          "blockBootstrap95CI": [
+            -4.1666666666666625,
+            2.2727272727272707
+          ],
+          "independentBlocks": 5
+        },
+        "notifier-reuse": {
+          "pairedTimeChangePercent": -1.6393442622950838,
+          "blockBootstrap95CI": [
+            -4.1666666666666625,
+            0
+          ],
+          "independentBlocks": 5
+        }
+      },
+      "string-fallback": {
+        "control": {
+          "pairedTimeChangePercent": -0.48309178743961567,
+          "blockBootstrap95CI": [
+            -2.3696682464455,
+            0.46511627906977715
+          ],
+          "independentBlocks": 5
+        },
+        "notifier-reuse": {
+          "pairedTimeChangePercent": 0.9478672985782088,
+          "blockBootstrap95CI": [
+            -0.42553191489361764,
+            2.7906976744185963
+          ],
+          "independentBlocks": 5
+        }
+      },
+      "root-retry": {
+        "control": {
+          "pairedTimeChangePercent": 0,
+          "blockBootstrap95CI": [
+            0,
+            5.555555555555558
+          ],
+          "independentBlocks": 5
+        },
+        "notifier-reuse": {
+          "pairedTimeChangePercent": 1.388888888888884,
+          "blockBootstrap95CI": [
+            -4.81927710843374,
+            3.797468354430378
           ],
           "independentBlocks": 5
         }
@@ -405,33 +405,33 @@
   "notifier-staggered-allocation": {
     "base": {
       "samples": 5,
-      "medianBytes": 393880472
+      "medianBytes": 394524392
     },
     "control": {
       "samples": 5,
-      "medianBytes": 394349720,
-      "changePercent": 0.11913461909327516
+      "medianBytes": 394424880,
+      "changePercent": -0.025223282011921366
     },
     "notifier-reuse": {
       "samples": 5,
-      "medianBytes": 280698552,
-      "changePercent": -28.73509301573093
+      "medianBytes": 279765112,
+      "changePercent": -29.088006300000835
     }
   },
   "notifier-repeat-allocation": {
     "base": {
       "samples": 5,
-      "medianBytes": 394939856
+      "medianBytes": 393970392
     },
     "control": {
       "samples": 5,
-      "medianBytes": 393922368,
-      "changePercent": -0.25763112649739295
+      "medianBytes": 393896328,
+      "changePercent": -0.018799382264234055
     },
     "notifier-reuse": {
       "samples": 5,
-      "medianBytes": 280821000,
-      "changePercent": -28.895249306010783
+      "medianBytes": 279935728,
+      "changePercent": -28.944983256508273
     }
   },
   "sourceHashes": {
@@ -570,7 +570,7 @@
       "vinext/compatibility.ts": "eeb52f4ef5d6fec3dca8aabbb296c5d52bddaefbe75dcbe2aa94774dbbecdb08",
       "server/walk.ts": "b6f1d5b124d3acb2641ce94552e766446bb6d1e7389d0a48901324f5cca5618e",
       "server/resource-hints.ts": "1a6afd6dd99a022f83962b6dec7d865198b0cb3fccfa43c87ec47bb9ba27216b",
-      "server/stream.ts": "9522a9297d7a0fa56d03eaa6cedfc0615c95cc10b4b342a06d754e983688da91",
+      "server/stream.ts": "ca5107bf71f0873531acffda4730b87cf606534614af80542ad90c3d002377c0",
       "server/renderToString.ts": "df6eb5070bde0b1b6d690c1cc053be52b3880733190ff76b87e06d8fd045e107",
       "server/index.ts": "1b5fa6eb9b09f4a68c0b46cbf20eec8e5f910283230a8ece6513e79ddc2d4410",
       "server/escape.ts": "6cc480f0823a37eed106c5956b545459572016fc8697e104de0ae98a06c7e5e1",
