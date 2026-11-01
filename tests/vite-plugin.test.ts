@@ -67,7 +67,7 @@ describe('redact vite plugin', () => {
   it.each(['ts', 'js'])('keeps peer imports on the same disabled implementation in %s modules', async (extension) => {
     const plugin = findPlugin(redact({ preset: 'nano' }), 'redact')
     const importer = `/package/${extension === 'ts' ? 'src' : 'dist'}/dom/features/suspense/full.${extension}`
-    for (const feature of ['context', 'hydration', 'fragment-refs', 'view-transition', 'class']) {
+    for (const feature of ['context', 'hydration', 'fragment-refs', 'view-transition', 'class', 'suspense-hydration']) {
       for (const base of [`../${feature}`, `../../features/${feature}`]) {
         const specifier = base + (extension === 'js' ? '/index.js' : '')
         const context = {
@@ -488,5 +488,25 @@ describe('redact vite plugin', () => {
       'react',
       'react-dom/server',
     ])
+  })
+})
+
+
+describe('streamed hydration feature boundary',()=>{
+  it.each([
+    {hydration:false,suspense:true},
+    {hydration:false,suspense:false},
+    {hydration:true,suspense:false},
+    {hydration:true,suspense:true},
+  ])('bundles hydration=$hydration suspense=$suspense without leaking disabled implementations',async features=>{
+    const source=resolve(import.meta.dirname,'../packages/redact/src'),fixture='\0streamed-hydration-feature-fixture'
+    let modules:string[]=[]
+    await build({configFile:false,logLevel:'silent',plugins:[...redact({preset:'full',features}),{
+      name:'streamed-hydration-feature-fixture',resolveId(id){if(id===fixture)return id},
+      load(id){if(id===fixture)return `export {createRoot,hydrateRoot} from ${JSON.stringify(source+'/dom/client.ts')};`},
+      generateBundle(_options,bundle){modules=Object.values(bundle).flatMap(item=>item.type==='chunk'?Object.keys(item.modules):[])},
+    }],build:{write:false,minify:true,rollupOptions:{input:fixture,preserveEntrySignatures:'strict',output:{format:'es'}}}})
+    expect(modules.some(id=>id.endsWith('/features/suspense-hydration/full.ts'))).toBe(features.hydration&&features.suspense)
+    expect(modules.some(id=>id.endsWith('/features/suspense/full.ts'))).toBe(features.suspense)
   })
 })
