@@ -53,3 +53,45 @@ it.each(['abort','reject','both-errors','reverse'])('preserves completion traces
 it('propagates a reveal sink error through completion', async () => {
  expect(await checkPipe()).toEqual(['shell','write','reveal','reveal','error:sink failed','destroy:sink failed'])
 }, 2000)
+
+it('waits for a nested boundary registered while its parent completes', async () => {
+  let parentReady = false
+  let childReady = false
+  let releaseParent!: () => void
+  let releaseChild!: () => void
+  const parent = new Promise<void>(resolve => {
+    releaseParent = () => { parentReady = true; resolve() }
+  })
+  const child = new Promise<void>(resolve => {
+    releaseChild = () => { childReady = true; resolve() }
+  })
+  function Child() {
+    if (!childReady) throw child
+    return h('b', null, 'child done')
+  }
+  function Parent() {
+    if (!parentReady) throw parent
+    return h('section', null, 'parent done', h(Suspense, { fallback: 'child waiting' }, h(Child)))
+  }
+  const stream = await renderToReadableStream(h(Suspense, { fallback: 'parent waiting' }, h(Parent)))
+  let completed = false
+  const completion = stream.allReady.then(() => { completed = true })
+  const reader = stream.getReader()
+  const decoder = new TextDecoder()
+  let html = decoder.decode((await reader.read()).value)
+  releaseParent()
+  html += decoder.decode((await reader.read()).value)
+  expect(html).toContain('parent done')
+  expect(html).toContain('child waiting')
+  await Promise.resolve()
+  expect(completed).toBe(false)
+  releaseChild()
+  for (;;) {
+    const result = await reader.read()
+    if (result.done) break
+    html += decoder.decode(result.value)
+  }
+  await completion
+  expect(completed).toBe(true)
+  expect(html).toContain('child done')
+}, 2000)

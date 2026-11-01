@@ -1,0 +1,667 @@
+{
+  "notifier-reuse-staggered-node": {
+    "complete": true,
+    "comparisons": {
+      "staggered-128": {
+        "control": {
+          "pairedTimeChangePercent": -0.23715998147445516,
+          "blockBootstrap95CI": [
+            -1.2501981171567644,
+            1.1066619032952696
+          ],
+          "independentBlocks": 5
+        },
+        "notifier-reuse": {
+          "pairedTimeChangePercent": -36.78883179892595,
+          "blockBootstrap95CI": [
+            -39.581392707949036,
+            -35.35883510933166
+          ],
+          "independentBlocks": 5
+        }
+      },
+      "staggered-512": {
+        "control": {
+          "pairedTimeChangePercent": -0.3690622456320569,
+          "blockBootstrap95CI": [
+            -0.6598467562483834,
+            0.9989578442986424
+          ],
+          "independentBlocks": 5
+        },
+        "notifier-reuse": {
+          "pairedTimeChangePercent": -49.98152552571046,
+          "blockBootstrap95CI": [
+            -50.11836872416458,
+            -49.60908342873578
+          ],
+          "independentBlocks": 5
+        }
+      },
+      "staggered-8": {
+        "control": {
+          "pairedTimeChangePercent": 0.15645773677419594,
+          "blockBootstrap95CI": [
+            -0.4581950206632657,
+            5.209742895833114
+          ],
+          "independentBlocks": 5
+        },
+        "notifier-reuse": {
+          "pairedTimeChangePercent": -6.639065021442658,
+          "blockBootstrap95CI": [
+            -8.016326625567938,
+            -5.242146499029355
+          ],
+          "independentBlocks": 5
+        }
+      },
+      "staggered-32": {
+        "control": {
+          "pairedTimeChangePercent": -0.20629305641902684,
+          "blockBootstrap95CI": [
+            -3.61691043464627,
+            0.1919194111207334
+          ],
+          "independentBlocks": 5
+        },
+        "notifier-reuse": {
+          "pairedTimeChangePercent": -20.95075865716227,
+          "blockBootstrap95CI": [
+            -22.95501774886325,
+            -19.52120405308879
+          ],
+          "independentBlocks": 5
+        }
+      }
+    }
+  },
+  "notifier-reuse-repeat-node": {
+    "complete": true,
+    "comparisons": {
+      "staggered-128": {
+        "control": {
+          "pairedTimeChangePercent": -0.12222122673788416,
+          "blockBootstrap95CI": [
+            -0.37106887555475865,
+            0.8264084045407127
+          ],
+          "independentBlocks": 5
+        },
+        "notifier-reuse": {
+          "pairedTimeChangePercent": -36.36389606360818,
+          "blockBootstrap95CI": [
+            -37.36625596943611,
+            -35.87123869310275
+          ],
+          "independentBlocks": 5
+        }
+      },
+      "staggered-8": {
+        "control": {
+          "pairedTimeChangePercent": 0.601530328264932,
+          "blockBootstrap95CI": [
+            -1.1708491756652561,
+            5.262962696113416
+          ],
+          "independentBlocks": 5
+        },
+        "notifier-reuse": {
+          "pairedTimeChangePercent": -7.692274685421719,
+          "blockBootstrap95CI": [
+            -10.62873247002505,
+            -3.101572835503963
+          ],
+          "independentBlocks": 5
+        }
+      },
+      "staggered-512": {
+        "control": {
+          "pairedTimeChangePercent": -0.9386017811299108,
+          "blockBootstrap95CI": [
+            -1.4203674378190367,
+            -0.3435109939841863
+          ],
+          "independentBlocks": 5
+        },
+        "notifier-reuse": {
+          "pairedTimeChangePercent": -50.11175348972054,
+          "blockBootstrap95CI": [
+            -50.248215322049774,
+            -49.49253168540376
+          ],
+          "independentBlocks": 5
+        }
+      },
+      "staggered-32": {
+        "control": {
+          "pairedTimeChangePercent": 0.44133462096733744,
+          "blockBootstrap95CI": [
+            -1.604049845219302,
+            4.70972584856908
+          ],
+          "independentBlocks": 5
+        },
+        "notifier-reuse": {
+          "pairedTimeChangePercent": -20.89207736857904,
+          "blockBootstrap95CI": [
+            -22.292036553529393,
+            -20.06431901047693
+          ],
+          "independentBlocks": 5
+        }
+      }
+    }
+  },
+  "notifier-reuse-broad-node": {
+    "complete": true,
+    "comparisons": {
+      "stream-delayed": {
+        "control": {
+          "pairedTimeChangePercent": -2.574973615924825,
+          "blockBootstrap95CI": [
+            -4.582751339669066,
+            -1.642741687770688
+          ],
+          "independentBlocks": 5
+        },
+        "notifier-reuse": {
+          "pairedTimeChangePercent": -2.1931938641449378,
+          "blockBootstrap95CI": [
+            -3.777787654988851,
+            0.24410018695497637
+          ],
+          "independentBlocks": 5
+        }
+      },
+      "string-ready": {
+        "control": {
+          "pairedTimeChangePercent": 0.4005925262660526,
+          "blockBootstrap95CI": [
+            -1.4065890889890187,
+            1.8013365833254413
+          ],
+          "independentBlocks": 5
+        },
+        "notifier-reuse": {
+          "pairedTimeChangePercent": -0.4384810340039569,
+          "blockBootstrap95CI": [
+            -1.9876341468654468,
+            1.3762037941929428
+          ],
+          "independentBlocks": 5
+        }
+      },
+      "stream-ready": {
+        "control": {
+          "pairedTimeChangePercent": 0.9165412588926225,
+          "blockBootstrap95CI": [
+            -0.06931362292695864,
+            1.5571297823746333
+          ],
+          "independentBlocks": 5
+        },
+        "notifier-reuse": {
+          "pairedTimeChangePercent": 0.6190757073060604,
+          "blockBootstrap95CI": [
+            -0.715911104270095,
+            0.7669956521277443
+          ],
+          "independentBlocks": 5
+        }
+      }
+    }
+  },
+  "firefox-notifier-reuse-browser": {
+    "complete": true,
+    "comparisons": {
+      "stream-delayed": {
+        "control": {
+          "pairedTimeChangePercent": -0.1242236024844745,
+          "blockBootstrap95CI": [
+            -0.8717310087173136,
+            1.0519801980197974
+          ],
+          "independentBlocks": 5
+        },
+        "notifier-reuse": {
+          "pairedTimeChangePercent": -1.5470297029702929,
+          "blockBootstrap95CI": [
+            -2.7177269919703484,
+            -1.3504823151125445
+          ],
+          "independentBlocks": 5
+        }
+      },
+      "stream-ready": {
+        "control": {
+          "pairedTimeChangePercent": 6.923076923076921,
+          "blockBootstrap95CI": [
+            1.6528925619834656,
+            12.903225806451623
+          ],
+          "independentBlocks": 5
+        },
+        "notifier-reuse": {
+          "pairedTimeChangePercent": 3.200000000000003,
+          "blockBootstrap95CI": [
+            -3.3057851239669422,
+            5.645161290322576
+          ],
+          "independentBlocks": 5
+        }
+      },
+      "string-ready": {
+        "control": {
+          "pairedTimeChangePercent": 3.703703703703698,
+          "blockBootstrap95CI": [
+            -2.8169014084507005,
+            22.535211267605625
+          ],
+          "independentBlocks": 5
+        },
+        "notifier-reuse": {
+          "pairedTimeChangePercent": 2.8169014084507005,
+          "blockBootstrap95CI": [
+            0,
+            18.055555555555557
+          ],
+          "independentBlocks": 5
+        }
+      },
+      "string-fallback": {
+        "control": {
+          "pairedTimeChangePercent": 0.20387359836901986,
+          "blockBootstrap95CI": [
+            -1.7821782178217838,
+            3.571428571428581
+          ],
+          "independentBlocks": 5
+        },
+        "notifier-reuse": {
+          "pairedTimeChangePercent": 0.5035246727089548,
+          "blockBootstrap95CI": [
+            -1.0901883052527261,
+            2.0387359836901098
+          ],
+          "independentBlocks": 5
+        }
+      },
+      "root-retry": {
+        "control": {
+          "pairedTimeChangePercent": 1.8404907975460016,
+          "blockBootstrap95CI": [
+            -4.968944099378881,
+            8.7248322147651
+          ],
+          "independentBlocks": 5
+        },
+        "notifier-reuse": {
+          "pairedTimeChangePercent": -3.9735099337748325,
+          "blockBootstrap95CI": [
+            -7.975460122699385,
+            5.263157894736836
+          ],
+          "independentBlocks": 5
+        }
+      }
+    }
+  },
+  "webkit-notifier-reuse-browser": {
+    "complete": true,
+    "comparisons": {
+      "stream-delayed": {
+        "control": {
+          "pairedTimeChangePercent": 2.7190332326284095,
+          "blockBootstrap95CI": [
+            0.29239766081872176,
+            4.692082111436946
+          ],
+          "independentBlocks": 5
+        },
+        "notifier-reuse": {
+          "pairedTimeChangePercent": -2.5139664804469275,
+          "blockBootstrap95CI": [
+            -4.0229885057471275,
+            -0.28985507246376274
+          ],
+          "independentBlocks": 5
+        }
+      },
+      "stream-ready": {
+        "control": {
+          "pairedTimeChangePercent": 3.3898305084745672,
+          "blockBootstrap95CI": [
+            -1.4925373134328401,
+            6.944444444444442
+          ],
+          "independentBlocks": 5
+        },
+        "notifier-reuse": {
+          "pairedTimeChangePercent": 1.6949152542372836,
+          "blockBootstrap95CI": [
+            -5.970149253731338,
+            11.428571428571432
+          ],
+          "independentBlocks": 5
+        }
+      },
+      "string-ready": {
+        "control": {
+          "pairedTimeChangePercent": -4.918032786885251,
+          "blockBootstrap95CI": [
+            -7.272727272727275,
+            -1.6393442622950838
+          ],
+          "independentBlocks": 5
+        },
+        "notifier-reuse": {
+          "pairedTimeChangePercent": -4.1666666666666625,
+          "blockBootstrap95CI": [
+            -14.28571428571429,
+            2.3255813953488413
+          ],
+          "independentBlocks": 5
+        }
+      },
+      "string-fallback": {
+        "control": {
+          "pairedTimeChangePercent": 0.48076923076922906,
+          "blockBootstrap95CI": [
+            -1.9138755980861233,
+            0.8474576271186418
+          ],
+          "independentBlocks": 5
+        },
+        "notifier-reuse": {
+          "pairedTimeChangePercent": 0.4854368932038833,
+          "blockBootstrap95CI": [
+            -0.4784688995215336,
+            4.4334975369458185
+          ],
+          "independentBlocks": 5
+        }
+      },
+      "root-retry": {
+        "control": {
+          "pairedTimeChangePercent": -2.5316455696202556,
+          "blockBootstrap95CI": [
+            -4.1666666666666625,
+            0
+          ],
+          "independentBlocks": 5
+        },
+        "notifier-reuse": {
+          "pairedTimeChangePercent": 0,
+          "blockBootstrap95CI": [
+            -7.57575757575758,
+            4.477611940298498
+          ],
+          "independentBlocks": 5
+        }
+      }
+    }
+  },
+  "notifier-staggered-allocation": {
+    "base": {
+      "samples": 5,
+      "medianBytes": 393880472
+    },
+    "control": {
+      "samples": 5,
+      "medianBytes": 394349720,
+      "changePercent": 0.11913461909327516
+    },
+    "notifier-reuse": {
+      "samples": 5,
+      "medianBytes": 280698552,
+      "changePercent": -28.73509301573093
+    }
+  },
+  "notifier-repeat-allocation": {
+    "base": {
+      "samples": 5,
+      "medianBytes": 394939856
+    },
+    "control": {
+      "samples": 5,
+      "medianBytes": 393922368,
+      "changePercent": -0.25763112649739295
+    },
+    "notifier-reuse": {
+      "samples": 5,
+      "medianBytes": 280821000,
+      "changePercent": -28.895249306010783
+    }
+  },
+  "sourceHashes": {
+    "base": {
+      "next/client.ts": "62648eaaab71e63fd44d1635491adbc99db990ea27d2ce70b93ef0045046e490",
+      "next/index.ts": "45daaaf47716c336788abc7fc64b7134b32624ab0dbb6669df504344559045bf",
+      "next/react.ts": "09d9f289cefae83e9fdfb7951a884a1ec31e104c7e762f17efb129dfa04afdcd",
+      "core/unitless-style.ts": "e66d09b21a80f1d2920c672daf8cb93dfcca46f9e28048f10c9964682b1e44bf",
+      "core/class-props.ts": "693d285a0d573a6b453dcfb20251f0e51014b464779627dbce5c4fcfecdd3788",
+      "core/resource-hints.ts": "9e921e64d48e1fb7595660c88ae5882ba183c4a6c6c5a9547c774df6bc2e2cb7",
+      "core/devtools.ts": "f899c2d7045375170cb383801087b9b7dca38175ceb33647a08f1a4e1216a083",
+      "core/browser.ts": "07ad11302ef69cc18cc45d6941e22b1b3e1913d6158f8036110203ed9abfa245",
+      "core/types.ts": "8aafcbcdbed63e6461ede6c8d19407c23470024511a48d322c535fc8c6ef722d",
+      "core/index.ts": "9afcb4a85c06b45f125f109d9af0cc75ea0f536b05c930a8c066dd553b58386b",
+      "core/attributes.ts": "0f756e90a7443f7d495b0d03d0e6909b83228d964318837b5d78a7acd10a7377",
+      "core/internal.ts": "b5377d8b657571c5e9abfef8ef7e1fbd2e79d1732b706a6ae4f1943621c04eb8",
+      "core/functions.ts": "7f9e3286da7abfde91b86bfc2a70f0085aa98726bfd23ba6a3382df10522405d",
+      "cloudflare/index.ts": "409da69b2e295a299e3b6215a6201cd2681e1c923e80ad829cec08f5d0bc707d",
+      "scheduler/index.ts": "2dae9b874e2eed82735c8bbb5fcb1fd626ef97af9da5c842cfd181dbafc78c07",
+      "vinext/flight-timing.ts": "c13e43aec5e8a439d639d6029752220242165d017de47c424c1673cc287baa4c",
+      "vinext/index.ts": "52e9f42ad55d23a3b5f1eb010e37e151d173d3cd04a166848306b2cc33aca75a",
+      "vinext/compatibility.ts": "eeb52f4ef5d6fec3dca8aabbb296c5d52bddaefbe75dcbe2aa94774dbbecdb08",
+      "server/walk.ts": "689391403e5b257db21b39884969b8e70d968f2701bae3c2ec664dedd6c3faf8",
+      "server/resource-hints.ts": "1a6afd6dd99a022f83962b6dec7d865198b0cb3fccfa43c87ec47bb9ba27216b",
+      "server/stream.ts": "320d3842e7b723f5d02da815bebb50239df16493b279346621b05ba911c2defa",
+      "server/renderToString.ts": "df6eb5070bde0b1b6d690c1cc053be52b3880733190ff76b87e06d8fd045e107",
+      "server/index.ts": "1b5fa6eb9b09f4a68c0b46cbf20eec8e5f910283230a8ece6513e79ddc2d4410",
+      "server/escape.ts": "6cc480f0823a37eed106c5956b545459572016fc8697e104de0ae98a06c7e5e1",
+      "server/bootstrap-script.ts": "cbe958554ff1df966a7f2de585311bd8ba72bf84e8f95f78a16743b0ab0da243",
+      "server/dispatcher.ts": "5081f738e859d5684248f03fa99e619ea194822adf205c9d4935951488173359",
+      "vite/react18.ts": "df61638786bdda3f4031863353604424c39282ebdad2dac956a0afe21204f4f4",
+      "vite/index.ts": "0c84a9e60a7ac8bbfaa4b7c6b319d2089786981c6370561215d092a1c2404717",
+      "dom/retained-effects.ts": "fa030ddce0fb73aa3fa5c8705d16fa02d64c6a340dfeab018a150c6da38e3528",
+      "dom/dom.ts": "e4d4083d5a56b2ce92f9aeed522ecc4f65151f38322641245391391ca003c7c4",
+      "dom/fragment-instance.ts": "70d62be97e8173b1dd8a519679fd54ae2a57acdfd415c0cfbd676621fe73680a",
+      "dom/reconcile.ts": "22be6759228213f042bc8569b8e83aed200f4acf64739e1c1f31a6c210232c72",
+      "dom/form-actions.ts": "0945bafc83e4e76759fb45cd7691d2ce185d0cc43480952d2f169227f38b04f7",
+      "dom/document-metadata.ts": "393d0f3412cce40d532b6852a5f6fcbbecabcdc30434e1c5f6b5c5583cac5202",
+      "dom/react-ids.ts": "38ce3402325fecd262fcbff5e70db59064d87fb4b9245f8cb3e5196889854e25",
+      "dom/root.ts": "116ad714529e988f32ae11ccc884354be0210cb943999a70ff45af759fc31c70",
+      "dom/_all.ts": "2639dfd4daad3cec26511ff11ecdfc1038675a3797d01215f0e856bfded20ea5",
+      "dom/resources.ts": "e4cdf3e619fe3836d7d0fb06a9d053d615a66b7f6c9fb05c93fa5e2ae1d3c79b",
+      "dom/refresh.ts": "b0d697660a22f158726e39a4d273806b83e3086f63ddfd79441d320843aacaa7",
+      "dom/transitions.ts": "f952d51cd4b3fe2afb8c394d2e7d8ade8cc5cd1417b469d56da404ecc6591030",
+      "dom/walk.ts": "fafcd004cdee4a87e4d8bfa5c4966c5fe333f4c9d5853900fbed6e335c60bfb6",
+      "dom/resource-hints.ts": "ca9df5d78dc306a6ab13b6c0795a630349ca5be74c716d591eb87a7aad233eb9",
+      "dom/devtools.ts": "97c22485fc83d47d36b087d3b66ef2559202a5356ac4d84fdef459d2783b7fc1",
+      "dom/test-utils.ts": "27845b519ad4cf87ef2d998a26c80dca71c787d882b814e4b1ce152f50ad5ca1",
+      "dom/form-controls.ts": "951a355d35aa552f87957d68d87fb8600220a1b94ef181367ee7cfd236511527",
+      "dom/commit.ts": "71da8f9f9bb8b179e09cb525b022692896f31dc4603342b8c8e357926a347a02",
+      "dom/event-replay.ts": "e31a638c5d6296f9e8a6c777a682f3be86cd6a4e70342ba5661f0a34af47e4c5",
+      "dom/client.ts": "902098782524a4186ab729ae55c64c74ebf85c6f8fca31b6880ef2ef64cab66f",
+      "dom/resource-store.ts": "aaab48fd87e36a06adffd184de100d1e7425e1b69c1e81e87bdfa9e65b16ff52",
+      "dom/devtools-effects.ts": "b84fc76e2b710615444b76345428833a67ea1de0e0ecd036ada324b3d65a77a7",
+      "dom/error-info.ts": "bfe0c4a2b03f50e44042b2378968801a2e6da566f7e4d638343fae452db08991",
+      "dom/root-internal.ts": "0a3071b601f99ff7de7ef98f52e9d0e154c164f1d58af99afe45814dd2519b26",
+      "dom/index.ts": "bbe663278bc1c095d3dd57cbccb47052a8fe946fc04972682075707b61070900",
+      "dom/portal.ts": "68385af1e435f1fa4534f094a161ba30654f3532a8076656cef22bd0d5fa652b",
+      "dom/synthetic-event.ts": "f2714fb1edef30f7bf083a72356f5d1f2d95be70576b006c522f73be17a28ce6",
+      "dom/tree.ts": "2624900e833384e58e0c99fda2d6f62f4a15a03aefd1815dad1a7664707653a3",
+      "dom/dispatcher.ts": "b4b961299c7aa93c01050a62dacb8769ff5a2a0fea51b94e5f322adae897f6aa",
+      "react/compiler-runtime.ts": "b8998ff42eee709565bf4ac1e2a28c78dc20483d20af5e1c2944ee2fbc8404fc",
+      "react/class.ts": "bccdcd7290f8a219a0b07028b1cc855f7003fbfa28e852dbfc3d4eb2005c7cb5",
+      "react/act.ts": "035f53523f34eba876f161d19a9958edaf1b24f2fe8d3977fb9d0e12379cd9fd",
+      "react/context.ts": "865b7483cb0f9b790b2859714ad7ab2871010df07a36ae3bb1ff07d0ea16e838",
+      "react/element.ts": "fd8a267f9afc0992b9ab66b17b4f104ff5c0189aa204dca6157df31986da25cc",
+      "react/action-scope.ts": "af37caa023c6d382440eeafae3df7266027daf8f05e2ca64ecdb354848e4cb11",
+      "react/shared-internals.ts": "5abeef2d413b51e58a6c63f76ec477991081bb030007c0c459a3eed878d794c4",
+      "react/activity.ts": "dac42f0847c53ea6233dd5c04491379f305547acbfbe7d6491728505e66fdf77",
+      "react/memo.ts": "786494c7d963c2c1d8ba7c297bdc0239d8232ff29b1da4075f18f062d1389055",
+      "react/index.ts": "047ed4d444590ff2f41c2142c2de612127cca7bd7cbcd015005bb44ffe84edc5",
+      "react/portal.ts": "0e0e28608e1dc5ef5e18649e1d8d122206468d4b9b4d1fdbebc36535612d4958",
+      "react/view-transition.ts": "deae1edf4bc2b1025b1e63e12f052435a415db3163b86cfb1c9135a3bebfe09b",
+      "react/children.ts": "79380a3bb4a69f4ea79e9d0abcba6ebc784f18505ce553fd665bdfbecf9cd891",
+      "react/hooks.ts": "aac373f5d2ec1053aa10a33dd932b60472826c7bc7a4843459ec63a66d4fcbc4",
+      "react/form-state.ts": "e9e20dd64c4a8ef1f963288ec995df144063d262c005ce095c5061351d0fda10",
+      "react/thenable.ts": "fdbcfbee466902e3b87e7f19a0b81098bd526c7f89bb1d4428b11d102b6cce37",
+      "react/suspense.ts": "487b236e813138ce54a0931a580254100fa790d429d4423ef09e370176565678",
+      "react/jsx-runtime.ts": "53fe71484ce54ef530ec00594d175e30b73a5e6362c5b657d679188ae903fe86",
+      "dom/features/index.ts": "32f51b149ea7185b1c5b7a66f4e85ea9f9cb0ce1b320eaeb479f03f3fdc066a9",
+      "dom/features/forward-ref/stub.ts": "8f719c82281db4431a5a6b87936542cdd8b8077963d6b943f346992e4dbf4f9b",
+      "dom/features/forward-ref/full.ts": "15186cb16c5b7c930de487d6be430fbc4287152d496b1c8a8dd113cba62b652b",
+      "dom/features/forward-ref/index.ts": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7",
+      "dom/features/portal/stub.ts": "2caf5f729ebaf482eebdcc46f3e40ed61a13ae907ce730a58a2359b01d0a3e48",
+      "dom/features/portal/full.ts": "774980376701939afd29e41048fb4130d5c1358ba4748029e93bc7c07f444baf",
+      "dom/features/portal/index.ts": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7",
+      "dom/features/context/stub.ts": "fb62e3cdcdce264929ce1d2dd5672a25bec6787c417b8c612e95fbc57afc7be4",
+      "dom/features/context/full.ts": "823d634c263ff247faa704cb61dc8ff8a1c01b3d7ef1a36a76bf0ad4fac871be",
+      "dom/features/context/index.ts": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7",
+      "dom/features/hydration/stub.ts": "c8a9cf7c89f1db2dd35f0f777f93c4f46cc52a0c8ffeb75ce5386e34287a9049",
+      "dom/features/hydration/full.ts": "1fe8b907ea4f26c1f71b787e0532b52cac67a8ddfd11fe1a3eef6ca4a6d9abea",
+      "dom/features/hydration/index.ts": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7",
+      "dom/features/activity/stub.ts": "18af861f90260dc7e1a1f890600a74b4dd95069314a6efc0628ea133a27b566e",
+      "dom/features/activity/full.ts": "f569842bef0be239fb8f9e1d3577486371fe5e5fec22a573eff8386c28a1aebf",
+      "dom/features/activity/index.ts": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7",
+      "dom/features/view-transition/stub.ts": "ac134272d3e8439a62bf4de469a870d153da187b7af62176d5b2e0212a945285",
+      "dom/features/view-transition/resources.ts": "f03ab94bc0ff711f4adfeae34ff74cbd81440077376f9dc62d0a49cab11f9f4c",
+      "dom/features/view-transition/visual.ts": "7f72c81a5862b56b1759d73259112e4336cc8c8627da30747837c785c05a10b4",
+      "dom/features/view-transition/full.ts": "b9a396b7c6bdd2ee5bb7ffc27863307ffa9a90246bc4c710bf91e620d7ae311b",
+      "dom/features/view-transition/index.ts": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7",
+      "dom/features/fragment-refs/stub.ts": "664948ce8ec61f544c29b56268fc5780e4fa9b601fcb39e2d4db4ea6df5f208e",
+      "dom/features/fragment-refs/index.ts": "ce6f37d0ca14b2dbb1f4e20134cdfbb2e34055dc3710a40b74f7c93d8ea92507",
+      "dom/features/suspense/stub.ts": "4620b3d2aa0a37519b9482134522c465f0b819930a23441e387069fc6bd7a02d",
+      "dom/features/suspense/full.ts": "c2d0460c4dd7be17b9e46727b67e0f4eeed585e556ab5c69978e0406a1eaa1dc",
+      "dom/features/suspense/index.ts": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7",
+      "dom/features/memo/stub.ts": "1e13365ad90befa6abe23c6c966b1fe5db627d055d1fe0dde79152296fadd0ac",
+      "dom/features/memo/full.ts": "87bf1f88bf8f6088b2df5a6e5401fa4684ee53d10f63b7219e0c14c1eb44ef89",
+      "dom/features/memo/index.ts": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7",
+      "dom/features/lazy/stub.ts": "2358931a8e8027c8972f884856efd379e6ce95604afed4a0eb39d7293bd968d0",
+      "dom/features/lazy/full.ts": "5592c9a3abed927fa3d774f4055fe2bff708e5f86d806f792409ec94f056ae58",
+      "dom/features/lazy/index.ts": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7",
+      "dom/features/class/stub.ts": "f2044bf151980dac9fd3e72e56d7904a6e96d24e58add5060d9ca2ba93e261f7",
+      "dom/features/class/full.ts": "4ab25f8041c209a9c1814579a76e45bb3a5a805a0c1aaac2dfe5c95d7eef8180",
+      "dom/features/class/index.ts": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7",
+      "dom/features/suspense-runtime/stub.ts": "0bd2bbe083d07f42ef78806c75ffa6755b78155cf2450887bb6f331f46731230",
+      "dom/features/suspense-runtime/index.ts": "dc1836464b06c70e1ba2f7a7a3ffc9cbe9238549e9e04adf5906ffba7261c367"
+    },
+    "notifier-reuse": {
+      "next/client.ts": "62648eaaab71e63fd44d1635491adbc99db990ea27d2ce70b93ef0045046e490",
+      "next/index.ts": "45daaaf47716c336788abc7fc64b7134b32624ab0dbb6669df504344559045bf",
+      "next/react.ts": "09d9f289cefae83e9fdfb7951a884a1ec31e104c7e762f17efb129dfa04afdcd",
+      "core/unitless-style.ts": "e66d09b21a80f1d2920c672daf8cb93dfcca46f9e28048f10c9964682b1e44bf",
+      "core/class-props.ts": "693d285a0d573a6b453dcfb20251f0e51014b464779627dbce5c4fcfecdd3788",
+      "core/resource-hints.ts": "9e921e64d48e1fb7595660c88ae5882ba183c4a6c6c5a9547c774df6bc2e2cb7",
+      "core/devtools.ts": "f899c2d7045375170cb383801087b9b7dca38175ceb33647a08f1a4e1216a083",
+      "core/browser.ts": "07ad11302ef69cc18cc45d6941e22b1b3e1913d6158f8036110203ed9abfa245",
+      "core/types.ts": "8aafcbcdbed63e6461ede6c8d19407c23470024511a48d322c535fc8c6ef722d",
+      "core/index.ts": "9afcb4a85c06b45f125f109d9af0cc75ea0f536b05c930a8c066dd553b58386b",
+      "core/attributes.ts": "0f756e90a7443f7d495b0d03d0e6909b83228d964318837b5d78a7acd10a7377",
+      "core/internal.ts": "b5377d8b657571c5e9abfef8ef7e1fbd2e79d1732b706a6ae4f1943621c04eb8",
+      "core/functions.ts": "7f9e3286da7abfde91b86bfc2a70f0085aa98726bfd23ba6a3382df10522405d",
+      "cloudflare/index.ts": "409da69b2e295a299e3b6215a6201cd2681e1c923e80ad829cec08f5d0bc707d",
+      "scheduler/index.ts": "2dae9b874e2eed82735c8bbb5fcb1fd626ef97af9da5c842cfd181dbafc78c07",
+      "vinext/flight-timing.ts": "c13e43aec5e8a439d639d6029752220242165d017de47c424c1673cc287baa4c",
+      "vinext/index.ts": "52e9f42ad55d23a3b5f1eb010e37e151d173d3cd04a166848306b2cc33aca75a",
+      "vinext/compatibility.ts": "eeb52f4ef5d6fec3dca8aabbb296c5d52bddaefbe75dcbe2aa94774dbbecdb08",
+      "server/walk.ts": "b6f1d5b124d3acb2641ce94552e766446bb6d1e7389d0a48901324f5cca5618e",
+      "server/resource-hints.ts": "1a6afd6dd99a022f83962b6dec7d865198b0cb3fccfa43c87ec47bb9ba27216b",
+      "server/stream.ts": "9522a9297d7a0fa56d03eaa6cedfc0615c95cc10b4b342a06d754e983688da91",
+      "server/renderToString.ts": "df6eb5070bde0b1b6d690c1cc053be52b3880733190ff76b87e06d8fd045e107",
+      "server/index.ts": "1b5fa6eb9b09f4a68c0b46cbf20eec8e5f910283230a8ece6513e79ddc2d4410",
+      "server/escape.ts": "6cc480f0823a37eed106c5956b545459572016fc8697e104de0ae98a06c7e5e1",
+      "server/bootstrap-script.ts": "cbe958554ff1df966a7f2de585311bd8ba72bf84e8f95f78a16743b0ab0da243",
+      "server/dispatcher.ts": "5081f738e859d5684248f03fa99e619ea194822adf205c9d4935951488173359",
+      "vite/react18.ts": "df61638786bdda3f4031863353604424c39282ebdad2dac956a0afe21204f4f4",
+      "vite/index.ts": "0c84a9e60a7ac8bbfaa4b7c6b319d2089786981c6370561215d092a1c2404717",
+      "dom/retained-effects.ts": "fa030ddce0fb73aa3fa5c8705d16fa02d64c6a340dfeab018a150c6da38e3528",
+      "dom/dom.ts": "e4d4083d5a56b2ce92f9aeed522ecc4f65151f38322641245391391ca003c7c4",
+      "dom/fragment-instance.ts": "70d62be97e8173b1dd8a519679fd54ae2a57acdfd415c0cfbd676621fe73680a",
+      "dom/reconcile.ts": "22be6759228213f042bc8569b8e83aed200f4acf64739e1c1f31a6c210232c72",
+      "dom/form-actions.ts": "0945bafc83e4e76759fb45cd7691d2ce185d0cc43480952d2f169227f38b04f7",
+      "dom/document-metadata.ts": "393d0f3412cce40d532b6852a5f6fcbbecabcdc30434e1c5f6b5c5583cac5202",
+      "dom/react-ids.ts": "38ce3402325fecd262fcbff5e70db59064d87fb4b9245f8cb3e5196889854e25",
+      "dom/root.ts": "116ad714529e988f32ae11ccc884354be0210cb943999a70ff45af759fc31c70",
+      "dom/_all.ts": "2639dfd4daad3cec26511ff11ecdfc1038675a3797d01215f0e856bfded20ea5",
+      "dom/resources.ts": "e4cdf3e619fe3836d7d0fb06a9d053d615a66b7f6c9fb05c93fa5e2ae1d3c79b",
+      "dom/refresh.ts": "b0d697660a22f158726e39a4d273806b83e3086f63ddfd79441d320843aacaa7",
+      "dom/transitions.ts": "f952d51cd4b3fe2afb8c394d2e7d8ade8cc5cd1417b469d56da404ecc6591030",
+      "dom/walk.ts": "fafcd004cdee4a87e4d8bfa5c4966c5fe333f4c9d5853900fbed6e335c60bfb6",
+      "dom/resource-hints.ts": "ca9df5d78dc306a6ab13b6c0795a630349ca5be74c716d591eb87a7aad233eb9",
+      "dom/devtools.ts": "97c22485fc83d47d36b087d3b66ef2559202a5356ac4d84fdef459d2783b7fc1",
+      "dom/test-utils.ts": "27845b519ad4cf87ef2d998a26c80dca71c787d882b814e4b1ce152f50ad5ca1",
+      "dom/form-controls.ts": "951a355d35aa552f87957d68d87fb8600220a1b94ef181367ee7cfd236511527",
+      "dom/commit.ts": "71da8f9f9bb8b179e09cb525b022692896f31dc4603342b8c8e357926a347a02",
+      "dom/event-replay.ts": "e31a638c5d6296f9e8a6c777a682f3be86cd6a4e70342ba5661f0a34af47e4c5",
+      "dom/client.ts": "902098782524a4186ab729ae55c64c74ebf85c6f8fca31b6880ef2ef64cab66f",
+      "dom/resource-store.ts": "aaab48fd87e36a06adffd184de100d1e7425e1b69c1e81e87bdfa9e65b16ff52",
+      "dom/devtools-effects.ts": "b84fc76e2b710615444b76345428833a67ea1de0e0ecd036ada324b3d65a77a7",
+      "dom/error-info.ts": "bfe0c4a2b03f50e44042b2378968801a2e6da566f7e4d638343fae452db08991",
+      "dom/root-internal.ts": "0a3071b601f99ff7de7ef98f52e9d0e154c164f1d58af99afe45814dd2519b26",
+      "dom/index.ts": "bbe663278bc1c095d3dd57cbccb47052a8fe946fc04972682075707b61070900",
+      "dom/portal.ts": "68385af1e435f1fa4534f094a161ba30654f3532a8076656cef22bd0d5fa652b",
+      "dom/synthetic-event.ts": "f2714fb1edef30f7bf083a72356f5d1f2d95be70576b006c522f73be17a28ce6",
+      "dom/tree.ts": "2624900e833384e58e0c99fda2d6f62f4a15a03aefd1815dad1a7664707653a3",
+      "dom/dispatcher.ts": "b4b961299c7aa93c01050a62dacb8769ff5a2a0fea51b94e5f322adae897f6aa",
+      "react/compiler-runtime.ts": "b8998ff42eee709565bf4ac1e2a28c78dc20483d20af5e1c2944ee2fbc8404fc",
+      "react/class.ts": "bccdcd7290f8a219a0b07028b1cc855f7003fbfa28e852dbfc3d4eb2005c7cb5",
+      "react/act.ts": "035f53523f34eba876f161d19a9958edaf1b24f2fe8d3977fb9d0e12379cd9fd",
+      "react/context.ts": "865b7483cb0f9b790b2859714ad7ab2871010df07a36ae3bb1ff07d0ea16e838",
+      "react/element.ts": "fd8a267f9afc0992b9ab66b17b4f104ff5c0189aa204dca6157df31986da25cc",
+      "react/action-scope.ts": "af37caa023c6d382440eeafae3df7266027daf8f05e2ca64ecdb354848e4cb11",
+      "react/shared-internals.ts": "5abeef2d413b51e58a6c63f76ec477991081bb030007c0c459a3eed878d794c4",
+      "react/activity.ts": "dac42f0847c53ea6233dd5c04491379f305547acbfbe7d6491728505e66fdf77",
+      "react/memo.ts": "786494c7d963c2c1d8ba7c297bdc0239d8232ff29b1da4075f18f062d1389055",
+      "react/index.ts": "047ed4d444590ff2f41c2142c2de612127cca7bd7cbcd015005bb44ffe84edc5",
+      "react/portal.ts": "0e0e28608e1dc5ef5e18649e1d8d122206468d4b9b4d1fdbebc36535612d4958",
+      "react/view-transition.ts": "deae1edf4bc2b1025b1e63e12f052435a415db3163b86cfb1c9135a3bebfe09b",
+      "react/children.ts": "79380a3bb4a69f4ea79e9d0abcba6ebc784f18505ce553fd665bdfbecf9cd891",
+      "react/hooks.ts": "aac373f5d2ec1053aa10a33dd932b60472826c7bc7a4843459ec63a66d4fcbc4",
+      "react/form-state.ts": "e9e20dd64c4a8ef1f963288ec995df144063d262c005ce095c5061351d0fda10",
+      "react/thenable.ts": "fdbcfbee466902e3b87e7f19a0b81098bd526c7f89bb1d4428b11d102b6cce37",
+      "react/suspense.ts": "487b236e813138ce54a0931a580254100fa790d429d4423ef09e370176565678",
+      "react/jsx-runtime.ts": "53fe71484ce54ef530ec00594d175e30b73a5e6362c5b657d679188ae903fe86",
+      "dom/features/index.ts": "32f51b149ea7185b1c5b7a66f4e85ea9f9cb0ce1b320eaeb479f03f3fdc066a9",
+      "dom/features/forward-ref/stub.ts": "8f719c82281db4431a5a6b87936542cdd8b8077963d6b943f346992e4dbf4f9b",
+      "dom/features/forward-ref/full.ts": "15186cb16c5b7c930de487d6be430fbc4287152d496b1c8a8dd113cba62b652b",
+      "dom/features/forward-ref/index.ts": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7",
+      "dom/features/portal/stub.ts": "2caf5f729ebaf482eebdcc46f3e40ed61a13ae907ce730a58a2359b01d0a3e48",
+      "dom/features/portal/full.ts": "774980376701939afd29e41048fb4130d5c1358ba4748029e93bc7c07f444baf",
+      "dom/features/portal/index.ts": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7",
+      "dom/features/context/stub.ts": "fb62e3cdcdce264929ce1d2dd5672a25bec6787c417b8c612e95fbc57afc7be4",
+      "dom/features/context/full.ts": "823d634c263ff247faa704cb61dc8ff8a1c01b3d7ef1a36a76bf0ad4fac871be",
+      "dom/features/context/index.ts": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7",
+      "dom/features/hydration/stub.ts": "c8a9cf7c89f1db2dd35f0f777f93c4f46cc52a0c8ffeb75ce5386e34287a9049",
+      "dom/features/hydration/full.ts": "1fe8b907ea4f26c1f71b787e0532b52cac67a8ddfd11fe1a3eef6ca4a6d9abea",
+      "dom/features/hydration/index.ts": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7",
+      "dom/features/activity/stub.ts": "18af861f90260dc7e1a1f890600a74b4dd95069314a6efc0628ea133a27b566e",
+      "dom/features/activity/full.ts": "f569842bef0be239fb8f9e1d3577486371fe5e5fec22a573eff8386c28a1aebf",
+      "dom/features/activity/index.ts": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7",
+      "dom/features/view-transition/stub.ts": "ac134272d3e8439a62bf4de469a870d153da187b7af62176d5b2e0212a945285",
+      "dom/features/view-transition/resources.ts": "f03ab94bc0ff711f4adfeae34ff74cbd81440077376f9dc62d0a49cab11f9f4c",
+      "dom/features/view-transition/visual.ts": "7f72c81a5862b56b1759d73259112e4336cc8c8627da30747837c785c05a10b4",
+      "dom/features/view-transition/full.ts": "b9a396b7c6bdd2ee5bb7ffc27863307ffa9a90246bc4c710bf91e620d7ae311b",
+      "dom/features/view-transition/index.ts": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7",
+      "dom/features/fragment-refs/stub.ts": "664948ce8ec61f544c29b56268fc5780e4fa9b601fcb39e2d4db4ea6df5f208e",
+      "dom/features/fragment-refs/index.ts": "ce6f37d0ca14b2dbb1f4e20134cdfbb2e34055dc3710a40b74f7c93d8ea92507",
+      "dom/features/suspense/stub.ts": "4620b3d2aa0a37519b9482134522c465f0b819930a23441e387069fc6bd7a02d",
+      "dom/features/suspense/full.ts": "c2d0460c4dd7be17b9e46727b67e0f4eeed585e556ab5c69978e0406a1eaa1dc",
+      "dom/features/suspense/index.ts": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7",
+      "dom/features/memo/stub.ts": "1e13365ad90befa6abe23c6c966b1fe5db627d055d1fe0dde79152296fadd0ac",
+      "dom/features/memo/full.ts": "87bf1f88bf8f6088b2df5a6e5401fa4684ee53d10f63b7219e0c14c1eb44ef89",
+      "dom/features/memo/index.ts": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7",
+      "dom/features/lazy/stub.ts": "2358931a8e8027c8972f884856efd379e6ce95604afed4a0eb39d7293bd968d0",
+      "dom/features/lazy/full.ts": "5592c9a3abed927fa3d774f4055fe2bff708e5f86d806f792409ec94f056ae58",
+      "dom/features/lazy/index.ts": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7",
+      "dom/features/class/stub.ts": "f2044bf151980dac9fd3e72e56d7904a6e96d24e58add5060d9ca2ba93e261f7",
+      "dom/features/class/full.ts": "4ab25f8041c209a9c1814579a76e45bb3a5a805a0c1aaac2dfe5c95d7eef8180",
+      "dom/features/class/index.ts": "2d4c60521608900201a8a06b6339984e853fe04187079f991e74ae2e6a3b44d7",
+      "dom/features/suspense-runtime/stub.ts": "0bd2bbe083d07f42ef78806c75ffa6755b78155cf2450887bb6f331f46731230",
+      "dom/features/suspense-runtime/index.ts": "dc1836464b06c70e1ba2f7a7a3ffc9cbe9238549e9e04adf5906ffba7261c367"
+    }
+  }
+}

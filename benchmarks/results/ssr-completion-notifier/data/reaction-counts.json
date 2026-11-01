@@ -1,0 +1,66 @@
+[
+  {
+    "variant": "base",
+    "width": 8,
+    "thenCalls": 62,
+    "completed": 1,
+    "bytes": 3191,
+    "chunks": 9
+  },
+  {
+    "variant": "base",
+    "width": 32,
+    "thenCalls": 626,
+    "completed": 1,
+    "bytes": 6037,
+    "chunks": 33
+  },
+  {
+    "variant": "base",
+    "width": 128,
+    "thenCalls": 8642,
+    "completed": 1,
+    "bytes": 17601,
+    "chunks": 129
+  },
+  {
+    "variant": "base",
+    "width": 512,
+    "thenCalls": 132866,
+    "completed": 1,
+    "bytes": 65217,
+    "chunks": 513
+  },
+  {
+    "variant": "notifier-reuse",
+    "width": 8,
+    "thenCalls": 34,
+    "completed": 1,
+    "bytes": 3191,
+    "chunks": 9
+  },
+  {
+    "variant": "notifier-reuse",
+    "width": 32,
+    "thenCalls": 130,
+    "completed": 1,
+    "bytes": 6037,
+    "chunks": 33
+  },
+  {
+    "variant": "notifier-reuse",
+    "width": 128,
+    "thenCalls": 514,
+    "completed": 1,
+    "bytes": 17601,
+    "chunks": 129
+  },
+  {
+    "variant": "notifier-reuse",
+    "width": 512,
+    "thenCalls": 2050,
+    "completed": 1,
+    "bytes": 65217,
+    "chunks": 513
+  }
+]

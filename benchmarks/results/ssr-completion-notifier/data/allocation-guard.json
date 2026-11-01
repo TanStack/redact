@@ -1,0 +1,35 @@
+{
+  "started": "2026-11-01T18:36:24.621132+00:00",
+  "command": [
+    "/tmp/rd-node-24-22/node_modules/node/bin/node",
+    "/tmp/rd-notifier-delivery/rd-notifier-reuse-allocation.mjs"
+  ],
+  "pollSeconds": 2,
+  "samples": [
+    {
+      "at": "2026-11-01T18:36:24.718151+00:00",
+      "competitors": []
+    },
+    {
+      "at": "2026-11-01T18:36:26.773999+00:00",
+      "competitors": []
+    },
+    {
+      "at": "2026-11-01T18:36:28.828780+00:00",
+      "competitors": []
+    },
+    {
+      "at": "2026-11-01T18:36:30.881820+00:00",
+      "competitors": []
+    },
+    {
+      "at": "2026-11-01T18:36:32.941527+00:00",
+      "competitors": []
+    }
+  ],
+  "excluded": false,
+  "childStarted": true,
+  "pid": 3709,
+  "exitCode": 0,
+  "ended": "2026-11-01T18:36:32.941653+00:00"
+}

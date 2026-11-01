@@ -1,0 +1,2680 @@
+{
+  "node": "v24.22.0",
+  "rows": [
+    {
+      "variant": "control",
+      "name": "staggered-128",
+      "block": 0,
+      "round": 0,
+      "pid": 3588,
+      "ms": 50.45195800000002,
+      "completed": 20,
+      "totalBytes": 352020,
+      "totalChunks": 2580,
+      "outputSHA256": "583e3a7a6fff13c380ad4b6759dc37be778f05d620257dd983e0332b528d33ca"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-128",
+      "block": 0,
+      "round": 0,
+      "pid": 3589,
+      "ms": 32.06841600000001,
+      "completed": 20,
+      "totalBytes": 352020,
+      "totalChunks": 2580,
+      "outputSHA256": "583e3a7a6fff13c380ad4b6759dc37be778f05d620257dd983e0332b528d33ca"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-128",
+      "block": 0,
+      "round": 0,
+      "pid": 3587,
+      "ms": 50.514917,
+      "completed": 20,
+      "totalBytes": 352020,
+      "totalChunks": 2580,
+      "outputSHA256": "583e3a7a6fff13c380ad4b6759dc37be778f05d620257dd983e0332b528d33ca"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-128",
+      "block": 0,
+      "round": 1,
+      "pid": 3589,
+      "ms": 31.750666000000024,
+      "completed": 20,
+      "totalBytes": 352020,
+      "totalChunks": 2580,
+      "outputSHA256": "583e3a7a6fff13c380ad4b6759dc37be778f05d620257dd983e0332b528d33ca"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-128",
+      "block": 0,
+      "round": 1,
+      "pid": 3587,
+      "ms": 50.70045799999997,
+      "completed": 20,
+      "totalBytes": 352020,
+      "totalChunks": 2580,
+      "outputSHA256": "583e3a7a6fff13c380ad4b6759dc37be778f05d620257dd983e0332b528d33ca"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-128",
+      "block": 0,
+      "round": 1,
+      "pid": 3588,
+      "ms": 49.89375000000001,
+      "completed": 20,
+      "totalBytes": 352020,
+      "totalChunks": 2580,
+      "outputSHA256": "583e3a7a6fff13c380ad4b6759dc37be778f05d620257dd983e0332b528d33ca"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-128",
+      "block": 0,
+      "round": 2,
+      "pid": 3587,
+      "ms": 47.224541999999985,
+      "completed": 20,
+      "totalBytes": 352020,
+      "totalChunks": 2580,
+      "outputSHA256": "583e3a7a6fff13c380ad4b6759dc37be778f05d620257dd983e0332b528d33ca"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-128",
+      "block": 0,
+      "round": 2,
+      "pid": 3588,
+      "ms": 47.27849999999995,
+      "completed": 20,
+      "totalBytes": 352020,
+      "totalChunks": 2580,
+      "outputSHA256": "583e3a7a6fff13c380ad4b6759dc37be778f05d620257dd983e0332b528d33ca"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-128",
+      "block": 0,
+      "round": 2,
+      "pid": 3589,
+      "ms": 30.273957999999993,
+      "completed": 20,
+      "totalBytes": 352020,
+      "totalChunks": 2580,
+      "outputSHA256": "583e3a7a6fff13c380ad4b6759dc37be778f05d620257dd983e0332b528d33ca"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-8",
+      "block": 0,
+      "round": 0,
+      "pid": 3587,
+      "ms": 1.0122499999999945,
+      "completed": 20,
+      "totalBytes": 63820,
+      "totalChunks": 180,
+      "outputSHA256": "da84c4abf31bca3ada7e749e5d612095b39fd52557c2e48d17e4a6cc98247258"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-8",
+      "block": 0,
+      "round": 0,
+      "pid": 3588,
+      "ms": 0.9525830000000042,
+      "completed": 20,
+      "totalBytes": 63820,
+      "totalChunks": 180,
+      "outputSHA256": "da84c4abf31bca3ada7e749e5d612095b39fd52557c2e48d17e4a6cc98247258"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-8",
+      "block": 0,
+      "round": 0,
+      "pid": 3589,
+      "ms": 0.8836250000000518,
+      "completed": 20,
+      "totalBytes": 63820,
+      "totalChunks": 180,
+      "outputSHA256": "da84c4abf31bca3ada7e749e5d612095b39fd52557c2e48d17e4a6cc98247258"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-8",
+      "block": 0,
+      "round": 1,
+      "pid": 3588,
+      "ms": 0.982167000000004,
+      "completed": 20,
+      "totalBytes": 63820,
+      "totalChunks": 180,
+      "outputSHA256": "da84c4abf31bca3ada7e749e5d612095b39fd52557c2e48d17e4a6cc98247258"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-8",
+      "block": 0,
+      "round": 1,
+      "pid": 3589,
+      "ms": 0.9642090000000394,
+      "completed": 20,
+      "totalBytes": 63820,
+      "totalChunks": 180,
+      "outputSHA256": "da84c4abf31bca3ada7e749e5d612095b39fd52557c2e48d17e4a6cc98247258"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-8",
+      "block": 0,
+      "round": 1,
+      "pid": 3587,
+      "ms": 1.0323339999999916,
+      "completed": 20,
+      "totalBytes": 63820,
+      "totalChunks": 180,
+      "outputSHA256": "da84c4abf31bca3ada7e749e5d612095b39fd52557c2e48d17e4a6cc98247258"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-8",
+      "block": 0,
+      "round": 2,
+      "pid": 3589,
+      "ms": 0.851333000000011,
+      "completed": 20,
+      "totalBytes": 63820,
+      "totalChunks": 180,
+      "outputSHA256": "da84c4abf31bca3ada7e749e5d612095b39fd52557c2e48d17e4a6cc98247258"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-8",
+      "block": 0,
+      "round": 2,
+      "pid": 3587,
+      "ms": 0.9999579999999924,
+      "completed": 20,
+      "totalBytes": 63820,
+      "totalChunks": 180,
+      "outputSHA256": "da84c4abf31bca3ada7e749e5d612095b39fd52557c2e48d17e4a6cc98247258"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-8",
+      "block": 0,
+      "round": 2,
+      "pid": 3588,
+      "ms": 0.9882499999999936,
+      "completed": 20,
+      "totalBytes": 63820,
+      "totalChunks": 180,
+      "outputSHA256": "da84c4abf31bca3ada7e749e5d612095b39fd52557c2e48d17e4a6cc98247258"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-512",
+      "block": 0,
+      "round": 0,
+      "pid": 3587,
+      "ms": 651.794875,
+      "completed": 20,
+      "totalBytes": 1304340,
+      "totalChunks": 10260,
+      "outputSHA256": "4495c63b4d320fb0fb87f14ca92e601607abc1fb985b5f0d830da1c5b79ac9ab"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-512",
+      "block": 0,
+      "round": 0,
+      "pid": 3589,
+      "ms": 325.15279199999986,
+      "completed": 20,
+      "totalBytes": 1304340,
+      "totalChunks": 10260,
+      "outputSHA256": "4495c63b4d320fb0fb87f14ca92e601607abc1fb985b5f0d830da1c5b79ac9ab"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-512",
+      "block": 0,
+      "round": 0,
+      "pid": 3588,
+      "ms": 642.9566250000003,
+      "completed": 20,
+      "totalBytes": 1304340,
+      "totalChunks": 10260,
+      "outputSHA256": "4495c63b4d320fb0fb87f14ca92e601607abc1fb985b5f0d830da1c5b79ac9ab"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-512",
+      "block": 0,
+      "round": 1,
+      "pid": 3589,
+      "ms": 327.70120799999995,
+      "completed": 20,
+      "totalBytes": 1304340,
+      "totalChunks": 10260,
+      "outputSHA256": "4495c63b4d320fb0fb87f14ca92e601607abc1fb985b5f0d830da1c5b79ac9ab"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-512",
+      "block": 0,
+      "round": 1,
+      "pid": 3588,
+      "ms": 659.5615419999999,
+      "completed": 20,
+      "totalBytes": 1304340,
+      "totalChunks": 10260,
+      "outputSHA256": "4495c63b4d320fb0fb87f14ca92e601607abc1fb985b5f0d830da1c5b79ac9ab"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-512",
+      "block": 0,
+      "round": 1,
+      "pid": 3587,
+      "ms": 668.4458330000002,
+      "completed": 20,
+      "totalBytes": 1304340,
+      "totalChunks": 10260,
+      "outputSHA256": "4495c63b4d320fb0fb87f14ca92e601607abc1fb985b5f0d830da1c5b79ac9ab"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-512",
+      "block": 0,
+      "round": 2,
+      "pid": 3588,
+      "ms": 658.6356249999999,
+      "completed": 20,
+      "totalBytes": 1304340,
+      "totalChunks": 10260,
+      "outputSHA256": "4495c63b4d320fb0fb87f14ca92e601607abc1fb985b5f0d830da1c5b79ac9ab"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-512",
+      "block": 0,
+      "round": 2,
+      "pid": 3587,
+      "ms": 633.9507919999996,
+      "completed": 20,
+      "totalBytes": 1304340,
+      "totalChunks": 10260,
+      "outputSHA256": "4495c63b4d320fb0fb87f14ca92e601607abc1fb985b5f0d830da1c5b79ac9ab"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-512",
+      "block": 0,
+      "round": 2,
+      "pid": 3589,
+      "ms": 315.4018329999999,
+      "completed": 20,
+      "totalBytes": 1304340,
+      "totalChunks": 10260,
+      "outputSHA256": "4495c63b4d320fb0fb87f14ca92e601607abc1fb985b5f0d830da1c5b79ac9ab"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-32",
+      "block": 0,
+      "round": 0,
+      "pid": 3587,
+      "ms": 4.669207999999344,
+      "completed": 20,
+      "totalBytes": 120740,
+      "totalChunks": 660,
+      "outputSHA256": "f6eaeb89f1c610a4c311616ebedb37edd5e8144be30c3d094dd0dc0d2b172894"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-32",
+      "block": 0,
+      "round": 0,
+      "pid": 3589,
+      "ms": 3.541124999999738,
+      "completed": 20,
+      "totalBytes": 120740,
+      "totalChunks": 660,
+      "outputSHA256": "f6eaeb89f1c610a4c311616ebedb37edd5e8144be30c3d094dd0dc0d2b172894"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-32",
+      "block": 0,
+      "round": 0,
+      "pid": 3588,
+      "ms": 4.623499999999694,
+      "completed": 20,
+      "totalBytes": 120740,
+      "totalChunks": 660,
+      "outputSHA256": "f6eaeb89f1c610a4c311616ebedb37edd5e8144be30c3d094dd0dc0d2b172894"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-32",
+      "block": 0,
+      "round": 1,
+      "pid": 3589,
+      "ms": 3.6195830000006026,
+      "completed": 20,
+      "totalBytes": 120740,
+      "totalChunks": 660,
+      "outputSHA256": "f6eaeb89f1c610a4c311616ebedb37edd5e8144be30c3d094dd0dc0d2b172894"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-32",
+      "block": 0,
+      "round": 1,
+      "pid": 3588,
+      "ms": 4.407333000000108,
+      "completed": 20,
+      "totalBytes": 120740,
+      "totalChunks": 660,
+      "outputSHA256": "f6eaeb89f1c610a4c311616ebedb37edd5e8144be30c3d094dd0dc0d2b172894"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-32",
+      "block": 0,
+      "round": 1,
+      "pid": 3587,
+      "ms": 4.57549999999992,
+      "completed": 20,
+      "totalBytes": 120740,
+      "totalChunks": 660,
+      "outputSHA256": "f6eaeb89f1c610a4c311616ebedb37edd5e8144be30c3d094dd0dc0d2b172894"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-32",
+      "block": 0,
+      "round": 2,
+      "pid": 3588,
+      "ms": 4.515917000000627,
+      "completed": 20,
+      "totalBytes": 120740,
+      "totalChunks": 660,
+      "outputSHA256": "f6eaeb89f1c610a4c311616ebedb37edd5e8144be30c3d094dd0dc0d2b172894"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-32",
+      "block": 0,
+      "round": 2,
+      "pid": 3587,
+      "ms": 4.381583999999748,
+      "completed": 20,
+      "totalBytes": 120740,
+      "totalChunks": 660,
+      "outputSHA256": "f6eaeb89f1c610a4c311616ebedb37edd5e8144be30c3d094dd0dc0d2b172894"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-32",
+      "block": 0,
+      "round": 2,
+      "pid": 3589,
+      "ms": 3.452874999999949,
+      "completed": 20,
+      "totalBytes": 120740,
+      "totalChunks": 660,
+      "outputSHA256": "f6eaeb89f1c610a4c311616ebedb37edd5e8144be30c3d094dd0dc0d2b172894"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-32",
+      "block": 1,
+      "round": 0,
+      "pid": 3614,
+      "ms": 6.598083000000003,
+      "completed": 20,
+      "totalBytes": 120740,
+      "totalChunks": 660,
+      "outputSHA256": "f6eaeb89f1c610a4c311616ebedb37edd5e8144be30c3d094dd0dc0d2b172894"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-32",
+      "block": 1,
+      "round": 0,
+      "pid": 3613,
+      "ms": 7.284791999999996,
+      "completed": 20,
+      "totalBytes": 120740,
+      "totalChunks": 660,
+      "outputSHA256": "f6eaeb89f1c610a4c311616ebedb37edd5e8144be30c3d094dd0dc0d2b172894"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-32",
+      "block": 1,
+      "round": 0,
+      "pid": 3612,
+      "ms": 7.300708999999998,
+      "completed": 20,
+      "totalBytes": 120740,
+      "totalChunks": 660,
+      "outputSHA256": "f6eaeb89f1c610a4c311616ebedb37edd5e8144be30c3d094dd0dc0d2b172894"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-32",
+      "block": 1,
+      "round": 1,
+      "pid": 3613,
+      "ms": 6.234666000000004,
+      "completed": 20,
+      "totalBytes": 120740,
+      "totalChunks": 660,
+      "outputSHA256": "f6eaeb89f1c610a4c311616ebedb37edd5e8144be30c3d094dd0dc0d2b172894"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-32",
+      "block": 1,
+      "round": 1,
+      "pid": 3612,
+      "ms": 6.206000000000003,
+      "completed": 20,
+      "totalBytes": 120740,
+      "totalChunks": 660,
+      "outputSHA256": "f6eaeb89f1c610a4c311616ebedb37edd5e8144be30c3d094dd0dc0d2b172894"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-32",
+      "block": 1,
+      "round": 1,
+      "pid": 3614,
+      "ms": 4.709042000000011,
+      "completed": 20,
+      "totalBytes": 120740,
+      "totalChunks": 660,
+      "outputSHA256": "f6eaeb89f1c610a4c311616ebedb37edd5e8144be30c3d094dd0dc0d2b172894"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-32",
+      "block": 1,
+      "round": 2,
+      "pid": 3612,
+      "ms": 5.4167500000000075,
+      "completed": 20,
+      "totalBytes": 120740,
+      "totalChunks": 660,
+      "outputSHA256": "f6eaeb89f1c610a4c311616ebedb37edd5e8144be30c3d094dd0dc0d2b172894"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-32",
+      "block": 1,
+      "round": 2,
+      "pid": 3614,
+      "ms": 4.329915999999997,
+      "completed": 20,
+      "totalBytes": 120740,
+      "totalChunks": 660,
+      "outputSHA256": "f6eaeb89f1c610a4c311616ebedb37edd5e8144be30c3d094dd0dc0d2b172894"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-32",
+      "block": 1,
+      "round": 2,
+      "pid": 3613,
+      "ms": 5.584083000000007,
+      "completed": 20,
+      "totalBytes": 120740,
+      "totalChunks": 660,
+      "outputSHA256": "f6eaeb89f1c610a4c311616ebedb37edd5e8144be30c3d094dd0dc0d2b172894"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-128",
+      "block": 1,
+      "round": 0,
+      "pid": 3613,
+      "ms": 48.2655,
+      "completed": 20,
+      "totalBytes": 352020,
+      "totalChunks": 2580,
+      "outputSHA256": "583e3a7a6fff13c380ad4b6759dc37be778f05d620257dd983e0332b528d33ca"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-128",
+      "block": 1,
+      "round": 0,
+      "pid": 3612,
+      "ms": 47.83095800000001,
+      "completed": 20,
+      "totalBytes": 352020,
+      "totalChunks": 2580,
+      "outputSHA256": "583e3a7a6fff13c380ad4b6759dc37be778f05d620257dd983e0332b528d33ca"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-128",
+      "block": 1,
+      "round": 0,
+      "pid": 3614,
+      "ms": 29.66720799999996,
+      "completed": 20,
+      "totalBytes": 352020,
+      "totalChunks": 2580,
+      "outputSHA256": "583e3a7a6fff13c380ad4b6759dc37be778f05d620257dd983e0332b528d33ca"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-128",
+      "block": 1,
+      "round": 1,
+      "pid": 3612,
+      "ms": 45.847208999999964,
+      "completed": 20,
+      "totalBytes": 352020,
+      "totalChunks": 2580,
+      "outputSHA256": "583e3a7a6fff13c380ad4b6759dc37be778f05d620257dd983e0332b528d33ca"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-128",
+      "block": 1,
+      "round": 1,
+      "pid": 3614,
+      "ms": 29.489125,
+      "completed": 20,
+      "totalBytes": 352020,
+      "totalChunks": 2580,
+      "outputSHA256": "583e3a7a6fff13c380ad4b6759dc37be778f05d620257dd983e0332b528d33ca"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-128",
+      "block": 1,
+      "round": 1,
+      "pid": 3613,
+      "ms": 46.06999999999999,
+      "completed": 20,
+      "totalBytes": 352020,
+      "totalChunks": 2580,
+      "outputSHA256": "583e3a7a6fff13c380ad4b6759dc37be778f05d620257dd983e0332b528d33ca"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-128",
+      "block": 1,
+      "round": 2,
+      "pid": 3614,
+      "ms": 28.167125,
+      "completed": 20,
+      "totalBytes": 352020,
+      "totalChunks": 2580,
+      "outputSHA256": "583e3a7a6fff13c380ad4b6759dc37be778f05d620257dd983e0332b528d33ca"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-128",
+      "block": 1,
+      "round": 2,
+      "pid": 3613,
+      "ms": 44.804291999999975,
+      "completed": 20,
+      "totalBytes": 352020,
+      "totalChunks": 2580,
+      "outputSHA256": "583e3a7a6fff13c380ad4b6759dc37be778f05d620257dd983e0332b528d33ca"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-128",
+      "block": 1,
+      "round": 2,
+      "pid": 3612,
+      "ms": 44.97116600000004,
+      "completed": 20,
+      "totalBytes": 352020,
+      "totalChunks": 2580,
+      "outputSHA256": "583e3a7a6fff13c380ad4b6759dc37be778f05d620257dd983e0332b528d33ca"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-512",
+      "block": 1,
+      "round": 0,
+      "pid": 3613,
+      "ms": 645.2313750000001,
+      "completed": 20,
+      "totalBytes": 1304340,
+      "totalChunks": 10260,
+      "outputSHA256": "4495c63b4d320fb0fb87f14ca92e601607abc1fb985b5f0d830da1c5b79ac9ab"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-512",
+      "block": 1,
+      "round": 0,
+      "pid": 3612,
+      "ms": 667.5751249999998,
+      "completed": 20,
+      "totalBytes": 1304340,
+      "totalChunks": 10260,
+      "outputSHA256": "4495c63b4d320fb0fb87f14ca92e601607abc1fb985b5f0d830da1c5b79ac9ab"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-512",
+      "block": 1,
+      "round": 0,
+      "pid": 3614,
+      "ms": 332.9931660000002,
+      "completed": 20,
+      "totalBytes": 1304340,
+      "totalChunks": 10260,
+      "outputSHA256": "4495c63b4d320fb0fb87f14ca92e601607abc1fb985b5f0d830da1c5b79ac9ab"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-512",
+      "block": 1,
+      "round": 1,
+      "pid": 3612,
+      "ms": 659.6722090000003,
+      "completed": 20,
+      "totalBytes": 1304340,
+      "totalChunks": 10260,
+      "outputSHA256": "4495c63b4d320fb0fb87f14ca92e601607abc1fb985b5f0d830da1c5b79ac9ab"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-512",
+      "block": 1,
+      "round": 1,
+      "pid": 3614,
+      "ms": 330.62112499999967,
+      "completed": 20,
+      "totalBytes": 1304340,
+      "totalChunks": 10260,
+      "outputSHA256": "4495c63b4d320fb0fb87f14ca92e601607abc1fb985b5f0d830da1c5b79ac9ab"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-512",
+      "block": 1,
+      "round": 1,
+      "pid": 3613,
+      "ms": 630.7927089999998,
+      "completed": 20,
+      "totalBytes": 1304340,
+      "totalChunks": 10260,
+      "outputSHA256": "4495c63b4d320fb0fb87f14ca92e601607abc1fb985b5f0d830da1c5b79ac9ab"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-512",
+      "block": 1,
+      "round": 2,
+      "pid": 3614,
+      "ms": 312.29262500000004,
+      "completed": 20,
+      "totalBytes": 1304340,
+      "totalChunks": 10260,
+      "outputSHA256": "4495c63b4d320fb0fb87f14ca92e601607abc1fb985b5f0d830da1c5b79ac9ab"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-512",
+      "block": 1,
+      "round": 2,
+      "pid": 3613,
+      "ms": 628.4697920000008,
+      "completed": 20,
+      "totalBytes": 1304340,
+      "totalChunks": 10260,
+      "outputSHA256": "4495c63b4d320fb0fb87f14ca92e601607abc1fb985b5f0d830da1c5b79ac9ab"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-512",
+      "block": 1,
+      "round": 2,
+      "pid": 3612,
+      "ms": 632.9675829999996,
+      "completed": 20,
+      "totalBytes": 1304340,
+      "totalChunks": 10260,
+      "outputSHA256": "4495c63b4d320fb0fb87f14ca92e601607abc1fb985b5f0d830da1c5b79ac9ab"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-8",
+      "block": 1,
+      "round": 0,
+      "pid": 3613,
+      "ms": 0.9735409999993863,
+      "completed": 20,
+      "totalBytes": 63820,
+      "totalChunks": 180,
+      "outputSHA256": "da84c4abf31bca3ada7e749e5d612095b39fd52557c2e48d17e4a6cc98247258"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-8",
+      "block": 1,
+      "round": 0,
+      "pid": 3612,
+      "ms": 0.9322080000001733,
+      "completed": 20,
+      "totalBytes": 63820,
+      "totalChunks": 180,
+      "outputSHA256": "da84c4abf31bca3ada7e749e5d612095b39fd52557c2e48d17e4a6cc98247258"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-8",
+      "block": 1,
+      "round": 0,
+      "pid": 3614,
+      "ms": 0.8605000000006839,
+      "completed": 20,
+      "totalBytes": 63820,
+      "totalChunks": 180,
+      "outputSHA256": "da84c4abf31bca3ada7e749e5d612095b39fd52557c2e48d17e4a6cc98247258"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-8",
+      "block": 1,
+      "round": 1,
+      "pid": 3612,
+      "ms": 0.9322500000007494,
+      "completed": 20,
+      "totalBytes": 63820,
+      "totalChunks": 180,
+      "outputSHA256": "da84c4abf31bca3ada7e749e5d612095b39fd52557c2e48d17e4a6cc98247258"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-8",
+      "block": 1,
+      "round": 1,
+      "pid": 3614,
+      "ms": 0.8837919999996302,
+      "completed": 20,
+      "totalBytes": 63820,
+      "totalChunks": 180,
+      "outputSHA256": "da84c4abf31bca3ada7e749e5d612095b39fd52557c2e48d17e4a6cc98247258"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-8",
+      "block": 1,
+      "round": 1,
+      "pid": 3613,
+      "ms": 0.9558749999996508,
+      "completed": 20,
+      "totalBytes": 63820,
+      "totalChunks": 180,
+      "outputSHA256": "da84c4abf31bca3ada7e749e5d612095b39fd52557c2e48d17e4a6cc98247258"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-8",
+      "block": 1,
+      "round": 2,
+      "pid": 3614,
+      "ms": 0.7577499999997599,
+      "completed": 20,
+      "totalBytes": 63820,
+      "totalChunks": 180,
+      "outputSHA256": "da84c4abf31bca3ada7e749e5d612095b39fd52557c2e48d17e4a6cc98247258"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-8",
+      "block": 1,
+      "round": 2,
+      "pid": 3613,
+      "ms": 0.8859169999996084,
+      "completed": 20,
+      "totalBytes": 63820,
+      "totalChunks": 180,
+      "outputSHA256": "da84c4abf31bca3ada7e749e5d612095b39fd52557c2e48d17e4a6cc98247258"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-8",
+      "block": 1,
+      "round": 2,
+      "pid": 3612,
+      "ms": 0.9715829999995549,
+      "completed": 20,
+      "totalBytes": 63820,
+      "totalChunks": 180,
+      "outputSHA256": "da84c4abf31bca3ada7e749e5d612095b39fd52557c2e48d17e4a6cc98247258"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-128",
+      "block": 2,
+      "round": 0,
+      "pid": 3644,
+      "ms": 47.67366700000001,
+      "completed": 20,
+      "totalBytes": 352020,
+      "totalChunks": 2580,
+      "outputSHA256": "583e3a7a6fff13c380ad4b6759dc37be778f05d620257dd983e0332b528d33ca"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-128",
+      "block": 2,
+      "round": 0,
+      "pid": 3643,
+      "ms": 47.282917,
+      "completed": 20,
+      "totalBytes": 352020,
+      "totalChunks": 2580,
+      "outputSHA256": "583e3a7a6fff13c380ad4b6759dc37be778f05d620257dd983e0332b528d33ca"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-128",
+      "block": 2,
+      "round": 0,
+      "pid": 3645,
+      "ms": 30.42587499999999,
+      "completed": 20,
+      "totalBytes": 352020,
+      "totalChunks": 2580,
+      "outputSHA256": "583e3a7a6fff13c380ad4b6759dc37be778f05d620257dd983e0332b528d33ca"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-128",
+      "block": 2,
+      "round": 1,
+      "pid": 3643,
+      "ms": 48.804666999999995,
+      "completed": 20,
+      "totalBytes": 352020,
+      "totalChunks": 2580,
+      "outputSHA256": "583e3a7a6fff13c380ad4b6759dc37be778f05d620257dd983e0332b528d33ca"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-128",
+      "block": 2,
+      "round": 1,
+      "pid": 3645,
+      "ms": 30.387792000000047,
+      "completed": 20,
+      "totalBytes": 352020,
+      "totalChunks": 2580,
+      "outputSHA256": "583e3a7a6fff13c380ad4b6759dc37be778f05d620257dd983e0332b528d33ca"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-128",
+      "block": 2,
+      "round": 1,
+      "pid": 3644,
+      "ms": 49.63333399999999,
+      "completed": 20,
+      "totalBytes": 352020,
+      "totalChunks": 2580,
+      "outputSHA256": "583e3a7a6fff13c380ad4b6759dc37be778f05d620257dd983e0332b528d33ca"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-128",
+      "block": 2,
+      "round": 2,
+      "pid": 3645,
+      "ms": 31.57412499999998,
+      "completed": 20,
+      "totalBytes": 352020,
+      "totalChunks": 2580,
+      "outputSHA256": "583e3a7a6fff13c380ad4b6759dc37be778f05d620257dd983e0332b528d33ca"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-128",
+      "block": 2,
+      "round": 2,
+      "pid": 3644,
+      "ms": 50.12766700000003,
+      "completed": 20,
+      "totalBytes": 352020,
+      "totalChunks": 2580,
+      "outputSHA256": "583e3a7a6fff13c380ad4b6759dc37be778f05d620257dd983e0332b528d33ca"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-128",
+      "block": 2,
+      "round": 2,
+      "pid": 3643,
+      "ms": 48.196375000000046,
+      "completed": 20,
+      "totalBytes": 352020,
+      "totalChunks": 2580,
+      "outputSHA256": "583e3a7a6fff13c380ad4b6759dc37be778f05d620257dd983e0332b528d33ca"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-512",
+      "block": 2,
+      "round": 0,
+      "pid": 3643,
+      "ms": 669.6970829999998,
+      "completed": 20,
+      "totalBytes": 1304340,
+      "totalChunks": 10260,
+      "outputSHA256": "4495c63b4d320fb0fb87f14ca92e601607abc1fb985b5f0d830da1c5b79ac9ab"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-512",
+      "block": 2,
+      "round": 0,
+      "pid": 3645,
+      "ms": 338.2470420000002,
+      "completed": 20,
+      "totalBytes": 1304340,
+      "totalChunks": 10260,
+      "outputSHA256": "4495c63b4d320fb0fb87f14ca92e601607abc1fb985b5f0d830da1c5b79ac9ab"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-512",
+      "block": 2,
+      "round": 0,
+      "pid": 3644,
+      "ms": 645.7378750000003,
+      "completed": 20,
+      "totalBytes": 1304340,
+      "totalChunks": 10260,
+      "outputSHA256": "4495c63b4d320fb0fb87f14ca92e601607abc1fb985b5f0d830da1c5b79ac9ab"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-512",
+      "block": 2,
+      "round": 1,
+      "pid": 3645,
+      "ms": 319.0204170000002,
+      "completed": 20,
+      "totalBytes": 1304340,
+      "totalChunks": 10260,
+      "outputSHA256": "4495c63b4d320fb0fb87f14ca92e601607abc1fb985b5f0d830da1c5b79ac9ab"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-512",
+      "block": 2,
+      "round": 1,
+      "pid": 3644,
+      "ms": 633.6033750000001,
+      "completed": 20,
+      "totalBytes": 1304340,
+      "totalChunks": 10260,
+      "outputSHA256": "4495c63b4d320fb0fb87f14ca92e601607abc1fb985b5f0d830da1c5b79ac9ab"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-512",
+      "block": 2,
+      "round": 1,
+      "pid": 3643,
+      "ms": 628.8335410000004,
+      "completed": 20,
+      "totalBytes": 1304340,
+      "totalChunks": 10260,
+      "outputSHA256": "4495c63b4d320fb0fb87f14ca92e601607abc1fb985b5f0d830da1c5b79ac9ab"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-512",
+      "block": 2,
+      "round": 2,
+      "pid": 3644,
+      "ms": 635.3330830000004,
+      "completed": 20,
+      "totalBytes": 1304340,
+      "totalChunks": 10260,
+      "outputSHA256": "4495c63b4d320fb0fb87f14ca92e601607abc1fb985b5f0d830da1c5b79ac9ab"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-512",
+      "block": 2,
+      "round": 2,
+      "pid": 3643,
+      "ms": 635.7364580000003,
+      "completed": 20,
+      "totalBytes": 1304340,
+      "totalChunks": 10260,
+      "outputSHA256": "4495c63b4d320fb0fb87f14ca92e601607abc1fb985b5f0d830da1c5b79ac9ab"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-512",
+      "block": 2,
+      "round": 2,
+      "pid": 3645,
+      "ms": 331.8988330000002,
+      "completed": 20,
+      "totalBytes": 1304340,
+      "totalChunks": 10260,
+      "outputSHA256": "4495c63b4d320fb0fb87f14ca92e601607abc1fb985b5f0d830da1c5b79ac9ab"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-8",
+      "block": 2,
+      "round": 0,
+      "pid": 3644,
+      "ms": 0.9933750000000146,
+      "completed": 20,
+      "totalBytes": 63820,
+      "totalChunks": 180,
+      "outputSHA256": "da84c4abf31bca3ada7e749e5d612095b39fd52557c2e48d17e4a6cc98247258"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-8",
+      "block": 2,
+      "round": 0,
+      "pid": 3645,
+      "ms": 0.8588749999998981,
+      "completed": 20,
+      "totalBytes": 63820,
+      "totalChunks": 180,
+      "outputSHA256": "da84c4abf31bca3ada7e749e5d612095b39fd52557c2e48d17e4a6cc98247258"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-8",
+      "block": 2,
+      "round": 0,
+      "pid": 3643,
+      "ms": 0.9437079999997877,
+      "completed": 20,
+      "totalBytes": 63820,
+      "totalChunks": 180,
+      "outputSHA256": "da84c4abf31bca3ada7e749e5d612095b39fd52557c2e48d17e4a6cc98247258"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-8",
+      "block": 2,
+      "round": 1,
+      "pid": 3645,
+      "ms": 0.852415999999721,
+      "completed": 20,
+      "totalBytes": 63820,
+      "totalChunks": 180,
+      "outputSHA256": "da84c4abf31bca3ada7e749e5d612095b39fd52557c2e48d17e4a6cc98247258"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-8",
+      "block": 2,
+      "round": 1,
+      "pid": 3643,
+      "ms": 0.9537920000002487,
+      "completed": 20,
+      "totalBytes": 63820,
+      "totalChunks": 180,
+      "outputSHA256": "da84c4abf31bca3ada7e749e5d612095b39fd52557c2e48d17e4a6cc98247258"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-8",
+      "block": 2,
+      "round": 1,
+      "pid": 3644,
+      "ms": 1.0501670000003287,
+      "completed": 20,
+      "totalBytes": 63820,
+      "totalChunks": 180,
+      "outputSHA256": "da84c4abf31bca3ada7e749e5d612095b39fd52557c2e48d17e4a6cc98247258"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-8",
+      "block": 2,
+      "round": 2,
+      "pid": 3643,
+      "ms": 0.9461660000006304,
+      "completed": 20,
+      "totalBytes": 63820,
+      "totalChunks": 180,
+      "outputSHA256": "da84c4abf31bca3ada7e749e5d612095b39fd52557c2e48d17e4a6cc98247258"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-8",
+      "block": 2,
+      "round": 2,
+      "pid": 3644,
+      "ms": 0.9976249999999709,
+      "completed": 20,
+      "totalBytes": 63820,
+      "totalChunks": 180,
+      "outputSHA256": "da84c4abf31bca3ada7e749e5d612095b39fd52557c2e48d17e4a6cc98247258"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-8",
+      "block": 2,
+      "round": 2,
+      "pid": 3645,
+      "ms": 0.8868750000001455,
+      "completed": 20,
+      "totalBytes": 63820,
+      "totalChunks": 180,
+      "outputSHA256": "da84c4abf31bca3ada7e749e5d612095b39fd52557c2e48d17e4a6cc98247258"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-32",
+      "block": 2,
+      "round": 0,
+      "pid": 3645,
+      "ms": 3.5714579999994385,
+      "completed": 20,
+      "totalBytes": 120740,
+      "totalChunks": 660,
+      "outputSHA256": "f6eaeb89f1c610a4c311616ebedb37edd5e8144be30c3d094dd0dc0d2b172894"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-32",
+      "block": 2,
+      "round": 0,
+      "pid": 3644,
+      "ms": 4.889957999999751,
+      "completed": 20,
+      "totalBytes": 120740,
+      "totalChunks": 660,
+      "outputSHA256": "f6eaeb89f1c610a4c311616ebedb37edd5e8144be30c3d094dd0dc0d2b172894"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-32",
+      "block": 2,
+      "round": 0,
+      "pid": 3643,
+      "ms": 4.595999999999549,
+      "completed": 20,
+      "totalBytes": 120740,
+      "totalChunks": 660,
+      "outputSHA256": "f6eaeb89f1c610a4c311616ebedb37edd5e8144be30c3d094dd0dc0d2b172894"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-32",
+      "block": 2,
+      "round": 1,
+      "pid": 3644,
+      "ms": 4.8124589999997625,
+      "completed": 20,
+      "totalBytes": 120740,
+      "totalChunks": 660,
+      "outputSHA256": "f6eaeb89f1c610a4c311616ebedb37edd5e8144be30c3d094dd0dc0d2b172894"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-32",
+      "block": 2,
+      "round": 1,
+      "pid": 3643,
+      "ms": 4.595999999999549,
+      "completed": 20,
+      "totalBytes": 120740,
+      "totalChunks": 660,
+      "outputSHA256": "f6eaeb89f1c610a4c311616ebedb37edd5e8144be30c3d094dd0dc0d2b172894"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-32",
+      "block": 2,
+      "round": 1,
+      "pid": 3645,
+      "ms": 3.7197910000004413,
+      "completed": 20,
+      "totalBytes": 120740,
+      "totalChunks": 660,
+      "outputSHA256": "f6eaeb89f1c610a4c311616ebedb37edd5e8144be30c3d094dd0dc0d2b172894"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-32",
+      "block": 2,
+      "round": 2,
+      "pid": 3643,
+      "ms": 4.598499999999149,
+      "completed": 20,
+      "totalBytes": 120740,
+      "totalChunks": 660,
+      "outputSHA256": "f6eaeb89f1c610a4c311616ebedb37edd5e8144be30c3d094dd0dc0d2b172894"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-32",
+      "block": 2,
+      "round": 2,
+      "pid": 3645,
+      "ms": 3.6316249999999854,
+      "completed": 20,
+      "totalBytes": 120740,
+      "totalChunks": 660,
+      "outputSHA256": "f6eaeb89f1c610a4c311616ebedb37edd5e8144be30c3d094dd0dc0d2b172894"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-32",
+      "block": 2,
+      "round": 2,
+      "pid": 3644,
+      "ms": 4.834791000000223,
+      "completed": 20,
+      "totalBytes": 120740,
+      "totalChunks": 660,
+      "outputSHA256": "f6eaeb89f1c610a4c311616ebedb37edd5e8144be30c3d094dd0dc0d2b172894"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-32",
+      "block": 3,
+      "round": 0,
+      "pid": 3664,
+      "ms": 7.178500000000007,
+      "completed": 20,
+      "totalBytes": 120740,
+      "totalChunks": 660,
+      "outputSHA256": "f6eaeb89f1c610a4c311616ebedb37edd5e8144be30c3d094dd0dc0d2b172894"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-32",
+      "block": 3,
+      "round": 0,
+      "pid": 3665,
+      "ms": 6.022542000000001,
+      "completed": 20,
+      "totalBytes": 120740,
+      "totalChunks": 660,
+      "outputSHA256": "f6eaeb89f1c610a4c311616ebedb37edd5e8144be30c3d094dd0dc0d2b172894"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-32",
+      "block": 3,
+      "round": 0,
+      "pid": 3663,
+      "ms": 7.146958000000012,
+      "completed": 20,
+      "totalBytes": 120740,
+      "totalChunks": 660,
+      "outputSHA256": "f6eaeb89f1c610a4c311616ebedb37edd5e8144be30c3d094dd0dc0d2b172894"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-32",
+      "block": 3,
+      "round": 1,
+      "pid": 3665,
+      "ms": 4.7762090000000015,
+      "completed": 20,
+      "totalBytes": 120740,
+      "totalChunks": 660,
+      "outputSHA256": "f6eaeb89f1c610a4c311616ebedb37edd5e8144be30c3d094dd0dc0d2b172894"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-32",
+      "block": 3,
+      "round": 1,
+      "pid": 3663,
+      "ms": 5.991583000000006,
+      "completed": 20,
+      "totalBytes": 120740,
+      "totalChunks": 660,
+      "outputSHA256": "f6eaeb89f1c610a4c311616ebedb37edd5e8144be30c3d094dd0dc0d2b172894"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-32",
+      "block": 3,
+      "round": 1,
+      "pid": 3664,
+      "ms": 6.010958000000002,
+      "completed": 20,
+      "totalBytes": 120740,
+      "totalChunks": 660,
+      "outputSHA256": "f6eaeb89f1c610a4c311616ebedb37edd5e8144be30c3d094dd0dc0d2b172894"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-32",
+      "block": 3,
+      "round": 2,
+      "pid": 3663,
+      "ms": 5.6791669999999925,
+      "completed": 20,
+      "totalBytes": 120740,
+      "totalChunks": 660,
+      "outputSHA256": "f6eaeb89f1c610a4c311616ebedb37edd5e8144be30c3d094dd0dc0d2b172894"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-32",
+      "block": 3,
+      "round": 2,
+      "pid": 3664,
+      "ms": 5.726291000000003,
+      "completed": 20,
+      "totalBytes": 120740,
+      "totalChunks": 660,
+      "outputSHA256": "f6eaeb89f1c610a4c311616ebedb37edd5e8144be30c3d094dd0dc0d2b172894"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-32",
+      "block": 3,
+      "round": 2,
+      "pid": 3665,
+      "ms": 4.544832999999997,
+      "completed": 20,
+      "totalBytes": 120740,
+      "totalChunks": 660,
+      "outputSHA256": "f6eaeb89f1c610a4c311616ebedb37edd5e8144be30c3d094dd0dc0d2b172894"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-128",
+      "block": 3,
+      "round": 0,
+      "pid": 3663,
+      "ms": 50.140499999999975,
+      "completed": 20,
+      "totalBytes": 352020,
+      "totalChunks": 2580,
+      "outputSHA256": "583e3a7a6fff13c380ad4b6759dc37be778f05d620257dd983e0332b528d33ca"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-128",
+      "block": 3,
+      "round": 0,
+      "pid": 3664,
+      "ms": 49.748583999999965,
+      "completed": 20,
+      "totalBytes": 352020,
+      "totalChunks": 2580,
+      "outputSHA256": "583e3a7a6fff13c380ad4b6759dc37be778f05d620257dd983e0332b528d33ca"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-128",
+      "block": 3,
+      "round": 0,
+      "pid": 3665,
+      "ms": 32.141666999999984,
+      "completed": 20,
+      "totalBytes": 352020,
+      "totalChunks": 2580,
+      "outputSHA256": "583e3a7a6fff13c380ad4b6759dc37be778f05d620257dd983e0332b528d33ca"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-128",
+      "block": 3,
+      "round": 1,
+      "pid": 3664,
+      "ms": 47.839583000000005,
+      "completed": 20,
+      "totalBytes": 352020,
+      "totalChunks": 2580,
+      "outputSHA256": "583e3a7a6fff13c380ad4b6759dc37be778f05d620257dd983e0332b528d33ca"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-128",
+      "block": 3,
+      "round": 1,
+      "pid": 3665,
+      "ms": 32.492209,
+      "completed": 20,
+      "totalBytes": 352020,
+      "totalChunks": 2580,
+      "outputSHA256": "583e3a7a6fff13c380ad4b6759dc37be778f05d620257dd983e0332b528d33ca"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-128",
+      "block": 3,
+      "round": 1,
+      "pid": 3663,
+      "ms": 48.14225000000005,
+      "completed": 20,
+      "totalBytes": 352020,
+      "totalChunks": 2580,
+      "outputSHA256": "583e3a7a6fff13c380ad4b6759dc37be778f05d620257dd983e0332b528d33ca"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-128",
+      "block": 3,
+      "round": 2,
+      "pid": 3665,
+      "ms": 29.82933300000002,
+      "completed": 20,
+      "totalBytes": 352020,
+      "totalChunks": 2580,
+      "outputSHA256": "583e3a7a6fff13c380ad4b6759dc37be778f05d620257dd983e0332b528d33ca"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-128",
+      "block": 3,
+      "round": 2,
+      "pid": 3663,
+      "ms": 46.51475000000005,
+      "completed": 20,
+      "totalBytes": 352020,
+      "totalChunks": 2580,
+      "outputSHA256": "583e3a7a6fff13c380ad4b6759dc37be778f05d620257dd983e0332b528d33ca"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-128",
+      "block": 3,
+      "round": 2,
+      "pid": 3664,
+      "ms": 46.81837500000006,
+      "completed": 20,
+      "totalBytes": 352020,
+      "totalChunks": 2580,
+      "outputSHA256": "583e3a7a6fff13c380ad4b6759dc37be778f05d620257dd983e0332b528d33ca"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-8",
+      "block": 3,
+      "round": 0,
+      "pid": 3663,
+      "ms": 0.8503749999999854,
+      "completed": 20,
+      "totalBytes": 63820,
+      "totalChunks": 180,
+      "outputSHA256": "da84c4abf31bca3ada7e749e5d612095b39fd52557c2e48d17e4a6cc98247258"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-8",
+      "block": 3,
+      "round": 0,
+      "pid": 3665,
+      "ms": 0.8240000000000691,
+      "completed": 20,
+      "totalBytes": 63820,
+      "totalChunks": 180,
+      "outputSHA256": "da84c4abf31bca3ada7e749e5d612095b39fd52557c2e48d17e4a6cc98247258"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-8",
+      "block": 3,
+      "round": 0,
+      "pid": 3664,
+      "ms": 0.8789170000000013,
+      "completed": 20,
+      "totalBytes": 63820,
+      "totalChunks": 180,
+      "outputSHA256": "da84c4abf31bca3ada7e749e5d612095b39fd52557c2e48d17e4a6cc98247258"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-8",
+      "block": 3,
+      "round": 1,
+      "pid": 3665,
+      "ms": 0.8508749999999736,
+      "completed": 20,
+      "totalBytes": 63820,
+      "totalChunks": 180,
+      "outputSHA256": "da84c4abf31bca3ada7e749e5d612095b39fd52557c2e48d17e4a6cc98247258"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-8",
+      "block": 3,
+      "round": 1,
+      "pid": 3664,
+      "ms": 0.8320420000000013,
+      "completed": 20,
+      "totalBytes": 63820,
+      "totalChunks": 180,
+      "outputSHA256": "da84c4abf31bca3ada7e749e5d612095b39fd52557c2e48d17e4a6cc98247258"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-8",
+      "block": 3,
+      "round": 1,
+      "pid": 3663,
+      "ms": 0.8730410000000575,
+      "completed": 20,
+      "totalBytes": 63820,
+      "totalChunks": 180,
+      "outputSHA256": "da84c4abf31bca3ada7e749e5d612095b39fd52557c2e48d17e4a6cc98247258"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-8",
+      "block": 3,
+      "round": 2,
+      "pid": 3664,
+      "ms": 0.871167000000014,
+      "completed": 20,
+      "totalBytes": 63820,
+      "totalChunks": 180,
+      "outputSHA256": "da84c4abf31bca3ada7e749e5d612095b39fd52557c2e48d17e4a6cc98247258"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-8",
+      "block": 3,
+      "round": 2,
+      "pid": 3663,
+      "ms": 0.8659579999999778,
+      "completed": 20,
+      "totalBytes": 63820,
+      "totalChunks": 180,
+      "outputSHA256": "da84c4abf31bca3ada7e749e5d612095b39fd52557c2e48d17e4a6cc98247258"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-8",
+      "block": 3,
+      "round": 2,
+      "pid": 3665,
+      "ms": 0.8635000000000446,
+      "completed": 20,
+      "totalBytes": 63820,
+      "totalChunks": 180,
+      "outputSHA256": "da84c4abf31bca3ada7e749e5d612095b39fd52557c2e48d17e4a6cc98247258"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-512",
+      "block": 3,
+      "round": 0,
+      "pid": 3664,
+      "ms": 635.5267920000001,
+      "completed": 20,
+      "totalBytes": 1304340,
+      "totalChunks": 10260,
+      "outputSHA256": "4495c63b4d320fb0fb87f14ca92e601607abc1fb985b5f0d830da1c5b79ac9ab"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-512",
+      "block": 3,
+      "round": 0,
+      "pid": 3663,
+      "ms": 625.0790000000002,
+      "completed": 20,
+      "totalBytes": 1304340,
+      "totalChunks": 10260,
+      "outputSHA256": "4495c63b4d320fb0fb87f14ca92e601607abc1fb985b5f0d830da1c5b79ac9ab"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-512",
+      "block": 3,
+      "round": 0,
+      "pid": 3665,
+      "ms": 312.2412910000003,
+      "completed": 20,
+      "totalBytes": 1304340,
+      "totalChunks": 10260,
+      "outputSHA256": "4495c63b4d320fb0fb87f14ca92e601607abc1fb985b5f0d830da1c5b79ac9ab"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-512",
+      "block": 3,
+      "round": 1,
+      "pid": 3663,
+      "ms": 632.169167,
+      "completed": 20,
+      "totalBytes": 1304340,
+      "totalChunks": 10260,
+      "outputSHA256": "4495c63b4d320fb0fb87f14ca92e601607abc1fb985b5f0d830da1c5b79ac9ab"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-512",
+      "block": 3,
+      "round": 1,
+      "pid": 3665,
+      "ms": 317.6282919999999,
+      "completed": 20,
+      "totalBytes": 1304340,
+      "totalChunks": 10260,
+      "outputSHA256": "4495c63b4d320fb0fb87f14ca92e601607abc1fb985b5f0d830da1c5b79ac9ab"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-512",
+      "block": 3,
+      "round": 1,
+      "pid": 3664,
+      "ms": 623.1900420000002,
+      "completed": 20,
+      "totalBytes": 1304340,
+      "totalChunks": 10260,
+      "outputSHA256": "4495c63b4d320fb0fb87f14ca92e601607abc1fb985b5f0d830da1c5b79ac9ab"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-512",
+      "block": 3,
+      "round": 2,
+      "pid": 3665,
+      "ms": 316.172458,
+      "completed": 20,
+      "totalBytes": 1304340,
+      "totalChunks": 10260,
+      "outputSHA256": "4495c63b4d320fb0fb87f14ca92e601607abc1fb985b5f0d830da1c5b79ac9ab"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-512",
+      "block": 3,
+      "round": 2,
+      "pid": 3664,
+      "ms": 622.2224580000002,
+      "completed": 20,
+      "totalBytes": 1304340,
+      "totalChunks": 10260,
+      "outputSHA256": "4495c63b4d320fb0fb87f14ca92e601607abc1fb985b5f0d830da1c5b79ac9ab"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-512",
+      "block": 3,
+      "round": 2,
+      "pid": 3663,
+      "ms": 633.7614169999997,
+      "completed": 20,
+      "totalBytes": 1304340,
+      "totalChunks": 10260,
+      "outputSHA256": "4495c63b4d320fb0fb87f14ca92e601607abc1fb985b5f0d830da1c5b79ac9ab"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-128",
+      "block": 4,
+      "round": 0,
+      "pid": 3693,
+      "ms": 46.95483300000001,
+      "completed": 20,
+      "totalBytes": 352020,
+      "totalChunks": 2580,
+      "outputSHA256": "583e3a7a6fff13c380ad4b6759dc37be778f05d620257dd983e0332b528d33ca"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-128",
+      "block": 4,
+      "round": 0,
+      "pid": 3692,
+      "ms": 47.012292,
+      "completed": 20,
+      "totalBytes": 352020,
+      "totalChunks": 2580,
+      "outputSHA256": "583e3a7a6fff13c380ad4b6759dc37be778f05d620257dd983e0332b528d33ca"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-128",
+      "block": 4,
+      "round": 0,
+      "pid": 3694,
+      "ms": 29.916791000000018,
+      "completed": 20,
+      "totalBytes": 352020,
+      "totalChunks": 2580,
+      "outputSHA256": "583e3a7a6fff13c380ad4b6759dc37be778f05d620257dd983e0332b528d33ca"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-128",
+      "block": 4,
+      "round": 1,
+      "pid": 3692,
+      "ms": 49.284042,
+      "completed": 20,
+      "totalBytes": 352020,
+      "totalChunks": 2580,
+      "outputSHA256": "583e3a7a6fff13c380ad4b6759dc37be778f05d620257dd983e0332b528d33ca"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-128",
+      "block": 4,
+      "round": 1,
+      "pid": 3694,
+      "ms": 29.303541999999993,
+      "completed": 20,
+      "totalBytes": 352020,
+      "totalChunks": 2580,
+      "outputSHA256": "583e3a7a6fff13c380ad4b6759dc37be778f05d620257dd983e0332b528d33ca"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-128",
+      "block": 4,
+      "round": 1,
+      "pid": 3693,
+      "ms": 49.107083999999986,
+      "completed": 20,
+      "totalBytes": 352020,
+      "totalChunks": 2580,
+      "outputSHA256": "583e3a7a6fff13c380ad4b6759dc37be778f05d620257dd983e0332b528d33ca"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-128",
+      "block": 4,
+      "round": 2,
+      "pid": 3694,
+      "ms": 29.836791000000005,
+      "completed": 20,
+      "totalBytes": 352020,
+      "totalChunks": 2580,
+      "outputSHA256": "583e3a7a6fff13c380ad4b6759dc37be778f05d620257dd983e0332b528d33ca"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-128",
+      "block": 4,
+      "round": 2,
+      "pid": 3693,
+      "ms": 46.80229200000002,
+      "completed": 20,
+      "totalBytes": 352020,
+      "totalChunks": 2580,
+      "outputSHA256": "583e3a7a6fff13c380ad4b6759dc37be778f05d620257dd983e0332b528d33ca"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-128",
+      "block": 4,
+      "round": 2,
+      "pid": 3692,
+      "ms": 47.36445800000007,
+      "completed": 20,
+      "totalBytes": 352020,
+      "totalChunks": 2580,
+      "outputSHA256": "583e3a7a6fff13c380ad4b6759dc37be778f05d620257dd983e0332b528d33ca"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-32",
+      "block": 4,
+      "round": 0,
+      "pid": 3694,
+      "ms": 3.767583000000002,
+      "completed": 20,
+      "totalBytes": 120740,
+      "totalChunks": 660,
+      "outputSHA256": "f6eaeb89f1c610a4c311616ebedb37edd5e8144be30c3d094dd0dc0d2b172894"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-32",
+      "block": 4,
+      "round": 0,
+      "pid": 3692,
+      "ms": 5.070416000000023,
+      "completed": 20,
+      "totalBytes": 120740,
+      "totalChunks": 660,
+      "outputSHA256": "f6eaeb89f1c610a4c311616ebedb37edd5e8144be30c3d094dd0dc0d2b172894"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-32",
+      "block": 4,
+      "round": 0,
+      "pid": 3693,
+      "ms": 4.989084000000048,
+      "completed": 20,
+      "totalBytes": 120740,
+      "totalChunks": 660,
+      "outputSHA256": "f6eaeb89f1c610a4c311616ebedb37edd5e8144be30c3d094dd0dc0d2b172894"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-32",
+      "block": 4,
+      "round": 1,
+      "pid": 3692,
+      "ms": 5.292166000000066,
+      "completed": 20,
+      "totalBytes": 120740,
+      "totalChunks": 660,
+      "outputSHA256": "f6eaeb89f1c610a4c311616ebedb37edd5e8144be30c3d094dd0dc0d2b172894"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-32",
+      "block": 4,
+      "round": 1,
+      "pid": 3693,
+      "ms": 5.002667000000088,
+      "completed": 20,
+      "totalBytes": 120740,
+      "totalChunks": 660,
+      "outputSHA256": "f6eaeb89f1c610a4c311616ebedb37edd5e8144be30c3d094dd0dc0d2b172894"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-32",
+      "block": 4,
+      "round": 1,
+      "pid": 3694,
+      "ms": 3.708750000000066,
+      "completed": 20,
+      "totalBytes": 120740,
+      "totalChunks": 660,
+      "outputSHA256": "f6eaeb89f1c610a4c311616ebedb37edd5e8144be30c3d094dd0dc0d2b172894"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-32",
+      "block": 4,
+      "round": 2,
+      "pid": 3693,
+      "ms": 5.258707999999956,
+      "completed": 20,
+      "totalBytes": 120740,
+      "totalChunks": 660,
+      "outputSHA256": "f6eaeb89f1c610a4c311616ebedb37edd5e8144be30c3d094dd0dc0d2b172894"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-32",
+      "block": 4,
+      "round": 2,
+      "pid": 3694,
+      "ms": 4.280250000000024,
+      "completed": 20,
+      "totalBytes": 120740,
+      "totalChunks": 660,
+      "outputSHA256": "f6eaeb89f1c610a4c311616ebedb37edd5e8144be30c3d094dd0dc0d2b172894"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-32",
+      "block": 4,
+      "round": 2,
+      "pid": 3692,
+      "ms": 5.379000000000019,
+      "completed": 20,
+      "totalBytes": 120740,
+      "totalChunks": 660,
+      "outputSHA256": "f6eaeb89f1c610a4c311616ebedb37edd5e8144be30c3d094dd0dc0d2b172894"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-8",
+      "block": 4,
+      "round": 0,
+      "pid": 3693,
+      "ms": 0.8232909999999265,
+      "completed": 20,
+      "totalBytes": 63820,
+      "totalChunks": 180,
+      "outputSHA256": "da84c4abf31bca3ada7e749e5d612095b39fd52557c2e48d17e4a6cc98247258"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-8",
+      "block": 4,
+      "round": 0,
+      "pid": 3694,
+      "ms": 0.7603330000000597,
+      "completed": 20,
+      "totalBytes": 63820,
+      "totalChunks": 180,
+      "outputSHA256": "da84c4abf31bca3ada7e749e5d612095b39fd52557c2e48d17e4a6cc98247258"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-8",
+      "block": 4,
+      "round": 0,
+      "pid": 3692,
+      "ms": 0.8224579999999833,
+      "completed": 20,
+      "totalBytes": 63820,
+      "totalChunks": 180,
+      "outputSHA256": "da84c4abf31bca3ada7e749e5d612095b39fd52557c2e48d17e4a6cc98247258"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-8",
+      "block": 4,
+      "round": 1,
+      "pid": 3694,
+      "ms": 0.7267919999999322,
+      "completed": 20,
+      "totalBytes": 63820,
+      "totalChunks": 180,
+      "outputSHA256": "da84c4abf31bca3ada7e749e5d612095b39fd52557c2e48d17e4a6cc98247258"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-8",
+      "block": 4,
+      "round": 1,
+      "pid": 3692,
+      "ms": 0.8309169999999995,
+      "completed": 20,
+      "totalBytes": 63820,
+      "totalChunks": 180,
+      "outputSHA256": "da84c4abf31bca3ada7e749e5d612095b39fd52557c2e48d17e4a6cc98247258"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-8",
+      "block": 4,
+      "round": 1,
+      "pid": 3693,
+      "ms": 0.8536660000000893,
+      "completed": 20,
+      "totalBytes": 63820,
+      "totalChunks": 180,
+      "outputSHA256": "da84c4abf31bca3ada7e749e5d612095b39fd52557c2e48d17e4a6cc98247258"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-8",
+      "block": 4,
+      "round": 2,
+      "pid": 3692,
+      "ms": 0.8944589999999835,
+      "completed": 20,
+      "totalBytes": 63820,
+      "totalChunks": 180,
+      "outputSHA256": "da84c4abf31bca3ada7e749e5d612095b39fd52557c2e48d17e4a6cc98247258"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-8",
+      "block": 4,
+      "round": 2,
+      "pid": 3693,
+      "ms": 0.8848749999999654,
+      "completed": 20,
+      "totalBytes": 63820,
+      "totalChunks": 180,
+      "outputSHA256": "da84c4abf31bca3ada7e749e5d612095b39fd52557c2e48d17e4a6cc98247258"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-8",
+      "block": 4,
+      "round": 2,
+      "pid": 3694,
+      "ms": 0.8160419999999249,
+      "completed": 20,
+      "totalBytes": 63820,
+      "totalChunks": 180,
+      "outputSHA256": "da84c4abf31bca3ada7e749e5d612095b39fd52557c2e48d17e4a6cc98247258"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-512",
+      "block": 4,
+      "round": 0,
+      "pid": 3693,
+      "ms": 624.453542,
+      "completed": 20,
+      "totalBytes": 1304340,
+      "totalChunks": 10260,
+      "outputSHA256": "4495c63b4d320fb0fb87f14ca92e601607abc1fb985b5f0d830da1c5b79ac9ab"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-512",
+      "block": 4,
+      "round": 0,
+      "pid": 3694,
+      "ms": 321.01649999999995,
+      "completed": 20,
+      "totalBytes": 1304340,
+      "totalChunks": 10260,
+      "outputSHA256": "4495c63b4d320fb0fb87f14ca92e601607abc1fb985b5f0d830da1c5b79ac9ab"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-512",
+      "block": 4,
+      "round": 0,
+      "pid": 3692,
+      "ms": 630.3702080000003,
+      "completed": 20,
+      "totalBytes": 1304340,
+      "totalChunks": 10260,
+      "outputSHA256": "4495c63b4d320fb0fb87f14ca92e601607abc1fb985b5f0d830da1c5b79ac9ab"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-512",
+      "block": 4,
+      "round": 1,
+      "pid": 3694,
+      "ms": 323.15870799999993,
+      "completed": 20,
+      "totalBytes": 1304340,
+      "totalChunks": 10260,
+      "outputSHA256": "4495c63b4d320fb0fb87f14ca92e601607abc1fb985b5f0d830da1c5b79ac9ab"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-512",
+      "block": 4,
+      "round": 1,
+      "pid": 3692,
+      "ms": 662.3395,
+      "completed": 20,
+      "totalBytes": 1304340,
+      "totalChunks": 10260,
+      "outputSHA256": "4495c63b4d320fb0fb87f14ca92e601607abc1fb985b5f0d830da1c5b79ac9ab"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-512",
+      "block": 4,
+      "round": 1,
+      "pid": 3693,
+      "ms": 660.0642910000001,
+      "completed": 20,
+      "totalBytes": 1304340,
+      "totalChunks": 10260,
+      "outputSHA256": "4495c63b4d320fb0fb87f14ca92e601607abc1fb985b5f0d830da1c5b79ac9ab"
+    },
+    {
+      "variant": "base",
+      "name": "staggered-512",
+      "block": 4,
+      "round": 2,
+      "pid": 3692,
+      "ms": 658.878084,
+      "completed": 20,
+      "totalBytes": 1304340,
+      "totalChunks": 10260,
+      "outputSHA256": "4495c63b4d320fb0fb87f14ca92e601607abc1fb985b5f0d830da1c5b79ac9ab"
+    },
+    {
+      "variant": "control",
+      "name": "staggered-512",
+      "block": 4,
+      "round": 2,
+      "pid": 3693,
+      "ms": 655.2219169999998,
+      "completed": 20,
+      "totalBytes": 1304340,
+      "totalChunks": 10260,
+      "outputSHA256": "4495c63b4d320fb0fb87f14ca92e601607abc1fb985b5f0d830da1c5b79ac9ab"
+    },
+    {
+      "variant": "notifier-reuse",
+      "name": "staggered-512",
+      "block": 4,
+      "round": 2,
+      "pid": 3694,
+      "ms": 312.7383749999999,
+      "completed": 20,
+      "totalBytes": 1304340,
+      "totalChunks": 10260,
+      "outputSHA256": "4495c63b4d320fb0fb87f14ca92e601607abc1fb985b5f0d830da1c5b79ac9ab"
+    }
+  ],
+  "inputs": {
+    "base": {
+      "sha256": "80428dd8ef13a2ccccf551ba67455a0f1bb9acbc0d01371337345d7611864f41",
+      "files": [
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/core/functions.ts",
+          "sha256": "7f9e3286da7abfde91b86bfc2a70f0085aa98726bfd23ba6a3382df10522405d"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/react/shared-internals.ts",
+          "sha256": "5abeef2d413b51e58a6c63f76ec477991081bb030007c0c459a3eed878d794c4"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/react/hooks.ts",
+          "sha256": "aac373f5d2ec1053aa10a33dd932b60472826c7bc7a4843459ec63a66d4fcbc4"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/core/types.ts",
+          "sha256": "8aafcbcdbed63e6461ede6c8d19407c23470024511a48d322c535fc8c6ef722d"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/core/internal.ts",
+          "sha256": "b5377d8b657571c5e9abfef8ef7e1fbd2e79d1732b706a6ae4f1943621c04eb8"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/core/index.ts",
+          "sha256": "9afcb4a85c06b45f125f109d9af0cc75ea0f536b05c930a8c066dd553b58386b"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/core/devtools.ts",
+          "sha256": "f899c2d7045375170cb383801087b9b7dca38175ceb33647a08f1a4e1216a083"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/react/element.ts",
+          "sha256": "fd8a267f9afc0992b9ab66b17b4f104ff5c0189aa204dca6157df31986da25cc"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/react/children.ts",
+          "sha256": "79380a3bb4a69f4ea79e9d0abcba6ebc784f18505ce553fd665bdfbecf9cd891"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/react/suspense.ts",
+          "sha256": "487b236e813138ce54a0931a580254100fa790d429d4423ef09e370176565678"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/react/act.ts",
+          "sha256": "035f53523f34eba876f161d19a9958edaf1b24f2fe8d3977fb9d0e12379cd9fd"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/react/class.ts",
+          "sha256": "bccdcd7290f8a219a0b07028b1cc855f7003fbfa28e852dbfc3d4eb2005c7cb5"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/react/view-transition.ts",
+          "sha256": "deae1edf4bc2b1025b1e63e12f052435a415db3163b86cfb1c9135a3bebfe09b"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/react/context.ts",
+          "sha256": "865b7483cb0f9b790b2859714ad7ab2871010df07a36ae3bb1ff07d0ea16e838"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/react/thenable.ts",
+          "sha256": "fdbcfbee466902e3b87e7f19a0b81098bd526c7f89bb1d4428b11d102b6cce37"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/react/memo.ts",
+          "sha256": "786494c7d963c2c1d8ba7c297bdc0239d8232ff29b1da4075f18f062d1389055"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/react/activity.ts",
+          "sha256": "dac42f0847c53ea6233dd5c04491379f305547acbfbe7d6491728505e66fdf77"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/react/portal.ts",
+          "sha256": "0e0e28608e1dc5ef5e18649e1d8d122206468d4b9b4d1fdbebc36535612d4958"
+        },
+        {
+          "path": "../../../../../../tmp/rd-notifier-delivery/base/src/react/index.ts",
+          "sha256": "047ed4d444590ff2f41c2142c2de612127cca7bd7cbcd015005bb44ffe84edc5"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/react/form-state.ts",
+          "sha256": "e9e20dd64c4a8ef1f963288ec995df144063d262c005ce095c5061351d0fda10"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/react/index.ts",
+          "sha256": "047ed4d444590ff2f41c2142c2de612127cca7bd7cbcd015005bb44ffe84edc5"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/core/browser.ts",
+          "sha256": "07ad11302ef69cc18cc45d6941e22b1b3e1913d6158f8036110203ed9abfa245"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/core/resource-hints.ts",
+          "sha256": "9e921e64d48e1fb7595660c88ae5882ba183c4a6c6c5a9547c774df6bc2e2cb7"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/core/unitless-style.ts",
+          "sha256": "e66d09b21a80f1d2920c672daf8cb93dfcca46f9e28048f10c9964682b1e44bf"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/core/attributes.ts",
+          "sha256": "0f756e90a7443f7d495b0d03d0e6909b83228d964318837b5d78a7acd10a7377"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/server/escape.ts",
+          "sha256": "6cc480f0823a37eed106c5956b545459572016fc8697e104de0ae98a06c7e5e1"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/server/resource-hints.ts",
+          "sha256": "1a6afd6dd99a022f83962b6dec7d865198b0cb3fccfa43c87ec47bb9ba27216b"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/server/dispatcher.ts",
+          "sha256": "5081f738e859d5684248f03fa99e619ea194822adf205c9d4935951488173359"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/core/class-props.ts",
+          "sha256": "693d285a0d573a6b453dcfb20251f0e51014b464779627dbce5c4fcfecdd3788"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/server/walk.ts",
+          "sha256": "689391403e5b257db21b39884969b8e70d968f2701bae3c2ec664dedd6c3faf8"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/server/renderToString.ts",
+          "sha256": "df6eb5070bde0b1b6d690c1cc053be52b3880733190ff76b87e06d8fd045e107"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/server/bootstrap-script.ts",
+          "sha256": "cbe958554ff1df966a7f2de585311bd8ba72bf84e8f95f78a16743b0ab0da243"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/server/stream.ts",
+          "sha256": "320d3842e7b723f5d02da815bebb50239df16493b279346621b05ba911c2defa"
+        },
+        {
+          "path": "../../../../../../tmp/rd-notifier-delivery/base/src/server/index.ts",
+          "sha256": "1b5fa6eb9b09f4a68c0b46cbf20eec8e5f910283230a8ece6513e79ddc2d4410"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/staggered-workload.ts",
+          "sha256": "b28e44bc911d04204edd4d13ce34b55c1578de9743db38893a3b102b325bc915"
+        }
+      ]
+    },
+    "control": {
+      "sha256": "80428dd8ef13a2ccccf551ba67455a0f1bb9acbc0d01371337345d7611864f41",
+      "files": [
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/core/functions.ts",
+          "sha256": "7f9e3286da7abfde91b86bfc2a70f0085aa98726bfd23ba6a3382df10522405d"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/react/shared-internals.ts",
+          "sha256": "5abeef2d413b51e58a6c63f76ec477991081bb030007c0c459a3eed878d794c4"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/react/hooks.ts",
+          "sha256": "aac373f5d2ec1053aa10a33dd932b60472826c7bc7a4843459ec63a66d4fcbc4"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/core/types.ts",
+          "sha256": "8aafcbcdbed63e6461ede6c8d19407c23470024511a48d322c535fc8c6ef722d"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/core/internal.ts",
+          "sha256": "b5377d8b657571c5e9abfef8ef7e1fbd2e79d1732b706a6ae4f1943621c04eb8"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/core/index.ts",
+          "sha256": "9afcb4a85c06b45f125f109d9af0cc75ea0f536b05c930a8c066dd553b58386b"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/core/devtools.ts",
+          "sha256": "f899c2d7045375170cb383801087b9b7dca38175ceb33647a08f1a4e1216a083"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/react/element.ts",
+          "sha256": "fd8a267f9afc0992b9ab66b17b4f104ff5c0189aa204dca6157df31986da25cc"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/react/children.ts",
+          "sha256": "79380a3bb4a69f4ea79e9d0abcba6ebc784f18505ce553fd665bdfbecf9cd891"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/react/suspense.ts",
+          "sha256": "487b236e813138ce54a0931a580254100fa790d429d4423ef09e370176565678"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/react/act.ts",
+          "sha256": "035f53523f34eba876f161d19a9958edaf1b24f2fe8d3977fb9d0e12379cd9fd"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/react/class.ts",
+          "sha256": "bccdcd7290f8a219a0b07028b1cc855f7003fbfa28e852dbfc3d4eb2005c7cb5"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/react/view-transition.ts",
+          "sha256": "deae1edf4bc2b1025b1e63e12f052435a415db3163b86cfb1c9135a3bebfe09b"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/react/context.ts",
+          "sha256": "865b7483cb0f9b790b2859714ad7ab2871010df07a36ae3bb1ff07d0ea16e838"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/react/thenable.ts",
+          "sha256": "fdbcfbee466902e3b87e7f19a0b81098bd526c7f89bb1d4428b11d102b6cce37"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/react/memo.ts",
+          "sha256": "786494c7d963c2c1d8ba7c297bdc0239d8232ff29b1da4075f18f062d1389055"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/react/activity.ts",
+          "sha256": "dac42f0847c53ea6233dd5c04491379f305547acbfbe7d6491728505e66fdf77"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/react/portal.ts",
+          "sha256": "0e0e28608e1dc5ef5e18649e1d8d122206468d4b9b4d1fdbebc36535612d4958"
+        },
+        {
+          "path": "../../../../../../tmp/rd-notifier-delivery/base/src/react/index.ts",
+          "sha256": "047ed4d444590ff2f41c2142c2de612127cca7bd7cbcd015005bb44ffe84edc5"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/react/form-state.ts",
+          "sha256": "e9e20dd64c4a8ef1f963288ec995df144063d262c005ce095c5061351d0fda10"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/react/index.ts",
+          "sha256": "047ed4d444590ff2f41c2142c2de612127cca7bd7cbcd015005bb44ffe84edc5"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/core/browser.ts",
+          "sha256": "07ad11302ef69cc18cc45d6941e22b1b3e1913d6158f8036110203ed9abfa245"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/core/resource-hints.ts",
+          "sha256": "9e921e64d48e1fb7595660c88ae5882ba183c4a6c6c5a9547c774df6bc2e2cb7"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/core/unitless-style.ts",
+          "sha256": "e66d09b21a80f1d2920c672daf8cb93dfcca46f9e28048f10c9964682b1e44bf"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/core/attributes.ts",
+          "sha256": "0f756e90a7443f7d495b0d03d0e6909b83228d964318837b5d78a7acd10a7377"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/server/escape.ts",
+          "sha256": "6cc480f0823a37eed106c5956b545459572016fc8697e104de0ae98a06c7e5e1"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/server/resource-hints.ts",
+          "sha256": "1a6afd6dd99a022f83962b6dec7d865198b0cb3fccfa43c87ec47bb9ba27216b"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/server/dispatcher.ts",
+          "sha256": "5081f738e859d5684248f03fa99e619ea194822adf205c9d4935951488173359"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/core/class-props.ts",
+          "sha256": "693d285a0d573a6b453dcfb20251f0e51014b464779627dbce5c4fcfecdd3788"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/server/walk.ts",
+          "sha256": "689391403e5b257db21b39884969b8e70d968f2701bae3c2ec664dedd6c3faf8"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/server/renderToString.ts",
+          "sha256": "df6eb5070bde0b1b6d690c1cc053be52b3880733190ff76b87e06d8fd045e107"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/server/bootstrap-script.ts",
+          "sha256": "cbe958554ff1df966a7f2de585311bd8ba72bf84e8f95f78a16743b0ab0da243"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/base/src/server/stream.ts",
+          "sha256": "320d3842e7b723f5d02da815bebb50239df16493b279346621b05ba911c2defa"
+        },
+        {
+          "path": "../../../../../../tmp/rd-notifier-delivery/base/src/server/index.ts",
+          "sha256": "1b5fa6eb9b09f4a68c0b46cbf20eec8e5f910283230a8ece6513e79ddc2d4410"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/staggered-workload.ts",
+          "sha256": "b28e44bc911d04204edd4d13ce34b55c1578de9743db38893a3b102b325bc915"
+        }
+      ]
+    },
+    "notifier-reuse": {
+      "sha256": "b1a4a81f11eaee6e30f4d536894e5318f733bf89bdcd8f3b3690510134a233ad",
+      "files": [
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/notifier-reuse/src/core/functions.ts",
+          "sha256": "7f9e3286da7abfde91b86bfc2a70f0085aa98726bfd23ba6a3382df10522405d"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/notifier-reuse/src/react/shared-internals.ts",
+          "sha256": "5abeef2d413b51e58a6c63f76ec477991081bb030007c0c459a3eed878d794c4"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/notifier-reuse/src/react/hooks.ts",
+          "sha256": "aac373f5d2ec1053aa10a33dd932b60472826c7bc7a4843459ec63a66d4fcbc4"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/notifier-reuse/src/core/types.ts",
+          "sha256": "8aafcbcdbed63e6461ede6c8d19407c23470024511a48d322c535fc8c6ef722d"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/notifier-reuse/src/core/internal.ts",
+          "sha256": "b5377d8b657571c5e9abfef8ef7e1fbd2e79d1732b706a6ae4f1943621c04eb8"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/notifier-reuse/src/core/index.ts",
+          "sha256": "9afcb4a85c06b45f125f109d9af0cc75ea0f536b05c930a8c066dd553b58386b"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/notifier-reuse/src/core/devtools.ts",
+          "sha256": "f899c2d7045375170cb383801087b9b7dca38175ceb33647a08f1a4e1216a083"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/notifier-reuse/src/react/element.ts",
+          "sha256": "fd8a267f9afc0992b9ab66b17b4f104ff5c0189aa204dca6157df31986da25cc"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/notifier-reuse/src/react/children.ts",
+          "sha256": "79380a3bb4a69f4ea79e9d0abcba6ebc784f18505ce553fd665bdfbecf9cd891"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/notifier-reuse/src/react/suspense.ts",
+          "sha256": "487b236e813138ce54a0931a580254100fa790d429d4423ef09e370176565678"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/notifier-reuse/src/react/act.ts",
+          "sha256": "035f53523f34eba876f161d19a9958edaf1b24f2fe8d3977fb9d0e12379cd9fd"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/notifier-reuse/src/react/class.ts",
+          "sha256": "bccdcd7290f8a219a0b07028b1cc855f7003fbfa28e852dbfc3d4eb2005c7cb5"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/notifier-reuse/src/react/view-transition.ts",
+          "sha256": "deae1edf4bc2b1025b1e63e12f052435a415db3163b86cfb1c9135a3bebfe09b"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/notifier-reuse/src/react/context.ts",
+          "sha256": "865b7483cb0f9b790b2859714ad7ab2871010df07a36ae3bb1ff07d0ea16e838"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/notifier-reuse/src/react/thenable.ts",
+          "sha256": "fdbcfbee466902e3b87e7f19a0b81098bd526c7f89bb1d4428b11d102b6cce37"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/notifier-reuse/src/react/memo.ts",
+          "sha256": "786494c7d963c2c1d8ba7c297bdc0239d8232ff29b1da4075f18f062d1389055"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/notifier-reuse/src/react/activity.ts",
+          "sha256": "dac42f0847c53ea6233dd5c04491379f305547acbfbe7d6491728505e66fdf77"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/notifier-reuse/src/react/portal.ts",
+          "sha256": "0e0e28608e1dc5ef5e18649e1d8d122206468d4b9b4d1fdbebc36535612d4958"
+        },
+        {
+          "path": "../../../../../../tmp/rd-notifier-delivery/notifier-reuse/src/react/index.ts",
+          "sha256": "047ed4d444590ff2f41c2142c2de612127cca7bd7cbcd015005bb44ffe84edc5"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/notifier-reuse/src/react/form-state.ts",
+          "sha256": "e9e20dd64c4a8ef1f963288ec995df144063d262c005ce095c5061351d0fda10"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/notifier-reuse/src/react/index.ts",
+          "sha256": "047ed4d444590ff2f41c2142c2de612127cca7bd7cbcd015005bb44ffe84edc5"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/notifier-reuse/src/core/browser.ts",
+          "sha256": "07ad11302ef69cc18cc45d6941e22b1b3e1913d6158f8036110203ed9abfa245"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/notifier-reuse/src/core/resource-hints.ts",
+          "sha256": "9e921e64d48e1fb7595660c88ae5882ba183c4a6c6c5a9547c774df6bc2e2cb7"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/notifier-reuse/src/core/unitless-style.ts",
+          "sha256": "e66d09b21a80f1d2920c672daf8cb93dfcca46f9e28048f10c9964682b1e44bf"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/notifier-reuse/src/core/attributes.ts",
+          "sha256": "0f756e90a7443f7d495b0d03d0e6909b83228d964318837b5d78a7acd10a7377"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/notifier-reuse/src/server/escape.ts",
+          "sha256": "6cc480f0823a37eed106c5956b545459572016fc8697e104de0ae98a06c7e5e1"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/notifier-reuse/src/server/resource-hints.ts",
+          "sha256": "1a6afd6dd99a022f83962b6dec7d865198b0cb3fccfa43c87ec47bb9ba27216b"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/notifier-reuse/src/server/dispatcher.ts",
+          "sha256": "5081f738e859d5684248f03fa99e619ea194822adf205c9d4935951488173359"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/notifier-reuse/src/core/class-props.ts",
+          "sha256": "693d285a0d573a6b453dcfb20251f0e51014b464779627dbce5c4fcfecdd3788"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/notifier-reuse/src/server/walk.ts",
+          "sha256": "b6f1d5b124d3acb2641ce94552e766446bb6d1e7389d0a48901324f5cca5618e"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/notifier-reuse/src/server/renderToString.ts",
+          "sha256": "df6eb5070bde0b1b6d690c1cc053be52b3880733190ff76b87e06d8fd045e107"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/notifier-reuse/src/server/bootstrap-script.ts",
+          "sha256": "cbe958554ff1df966a7f2de585311bd8ba72bf84e8f95f78a16743b0ab0da243"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/notifier-reuse/src/server/stream.ts",
+          "sha256": "9522a9297d7a0fa56d03eaa6cedfc0615c95cc10b4b342a06d754e983688da91"
+        },
+        {
+          "path": "../../../../../../tmp/rd-notifier-delivery/notifier-reuse/src/server/index.ts",
+          "sha256": "1b5fa6eb9b09f4a68c0b46cbf20eec8e5f910283230a8ece6513e79ddc2d4410"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-delivery/staggered-workload.ts",
+          "sha256": "b28e44bc911d04204edd4d13ce34b55c1578de9743db38893a3b102b325bc915"
+        }
+      ]
+    }
+  },
+  "blocks": 5,
+  "rounds": 3,
+  "iterations": 20,
+  "comparisons": {
+    "staggered-128": {
+      "control": {
+        "pairedTimeChangePercent": -0.12222122673788416,
+        "blockBootstrap95CI": [
+          -0.37106887555475865,
+          0.8264084045407127
+        ],
+        "independentBlocks": 5
+      },
+      "notifier-reuse": {
+        "pairedTimeChangePercent": -36.36389606360818,
+        "blockBootstrap95CI": [
+          -37.36625596943611,
+          -35.87123869310275
+        ],
+        "independentBlocks": 5
+      }
+    },
+    "staggered-8": {
+      "control": {
+        "pairedTimeChangePercent": 0.601530328264932,
+        "blockBootstrap95CI": [
+          -1.1708491756652561,
+          5.262962696113416
+        ],
+        "independentBlocks": 5
+      },
+      "notifier-reuse": {
+        "pairedTimeChangePercent": -7.692274685421719,
+        "blockBootstrap95CI": [
+          -10.62873247002505,
+          -3.101572835503963
+        ],
+        "independentBlocks": 5
+      }
+    },
+    "staggered-512": {
+      "control": {
+        "pairedTimeChangePercent": -0.9386017811299108,
+        "blockBootstrap95CI": [
+          -1.4203674378190367,
+          -0.3435109939841863
+        ],
+        "independentBlocks": 5
+      },
+      "notifier-reuse": {
+        "pairedTimeChangePercent": -50.11175348972054,
+        "blockBootstrap95CI": [
+          -50.248215322049774,
+          -49.49253168540376
+        ],
+        "independentBlocks": 5
+      }
+    },
+    "staggered-32": {
+      "control": {
+        "pairedTimeChangePercent": 0.44133462096733744,
+        "blockBootstrap95CI": [
+          -1.604049845219302,
+          4.70972584856908
+        ],
+        "independentBlocks": 5
+      },
+      "notifier-reuse": {
+        "pairedTimeChangePercent": -20.89207736857904,
+        "blockBootstrap95CI": [
+          -22.292036553529393,
+          -20.06431901047693
+        ],
+        "independentBlocks": 5
+      }
+    }
+  },
+  "complete": true
+}

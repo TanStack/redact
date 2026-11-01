@@ -200,14 +200,14 @@ function streamBoundary(
   const nonce = scriptNonce(options)
   const task = (async () => {
     try {
-      await Promise.race([b.thenable, state.cancelled])
+      await Promise.race([b[2], state.cancelled])
     } catch {}
     if (state.closed) return
 
     const defer = (error: unknown) => {
-      if (isBrowserError(error)) options.onBrowserBailout?.(error, { componentStack: (error as any).componentStack || b.componentStack })
+      if (isBrowserError(error)) options.onBrowserBailout?.(error, { componentStack: (error as any).componentStack || b[4] })
       else options.onError?.(error)
-      emit(`<script${nonce ? ` nonce="${escapeAttr(nonce)}"` : ''}>$RB(${b.id}${isBrowserError(error) ? '' : ',1'})</script>`)
+      emit(`<script${nonce ? ` nonce="${escapeAttr(nonce)}"` : ''}>$RB(${b[0]}${isBrowserError(error) ? '' : ',1'})</script>`)
     }
     if (state.aborted) { defer(state.reason); return }
 
@@ -219,21 +219,22 @@ function streamBoundary(
     let styles: string[][] | undefined
     const previous = beginSSR(options.identifierPrefix, state.frame)
     state.frame?.resources?.takeStylesheets()
-    const restore = applyContextSnapshot(b.contextSnapshot)
+    const restore = applyContextSnapshot(b[3])
     try {
-      walk(b.children, {
+      walk(b[1], {
         emit: (s) => parts.push(s),
         onSuspend: (n) => sub.push(n),
         nextBoundaryId: () => state.nextId++,
         onBrowserBailout: options.onBrowserBailout,
           onError: options.onError,
-        componentStack: b.componentStack,
+        componentStack: b[4],
         resourceScope,
       })
       state.frame?.resources?.mergeScope(resourceScope)
     } catch (err) {
       if (isThenable(err)) {
-        streamBoundary({ ...b, thenable: err }, emit, options, state)
+        b[2] = err
+        streamBoundary(b, emit, options, state)
       } else defer(err)
       return
     } finally {
@@ -244,7 +245,7 @@ function streamBoundary(
       if (hints) emit(hints)
     }
 
-    emit(`<div hidden id="S:${b.id}">${parts.join('')}</div>${revealScript(b.id, nonce, styles)}`)
+    emit(`<div hidden id="S:${b[0]}">${parts.join('')}</div>${revealScript(b[0], nonce, styles)}`)
 
     // Recurse: any nested suspensions inside the now-revealed content
     for (const s of sub) streamBoundary(s, emit, options, state)
