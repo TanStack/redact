@@ -1,0 +1,413 @@
+{
+  "base": [
+    {
+      "gap": 0,
+      "events": [
+        "first",
+        "second",
+        "error:second sink failed",
+        "destroy:second sink failed"
+      ]
+    },
+    {
+      "gap": 1,
+      "events": [
+        "first",
+        "second",
+        "error:second sink failed",
+        "destroy:second sink failed"
+      ]
+    },
+    {
+      "gap": 2,
+      "events": [
+        "first",
+        "second",
+        "error:second sink failed",
+        "destroy:second sink failed"
+      ]
+    },
+    {
+      "gap": 3,
+      "events": [
+        "first",
+        "second",
+        "error:second sink failed",
+        "destroy:second sink failed"
+      ]
+    },
+    {
+      "gap": 4,
+      "events": [
+        "first",
+        "second",
+        "error:second sink failed",
+        "destroy:second sink failed"
+      ]
+    },
+    {
+      "gap": 5,
+      "events": [
+        "first",
+        "second",
+        "error:second sink failed",
+        "destroy:second sink failed"
+      ]
+    },
+    {
+      "gap": 6,
+      "events": [
+        "first",
+        "second",
+        "error:second sink failed",
+        "destroy:second sink failed"
+      ]
+    },
+    {
+      "gap": 7,
+      "events": [
+        "first",
+        "second",
+        "error:second sink failed",
+        "destroy:second sink failed"
+      ]
+    },
+    {
+      "gap": 8,
+      "events": [
+        "first",
+        "second",
+        "error:second sink failed",
+        "destroy:second sink failed"
+      ]
+    },
+    {
+      "gap": 9,
+      "events": [
+        "first",
+        "second",
+        "error:second sink failed",
+        "destroy:second sink failed"
+      ]
+    },
+    {
+      "gap": 10,
+      "events": [
+        "first",
+        "second",
+        "error:second sink failed",
+        "destroy:second sink failed"
+      ]
+    },
+    {
+      "gap": 11,
+      "events": [
+        "first",
+        "second",
+        "error:second sink failed",
+        "destroy:second sink failed"
+      ]
+    },
+    {
+      "gap": 12,
+      "events": [
+        "first",
+        "second",
+        "error:second sink failed",
+        "destroy:second sink failed"
+      ]
+    },
+    {
+      "gap": 13,
+      "events": [
+        "first",
+        "second",
+        "error:second sink failed",
+        "destroy:second sink failed"
+      ]
+    },
+    {
+      "gap": 14,
+      "events": [
+        "first",
+        "second",
+        "error:second sink failed",
+        "destroy:second sink failed"
+      ]
+    }
+  ],
+  "rejected": [
+    {
+      "gap": 0,
+      "events": [
+        "first",
+        "second",
+        "end",
+        "ready"
+      ]
+    },
+    {
+      "gap": 1,
+      "events": [
+        "first",
+        "second",
+        "end",
+        "ready"
+      ]
+    },
+    {
+      "gap": 2,
+      "events": [
+        "first",
+        "second",
+        "error:second sink failed",
+        "destroy:second sink failed"
+      ]
+    },
+    {
+      "gap": 3,
+      "events": [
+        "first",
+        "second",
+        "error:second sink failed",
+        "destroy:second sink failed"
+      ]
+    },
+    {
+      "gap": 4,
+      "events": [
+        "first",
+        "second",
+        "error:second sink failed",
+        "destroy:second sink failed"
+      ]
+    },
+    {
+      "gap": 5,
+      "events": [
+        "first",
+        "second",
+        "error:second sink failed",
+        "destroy:second sink failed"
+      ]
+    },
+    {
+      "gap": 6,
+      "events": [
+        "first",
+        "second",
+        "error:second sink failed",
+        "destroy:second sink failed"
+      ]
+    },
+    {
+      "gap": 7,
+      "events": [
+        "first",
+        "second",
+        "error:second sink failed",
+        "destroy:second sink failed"
+      ]
+    },
+    {
+      "gap": 8,
+      "events": [
+        "first",
+        "second",
+        "error:second sink failed",
+        "destroy:second sink failed"
+      ]
+    },
+    {
+      "gap": 9,
+      "events": [
+        "first",
+        "second",
+        "error:second sink failed",
+        "destroy:second sink failed"
+      ]
+    },
+    {
+      "gap": 10,
+      "events": [
+        "first",
+        "second",
+        "error:second sink failed",
+        "destroy:second sink failed"
+      ]
+    },
+    {
+      "gap": 11,
+      "events": [
+        "first",
+        "second",
+        "error:second sink failed",
+        "destroy:second sink failed"
+      ]
+    },
+    {
+      "gap": 12,
+      "events": [
+        "first",
+        "second",
+        "error:second sink failed",
+        "destroy:second sink failed"
+      ]
+    },
+    {
+      "gap": 13,
+      "events": [
+        "first",
+        "second",
+        "error:second sink failed",
+        "destroy:second sink failed"
+      ]
+    },
+    {
+      "gap": 14,
+      "events": [
+        "first",
+        "second",
+        "error:second sink failed",
+        "destroy:second sink failed"
+      ]
+    }
+  ],
+  "notifier-reuse": [
+    {
+      "gap": 0,
+      "events": [
+        "first",
+        "second",
+        "error:second sink failed",
+        "destroy:second sink failed"
+      ]
+    },
+    {
+      "gap": 1,
+      "events": [
+        "first",
+        "second",
+        "error:second sink failed",
+        "destroy:second sink failed"
+      ]
+    },
+    {
+      "gap": 2,
+      "events": [
+        "first",
+        "second",
+        "error:second sink failed",
+        "destroy:second sink failed"
+      ]
+    },
+    {
+      "gap": 3,
+      "events": [
+        "first",
+        "second",
+        "error:second sink failed",
+        "destroy:second sink failed"
+      ]
+    },
+    {
+      "gap": 4,
+      "events": [
+        "first",
+        "second",
+        "error:second sink failed",
+        "destroy:second sink failed"
+      ]
+    },
+    {
+      "gap": 5,
+      "events": [
+        "first",
+        "second",
+        "error:second sink failed",
+        "destroy:second sink failed"
+      ]
+    },
+    {
+      "gap": 6,
+      "events": [
+        "first",
+        "second",
+        "error:second sink failed",
+        "destroy:second sink failed"
+      ]
+    },
+    {
+      "gap": 7,
+      "events": [
+        "first",
+        "second",
+        "error:second sink failed",
+        "destroy:second sink failed"
+      ]
+    },
+    {
+      "gap": 8,
+      "events": [
+        "first",
+        "second",
+        "error:second sink failed",
+        "destroy:second sink failed"
+      ]
+    },
+    {
+      "gap": 9,
+      "events": [
+        "first",
+        "second",
+        "error:second sink failed",
+        "destroy:second sink failed"
+      ]
+    },
+    {
+      "gap": 10,
+      "events": [
+        "first",
+        "second",
+        "error:second sink failed",
+        "destroy:second sink failed"
+      ]
+    },
+    {
+      "gap": 11,
+      "events": [
+        "first",
+        "second",
+        "error:second sink failed",
+        "destroy:second sink failed"
+      ]
+    },
+    {
+      "gap": 12,
+      "events": [
+        "first",
+        "second",
+        "error:second sink failed",
+        "destroy:second sink failed"
+      ]
+    },
+    {
+      "gap": 13,
+      "events": [
+        "first",
+        "second",
+        "error:second sink failed",
+        "destroy:second sink failed"
+      ]
+    },
+    {
+      "gap": 14,
+      "events": [
+        "first",
+        "second",
+        "error:second sink failed",
+        "destroy:second sink failed"
+      ]
+    }
+  ]
+}
