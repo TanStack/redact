@@ -46,14 +46,15 @@ const allowances = {
 // The second base only adds the independent SSR change from #123; the affected
 // client inputs and approved row limits are identical.
 const hydrationSplitBases = {
-  "37c051c92cb2cda0f5b609aa29745c164e258d72": "4fae66ed73b8f06d4b912d2317cac2ec4c85c3de4c75f4318b7ec1990e3228c2",
-  "82da568053c186552325a12fdd48a1fb32e27dc1": "dc8c950b2a9961f6e84ee88c1d7e10473f741fe5e8c71703c08e82d2710b70f8"
+  "37c051c92cb2cda0f5b609aa29745c164e258d72": "a59621ef86788ef6af20a7b687e7c2368ca4aecaae40c2ff9f7ef3ff21b98334",
+  "82da568053c186552325a12fdd48a1fb32e27dc1": "acc5edd9e6e466a55b875a06a0e19e1afc7ccb091bac461e638009ff0d1f2712"
 }
 const hydrationSplitInputs = [
   "packages/redact/src",
   "packages/redact/package.json",
   "scripts/build.mjs",
   "scripts/measure-size.mjs",
+  "scripts/test-react-compatibility-size.mjs",
   "pnpm-lock.yaml",
   ".nvmrc",
   ".changeset/strip-streamed-hydration.md"

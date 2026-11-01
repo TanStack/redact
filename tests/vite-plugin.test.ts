@@ -45,7 +45,7 @@ describe('redact vite plugin', () => {
 
   it.each(['ts', 'js'])('redirects disabled registration imports in %s modules', async (extension) => {
     const plugin = findPlugin(redact({ preset: 'nano' }), 'redact')
-    const importer = `/package/${extension === 'ts' ? 'src' : 'dist'}/dom/features/index.${extension}`
+    const importer = `${resolve(import.meta.dirname, '../packages/redact')}/${extension === 'ts' ? 'src' : 'dist'}/dom/features/index.${extension}`
     const calls: Array<string> = []
     const context = {
       async resolve(id: string, from: string, options: any) {
@@ -66,7 +66,7 @@ describe('redact vite plugin', () => {
 
   it.each(['ts', 'js'])('keeps peer imports on the same disabled implementation in %s modules', async (extension) => {
     const plugin = findPlugin(redact({ preset: 'nano' }), 'redact')
-    const importer = `/package/${extension === 'ts' ? 'src' : 'dist'}/dom/features/suspense/full.${extension}`
+    const importer = `${resolve(import.meta.dirname, '../packages/redact')}/${extension === 'ts' ? 'src' : 'dist'}/dom/features/suspense/full.${extension}`
     for (const feature of ['context', 'hydration', 'fragment-refs', 'view-transition', 'class', 'suspense-hydration']) {
       for (const base of [`../${feature}`, `../../features/${feature}`]) {
         const specifier = base + (extension === 'js' ? '/index.js' : '')
@@ -85,7 +85,7 @@ describe('redact vite plugin', () => {
   })
 
   it.each(['ts', 'js'])('does not redirect enabled, unrelated, or RSC imports in %s modules', async (extension) => {
-    const importer = `/package/dist/dom/features/index.${extension}`
+    const importer = `${resolve(import.meta.dirname, '../packages/redact')}/dist/dom/features/index.${extension}`
     const suffix = extension === 'js' ? '/index.js' : ''
     const enabled = findPlugin(redact({ features: { viewTransitions: true } }), 'redact')
     const neverResolve = { resolve() { throw new Error('Unexpected feature redirect') } }
@@ -98,6 +98,17 @@ describe('redact vite plugin', () => {
     await expect(disabled.resolveId.call({
       resolve: async () => ({ id: `/other/context/index.${extension}` }),
     }, `../context${suffix}`, importer)).resolves.toBeNull()
+    for (const feature of ['hydration', 'suspense-hydration']) {
+      await expect(disabled.resolveId.call({
+        resolve: async () => ({ id: `/app/features/${feature}/index.${extension}` }),
+      }, `../${feature}${suffix}`, `/app/page.${extension}`)).resolves.toBeNull()
+    }
+    await expect(disabled.resolveId.call({
+      async resolve(id: string) {
+        expect(id).toBe(`./hydration${suffix}`)
+        return { id: `/app/features/hydration/index.${extension}` }
+      },
+    }, `./hydration${suffix}`, `/app/features/index.${extension}`)).resolves.toBeNull()
     await expect(disabled.resolveId.call(neverResolve, './unknown/index.js', importer)).resolves.toBeNull()
   })
 

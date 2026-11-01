@@ -111,9 +111,9 @@ it.each(hydrationRows)('limits the hydration split allowance to $profile $entry 
   expect(compatibilitySizeAllowance(hydrationBase,{...row,profile:'nano'},'brotli')).toBe(0)
   expect(compatibilitySizeAllowance(hydrationBase,row,'constructor')).toBe(0)
 })
-it('does not transfer the hydration allowance to changed source files',()=>{
+it.each(['packages/redact/src/dom/features/suspense-hydration/full.ts', 'scripts/test-react-compatibility-size.mjs'])('does not transfer the hydration allowance after changing %s',changedFile=>{
   const root=mkdtempSync(resolve(tmpdir(),'redact-hydration-allowance-'))
-  const files=["packages/redact/src", "packages/redact/package.json", "scripts/build.mjs", "scripts/measure-size.mjs", "pnpm-lock.yaml", ".nvmrc", ".changeset/strip-streamed-hydration.md"]
+  const files=["packages/redact/src", "packages/redact/package.json", "scripts/build.mjs", "scripts/measure-size.mjs", "scripts/test-react-compatibility-size.mjs", "pnpm-lock.yaml", ".nvmrc", ".changeset/strip-streamed-hydration.md"]
   try {
     for(const file of ['scripts/compatibility-size-budget.mjs',...files]) {
       const destination=resolve(root,file);mkdirSync(dirname(destination),{recursive:true});cpSync(resolve(import.meta.dirname,'..',file),destination,{recursive:true})
@@ -121,7 +121,7 @@ it('does not transfer the hydration allowance to changed source files',()=>{
     const script=`const {compatibilitySizeAllowance}=await import(${JSON.stringify(pathToFileURL(resolve(root,'scripts/compatibility-size-budget.mjs')).href)});console.log(compatibilitySizeAllowance('${hydrationBase}',{profile:'full',entry:'dom/client',target:'react19'},'brotli'))`
     const read=()=>Number(execFileSync(process.execPath,['--input-type=module','-e',script],{encoding:'utf8'}).trim())
     expect(read()).toBe(82)
-    appendFileSync(resolve(root,'packages/redact/src/dom/features/suspense-hydration/full.ts'),'\n// changed packet\n')
+    appendFileSync(resolve(root,changedFile),'\n// changed packet\n')
     expect(read()).toBe(0)
   } finally {rmSync(root,{recursive:true,force:true})}
 })

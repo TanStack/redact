@@ -330,6 +330,15 @@ export function redact(options: RedactOptions = {}): any {
   let done = false
   let react18Version: string | undefined
   let runtimeRoot: string | undefined
+  const featurePackageDir = options.packageRoots?.['@tanstack/redact'] ?? resolvePath(pluginDir, '../..')
+  let featurePackageRoot = resolvePath(featurePackageDir)
+  try { featurePackageRoot = realpathSync(featurePackageRoot) } catch { /* Package may not be built yet. */ }
+  featurePackageRoot = featurePackageRoot.replaceAll('\\', '/').replace(/\/$/, '')
+  function isRuntimeFeature(id: string): boolean {
+    const path = id.replaceAll('\\', '/')
+    return path.startsWith(featurePackageRoot + '/src/dom/features/') ||
+      path.startsWith(featurePackageRoot + '/dist/dom/features/')
+  }
 
   function resolveAll(root: string): void {
     if (done) return
@@ -417,7 +426,7 @@ export function redact(options: RedactOptions = {}): any {
       // imports a feature by relative path, redirect to that feature's stub
       // if the flag is off. The stub registers a graceful-degradation
       // matcher (e.g. Portal → Fragment) so user code keeps working.
-      if (importer && /[\\/]features[\\/]index\.[jt]sx?$/.test(importer)) {
+      if (importer && isRuntimeFeature(importer) && /[\\/]features[\\/]index\.[jt]sx?$/.test(importer)) {
         const m = id.match(/^\.\/([a-z-]+)(\/index\.js)?$/)
         if (m) {
           const dir = m[1]!
@@ -439,7 +448,7 @@ export function redact(options: RedactOptions = {}): any {
       if (importer && peer && peerKey && !features[peerKey]) {
         const r = await this.resolve(id, importer, { ...opts, skipSelf: true })
         const resolvedFeature = r?.id.match(/features[\\/](context|hydration|fragment-refs|view-transition|class|suspense-runtime|suspense-hydration)[\\/]index\.(ts|js)$/)
-        if (resolvedFeature?.[1] === peer[1]) {
+        if (r && isRuntimeFeature(r.id) && resolvedFeature?.[1] === peer[1]) {
           return r.id.replace(/index\.(ts|js)$/, 'stub.$1')
         }
       }
