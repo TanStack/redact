@@ -38,7 +38,7 @@ export interface PipeableWritable {
 
 export interface OrchestratorState {
   nextId: number
-  pending: Set<Promise<void>>
+  pending: (task?: Promise<void>) => Promise<void> | undefined
   closed: boolean
   errored: unknown | null
   aborted: boolean
@@ -51,8 +51,16 @@ export interface OrchestratorState {
 
 function createState(): OrchestratorState {
   let wake!: () => void
+  let count = 0, notify: ((task: Promise<void>) => void) | undefined
   const state: OrchestratorState = {
-    nextId: 0, pending: new Set(), closed: false, errored: null,
+    nextId: 0, pending(task) {
+      if (task) {
+        count++
+        // Adopt the settled task so sink failures still reject the drain.
+        const done = () => { count--; notify?.(task) }
+        task.then(done, done)
+      } else if (count) return new Promise<void>(resolve => { notify = resolve })
+    }, closed: false, errored: null,
     aborted: false, reason: undefined,
     cancelled: new Promise<void>((resolve) => { wake = resolve }),
     abort(reason) {
@@ -169,7 +177,7 @@ export async function streamHtml(
 
     // 3. Stream suspended boundaries as they resolve
     for (const b of boundaries) streamBoundary(b, emit, options, state)
-    await drain(state)
+    for (let next; (next = state.pending());) await next
   } catch (err) {
     if (isBrowserError(err)) {
       err = new Error('The server render could not complete because client rendering was requested outside a Suspense boundary.',
@@ -241,14 +249,7 @@ function streamBoundary(
     // Recurse: any nested suspensions inside the now-revealed content
     for (const s of sub) streamBoundary(s, emit, options, state)
   })()
-  state.pending.add(task)
-  task.then(() => state.pending.delete(task), () => state.pending.delete(task))
-}
-
-async function drain(state: OrchestratorState): Promise<void> {
-  while (state.pending.size > 0) {
-    await Promise.race(state.pending)
-  }
+  state.pending(task)
 }
 
 function scriptNonce(options: StreamOptions): string | undefined {
