@@ -79,6 +79,8 @@ function collectHostDoms(fiber: Fiber, out: Node[]): void {
     }
     if (fiber.t === FiberTag.Portal)
         return;
+    if (fiber.t === FiberTag.Suspense && fiber.b?.b)
+        out.push(fiber.b.b);
     let c = fiber.c;
     while (c) {
         collectHostDoms(c, out);
@@ -86,6 +88,8 @@ function collectHostDoms(fiber: Fiber, out: Node[]): void {
     }
     if (fiber.t === FiberTag.Suspense && fiber.b?.f)
         collectHostDoms(fiber.b.f, out);
+    if (fiber.t === FiberTag.Suspense && fiber.b?.e)
+        out.push(fiber.b.e);
 }
 export function stageCommit(fiber: Fiber, work: Effect | (() => void), ref = false): void {
     let entries = stagedCommits.get(fiber);
@@ -762,7 +766,7 @@ export function installRenderer(tag: FiberTag, fn: RenderFn): void {
 }
 function findErrorBoundary(fiber: Fiber): Fiber | null {
     for (let parent = fiber.p; parent; parent = parent.p) {
-        if (parent.u || parent.pd)
+        if (parent.u || parent.pd || parent.br)
             continue;
         const instance = parent.i;
         if (instance?._f === parent && (parent.b?.b?.getDerivedStateFromError || instance.componentDidCatch))
@@ -1001,7 +1005,7 @@ function renderHost(fiber: Fiber): void {
             applyHostProps(fiber.n as Element, props, undefined, isSvg, isInput, isTextarea, deferValue);
         }
         updateFragmentHost(fiber, true);
-        if (!hydrated && props.autoFocus && !isSvg && /^(button|input|select|textarea)$/.test(type))
+        if (!hydrated && props.autoFocus && !isSvg && (deferValue || type === 'button'))
             scheduleLifecycle(fiber, () => (fiber.n as HTMLElement).focus());
         attachRef(fiber, fiber.n);
     }
@@ -1222,6 +1226,10 @@ export function removeFiber(fiber: Fiber, remove = true): void {
     if (fiber.t === FiberTag.Suspense && fiber.b?.b) {
         const state = fiber.b;
         state.b._reactRetry = undefined;
+        if (remove && !state.w) {
+            state.b.remove();
+            state.e?.remove();
+        }
         if (remove && state.w) {
             let node: Node | null = state.b;
             while (node) {

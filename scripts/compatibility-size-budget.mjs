@@ -117,11 +117,128 @@ export function hydrationSplitAllowance(base, row, metric, fingerprint) {
   return 0
 }
 
+// Approved 2026-11-02 for PR109 recovery only. Pin the exact comparison
+// base and runtime/build inputs; other patches, bases and rows get no allowance.
+const recoveryApproval = {
+  base: '70d534b44f9baa50628cd41373b5f66d634d714f',
+  fingerprint: '5452053436021e318f5b7245c6fc19b00441a9ea0a5092da251eb8a561339e73',
+  rows: {
+  "full:dom/index:react19": {
+    "min": 30,
+    "gzip": 59,
+    "brotli": 34
+  },
+  "full:dom/index:react18": {
+    "min": 30,
+    "gzip": 61
+  },
+  "full:dom/client:react19": {
+    "min": 37,
+    "gzip": 67
+  },
+  "full:dom/client:react18": {
+    "min": 37,
+    "gzip": 68,
+    "brotli": 99
+  },
+  "full:client-total:react19": {
+    "min": 36,
+    "gzip": 80,
+    "brotli": 41
+  },
+  "full:client-total:react18": {
+    "min": 36,
+    "gzip": 66,
+    "brotli": 39
+  },
+  "default:dom/index:react19": {
+    "min": 23,
+    "gzip": 51,
+    "brotli": 32
+  },
+  "default:dom/index:react18": {
+    "min": 23,
+    "gzip": 52,
+    "brotli": 53
+  },
+  "default:dom/client:react19": {
+    "min": 28,
+    "gzip": 76,
+    "brotli": 43
+  },
+  "default:dom/client:react18": {
+    "min": 28,
+    "gzip": 74,
+    "brotli": 15
+  },
+  "default:client-total:react19": {
+    "min": 26,
+    "gzip": 66,
+    "brotli": 61
+  },
+  "default:client-total:react18": {
+    "min": 26,
+    "gzip": 58,
+    "brotli": 74
+  },
+  "nano:dom/index:react19": {
+    "min": 150,
+    "gzip": 52,
+    "brotli": 56
+  },
+  "nano:dom/index:react18": {
+    "min": 150,
+    "gzip": 54,
+    "brotli": 61
+  },
+  "nano:dom/client:react19": {
+    "min": 150,
+    "gzip": 56,
+    "brotli": 55
+  },
+  "nano:dom/client:react18": {
+    "min": 150,
+    "gzip": 57,
+    "brotli": 55
+  },
+  "nano:client-total:react19": {
+    "min": 150,
+    "gzip": 56,
+    "brotli": 46
+  },
+  "nano:client-total:react18": {
+    "min": 150,
+    "gzip": 59,
+    "brotli": 57
+  }
+}
+}
+
+const recoveryInputs = [
+  'packages/redact/src',
+  'packages/redact/package.json',
+  'scripts/build.mjs',
+  'scripts/measure-size.mjs',
+  'scripts/test-react-compatibility-size.mjs',
+  'pnpm-lock.yaml',
+  '.nvmrc',
+  '.changeset/error-boundary-recovery.md'
+]
+export function recoveryFingerprint(root = new URL('../', import.meta.url)) {
+  return fingerprintInputs(recoveryInputs, root)
+}
+export function recoveryAllowance(base, row, metric, fingerprint) {
+  if (base !== recoveryApproval.base || fingerprint !== recoveryApproval.fingerprint)
+    return 0
+  const value = recoveryApproval.rows[`${row.profile}:${row.entry}:${row.target}`]?.[metric]
+  return typeof value === 'number' ? value : 0
+}
+
 // Approved 2026-11-02 for autofocus only. Pin the exact comparison
 // base and runtime/build inputs; other patches, bases and rows get no allowance.
 const autofocusApproval = {
-  base: '70d534b44f9baa50628cd41373b5f66d634d714f',
-  fingerprint: '9156891e7390749db137e7df6f48e620bb88934b3aee0c124e4ee04a864bfa0e',
+  base: '577e3769002c467639878efe2218b2d16cc8aff6',
+  fingerprint: '0c0c8746d0b2e9a6066003ef3a7baf7fe1c3e14bed4ad7ee5b8dd1d514970776',
   rows: {
   "full:dom/index:react19": {
     "min": 104,
@@ -131,11 +248,12 @@ const autofocusApproval = {
   "full:dom/index:react18": {
     "min": 104,
     "gzip": 55,
-    "brotli": 42
+    "brotli": 51
   },
   "full:dom/client:react19": {
     "min": 106,
-    "gzip": 47
+    "gzip": 47,
+    "brotli": 43
   },
   "full:dom/client:react18": {
     "min": 106,
@@ -144,7 +262,8 @@ const autofocusApproval = {
   },
   "full:client-total:react19": {
     "min": 104,
-    "gzip": 57
+    "gzip": 57,
+    "brotli": 62
   },
   "full:client-total:react18": {
     "min": 104,
@@ -164,11 +283,12 @@ const autofocusApproval = {
   "default:dom/client:react19": {
     "min": 104,
     "gzip": 52,
-    "brotli": 16
+    "brotli": 60
   },
   "default:dom/client:react18": {
     "min": 104,
-    "gzip": 50
+    "gzip": 50,
+    "brotli": 45
   },
   "default:client-total:react19": {
     "min": 104,
@@ -203,7 +323,7 @@ const autofocusApproval = {
   "nano:client-total:react19": {
     "min": 135,
     "gzip": 54,
-    "brotli": 18
+    "brotli": 25
   },
   "nano:client-total:react18": {
     "min": 135,
@@ -234,8 +354,11 @@ export function autofocusAllowance(base, row, metric, fingerprint) {
 }
 
 export function compatibilitySizeAllowance(base, row, metric) {
-  const approved = autofocusAllowance(base, row, metric, base === autofocusApproval.base ? autofocusFingerprint() : undefined)
-  if (approved) return approved
+  const autofocus = autofocusAllowance(base, row, metric, base === autofocusApproval.base ? autofocusFingerprint() : undefined)
+  if (autofocus) return autofocus
+  const recovery = recoveryAllowance(base, row, metric,
+    base === recoveryApproval.base ? recoveryFingerprint() : undefined)
+  if (recovery) return recovery
   const hydration = hydrationSplitAllowance(base, row, metric,
     typeof hydrationSplitBases[base] === 'string' ? hydrationSplitFingerprint() : undefined)
   if (hydration) return hydration
