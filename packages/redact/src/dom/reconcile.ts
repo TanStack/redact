@@ -1,3 +1,4 @@
+import { pendingSuspenseWork } from './features/suspense-pending';
 import { isTextContent } from '../core/functions';
 import { devToolsMetadata, readOwnerStack, runWithOwnerStack } from '../core/devtools';
 import { getRootContainer } from './root-internal';
@@ -19,7 +20,7 @@ import { commitFragmentRef, placeFragmentCommits, updateFragmentHost, refreshFra
 import { isObject } from '../core/functions';
 import { FiberTag, createFiber, REACT_ELEMENT_TYPE, REACT_LEGACY_ELEMENT_TYPE, REACT_FRAGMENT_TYPE, type Fiber, type FiberRoot, type ReactElement, type ReactNode, type Effect, type Hook, } from '../core';
 import { createHostNode, setProp } from './dom';
-import { rememberRefreshRender, scheduleRefreshRoot, commitRefreshRoot, failRefreshRoot, failRefreshBoundary, resolveRefreshType, sameRefreshFamily, needsRefreshRemount } from './refresh';
+import { isRefreshing, rememberRefreshRender, scheduleRefreshRoot, commitRefreshRoot, failRefreshRoot, failRefreshBoundary, resolveRefreshType, sameRefreshFamily, needsRefreshRemount } from './refresh';
 import { forkId, assignReactIds, deferHydration, queueHydrationEnd, finishHydration, adoptHostDom, adoptTextDom, setHydrationCursor, getHydrationCursor, clearHydrationCursor, findHostParent as findHydrationHost, abortHydration, recoverHydration, isHydrationBailout, resumeHydration, } from './features/hydration';
 import { rememberRetainedEffect, setRetainedFlag, disconnectClass } from './retained-effects';
 import { readThenable } from '../react/thenable';
@@ -340,9 +341,19 @@ function renderUpdates(root: FiberRoot, pending: Fiber[], update?: () => void): 
         for (const fiber of pending)
             fiber.g = true;
     update?.();
+    let suspended: Set<Fiber> | undefined;
     for (const fiber of pending) {
         if (!fiber.g || fiber.u || fiber.pd)
             continue;
+        // A failed ancestor attempt restored old child props. Retry that boundary
+        // top-down before processing independently queued descendants.
+        if (suspended) {
+            let suspendedParent = fiber.p;
+            while (suspendedParent && !suspended.has(suspendedParent))
+                suspendedParent = suspendedParent.p;
+            if (suspendedParent)
+                continue;
+        }
         // An ancestor earlier in this batch may have retained this subscriber.
         if (fiber.su) {
             scheduleUpdate(fiber);
@@ -366,6 +377,7 @@ function renderUpdates(root: FiberRoot, pending: Fiber[], update?: () => void): 
             if (error instanceof RenderSuspenseCapture) {
                 rewindCommit(checkpoint);
                 error.b.b.u = true;
+                (suspended ||= new Set()).add(error.b);
                 scheduleUpdate(error.b);
                 continue;
             }
@@ -613,6 +625,7 @@ function renderText(fiber: Fiber): void {
 // readContext never walks the tree because no Provider fibers exist).
 // ---------------------------------------------------------------------------
 export interface Capabilities {
+    o: (fiber: Fiber) => boolean;
     h: (fiber: Fiber, thenable: Promise<any>) => void;
     c: (fiber: Fiber, ctx: any) => any;
     i: (fiber: Fiber) => boolean;
@@ -621,6 +634,7 @@ export interface Capabilities {
     s: (fiber: Fiber) => void;
 }
 const CAPABILITIES: Capabilities = {
+    o: () => false,
     h: defaultHandleSuspended,
     c: defaultReadContext,
     i: () => false,
@@ -1055,6 +1069,13 @@ export function renderNode(fiber: Fiber): void {
             })(fiber);
         fiber.type = resolveRefreshType(fiber.type);
     }
+    // Stable JSX can keep component work while independently queued descendants run.
+    if (fiber.t === FiberTag.Function && fiber.m !== null && fiber.v === fiber.m && !fiber.g && fiber !== forceRerenderingFiber &&
+        !currentRoot?.h && !fiber.ad && !CAPABILITIES.o(fiber) &&
+        (process.env.NODE_ENV === 'production' || !isRefreshing(fiber))) {
+        renderPendingChildren(fiber);
+        return;
+    }
     // Memo consumes pending state when it delegates to its inner renderer.
     if (fiber.t !== FiberTag.Memo)
         fiber.g = false;
@@ -1178,6 +1199,26 @@ const effectQueues: Array<Array<[
     Effect
 ] | LayoutCommit>> = [pendingEffects, pendingInsertionEffects, pendingCommits];
 let stagedCommits = new Map<Fiber, LayoutCommit[]>();
+export function renderPendingChildren(parent: Fiber): void {
+    for (let child = parent.c; child; child = child.s) renderPendingFiber(child);
+    // Visible fallback work belongs to the boundary outside its primary chain.
+    if (parent.t === FiberTag.Suspense && parent.b?.f) renderPendingFiber(parent.b.f);
+}
+function renderPendingFiber(fiber: Fiber): void {
+    if (fiber.su) return;
+    if (fiber.g || CAPABILITIES.o(fiber)) renderNode(fiber);
+    else if (fiber.t === FiberTag.Suspense) {
+        // Discover work without running it outside the boundary's suspension handler.
+        if (pendingSuspenseWork(fiber)) renderNode(fiber);
+    } else renderPendingChildren(fiber);
+}
+export function hasPendingFiber(fiber: Fiber): boolean {
+    if (fiber.su) return false;
+    if (fiber.g || CAPABILITIES.o(fiber)) return true;
+    for (let child = fiber.c; child; child = child.s)
+        if (hasPendingFiber(child)) return true;
+    return !!(fiber.t === FiberTag.Suspense && fiber.b?.f && hasPendingFiber(fiber.b.f));
+}
 function renderChildChain(parent: Fiber): void {
     for (let child = parent.c; child; child = child.s)
         renderNode(child);
