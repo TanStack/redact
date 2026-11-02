@@ -234,7 +234,128 @@ export function recoveryAllowance(base, row, metric, fingerprint) {
   return typeof value === 'number' ? value : 0
 }
 
+// Approved 2026-11-02 for autofocus only. Pin the exact comparison
+// base and runtime/build inputs; other patches, bases and rows get no allowance.
+const autofocusApproval = {
+  base: '577e3769002c467639878efe2218b2d16cc8aff6',
+  fingerprint: '0c0c8746d0b2e9a6066003ef3a7baf7fe1c3e14bed4ad7ee5b8dd1d514970776',
+  rows: {
+  "full:dom/index:react19": {
+    "min": 104,
+    "gzip": 52,
+    "brotli": 80
+  },
+  "full:dom/index:react18": {
+    "min": 104,
+    "gzip": 55,
+    "brotli": 51
+  },
+  "full:dom/client:react19": {
+    "min": 106,
+    "gzip": 47,
+    "brotli": 43
+  },
+  "full:dom/client:react18": {
+    "min": 106,
+    "gzip": 48,
+    "brotli": 70
+  },
+  "full:client-total:react19": {
+    "min": 104,
+    "gzip": 57,
+    "brotli": 62
+  },
+  "full:client-total:react18": {
+    "min": 104,
+    "gzip": 54,
+    "brotli": 58
+  },
+  "default:dom/index:react19": {
+    "min": 104,
+    "gzip": 52,
+    "brotli": 37
+  },
+  "default:dom/index:react18": {
+    "min": 104,
+    "gzip": 44,
+    "brotli": 53
+  },
+  "default:dom/client:react19": {
+    "min": 104,
+    "gzip": 52,
+    "brotli": 60
+  },
+  "default:dom/client:react18": {
+    "min": 104,
+    "gzip": 50,
+    "brotli": 45
+  },
+  "default:client-total:react19": {
+    "min": 104,
+    "gzip": 52,
+    "brotli": 90
+  },
+  "default:client-total:react18": {
+    "min": 104,
+    "gzip": 49,
+    "brotli": 73
+  },
+  "nano:dom/index:react19": {
+    "min": 135,
+    "gzip": 36,
+    "brotli": 41
+  },
+  "nano:dom/index:react18": {
+    "min": 135,
+    "gzip": 37,
+    "brotli": 46
+  },
+  "nano:dom/client:react19": {
+    "min": 135,
+    "gzip": 60,
+    "brotli": 49
+  },
+  "nano:dom/client:react18": {
+    "min": 135,
+    "gzip": 60,
+    "brotli": 57
+  },
+  "nano:client-total:react19": {
+    "min": 135,
+    "gzip": 54,
+    "brotli": 25
+  },
+  "nano:client-total:react18": {
+    "min": 135,
+    "gzip": 48,
+    "brotli": 58
+  }
+}
+}
+
+const autofocusInputs = [
+  'packages/redact/src',
+  'packages/redact/package.json',
+  'scripts/build.mjs',
+  'scripts/measure-size.mjs',
+  'scripts/test-react-compatibility-size.mjs',
+  'pnpm-lock.yaml',
+  '.nvmrc',
+  '.changeset/late-mounted-autofocus.md'
+]
+export function autofocusFingerprint(root = new URL('../', import.meta.url)) {
+  return fingerprintInputs(autofocusInputs, root)
+}
+export function autofocusAllowance(base, row, metric, fingerprint) {
+  if (base !== autofocusApproval.base || fingerprint !== autofocusApproval.fingerprint)
+    return 0
+  const value = autofocusApproval.rows[`${row.profile}:${row.entry}:${row.target}`]?.[metric]
+  return typeof value === 'number' ? value : 0
+}
+
 export function compatibilitySizeAllowance(base, row, metric) {
+  const autofocus = autofocusAllowance(base, row, metric, base === autofocusApproval.base ? autofocusFingerprint() : undefined)
+  if (autofocus) return autofocus
   const recovery = recoveryAllowance(base, row, metric,
     base === recoveryApproval.base ? recoveryFingerprint() : undefined)
   if (recovery) return recovery
