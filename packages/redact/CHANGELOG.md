@@ -1,5 +1,13 @@
 # @tanstack/redact
 
+## 0.2.4
+
+### Patch Changes
+
+- Reduce completion bookkeeping for streamed Suspense boundaries while preserving abort, error and allReady behavior. ([#123](https://github.com/TanStack/redact/pull/123))
+
+- Remove streamed Suspense hydration operations when hydration is disabled. ([#125](https://github.com/TanStack/redact/pull/125))
+
 ## 0.2.3
 
 ### Patch Changes
