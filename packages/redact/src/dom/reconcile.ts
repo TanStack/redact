@@ -764,10 +764,9 @@ export function reconcileChildren(parent: Fiber, nodes: Parameters<typeof reconc
 export function installRenderer(tag: FiberTag, fn: RenderFn): void {
     RENDERERS[tag] = fn;
 }
-export const recoveringBoundaries = new Set<Fiber>();
 function findErrorBoundary(fiber: Fiber): Fiber | null {
     for (let parent = fiber.p; parent; parent = parent.p) {
-        if (parent.u || parent.pd || recoveringBoundaries.has(parent))
+        if (parent.u || parent.pd || parent.br)
             continue;
         const instance = parent.i;
         if (instance?._f === parent && (parent.b?.b?.getDerivedStateFromError || instance.componentDidCatch))

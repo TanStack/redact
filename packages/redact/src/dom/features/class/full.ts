@@ -1,6 +1,6 @@
 import { devToolsMetadata } from '../../../core/devtools';
 import { resolveClassProps } from '../../../core/class-props';
-import { invokeCommit, stageCommit, recoveringBoundaries } from '../../reconcile';
+import { invokeCommit, stageCommit } from '../../reconcile';
 import { installRenderer, reconcileRaw, childrenToArray, scheduleUpdate, scheduleLifecycle, isThenable, handleSuspended, handleErrorInRender, readContext, attachRef, syncRefIfChanged, isActivityHidden, layoutIsDisconnected, RenderErrorCapture, handleCommitError, } from '../../reconcile';
 import { checkpointCommit, rewindCommit, queueBeforeMutation, queueMutation } from '../../commit';
 import { FiberTag, type Fiber, type ReactNode } from '../../../core';
@@ -100,7 +100,7 @@ function renderClass(fiber: Fiber): void {
     }
     // Errors from a recovery tree belong to an enclosing boundary. A nested
     // boundary introduced by that recovery remains eligible to catch them.
-    if (captured) recoveringBoundaries.add(fiber);
+    if (captured) fiber.br = true;
     try {
         if (captured && Ctor.getDerivedStateFromError) {
             const update = Ctor.getDerivedStateFromError(captured.e);
@@ -123,7 +123,7 @@ function renderClass(fiber: Fiber): void {
                 throw error;
             rewindCommit(checkpoint);
             captured = error;
-            recoveringBoundaries.add(fiber);
+            fiber.br = true;
             didRender = true;
             if (Ctor.getDerivedStateFromError) {
                 const update = Ctor.getDerivedStateFromError(error.e);
@@ -138,7 +138,7 @@ function renderClass(fiber: Fiber): void {
         }
     }
     finally {
-        recoveringBoundaries.delete(fiber);
+        fiber.br = false;
     }
     fiber.m = props;
     const state = instance.state;

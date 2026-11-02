@@ -30,6 +30,7 @@ export interface Effect {
     s?: boolean | undefined; // Store subscriptions run in layout but stay connected in Suspense.
 }
 export interface Fiber {
+    br?: boolean; // This boundary is rendering its error recovery tree.
     ix?: number; // Logical child position, including empty slots.
     t: FiberTag; // Tag.
     type: any;
