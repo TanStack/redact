@@ -86,7 +86,7 @@ const hydrationSplitAllowances = {
     "brotli": 20
   }
 }
-export function hydrationSplitFingerprint(root = new URL('../', import.meta.url)) {
+function fingerprintInputs(inputs, root) {
   try {
     const files = []
     function collect(file) {
@@ -94,13 +94,16 @@ export function hydrationSplitFingerprint(root = new URL('../', import.meta.url)
       if (statSync(url).isDirectory()) for (const name of readdirSync(url)) collect(file + '/' + name)
       else files.push(file)
     }
-    for (const file of hydrationSplitInputs) collect(file)
-    const inputs = files.sort().map(file => [file,
+    for (const file of inputs) collect(file)
+    const hashes = files.sort().map(file => [file,
       createHash('sha256').update(readFileSync(new URL(file, root))).digest('hex')])
-    return createHash('sha256').update(JSON.stringify(inputs)).digest('hex')
+    return createHash('sha256').update(JSON.stringify(hashes)).digest('hex')
   } catch {
     return undefined
   }
+}
+export function hydrationSplitFingerprint(root = new URL('../', import.meta.url)) {
+  return fingerprintInputs(hydrationSplitInputs, root)
 }
 
 // Pure approval lookup, kept separate from reading the current checkout so the
@@ -114,7 +117,125 @@ export function hydrationSplitAllowance(base, row, metric, fingerprint) {
   return 0
 }
 
+// Approved 2026-11-02 for autofocus only. Pin the exact comparison
+// base and runtime/build inputs; other patches, bases and rows get no allowance.
+const autofocusApproval = {
+  base: '70d534b44f9baa50628cd41373b5f66d634d714f',
+  fingerprint: '9156891e7390749db137e7df6f48e620bb88934b3aee0c124e4ee04a864bfa0e',
+  rows: {
+  "full:dom/index:react19": {
+    "min": 104,
+    "gzip": 52,
+    "brotli": 80
+  },
+  "full:dom/index:react18": {
+    "min": 104,
+    "gzip": 55,
+    "brotli": 42
+  },
+  "full:dom/client:react19": {
+    "min": 106,
+    "gzip": 47
+  },
+  "full:dom/client:react18": {
+    "min": 106,
+    "gzip": 48,
+    "brotli": 70
+  },
+  "full:client-total:react19": {
+    "min": 104,
+    "gzip": 57
+  },
+  "full:client-total:react18": {
+    "min": 104,
+    "gzip": 54,
+    "brotli": 58
+  },
+  "default:dom/index:react19": {
+    "min": 104,
+    "gzip": 52,
+    "brotli": 37
+  },
+  "default:dom/index:react18": {
+    "min": 104,
+    "gzip": 44,
+    "brotli": 53
+  },
+  "default:dom/client:react19": {
+    "min": 104,
+    "gzip": 52,
+    "brotli": 16
+  },
+  "default:dom/client:react18": {
+    "min": 104,
+    "gzip": 50
+  },
+  "default:client-total:react19": {
+    "min": 104,
+    "gzip": 52,
+    "brotli": 90
+  },
+  "default:client-total:react18": {
+    "min": 104,
+    "gzip": 49,
+    "brotli": 73
+  },
+  "nano:dom/index:react19": {
+    "min": 135,
+    "gzip": 36,
+    "brotli": 41
+  },
+  "nano:dom/index:react18": {
+    "min": 135,
+    "gzip": 37,
+    "brotli": 46
+  },
+  "nano:dom/client:react19": {
+    "min": 135,
+    "gzip": 60,
+    "brotli": 49
+  },
+  "nano:dom/client:react18": {
+    "min": 135,
+    "gzip": 60,
+    "brotli": 57
+  },
+  "nano:client-total:react19": {
+    "min": 135,
+    "gzip": 54,
+    "brotli": 18
+  },
+  "nano:client-total:react18": {
+    "min": 135,
+    "gzip": 48,
+    "brotli": 58
+  }
+}
+}
+
+const autofocusInputs = [
+  'packages/redact/src',
+  'packages/redact/package.json',
+  'scripts/build.mjs',
+  'scripts/measure-size.mjs',
+  'scripts/test-react-compatibility-size.mjs',
+  'pnpm-lock.yaml',
+  '.nvmrc',
+  '.changeset/late-mounted-autofocus.md'
+]
+export function autofocusFingerprint(root = new URL('../', import.meta.url)) {
+  return fingerprintInputs(autofocusInputs, root)
+}
+export function autofocusAllowance(base, row, metric, fingerprint) {
+  if (base !== autofocusApproval.base || fingerprint !== autofocusApproval.fingerprint)
+    return 0
+  const value = autofocusApproval.rows[`${row.profile}:${row.entry}:${row.target}`]?.[metric]
+  return typeof value === 'number' ? value : 0
+}
+
 export function compatibilitySizeAllowance(base, row, metric) {
+  const approved = autofocusAllowance(base, row, metric, base === autofocusApproval.base ? autofocusFingerprint() : undefined)
+  if (approved) return approved
   const hydration = hydrationSplitAllowance(base, row, metric,
     typeof hydrationSplitBases[base] === 'string' ? hydrationSplitFingerprint() : undefined)
   if (hydration) return hydration

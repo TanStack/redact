@@ -4,7 +4,7 @@ import { mkdtempSync, mkdirSync, writeFileSync, appendFileSync, rmSync } from 'n
 import { tmpdir } from 'node:os'
 import { dirname, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
-import { compatibilitySizeAllowance, hydrationSplitAllowance, hydrationSplitFingerprint } from '../scripts/compatibility-size-budget.mjs'
+import { compatibilitySizeAllowance, hydrationSplitAllowance, hydrationSplitFingerprint, autofocusAllowance, autofocusFingerprint } from '../scripts/compatibility-size-budget.mjs'
 
 const base = '89f2bfc58135fdf5fcb29af4c346680e0eda2763'
 const nano = { profile: 'nano', entry: 'client-total', target: 'react19' }
@@ -151,4 +151,20 @@ it.each([
       hydrationSplitAllowance(hydrationBase, row, 'brotli', hydrationSplitFingerprint()),
     )
   } finally { rmSync(root, {recursive: true, force: true}) }
+})
+
+it('limits the approved autofocus comparison to exact inputs and rows', () => {
+  const base = '70d534b44f9baa50628cd41373b5f66d634d714f'
+  const fingerprint = '9156891e7390749db137e7df6f48e620bb88934b3aee0c124e4ee04a864bfa0e'
+  expect(autofocusFingerprint()).toBe(fingerprint)
+  const rows = [{"profile": "full", "entry": "react/index", "target": "react19", "min": 0, "gzip": 0, "brotli": 0}, {"profile": "full", "entry": "react/index", "target": "react18", "min": 0, "gzip": 0, "brotli": 0}, {"profile": "full", "entry": "react/jsx-runtime", "target": "react19", "min": 0, "gzip": 0, "brotli": 0}, {"profile": "full", "entry": "react/jsx-runtime", "target": "react18", "min": 0, "gzip": 0, "brotli": 0}, {"profile": "full", "entry": "dom/index", "target": "react19", "min": 104, "gzip": 52, "brotli": 80}, {"profile": "full", "entry": "dom/index", "target": "react18", "min": 104, "gzip": 55, "brotli": 42}, {"profile": "full", "entry": "dom/client", "target": "react19", "min": 106, "gzip": 47, "brotli": -35}, {"profile": "full", "entry": "dom/client", "target": "react18", "min": 106, "gzip": 48, "brotli": 70}, {"profile": "full", "entry": "server/index", "target": "react19", "min": 0, "gzip": 0, "brotli": 0}, {"profile": "full", "entry": "server/index", "target": "react18", "min": 0, "gzip": 0, "brotli": 0}, {"profile": "full", "entry": "client-total", "target": "react19", "min": 104, "gzip": 57, "brotli": 0}, {"profile": "full", "entry": "client-total", "target": "react18", "min": 104, "gzip": 54, "brotli": 58}, {"profile": "default", "entry": "react/index", "target": "react19", "min": 0, "gzip": 0, "brotli": 0}, {"profile": "default", "entry": "react/index", "target": "react18", "min": 0, "gzip": 0, "brotli": 0}, {"profile": "default", "entry": "react/jsx-runtime", "target": "react19", "min": 0, "gzip": 0, "brotli": 0}, {"profile": "default", "entry": "react/jsx-runtime", "target": "react18", "min": 0, "gzip": 0, "brotli": 0}, {"profile": "default", "entry": "dom/index", "target": "react19", "min": 104, "gzip": 52, "brotli": 37}, {"profile": "default", "entry": "dom/index", "target": "react18", "min": 104, "gzip": 44, "brotli": 53}, {"profile": "default", "entry": "dom/client", "target": "react19", "min": 104, "gzip": 52, "brotli": 16}, {"profile": "default", "entry": "dom/client", "target": "react18", "min": 104, "gzip": 50, "brotli": -7}, {"profile": "default", "entry": "server/index", "target": "react19", "min": 0, "gzip": 0, "brotli": 0}, {"profile": "default", "entry": "server/index", "target": "react18", "min": 0, "gzip": 0, "brotli": 0}, {"profile": "default", "entry": "client-total", "target": "react19", "min": 104, "gzip": 52, "brotli": 90}, {"profile": "default", "entry": "client-total", "target": "react18", "min": 104, "gzip": 49, "brotli": 73}, {"profile": "nano", "entry": "react/index", "target": "react19", "min": 0, "gzip": 0, "brotli": 0}, {"profile": "nano", "entry": "react/index", "target": "react18", "min": 0, "gzip": 0, "brotli": 0}, {"profile": "nano", "entry": "react/jsx-runtime", "target": "react19", "min": 0, "gzip": 0, "brotli": 0}, {"profile": "nano", "entry": "react/jsx-runtime", "target": "react18", "min": 0, "gzip": 0, "brotli": 0}, {"profile": "nano", "entry": "dom/index", "target": "react19", "min": 135, "gzip": 36, "brotli": 41}, {"profile": "nano", "entry": "dom/index", "target": "react18", "min": 135, "gzip": 37, "brotli": 46}, {"profile": "nano", "entry": "dom/client", "target": "react19", "min": 135, "gzip": 60, "brotli": 49}, {"profile": "nano", "entry": "dom/client", "target": "react18", "min": 135, "gzip": 60, "brotli": 57}, {"profile": "nano", "entry": "server/index", "target": "react19", "min": 0, "gzip": 0, "brotli": 0}, {"profile": "nano", "entry": "server/index", "target": "react18", "min": 0, "gzip": 0, "brotli": 0}, {"profile": "nano", "entry": "client-total", "target": "react19", "min": 135, "gzip": 54, "brotli": 18}, {"profile": "nano", "entry": "client-total", "target": "react18", "min": 135, "gzip": 48, "brotli": 58}]
+  for (const row of rows) {
+    for (const metric of ['min','gzip','brotli'] as const) {
+      expect(autofocusAllowance(base,row,metric,fingerprint)).toBe(Math.max(0,row[metric]))
+      expect(autofocusAllowance('other',row,metric,fingerprint)).toBe(0)
+      expect(autofocusAllowance(base,row,metric,'changed')).toBe(0)
+      expect(autofocusAllowance(base,row,metric,undefined)).toBe(0)
+    }
+    expect(autofocusAllowance(base,row,'constructor',fingerprint)).toBe(0)
+  }
 })

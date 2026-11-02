@@ -8,7 +8,7 @@ const SVG_NS = 'http://www.w3.org/2000/svg';
 const IDL_ATTRS = /^(value|checked|selected|disabled|multiple|muted|readonly)$/;
 export const isSvgElement = (el: Element): boolean => (el.namespaceURI === SVG_NS);
 export function setProp(el: Element, name: string, next: any, prev: any, isSvg: boolean): void {
-    if (isReservedProp(name))
+    if (isReservedProp(name) || name === 'autoFocus')
         return;
     // These names need no alias or boolean-attribute normalization.
     if (/^(aria|data)-./.test(name)) {

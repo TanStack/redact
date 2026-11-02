@@ -1001,6 +1001,8 @@ function renderHost(fiber: Fiber): void {
             applyHostProps(fiber.n as Element, props, undefined, isSvg, isInput, isTextarea, deferValue);
         }
         updateFragmentHost(fiber, true);
+        if (!hydrated && props.autoFocus && !isSvg && /^(button|input|select|textarea)$/.test(type))
+            scheduleLifecycle(fiber, () => (fiber.n as HTMLElement).focus());
         attachRef(fiber, fiber.n);
     }
     else if (prev !== props) {
