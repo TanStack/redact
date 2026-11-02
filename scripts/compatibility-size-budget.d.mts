@@ -3,3 +3,12 @@ export declare function compatibilitySizeAllowance(
   row: { profile: string; entry: string; target: string },
   metric: string,
 ): number
+
+export declare function hydrationSplitFingerprint(root?: URL): string | undefined
+
+export declare function hydrationSplitAllowance(
+  base: string | undefined,
+  row: { profile: string; entry: string; target: string },
+  metric: string,
+  fingerprint: string | undefined,
+): number
