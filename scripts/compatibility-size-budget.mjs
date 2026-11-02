@@ -86,7 +86,7 @@ const hydrationSplitAllowances = {
     "brotli": 20
   }
 }
-export function hydrationSplitFingerprint(root = new URL('../', import.meta.url)) {
+function fingerprintInputs(inputs, root) {
   try {
     const files = []
     function collect(file) {
@@ -94,13 +94,16 @@ export function hydrationSplitFingerprint(root = new URL('../', import.meta.url)
       if (statSync(url).isDirectory()) for (const name of readdirSync(url)) collect(file + '/' + name)
       else files.push(file)
     }
-    for (const file of hydrationSplitInputs) collect(file)
-    const inputs = files.sort().map(file => [file,
+    for (const file of inputs) collect(file)
+    const hashes = files.sort().map(file => [file,
       createHash('sha256').update(readFileSync(new URL(file, root))).digest('hex')])
-    return createHash('sha256').update(JSON.stringify(inputs)).digest('hex')
+    return createHash('sha256').update(JSON.stringify(hashes)).digest('hex')
   } catch {
     return undefined
   }
+}
+export function hydrationSplitFingerprint(root = new URL('../', import.meta.url)) {
+  return fingerprintInputs(hydrationSplitInputs, root)
 }
 
 // Pure approval lookup, kept separate from reading the current checkout so the
@@ -114,7 +117,128 @@ export function hydrationSplitAllowance(base, row, metric, fingerprint) {
   return 0
 }
 
+// Approved 2026-11-02 for queuedStore only. Pin the exact comparison
+// base and runtime/build inputs; other patches, bases and rows get no allowance.
+const queuedStoreApproval = {
+  base: '70d534b44f9baa50628cd41373b5f66d634d714f',
+  fingerprint: '0915db720712aa37f9d437acadf759f36b3e1b709c83c638e2ba677f86cf4c5b',
+  rows: {
+  "full:dom/index:react19": {
+    "min": 494,
+    "gzip": 179,
+    "brotli": 101
+  },
+  "full:dom/index:react18": {
+    "min": 494,
+    "gzip": 181,
+    "brotli": 145
+  },
+  "full:dom/client:react19": {
+    "min": 489,
+    "gzip": 155,
+    "brotli": 56
+  },
+  "full:dom/client:react18": {
+    "min": 489,
+    "gzip": 156,
+    "brotli": 115
+  },
+  "full:client-total:react19": {
+    "min": 489,
+    "gzip": 177,
+    "brotli": 147
+  },
+  "full:client-total:react18": {
+    "min": 489,
+    "gzip": 173,
+    "brotli": 126
+  },
+  "default:dom/index:react19": {
+    "min": 494,
+    "gzip": 164,
+    "brotli": 135
+  },
+  "default:dom/index:react18": {
+    "min": 494,
+    "gzip": 157,
+    "brotli": 176
+  },
+  "default:dom/client:react19": {
+    "min": 490,
+    "gzip": 150,
+    "brotli": 102
+  },
+  "default:dom/client:react18": {
+    "min": 490,
+    "gzip": 148,
+    "brotli": 71
+  },
+  "default:client-total:react19": {
+    "min": 488,
+    "gzip": 147,
+    "brotli": 102
+  },
+  "default:client-total:react18": {
+    "min": 488,
+    "gzip": 145,
+    "brotli": 105
+  },
+  "nano:dom/index:react19": {
+    "min": 328,
+    "gzip": 122,
+    "brotli": 149
+  },
+  "nano:dom/index:react18": {
+    "min": 328,
+    "gzip": 122,
+    "brotli": 171
+  },
+  "nano:dom/client:react19": {
+    "min": 327,
+    "gzip": 124,
+    "brotli": 127
+  },
+  "nano:dom/client:react18": {
+    "min": 327,
+    "gzip": 125,
+    "brotli": 127
+  },
+  "nano:client-total:react19": {
+    "min": 329,
+    "gzip": 127,
+    "brotli": 69
+  },
+  "nano:client-total:react18": {
+    "min": 329,
+    "gzip": 132,
+    "brotli": 112
+  }
+}
+}
+
+const queuedStoreInputs = [
+  'packages/redact/src',
+  'packages/redact/package.json',
+  'scripts/build.mjs',
+  'scripts/measure-size.mjs',
+  'scripts/test-react-compatibility-size.mjs',
+  'pnpm-lock.yaml',
+  '.nvmrc',
+  '.changeset/queued-descendant-updates.md'
+]
+export function queuedStoreFingerprint(root = new URL('../', import.meta.url)) {
+  return fingerprintInputs(queuedStoreInputs, root)
+}
+export function queuedStoreAllowance(base, row, metric, fingerprint) {
+  if (base !== queuedStoreApproval.base || fingerprint !== queuedStoreApproval.fingerprint)
+    return 0
+  const value = queuedStoreApproval.rows[`${row.profile}:${row.entry}:${row.target}`]?.[metric]
+  return typeof value === 'number' ? value : 0
+}
+
 export function compatibilitySizeAllowance(base, row, metric) {
+  const approved = queuedStoreAllowance(base, row, metric, base === queuedStoreApproval.base ? queuedStoreFingerprint() : undefined)
+  if (approved) return approved
   const hydration = hydrationSplitAllowance(base, row, metric,
     typeof hydrationSplitBases[base] === 'string' ? hydrationSplitFingerprint() : undefined)
   if (hydration) return hydration

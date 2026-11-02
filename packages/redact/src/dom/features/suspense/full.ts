@@ -192,6 +192,11 @@ export function renderSuspense(fiber: Fiber): void {
     const hadCommittedPrimary = fiber.m && fiber.c;
     state.u = false;
     const checkpoint = checkpointCommit(fiber);
+    // Retried primary work belongs to this attempt, not its old hidden boundary.
+    // The checkpoint restores these update targets if it suspends again.
+    if (state.d)
+        for (let child = fiber.c; child; child = child.s)
+            setUpdateBoundary(child, fiber.su);
     const prevHandler = suspendHandler;
     fiber.cx?.clear();
     let pendingThenable: any;
