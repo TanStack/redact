@@ -1,11 +1,10 @@
 // @vitest-environment node
 import { expect, it } from 'vitest'
-import { mkdtempSync, mkdirSync, cpSync, appendFileSync, rmSync } from 'node:fs'
+import { mkdtempSync, mkdirSync, writeFileSync, appendFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
-import { execFileSync } from 'node:child_process'
-import { compatibilitySizeAllowance } from '../scripts/compatibility-size-budget.mjs'
+import { compatibilitySizeAllowance, hydrationSplitAllowance, hydrationSplitFingerprint } from '../scripts/compatibility-size-budget.mjs'
 
 const base = '89f2bfc58135fdf5fcb29af4c346680e0eda2763'
 const nano = { profile: 'nano', entry: 'client-total', target: 'react19' }
@@ -35,6 +34,7 @@ it('limits the inline metadata allowance to the approved 16-byte Brotli comparis
   expect(compatibilitySizeAllowance('another-base', row, 'brotli')).toBe(0)
 })
 
+const approvedFingerprint = 'acc5edd9e6e466a55b875a06a0e19e1afc7ccb091bac461e638009ff0d1f2712'
 const hydrationBase = '82da568053c186552325a12fdd48a1fb32e27dc1'
 const hydrationRows: Array<{profile:string;entry:string;target:string;allowance:Record<string,number>}> = [
   {
@@ -106,22 +106,49 @@ const hydrationRows: Array<{profile:string;entry:string;target:string;allowance:
 it.each(hydrationRows)('limits the hydration split allowance to $profile $entry $target', ({profile,entry,target,allowance}) => {
   const row={profile,entry,target}
   for(const metric of ['min','gzip','brotli'])
-    expect(compatibilitySizeAllowance(hydrationBase,row,metric)).toBe(allowance[metric] ?? 0)
-  expect(compatibilitySizeAllowance('another-base',row,'brotli')).toBe(0)
-  expect(compatibilitySizeAllowance(hydrationBase,{...row,profile:'nano'},'brotli')).toBe(0)
-  expect(compatibilitySizeAllowance(hydrationBase,row,'constructor')).toBe(0)
+    expect(hydrationSplitAllowance(hydrationBase,row,metric,approvedFingerprint)).toBe(allowance[metric] ?? 0)
+  expect(hydrationSplitAllowance('another-base',row,'brotli',approvedFingerprint)).toBe(0)
+  expect(hydrationSplitAllowance(hydrationBase,{...row,profile:'nano'},'brotli',approvedFingerprint)).toBe(0)
+  expect(hydrationSplitAllowance(hydrationBase,row,'constructor',approvedFingerprint)).toBe(0)
 })
-it.each(['packages/redact/src/dom/features/suspense-hydration/full.ts', 'scripts/test-react-compatibility-size.mjs'])('does not transfer the hydration allowance after changing %s',changedFile=>{
-  const root=mkdtempSync(resolve(tmpdir(),'redact-hydration-allowance-'))
-  const files=["packages/redact/src", "packages/redact/package.json", "scripts/build.mjs", "scripts/measure-size.mjs", "scripts/test-react-compatibility-size.mjs", "pnpm-lock.yaml", ".nvmrc", ".changeset/strip-streamed-hydration.md"]
+it('rejects a missing or changed approval fingerprint', () => {
+  const row = {profile: 'full', entry: 'dom/client', target: 'react19'}
+  expect(hydrationSplitAllowance(hydrationBase, row, 'brotli', undefined)).toBe(0)
+  expect(hydrationSplitAllowance(hydrationBase, row, 'brotli', 'changed')).toBe(0)
+})
+
+it.each([
+  'packages/redact/src/runtime.ts',
+  'scripts/test-react-compatibility-size.mjs',
+  'packages/redact/package.json',
+  '.changeset/strip-streamed-hydration.md',
+])('expires the fingerprint when %s changes or disappears', changedFile => {
+  const root = mkdtempSync(resolve(tmpdir(), 'redact-hydration-allowance-'))
+  const files = ['packages/redact/src/runtime.ts', 'packages/redact/package.json',
+    'scripts/build.mjs', 'scripts/measure-size.mjs', 'scripts/test-react-compatibility-size.mjs',
+    'pnpm-lock.yaml', '.nvmrc', '.changeset/strip-streamed-hydration.md']
   try {
-    for(const file of ['scripts/compatibility-size-budget.mjs',...files]) {
-      const destination=resolve(root,file);mkdirSync(dirname(destination),{recursive:true});cpSync(resolve(import.meta.dirname,'..',file),destination,{recursive:true})
+    for (const file of files) {
+      const destination = resolve(root, file)
+      mkdirSync(dirname(destination), {recursive: true})
+      writeFileSync(destination, file + '\n')
     }
-    const script=`const {compatibilitySizeAllowance}=await import(${JSON.stringify(pathToFileURL(resolve(root,'scripts/compatibility-size-budget.mjs')).href)});console.log(compatibilitySizeAllowance('${hydrationBase}',{profile:'full',entry:'dom/client',target:'react19'},'brotli'))`
-    const read=()=>Number(execFileSync(process.execPath,['--input-type=module','-e',script],{encoding:'utf8'}).trim())
-    expect(read()).toBe(82)
-    appendFileSync(resolve(root,changedFile),'\n// changed packet\n')
-    expect(read()).toBe(0)
-  } finally {rmSync(root,{recursive:true,force:true})}
+    const url = pathToFileURL(root + '/')
+    const original = hydrationSplitFingerprint(url)
+    expect(original).toBe('795d9e3a09349fd995e89558419fa9a088a634524f28aa2cbcfb643c92f6a5eb')
+    appendFileSync(resolve(root, changedFile), 'changed\n')
+    expect(hydrationSplitFingerprint(url)).not.toBe(original)
+    rmSync(resolve(root, changedFile))
+    if (changedFile === 'packages/redact/src/runtime.ts') {
+      expect(hydrationSplitFingerprint(url)).not.toBe(original)
+    } else {
+      expect(hydrationSplitFingerprint(url)).toBeUndefined()
+    }
+    // The production entry point must read its actual checkout, with no way for
+    // a caller to supply the historical approved fingerprint.
+    const row = {profile: 'full', entry: 'dom/client', target: 'react19'}
+    expect(compatibilitySizeAllowance(hydrationBase, row, 'brotli')).toBe(
+      hydrationSplitAllowance(hydrationBase, row, 'brotli', hydrationSplitFingerprint()),
+    )
+  } finally { rmSync(root, {recursive: true, force: true}) }
 })

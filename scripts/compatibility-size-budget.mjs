@@ -86,30 +86,38 @@ const hydrationSplitAllowances = {
     "brotli": 20
   }
 }
-function matchesHydrationSplit(base) {
-  const expected = hydrationSplitBases[base]
-  if (typeof expected !== 'string') return false
+export function hydrationSplitFingerprint(root = new URL('../', import.meta.url)) {
   try {
     const files = []
     function collect(file) {
-      const url = new URL('../' + file, import.meta.url)
+      const url = new URL(file, root)
       if (statSync(url).isDirectory()) for (const name of readdirSync(url)) collect(file + '/' + name)
       else files.push(file)
     }
     for (const file of hydrationSplitInputs) collect(file)
     const inputs = files.sort().map(file => [file,
-      createHash('sha256').update(readFileSync(new URL('../' + file, import.meta.url))).digest('hex')])
-    return createHash('sha256').update(JSON.stringify(inputs)).digest('hex') === expected
+      createHash('sha256').update(readFileSync(new URL(file, root))).digest('hex')])
+    return createHash('sha256').update(JSON.stringify(inputs)).digest('hex')
   } catch {
-    return false
+    return undefined
   }
 }
 
-export function compatibilitySizeAllowance(base, row, metric) {
-  if (matchesHydrationSplit(base)) {
+// Pure approval lookup, kept separate from reading the current checkout so the
+// historical approval remains testable after versioning consumes its Changeset.
+export function hydrationSplitAllowance(base, row, metric, fingerprint) {
+  const expected = hydrationSplitBases[base]
+  if (typeof expected === 'string' && fingerprint === expected) {
     const value = hydrationSplitAllowances[`${row.profile}:${row.entry}:${row.target}`]?.[metric]
     return typeof value === 'number' ? value : 0
   }
+  return 0
+}
+
+export function compatibilitySizeAllowance(base, row, metric) {
+  const hydration = hydrationSplitAllowance(base, row, metric,
+    typeof hydrationSplitBases[base] === 'string' ? hydrationSplitFingerprint() : undefined)
+  if (hydration) return hydration
   // Approved inline-metadata hydration fix, measured against the 0.2.2 base.
   if (base === '0c7274e17a3fade8396169bc6ed024903cd1252d' &&
       row.profile === 'full' && row.entry === 'client-total' &&
