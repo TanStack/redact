@@ -121,67 +121,65 @@ export function hydrationSplitAllowance(base, row, metric, fingerprint) {
 // base and runtime/build inputs; other patches, bases and rows get no allowance.
 const recoveryApproval = {
   base: '70d534b44f9baa50628cd41373b5f66d634d714f',
-  fingerprint: 'fea7c7e83c1c04dbb52dd2f36d9f0961aa13f7fd458fb68764a1e3cbd638fb38',
+  fingerprint: '5452053436021e318f5b7245c6fc19b00441a9ea0a5092da251eb8a561339e73',
   rows: {
   "full:dom/index:react19": {
-    "min": 184,
-    "gzip": 88,
-    "brotli": 55
+    "min": 30,
+    "gzip": 59,
+    "brotli": 34
   },
   "full:dom/index:react18": {
-    "min": 184,
-    "gzip": 90,
-    "brotli": 30
+    "min": 30,
+    "gzip": 61
   },
   "full:dom/client:react19": {
-    "min": 190,
-    "gzip": 97,
-    "brotli": 65
+    "min": 37,
+    "gzip": 67
   },
   "full:dom/client:react18": {
-    "min": 190,
-    "gzip": 98,
-    "brotli": 139
+    "min": 37,
+    "gzip": 68,
+    "brotli": 99
   },
   "full:client-total:react19": {
-    "min": 189,
-    "gzip": 109,
-    "brotli": 49
+    "min": 36,
+    "gzip": 80,
+    "brotli": 41
   },
   "full:client-total:react18": {
-    "min": 189,
-    "gzip": 93,
-    "brotli": 85
+    "min": 36,
+    "gzip": 66,
+    "brotli": 39
   },
   "default:dom/index:react19": {
-    "min": 178,
-    "gzip": 75,
-    "brotli": 49
+    "min": 23,
+    "gzip": 51,
+    "brotli": 32
   },
   "default:dom/index:react18": {
-    "min": 178,
-    "gzip": 68,
-    "brotli": 58
+    "min": 23,
+    "gzip": 52,
+    "brotli": 53
   },
   "default:dom/client:react19": {
-    "min": 186,
-    "gzip": 96,
-    "brotli": 75
+    "min": 28,
+    "gzip": 76,
+    "brotli": 43
   },
   "default:dom/client:react18": {
-    "min": 186,
-    "gzip": 95,
-    "brotli": 54
+    "min": 28,
+    "gzip": 74,
+    "brotli": 15
   },
   "default:client-total:react19": {
-    "min": 182,
-    "gzip": 100,
-    "brotli": 116
+    "min": 26,
+    "gzip": 66,
+    "brotli": 61
   },
   "default:client-total:react18": {
-    "min": 182,
-    "gzip": 93,
-    "brotli": 87
+    "min": 26,
+    "gzip": 58,
+    "brotli": 74
   },
   "nano:dom/index:react19": {
     "min": 150,
@@ -215,6 +213,7 @@ const recoveryApproval = {
   }
 }
 }
+
 const recoveryInputs = [
   'packages/redact/src',
   'packages/redact/package.json',
