@@ -12,6 +12,7 @@ import { build } from 'esbuild'
 import { execFileSync } from 'node:child_process'
 import ts from 'typescript'
 import {
+  existsSync,
   mkdirSync,
   readFileSync,
   rmSync,
@@ -166,7 +167,7 @@ async function buildPackage() {
     const relPath = relative(srcDir, tsFile).replace(/\.ts$/, '')
     // Build adapters run in Node and can leave builtins external. The Next
     // React bridge is browser code, so only its config entry uses Node.
-    const isNodeEntry = relPath.startsWith('vite' + sep) || relPath === 'next' + sep + 'index' || relPath.startsWith('vinext' + sep) || relPath.startsWith('cloudflare' + sep)
+    const isNodeEntry = ['webpack', 'rspack', 'bundler-core', 'vite'].some(dir => relPath.startsWith(dir + sep)) || relPath === 'next' + sep + 'index' || relPath.startsWith('vinext' + sep) || relPath.startsWith('cloudflare' + sep)
     await build({
       absWorkingDir: pkgDir,
       entryPoints: [{ in: tsFile, out: relPath }],
@@ -187,6 +188,12 @@ async function buildPackage() {
 
   for (const loader of ['loader.cjs', 'dev-cache-loader.cjs']) {
     writeFileSync(resolve(distDir, 'next', loader), readFileSync(resolve(srcDir, 'next', loader)))
+  }
+
+  // Compatibility-size checks also build older package trees with this script.
+  if (existsSync(resolve(srcDir, 'webpack/react18-loader.cjs'))) {
+    mkdirSync(resolve(distDir, 'webpack'), { recursive: true })
+    writeFileSync(resolve(distDir, 'webpack/react18-loader.cjs'), readFileSync(resolve(srcDir, 'webpack/react18-loader.cjs')))
   }
 
   // Generate .d.ts files. tsc --emitDeclarationOnly.

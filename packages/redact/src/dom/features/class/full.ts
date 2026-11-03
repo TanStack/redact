@@ -98,38 +98,39 @@ function renderClass(fiber: Fiber): void {
         }
         instance.props = props;
     }
-    if (captured && Ctor.getDerivedStateFromError) {
-        const update = Ctor.getDerivedStateFromError(captured.e);
-        if (update != null)
-            instance.state = { ...instance.state, ...update };
-    }
-    let rendered: ReactNode = captured && !Ctor.getDerivedStateFromError ? null : didRender ? instance.render() : fiber.b?.r;
-    fiber.b = { ...(fiber.b ?? {}), r: rendered };
-    const canCatch = Ctor.getDerivedStateFromError || instance.componentDidCatch;
-    if (canCatch)
-        fiber.b.b = Ctor;
-    if (canCatch && fiber.r)
-        fiber.r.eb = true;
-    const checkpoint = canCatch ? checkpointCommit(fiber) : -1;
+    // Errors from recovery belong to an enclosing boundary. Reuse the same
+    // render path for the first attempt and its fallback so state stays aligned.
     try {
-        reconcileRaw(fiber, rendered);
-    }
-    catch (error) {
-        if (!(error instanceof RenderErrorCapture) || error.b !== fiber)
-            throw error;
-        rewindCommit(checkpoint);
-        captured = error;
-        didRender = true;
-        if (Ctor.getDerivedStateFromError) {
-            const update = Ctor.getDerivedStateFromError(error.e);
-            if (update != null)
-                instance.state = { ...instance.state, ...update };
-            rendered = instance.render();
+        for (;;) {
+            fiber.br = !!captured;
+            if (captured && Ctor.getDerivedStateFromError) {
+                const update = Ctor.getDerivedStateFromError(captured.e);
+                if (update != null)
+                    instance.state = { ...instance.state, ...update };
+            }
+            const rendered: ReactNode = captured && !Ctor.getDerivedStateFromError ? null : didRender ? instance.render() : fiber.b?.r;
+            fiber.b = { ...(fiber.b ?? {}), r: rendered };
+            const canCatch = Ctor.getDerivedStateFromError || instance.componentDidCatch;
+            if (canCatch)
+                fiber.b.b = Ctor;
+            if (canCatch && fiber.r)
+                fiber.r.eb = true;
+            const checkpoint = canCatch ? checkpointCommit(fiber) : -1;
+            try {
+                reconcileRaw(fiber, rendered);
+                break;
+            }
+            catch (error) {
+                if (captured || !(error instanceof RenderErrorCapture) || error.b !== fiber)
+                    throw error;
+                rewindCommit(checkpoint);
+                captured = error;
+                didRender = true;
+            }
         }
-        else
-            rendered = null;
-        fiber.b = { ...(fiber.b ?? {}), r: rendered };
-        reconcileRaw(fiber, rendered);
+    }
+    finally {
+        fiber.br = false;
     }
     fiber.m = props;
     const state = instance.state;

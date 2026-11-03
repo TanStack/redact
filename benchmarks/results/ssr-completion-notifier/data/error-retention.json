@@ -1,0 +1,578 @@
+[
+  {
+    "variant": "base",
+    "repeat": 0,
+    "rows": [
+      {
+        "gap": 0,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 2,
+        "alive": [
+          "sink0",
+          null
+        ]
+      },
+      {
+        "gap": 1,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 2,
+        "alive": [
+          "sink0",
+          null
+        ]
+      },
+      {
+        "gap": 2,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 1,
+        "alive": [
+          "sink0"
+        ]
+      },
+      {
+        "gap": 3,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 1,
+        "alive": [
+          "sink0"
+        ]
+      },
+      {
+        "gap": 4,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 1,
+        "alive": [
+          "sink0"
+        ]
+      },
+      {
+        "gap": 5,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 1,
+        "alive": [
+          "sink0"
+        ]
+      },
+      {
+        "gap": 6,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 1,
+        "alive": [
+          "sink0"
+        ]
+      },
+      {
+        "gap": 7,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 1,
+        "alive": [
+          "sink0"
+        ]
+      }
+    ]
+  },
+  {
+    "variant": "base",
+    "repeat": 1,
+    "rows": [
+      {
+        "gap": 0,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 2,
+        "alive": [
+          "sink0",
+          null
+        ]
+      },
+      {
+        "gap": 1,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 2,
+        "alive": [
+          "sink0",
+          null
+        ]
+      },
+      {
+        "gap": 2,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 1,
+        "alive": [
+          "sink0"
+        ]
+      },
+      {
+        "gap": 3,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 1,
+        "alive": [
+          "sink0"
+        ]
+      },
+      {
+        "gap": 4,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 1,
+        "alive": [
+          "sink0"
+        ]
+      },
+      {
+        "gap": 5,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 1,
+        "alive": [
+          "sink0"
+        ]
+      },
+      {
+        "gap": 6,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 1,
+        "alive": [
+          "sink0"
+        ]
+      },
+      {
+        "gap": 7,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 1,
+        "alive": [
+          "sink0"
+        ]
+      }
+    ]
+  },
+  {
+    "variant": "base",
+    "repeat": 2,
+    "rows": [
+      {
+        "gap": 0,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 2,
+        "alive": [
+          "sink0",
+          null
+        ]
+      },
+      {
+        "gap": 1,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 2,
+        "alive": [
+          "sink0",
+          null
+        ]
+      },
+      {
+        "gap": 2,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 1,
+        "alive": [
+          "sink0"
+        ]
+      },
+      {
+        "gap": 3,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 1,
+        "alive": [
+          "sink0"
+        ]
+      },
+      {
+        "gap": 4,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 1,
+        "alive": [
+          "sink0"
+        ]
+      },
+      {
+        "gap": 5,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 1,
+        "alive": [
+          "sink0"
+        ]
+      },
+      {
+        "gap": 6,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 1,
+        "alive": [
+          "sink0"
+        ]
+      },
+      {
+        "gap": 7,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 1,
+        "alive": [
+          "sink0"
+        ]
+      }
+    ]
+  },
+  {
+    "variant": "notifier-reuse",
+    "repeat": 0,
+    "rows": [
+      {
+        "gap": 0,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 2,
+        "alive": [
+          "sink0",
+          null
+        ]
+      },
+      {
+        "gap": 1,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 2,
+        "alive": [
+          "sink0",
+          null
+        ]
+      },
+      {
+        "gap": 2,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 1,
+        "alive": [
+          "sink0"
+        ]
+      },
+      {
+        "gap": 3,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 1,
+        "alive": [
+          "sink0"
+        ]
+      },
+      {
+        "gap": 4,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 1,
+        "alive": [
+          "sink0"
+        ]
+      },
+      {
+        "gap": 5,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 1,
+        "alive": [
+          "sink0"
+        ]
+      },
+      {
+        "gap": 6,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 1,
+        "alive": [
+          "sink0"
+        ]
+      },
+      {
+        "gap": 7,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 1,
+        "alive": [
+          "sink0"
+        ]
+      }
+    ]
+  },
+  {
+    "variant": "notifier-reuse",
+    "repeat": 1,
+    "rows": [
+      {
+        "gap": 0,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 2,
+        "alive": [
+          "sink0",
+          null
+        ]
+      },
+      {
+        "gap": 1,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 2,
+        "alive": [
+          "sink0",
+          null
+        ]
+      },
+      {
+        "gap": 2,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 1,
+        "alive": [
+          "sink0"
+        ]
+      },
+      {
+        "gap": 3,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 1,
+        "alive": [
+          "sink0"
+        ]
+      },
+      {
+        "gap": 4,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 1,
+        "alive": [
+          "sink0"
+        ]
+      },
+      {
+        "gap": 5,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 1,
+        "alive": [
+          "sink0"
+        ]
+      },
+      {
+        "gap": 6,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 1,
+        "alive": [
+          "sink0"
+        ]
+      },
+      {
+        "gap": 7,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 1,
+        "alive": [
+          "sink0"
+        ]
+      }
+    ]
+  },
+  {
+    "variant": "notifier-reuse",
+    "repeat": 2,
+    "rows": [
+      {
+        "gap": 0,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 2,
+        "alive": [
+          "sink0",
+          null
+        ]
+      },
+      {
+        "gap": 1,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 2,
+        "alive": [
+          "sink0",
+          null
+        ]
+      },
+      {
+        "gap": 2,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 1,
+        "alive": [
+          "sink0"
+        ]
+      },
+      {
+        "gap": 3,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 1,
+        "alive": [
+          "sink0"
+        ]
+      },
+      {
+        "gap": 4,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 1,
+        "alive": [
+          "sink0"
+        ]
+      },
+      {
+        "gap": 5,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 1,
+        "alive": [
+          "sink0"
+        ]
+      },
+      {
+        "gap": 6,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 1,
+        "alive": [
+          "sink0"
+        ]
+      },
+      {
+        "gap": 7,
+        "events": [
+          "error:sink0",
+          "destroy:sink0"
+        ],
+        "created": 1,
+        "alive": [
+          "sink0"
+        ]
+      }
+    ]
+  }
+]
