@@ -1,0 +1,8 @@
+{
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "machine": "arm64",
+  "node": "v24.22.0",
+  "baselineCommit": "37c051c92cb2cda0f5b609aa29745c164e258d72",
+  "candidate": "Consumed one-slot failure box; exact source fingerprints in source-hashes.json",
+  "priorRejectedHead": "9f59c78f8ed760efdb130650af8546f158a93bdf"
+}

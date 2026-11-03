@@ -17,7 +17,7 @@ it('preserves string values for class and for aliases, including SVG', () => {
 
 it('normalizes boolean aliases without changing generic and string booleans', () => {
   const el = document.createElement('script')
-  for (const name of ['noModule', 'autoFocus', 'hidden']) {
+  for (const name of ['noModule', 'hidden']) {
     for (const value of [true, 'yes', 1, false, 0, null]) {
       setProp(el, name, value, undefined, false)
       expect(el.getAttribute(name.toLowerCase())).toBe(value ? '' : null)
@@ -57,4 +57,10 @@ it('updates, rebinds and removes capture and bubble handlers independently', () 
   setProp(el, 'onChange', null, undefined, false)
   el.dispatchEvent(new Event('change'))
   expect(calls).toEqual([])
+})
+
+it('leaves autoFocus to the host mount commit rather than a browser attribute', () => {
+ const el = document.createElement('input')
+ setProp(el, 'autoFocus', true, undefined, false)
+ expect(el.hasAttribute('autofocus')).toBe(false)
 })
