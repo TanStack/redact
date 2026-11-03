@@ -56,6 +56,8 @@ Keep the features your application and dependencies use. Both configurations are
 
 This fixture is independent of the Redact workspace and pins the published package. Its npm lockfile belongs to the fixture only.
 
+The current lockfile includes the required Webpack peer tree that was missing from the measured lockfile. Existing locked versions and integrity hashes are unchanged. The historical raw results keep their original lock hash, `b060fd76323e7671abde816f963fef884f93f896c4a0366172fd2c8ba8380a8d`, and are not replaced by a fresh validation run. The original lockfile is available at PR 55 head `40fffcb7dd4cca1d2011dfecad995db260d6f809`.
+
 Use a new directory and copy this folder's `package.json` and `package-lock.json` into it. Then run with Node 24.22.0:
 
 ```sh
@@ -67,3 +69,10 @@ node /path/to/serve.mjs "$PWD"
 ```
 
 `measure.mjs` generates every fixture from source, builds React and default Redact for each framework, adds the smaller Start and Vite builds, records `results.json`, and preserves all ten builds. `serve.mjs` opens local production previews on ports 4380 through 4389, in the order Start, Vite, Vinext, and Next.js. Each framework serves React, default Redact, then its smaller build when available. The small Node HTTP bridge for Start and Vite is only a preview harness and is not part of the measured output.
+
+Runner error handling was updated after the recorded measurements. The raw results and verification records are unchanged. From the Redact checkout, check the runner with controlled subprocess and HTTP fixtures, without rebuilding the frameworks:
+
+```sh
+node --test benchmarks/framework-bundles/runner.test.mjs
+node --test benchmarks/framework-bundles/lifecycle.test.mjs
+```

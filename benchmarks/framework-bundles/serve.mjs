@@ -3,6 +3,7 @@ import { createServer } from 'node:http'
 import { readFile } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
 import { Readable } from 'node:stream'
+import { pipeline } from 'node:stream/promises'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
 const root = resolve(process.argv[2])
@@ -11,7 +12,23 @@ const renderer = process.argv[4]
 const port = Number(process.argv[5])
 
 if (!framework) {
-  const children = []
+  const children = new Set()
+  let stopping = false
+  function stop(signal = 'SIGTERM') {
+    if (stopping) return
+    stopping = true
+    for (const child of children) child.kill(signal)
+    const force = setTimeout(() => {
+      for (const child of children) child.kill('SIGKILL')
+    }, 5000)
+    force.unref()
+  }
+  function failed(label, detail) {
+    if (stopping) return
+    console.error(`${label}: preview failed (${detail})`)
+    process.exitCode = 1
+    stop()
+  }
   let nextPort = 4380
   for (const name of ['start', 'vite', 'vinext', 'next']) {
     for (const runtime of [
@@ -20,28 +37,32 @@ if (!framework) {
       ...(['start', 'vite'].includes(name) ? ['redact-lean'] : []),
     ]) {
       const serverPort = nextPort++
-      children.push(
-        spawn(
-          process.execPath,
-          [
-            fileURLToPath(import.meta.url),
-            root,
-            name,
-            runtime,
-            String(serverPort),
-          ],
-          {
-            env: { ...process.env, NODE_ENV: 'production', RENDERER: runtime },
-            stdio: 'inherit',
-          },
-        ),
+      const child = spawn(
+        process.execPath,
+        [
+          fileURLToPath(import.meta.url),
+          root,
+          name,
+          runtime,
+          String(serverPort),
+        ],
+        {
+          env: { ...process.env, NODE_ENV: 'production', RENDERER: runtime },
+          stdio: 'inherit',
+        },
       )
+      children.add(child)
+      const label = `${name}/${runtime}`
+      child.once('error', error => failed(label, error.message))
+      child.once('exit', (code, signal) => failed(label, signal ?? `exit ${code}`))
+      child.once('close', () => children.delete(child))
       console.log(`${name}/${runtime}: http://127.0.0.1:${serverPort}`)
     }
   }
   for (const signal of ['SIGINT', 'SIGTERM']) {
     process.on(signal, () => {
-      for (const child of children) child.kill(signal)
+      if (!stopping) process.exitCode = signal === 'SIGINT' ? 130 : 143
+      stop(signal)
     })
   }
 } else if (framework === 'next') {
@@ -105,12 +126,14 @@ if (!framework) {
           new Request(url, { headers: request.headers }),
         )
         response.writeHead(result.status, Object.fromEntries(result.headers))
-        if (result.body) Readable.fromWeb(result.body).pipe(response)
+        if (result.body) await pipeline(Readable.fromWeb(result.body), response)
         else response.end()
       } else response.writeHead(404).end()
     } catch (error) {
       console.error(error)
-      response.writeHead(500).end(String(error))
+      if (response.destroyed) return
+      if (response.headersSent) response.destroy()
+      else response.writeHead(500).end(String(error))
     }
   }).listen(port, '127.0.0.1')
 }

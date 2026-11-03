@@ -5,6 +5,7 @@ import { createWriteStream } from 'node:fs'
 import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises'
 import { dirname, join, resolve } from 'node:path'
 import { gzipSync } from 'node:zlib'
+import { finished } from 'node:stream/promises'
 
 // Run inside an isolated directory with the pinned dependencies installed.
 const root = resolve(process.argv[2])
@@ -84,19 +85,24 @@ async function run(app, renderer, executable, args) {
       stdio: ['ignore', 'pipe', 'pipe'],
     },
   )
-  child.stdout.pipe(log)
-  child.stderr.pipe(log)
-  await new Promise((accept, reject) => {
-    child.on('error', reject)
-    child.on('exit', (code) =>
-      code === 0
-        ? accept()
-        : reject(
-            new Error(`${app}/${renderer} exited ${code}; see ${renderer}.log`),
-          ),
-    )
+  let failure
+  child.once('error', error => { failure = error })
+  for (const output of [child.stdout, child.stderr]) {
+    output.once('error', error => { failure ??= error; child.kill() })
+    output.pipe(log, { end: false })
+  }
+  const logged = finished(log)
+  // A failed log must also stop the build, rather than leave it running.
+  logged.catch(() => child.kill())
+  const status = await new Promise(accept => {
+    child.once('close', (code, signal) => accept({ code, signal }))
   })
   log.end()
+  await logged
+  if (failure) throw failure
+  if (status.code !== 0) {
+    throw new Error(`${app}/${renderer} exited ${status.signal ?? status.code}; see ${renderer}.log`)
+  }
 }
 
 async function files(directory, prefix = '') {
