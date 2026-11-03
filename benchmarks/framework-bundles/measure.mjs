@@ -271,7 +271,8 @@ export default process.env.RENDERER === 'redact' ? withRedact(config) : config
     )
     // Preserve every complete build for browser verification after measurement.
     if (framework !== 'Next.js') {
-      const { rename } = await import('node:fs/promises')
+      const { rename, rm } = await import('node:fs/promises')
+      await rm(join(app, `dist-${renderer}`), { recursive: true, force: true })
       await rename(join(app, 'dist'), join(app, `dist-${renderer}`))
     }
   }

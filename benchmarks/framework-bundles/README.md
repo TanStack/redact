@@ -73,6 +73,7 @@ node /path/to/serve.mjs "$PWD"
 Runner error handling was updated after the recorded measurements. The raw results and verification records are unchanged. From the Redact checkout, check the runner with controlled subprocess and HTTP fixtures, without rebuilding the frameworks:
 
 ```sh
-node --test benchmarks/framework-bundles/runner.test.mjs
-node --test benchmarks/framework-bundles/lifecycle.test.mjs
+npm test --prefix benchmarks/framework-bundles
 ```
+
+The test command runs the files one at a time because the preview-group cases use the documented fixed ports.

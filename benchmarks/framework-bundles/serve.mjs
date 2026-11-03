@@ -1,7 +1,7 @@
 import { spawn } from 'node:child_process'
 import { createServer } from 'node:http'
 import { readFile } from 'node:fs/promises'
-import { join, resolve } from 'node:path'
+import { join, resolve, sep } from 'node:path'
 import { Readable } from 'node:stream'
 import { pipeline } from 'node:stream/promises'
 import { fileURLToPath, pathToFileURL } from 'node:url'
@@ -107,7 +107,7 @@ if (!framework) {
           publicRoot,
           '.' + (url.pathname === '/' ? '/index.html' : url.pathname),
         )
-        if (!asset.startsWith(publicRoot + '/')) {
+        if (!asset.startsWith(publicRoot + sep)) {
           response.writeHead(400).end()
           return
         }

@@ -19,5 +19,8 @@
     "satori": {
       "fflate": "0.7.5"
     }
+  },
+  "scripts": {
+    "test": "node --test --test-concurrency=1 runner.test.mjs lifecycle.test.mjs"
   }
 }

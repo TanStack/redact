@@ -44,3 +44,25 @@ test('a port conflict fails the ten-preview group and releases its sibling ports
 test('an unexpected successful child exit also fails the preview group',async()=>{const root=await fixture();let run;try{await previews(root,{early:true});run=launch('serve.mjs',[root]);const r=await bounded(run,3000);assert.notEqual(r.code,0,r.text);assert.match(r.text,/next\/redact/);await portsFree()}finally{if(run)await stop(run);await clean(root)}})
 test('a healthy group serves all ten endpoints and shuts them down together',async()=>{const root=await fixture();let run;try{await previews(root);run=launch('serve.mjs',[root]);for(let p=4380;p<4390;p++)await ready(run,p);run.child.kill('SIGTERM');const r=await bounded(run);assert.ok(r.code===0||r.code===143,r.text);await portsFree()}finally{if(run)await stop(run);await clean(root)}})
 test('shutdown also retires a preview that ignores SIGTERM',async()=>{const root=await fixture();let run;try{await previews(root,{ignore:true});run=launch('serve.mjs',[root]);for(let p=4380;p<4390;p++)await ready(run,p);run.child.kill('SIGTERM');await bounded(run,7000);await portsFree()}finally{if(run)await stop(run);await clean(root)}})
+
+test('measure can replace its preserved build directories on a second run', async () => {
+ const root=await fixture();let run;
+ try {
+  await builds(root)
+  for(let attempt=0;attempt<2;attempt++) {
+   run=launch('measure.mjs',[root]);const result=await bounded(run)
+   assert.equal(result.code,0,result.text)
+   const report=JSON.parse(await readFile(join(root,'results.json')))
+   assert.equal(report.results.length,10)
+  }
+ } finally {if(run)await stop(run);await clean(root)}
+})
+test('the Vite preview serves its root and asset files from the public directory', async () => {
+ const root=await fixture();let run;
+ try {
+  await previews(root);await write(root,'vite/dist-redact/assets/example.js','export const value=1')
+  run=launch('serve.mjs',[root,'vite','redact','4493']);await ready(run,4493)
+  assert.match(await(await fetch('http://127.0.0.1:4493/')).text(),/vite-redact/)
+  assert.equal(await(await fetch('http://127.0.0.1:4493/assets/example.js')).text(),'export const value=1')
+ } finally {if(run)await stop(run);await clean(root)}
+})
