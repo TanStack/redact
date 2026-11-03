@@ -81,7 +81,7 @@ export interface FiberRoot {
     c: Element | DocumentFragment;
     r: Fiber;
     p: Set<Fiber>;
-    s: boolean;
+    s: boolean | (() => void); // Development host callbacks carry their own identity.
     u?: (() => void) | undefined;
     er?: Array<{
         error: unknown;

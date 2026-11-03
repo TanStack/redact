@@ -1330,12 +1330,21 @@ export function scheduleUpdate(fiber: Fiber): void {
     pendingRoots.add(root);
     if (isBatching)
         return;
+    // Act owns in-scope work even when a normal microtask is already pending.
+    if (process.env.NODE_ENV !== 'production' && ReactSharedInternals.A) {
+        ReactSharedInternals.A.push(flushPending);
+        return;
+    }
     if (!root.s) {
         root.s = true;
-        if (process.env.NODE_ENV !== 'production' && ReactSharedInternals.A)
-            ReactSharedInternals.A.push(flushPending);
-        else
-            queueMicrotask(flushPending);
+        if (process.env.NODE_ENV !== 'production') {
+            const scheduled = () => {
+                if (root.s === scheduled) flushPending();
+            };
+            root.s = scheduled;
+            queueMicrotask(scheduled);
+        }
+        else queueMicrotask(flushPending);
     }
 }
 setCommitCheckpointHook(() => {
