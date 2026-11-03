@@ -353,7 +353,20 @@ export function autofocusAllowance(base, row, metric, fingerprint) {
   return typeof value === 'number' ? value : 0
 }
 
+// Tanner approved this exact server-only shell-release cost on 2026-11-02.
+const shellReleaseBase = '2a76bd9dfdb72e53357c49e5b87d3f64e3fab6b5'
+const shellReleaseHash = '2b37faa65dd412be2166c19506c01b0a2801aff32b6f16dd43515243b001348d'
+export function shellReleaseFingerprint(root = new URL('../', import.meta.url)) {
+  return fingerprintInputs(['packages/redact/src', 'packages/redact/package.json', 'scripts/build.mjs', 'scripts/measure-size.mjs', 'scripts/test-react-compatibility-size.mjs', 'pnpm-lock.yaml', '.nvmrc', '.changeset/release-ssr-shell.md'], root)
+}
+export function shellReleaseAllowance(base, row, metric, fingerprint) {
+  if (base !== shellReleaseBase || fingerprint !== shellReleaseHash || row.entry !== 'server/index' || !['full', 'default', 'nano'].includes(row.profile) || !['react18', 'react19'].includes(row.target)) return 0
+  return ({min: 11, gzip: 4, brotli: 18})[metric] || 0
+}
+
 export function compatibilitySizeAllowance(base, row, metric) {
+  const shell = shellReleaseAllowance(base, row, metric, base === shellReleaseBase ? shellReleaseFingerprint() : undefined)
+  if (shell) return shell
   const autofocus = autofocusAllowance(base, row, metric, base === autofocusApproval.base ? autofocusFingerprint() : undefined)
   if (autofocus) return autofocus
   const recovery = recoveryAllowance(base, row, metric,

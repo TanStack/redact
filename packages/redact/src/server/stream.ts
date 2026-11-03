@@ -173,6 +173,7 @@ export async function streamHtml(
     }
 
     if (shellChunks.length) emit(normalizeDocumentShell(shellChunks.join('')))
+    shellChunks.length = 0
     state.onShellReady?.()
 
     // 3. Stream suspended boundaries as they resolve
