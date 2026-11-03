@@ -19,7 +19,7 @@ export function assignReactIds(parent: Fiber, children: object): void {
     const bit = leadingBit(base);
     let index = 0;
     for (let child = parent.c; child; child = child.s) {
-        const path = paths[index++] ?? 1n;
+        const path = paths[child.ix ?? index++] ?? 1n;
         child.it = (path * bit) | (base ^ bit);
     }
 }

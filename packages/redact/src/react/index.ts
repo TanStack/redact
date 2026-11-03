@@ -1,10 +1,12 @@
-import { useState, useReducer, useEffect, useLayoutEffect, useInsertionEffect, useRef, useMemo, useCallback, useContext, useImperativeHandle, useDebugValue, useId, useTransition, useDeferredValue, useSyncExternalStore, use, useActionState, useFormStatus, useOptimistic, useEffectEvent, startTransition, unstable_useCacheRefresh, } from './hooks';
+import { useState, useReducer, useEffect, useLayoutEffect, useInsertionEffect, useRef, useMemo, useCallback, useContext, useImperativeHandle, useDebugValue, useId, useTransition, useDeferredValue, useSyncExternalStore, useSyncExternalStoreWithSelector, use, useActionState, useFormStatus, useOptimistic, useEffectEvent, startTransition, unstable_useCacheRefresh, } from './hooks';
 export type { FragmentInstance } from '../dom/fragment-instance';
 export { Children } from './children';
 import { Suspense, StrictMode, Profiler } from './suspense';
 export { Suspense, StrictMode, Profiler, REACT_SUSPENSE_TYPE, REACT_STRICT_MODE_TYPE, REACT_PROFILER_TYPE, } from './suspense';
 export { createElement, cloneElement, isValidElement, createRef, Fragment } from './element';
 import { act } from './act';
+import { captureOwnerStack } from '../core/devtools';
+export { captureOwnerStack } from '../core/devtools';
 export type { ViewTransitionProps, ViewTransitionClass, ViewTransitionInstance, ViewTransitionPseudoElement } from './view-transition';
 export { Component, PureComponent } from './class';
 export { useState, useReducer, useEffect, useLayoutEffect, useInsertionEffect, useRef, useMemo, useCallback, useContext, useImperativeHandle, useDebugValue, useId, useTransition, useDeferredValue, useSyncExternalStore, useSyncExternalStoreWithSelector, use, useActionState, useFormStatus, useOptimistic, useEffectEvent, startTransition, unstable_useCacheRefresh, } from './hooks';
@@ -60,6 +62,7 @@ export default {
     useTransition,
     useDeferredValue,
     useSyncExternalStore,
+    useSyncExternalStoreWithSelector,
     use,
     useActionState,
     useFormStatus,
@@ -82,6 +85,7 @@ export default {
     addTransitionType,
     cache,
     cacheSignal,
+    ...(process.env.NODE_ENV !== 'production' ? { captureOwnerStack } : {}),
     act,
     version: '19.2.3',
 };

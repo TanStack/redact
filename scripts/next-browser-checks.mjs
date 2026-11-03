@@ -191,6 +191,15 @@ export async function checkNext({ browser, origin, production, cwd, cacheCompone
     await page.waitForFunction(() => document.querySelector('button[data-ready="true"]'))
     await page.getByRole('button', { name: 'Count: 0', exact: true }).click()
     await page.getByRole('button', { name: 'Count: 1', exact: true }).waitFor()
+    // Full prefetch captures the JSX owner stack in development. The ordinary
+    // automatic-prefetch links above do not exercise that diagnostic call.
+    await visit(`${origin}/owner-stack`)
+    await page.getByRole('heading', { name: 'Owner stack link', exact: true }).waitFor()
+    await page.waitForFunction(() => document.querySelector('button[data-ready="true"]'))
+    await page.getByRole('button', { name: 'Count: 0', exact: true }).click()
+    await page.getByRole('button', { name: 'Count: 1', exact: true }).waitFor()
+    await page.getByRole('link', { name: 'Open target', exact: true }).click()
+    await page.getByRole('heading', { name: 'Other page', exact: true }).waitFor()
   })
   await scenario('pages-router', async () => {
     console.log('Checking Pages Router')

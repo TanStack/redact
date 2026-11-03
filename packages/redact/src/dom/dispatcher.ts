@@ -170,7 +170,7 @@ function useEffectImpl(type: Effect['t'], create: () => any, deps?: ReadonlyArra
             return hook.c;
         },
     };
-    if (type === 1 && !subscription)
+    if (type !== 2 && !subscription)
         effect.d = () => cleanupEffect(hook, fiber);
     (hookEffects ||= []).push(hook, previous, effect, changed);
 }
@@ -205,7 +205,12 @@ const DISPATCHER = {
         const hook = nextHook(), fiber = getCurrentFiber();
         const queue = hook.q ||= { p: 0, f: false, e: undefined };
         hook.c ||= (fn: () => void) => {
-            const scope = transitionScope(() => runAction(fn));
+            const scope = transitionScope(() => runAction(fn, fiber.r, scope => {
+                scope.n = undefined;
+                queue.p++;
+                scheduleUpdate(fiber);
+                fiber.bt = false;
+            }));
             const finish = () => {
                 if (scope.f && !scope.h) {
                     queue.f = true;
@@ -215,17 +220,12 @@ const DISPATCHER = {
                     queue.p--;
                 scheduleUpdate(fiber);
             };
-            scope.n = () => {
-                delete scope.n;
-                queue.p++;
-                scheduleUpdate(fiber);
-            };
             if (!scope.p) {
                 finish();
                 return;
             }
             if (scope.p > (scope.v || 0))
-                scope.n();
+                scope.n?.(scope);
             scope.d.then(finish);
         };
         if (queue.f)
@@ -318,10 +318,8 @@ const DISPATCHER = {
         const hook = nextHook();
         const store: {
             g: () => T;
-            s: (() => T) | undefined;
         } = hook.q ||= {};
         store.g = getSnapshot;
-        store.s = getServerSnapshot;
         // During hydration, use the server snapshot (if provided) so the tree
         // matches the SSR output. Components like TanStack Router's ClientOnly
         // rely on this: they render `false` on server, `true` on client — and
@@ -344,8 +342,6 @@ const DISPATCHER = {
                 scheduleUpdate(fiber);
             };
             const unsubscribe = subscribe(check);
-            if (isHydrating && store.s)
-                queueMicrotask(() => queueMicrotask(check));
             check();
             return () => {
                 active = false;

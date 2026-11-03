@@ -1,16 +1,21 @@
+import { trackInputValue } from './dom';
 export function syncTextareaValue(el: HTMLTextAreaElement, props: any, mounting?: boolean): void {
     if (mounting) {
         const children = props.children;
         const initial = props.value ?? props.defaultValue ?? (Array.isArray(children) ? children[0] : children) ?? '';
         el.defaultValue = initial;
         // The strict check also preserves React's clean numeric-default state.
-        if (initial !== '' && el.textContent === initial)
+        if (initial !== '' && el.textContent === initial) {
             el.value = initial;
+            trackInputValue(el);
+        }
         return;
     }
     const value = props.value;
-    if (value != null && el.value !== '' + value)
+    if (value != null && el.value !== '' + value) {
         el.value = '' + value;
+        trackInputValue(el);
+    }
     const fallback = props.defaultValue ?? value ?? '';
     if (el.defaultValue !== '' + fallback)
         el.defaultValue = '' + fallback;
@@ -32,8 +37,10 @@ export function syncInputValue(el: HTMLInputElement, props: any, prev?: any): vo
             return;
         if (value != null || fallback != null) {
             const initial = '' + (value ?? fallback);
-            if (el.value !== initial)
+            if (el.value !== initial) {
                 el.value = initial;
+                trackInputValue(el);
+            }
             el.defaultValue = initial;
         }
         return;
@@ -42,6 +49,7 @@ export function syncInputValue(el: HTMLInputElement, props: any, prev?: any): vo
         // Number inputs keep equivalent user spelling, including trailing zeroes.
         if (el.type === 'number' ? (value === 0 && el.value === '') || el.value != value : el.value !== '' + value) {
             el.value = '' + value;
+            trackInputValue(el);
         }
         const nextDefault = el.type === 'number' && el.value == value ? el.value : '' + value;
         if (el.defaultValue !== nextDefault)

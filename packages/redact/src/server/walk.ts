@@ -1,4 +1,6 @@
+import { isTextContent } from '../core/functions';
 import { isFunction, isThenable } from '../core/functions'
+import { resolveClassProps } from '../core/class-props'
 import {
   REACT_ELEMENT_TYPE,
   REACT_LEGACY_ELEMENT_TYPE,
@@ -45,20 +47,14 @@ export interface ServerErrorInfo {
 
 export type BrowserBailoutCallback = (error: Error, errorInfo: ServerErrorInfo) => void
 
-export interface SuspendedBoundary {
-  id: number
-  fallbackHTML: string
-  children: ReactNode
-  thenable: Promise<any>
-  contextSnapshot: ContextSnapshot
-  componentStack: string
-}
+export type SuspendedBoundary = [number, ReactNode, Promise<any>, ContextSnapshot, string]
 
 export interface WalkOptions {
   emit: (chunk: string) => void
   onHead?: () => void
   onSuspend?: ((boundary: SuspendedBoundary) => void) | undefined
   onBrowserBailout?: BrowserBailoutCallback | undefined
+  onError?: ((error: unknown) => unknown) | undefined
   componentStack?: string | undefined
   thrownInfo?: { componentStack?: string | undefined }
   nextBoundaryId: () => number
@@ -102,7 +98,7 @@ function optionChildText(children: unknown): string {
   // flat string/number child content. Matches DOM semantics (`option.value`
   // defaults to `textContent` when no attribute is set).
   if (children == null) return ''
-  if (typeof children === 'string' || typeof children === 'number') return '' + children
+  if (isTextContent(children)) return '' + children
   if (Array.isArray(children)) return children.map(optionChildText).join('')
   return ''
 }
@@ -119,12 +115,8 @@ function emitText(text: string, opts: WalkOptions): void {
 function walkNode(node: ReactNode, opts: WalkOptions): void {
   if (node == null || node === false || node === true) return
 
-  if (typeof node === 'string') {
-    emitText(node, opts)
-    return
-  }
-  if (typeof node === 'number') {
-    emitText(String(node), opts)
+  if (isTextContent(node)) {
+    emitText('' + node, opts)
     return
   }
   if (Array.isArray(node)) {
@@ -421,6 +413,7 @@ function walkComponent(
   }
   try {
   if ((fn as any).prototype?.isReactComponent) {
+    props = resolveClassProps(fn, props)
     const ctxType = (fn as any).contextType
     const ctxValue = ctxType ? ctxType._currentValue : undefined
     const instance = new (fn as any)(props, ctxValue)
@@ -471,36 +464,27 @@ function walkSuspense(
     })
   } catch (thenable: any) {
     nested.length = 0
-    if (isThenable(thenable) || isBrowserError(thenable)) {
-      const fallbackParts: string[] = []
-        walkNode(props.fallback, {
-          ...opts,
-          emit: (s) => fallbackParts.push(s),
-          onSuspend: opts.onSuspend ? (boundary) => nested.push(boundary) : undefined,
-          nextBoundaryId: opts.nextBoundaryId,
-        })
-      if (isBrowserError(thenable)) {
-        opts.onBrowserBailout?.(thenable, { componentStack: (thenable as any).componentStack || opts.componentStack || '' })
-        opts.emit(`<!--$!${id}-->${fallbackParts.join('')}<!--/$-->`)
-        for (const boundary of nested) opts.onSuspend?.(boundary)
-        return
-      }
-      emitBoundary(opts, id, fallbackParts.join(''))
-      for (const boundary of nested) opts.onSuspend?.(boundary)
-
-      if (opts.onSuspend) {
-        opts.onSuspend({
-          id,
-          fallbackHTML: fallbackParts.join(''),
-          children: props.children,
-          thenable,
-          contextSnapshot,
-          componentStack: thrownInfo.componentStack || opts.componentStack || '',
-        })
-      }
-      return
+    const suspended = isThenable(thenable)
+    if (!suspended) {
+      if (isBrowserError(thenable)) opts.onBrowserBailout?.(thenable, { componentStack: (thenable as any).componentStack || opts.componentStack || '' })
+      else opts.onError?.(thenable)
     }
-    throw thenable
+    const fallbackParts: string[] = []
+    walkNode(props.fallback, {
+      ...opts,
+      emit: (s) => fallbackParts.push(s),
+      onSuspend: opts.onSuspend ? (boundary) => nested.push(boundary) : undefined,
+      nextBoundaryId: opts.nextBoundaryId,
+    })
+    if (!suspended) {
+      opts.emit(`<!--${isBrowserError(thenable) ? '$!' : '$E'}${id}-->${fallbackParts.join('')}<!--/$-->`)
+    } else emitBoundary(opts, id, fallbackParts.join(''))
+    for (const boundary of nested) opts.onSuspend?.(boundary)
+    if (suspended) opts.onSuspend?.([
+      id, props.children, thenable, contextSnapshot,
+      thrownInfo.componentStack || opts.componentStack || '',
+    ])
+    return
   }
 
   if (resourceScope) currentSSRFrame().resources?.mergeScope(resourceScope, opts.resourceScope)

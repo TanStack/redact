@@ -42,6 +42,12 @@ describe('hydration attribute comparison', () => {
     expect((original as Element).getAttribute('data-enabled')).toBe('false')
   })
 
+  it.each(['src', 'srcSet'])('still detects a mismatched img %s', name => {
+    const { errors } = fixture(React.createElement('img', { [name]: '/first' }))
+      .hydrate(React.createElement('img', { [name]: '/second' }))
+    expect(errors.length).toBeGreaterThan(0)
+  })
+
   it('keeps SVG attribute names and boolean string values', () => {
     const { hydrate } = fixture(<svg data-count={3} aria-hidden={true}><g data-state="&<>" /></svg>)
     const create = vi.spyOn(document, 'createElementNS')
@@ -99,4 +105,122 @@ describe('hydration attribute comparison', () => {
     expect(container.firstChild).toBe(original)
     expect(hints).toEqual(['default'])
   })
+
+  it.each([
+    { tag: 'img', attr: 'src', props: { src: '/image.gif' } },
+    { tag: 'img', attr: 'srcset', props: { srcSet: '/image.gif 1x' } },
+    { tag: 'input', attr: 'src', props: { type: 'image', src: '/button.gif' } },
+    { tag: 'video', attr: 'poster', props: { poster: '/poster.gif' } },
+    { tag: 'video', attr: 'src', props: { preload: 'auto', src: '/video.mp4' } },
+    { tag: 'audio', attr: 'src', props: { preload: 'auto', src: '/audio.mp3' } },
+    { tag: 'image', attr: 'href', props: { href: '/svg-image.gif' } },
+    { tag: 'object', attr: 'data', props: { data: '/embedded.html' } },
+    { tag: 'link', attr: 'href', props: { rel: 'preload', as: 'image', href: '/preload.gif' } },
+    { tag: 'table', attr: 'background', props: { background: '/background.gif' } },
+  ])('compares $tag $attr without assigning a resource URL in the active document', ({ tag, attr, props }) => {
+    const child = React.createElement(tag, props)
+    const tree = tag === 'image' ? React.createElement('svg', null, child) : child
+    const { hydrate } = fixture(tree)
+    const writes: Array<{ element: Element; name: string }> = []
+    const setAttribute = Element.prototype.setAttribute
+    vi.spyOn(Element.prototype, 'setAttribute').mockImplementation(function(this: Element, name: string, value: string) {
+      writes.push({ element: this, name })
+      setAttribute.call(this, name, value)
+    })
+    const { original, errors, container } = hydrate()
+    expect(errors).toEqual([])
+    expect(container.firstChild).toBe(original)
+    const matchingWrites = writes.filter(write => write.name === attr)
+    expect(matchingWrites.filter(write => write.element.ownerDocument.defaultView !== null)).toEqual([])
+    expect(matchingWrites).toEqual([])
+  })
+
+  it('keeps native string coercion for resource attributes', () => {
+    const hints: string[] = []
+    const value = {
+      [Symbol.toPrimitive](hint: string) {
+        hints.push(hint)
+        return hint === 'string' ? '/matching.gif' : '/wrong.gif'
+      },
+    }
+    const { hydrate } = fixture(React.createElement('img', { src: value }))
+    hints.length = 0
+    const { original, errors, container } = hydrate()
+    expect(errors).toEqual([])
+    expect(container.firstChild).toBe(original)
+    expect(hints).toEqual(['string'])
+  })
+
+  it('retains native property normalization where it is needed', () => {
+    const { original, errors, container } = fixture(React.createElement('progress', { value: 2 }))
+      .hydrate(React.createElement('progress', { value: '2.0' }))
+    expect(errors).toEqual([])
+    expect(container.firstChild).toBe(original)
+  })
+
+  it('retains boolean attribute normalization', () => {
+    const { original, errors, container } = fixture(React.createElement('div', { hidden: true }))
+      .hydrate(React.createElement('div', { hidden: 'hidden' }))
+    expect(errors).toEqual([])
+    expect(container.firstChild).toBe(original)
+  })
+
+  it('rejects inline event attributes even when the client supplies the same invalid handler', () => {
+    const container = document.createElement('div')
+    container.innerHTML = '<button onclick="alert(1)">x</button>'
+    const errors: unknown[] = []
+    const root = hydrateRoot(container, React.createElement('button', { onClick: 'alert(1)' }, 'x'), { onRecoverableError: e => errors.push(e) })
+    cleanup.push(() => root.unmount())
+    expect(errors.length).toBeGreaterThan(0)
+    expect(container.querySelector('button')!.hasAttribute('onclick')).toBe(false)
+  })
+
+  it('normalizes expected HTML in the original owner document', () => {
+    const { hydrate } = fixture(<div dangerouslySetInnerHTML={{ __html: '<img src=/nested.gif><p>&amp;</p>' }} />)
+    const setter = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML')?.set
+    if (!setter) throw new Error('Expected the native innerHTML setter')
+    const documents: Document[] = []
+    vi.spyOn(Element.prototype, 'innerHTML', 'set').mockImplementation(function(this: Element, html: string) {
+      documents.push(this.ownerDocument)
+      setter.call(this, html)
+    })
+    const { original, errors, container } = hydrate()
+    expect(errors).toEqual([])
+    expect(container.firstChild).toBe(original)
+    expect(documents.length).toBeGreaterThan(0)
+    expect(documents.every(doc => doc === document)).toBe(true)
+  })
+
+  it('still detects different raw HTML inside noscript', () => {
+    const { errors } = fixture(<div dangerouslySetInnerHTML={{ __html: '<noscript><p>first</p></noscript>' }} />)
+      .hydrate(<div dangerouslySetInnerHTML={{ __html: '<noscript><p>second</p></noscript>' }} />)
+    expect(errors.length).toBeGreaterThan(0)
+  })
+
+  it('does not upgrade custom-element probes or invoke attribute callbacks', () => {
+    let constructors = 0
+    let changes = 0
+    const tag = 'redact-hydration-probe-callbacks'
+    customElements.define(tag, class extends HTMLElement {
+      static observedAttributes = ['label', 'style']
+      constructor() { super(); constructors++ }
+      attributeChangedCallback() { changes++ }
+    })
+    const { hydrate } = fixture(React.createElement(tag, { label: 'matching', style: { color: 'red' } }))
+    constructors = changes = 0
+    const { original, errors, container } = hydrate()
+    expect(errors).toEqual([])
+    expect(container.firstChild).toBe(original)
+    expect(constructors).toBe(0)
+    expect(changes).toBe(0)
+  })
+
+})
+
+it('adopts the server-rendered omission of a false class', () => {
+  const { hydrate } = fixture(<div className={false as any} />)
+  const { original, errors, container } = hydrate()
+  expect(errors).toEqual([])
+  expect(container.firstChild).toBe(original)
+  expect((original as Element).getAttribute('class')).toBeNull()
 })

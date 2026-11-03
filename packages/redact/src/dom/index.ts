@@ -7,12 +7,10 @@ import { preconnect, prefetchDNS, preload, preinit, preloadModule, preinitModule
 import { useFormStatus, useActionState as useFormState } from '../react/hooks';
 export { flushSync, batchedUpdates as unstable_batchedUpdates } from './root';
 import { flushSync, batchedUpdates } from './root';
-import './features';
 export { browser } from '../core/browser';
 import { findDOMNode } from './features/class';
-// Side-effect import: registers opt-in features (Portal, etc.) with the
-// reconciler. A vite plugin may alias individual feature modules to their
-// stub variants to strip them from the bundle.
+// Root entry points register renderers. These DOM utilities can also run alone,
+// so importing them must not eagerly install every optional renderer.
 export { preconnect, prefetchDNS, preload, preinit, preloadModule, preinitModule };
 export const __DOM_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE = {
     d: {

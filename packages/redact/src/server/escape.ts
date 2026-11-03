@@ -1,18 +1,9 @@
+import { UNITLESS_STYLE } from '../core/unitless-style'
 import { isFunction } from '../core/functions'
-import { attributeName, STRING_BOOLEAN_ATTRS } from '../core/attributes'
+import { attributeName, STRING_BOOLEAN_ATTRS, BOOLEAN_ATTRS } from '../core/attributes'
 
 function escape(value: string, pattern: RegExp): string {
-  let out = ''
-  let start = 0
-  while (pattern.test(value)) {
-    const end = pattern.lastIndex
-    const char = value[end - 1]
-    out += value.slice(start, end - 1) + (
-      char === '&' ? '&amp;' : char === '<' ? '&lt;' : char === '>' ? '&gt;' : '&quot;'
-    )
-    start = end
-  }
-  return out + value.slice(start)
+  return value.replace(pattern, char => char === '&' ? '&amp;' : char === '<' ? '&lt;' : char === '>' ? '&gt;' : '&quot;')
 }
 
 export function escapeAttr(value: string): string {
@@ -53,35 +44,6 @@ export const VOID_ELEMENTS = new Set([
 
 export const RAW_TEXT_ELEMENTS = new Set(['script', 'style'])
 
-const BOOLEAN_ATTRS = new Set([
-  'allowfullscreen',
-  'async',
-  'autofocus',
-  'autoplay',
-  'checked',
-  'controls',
-  'credentialless',
-  'default',
-  'defer',
-  'disabled',
-  'formnovalidate',
-  'hidden',
-  'inert',
-  'ismap',
-  'itemscope',
-  'loop',
-  'multiple',
-  'muted',
-  'nomodule',
-  'novalidate',
-  'open',
-  'playsinline',
-  'readonly',
-  'required',
-  'reversed',
-  'selected',
-])
-
 export function attrToHtml(name: string, value: unknown, isSvg = false): string {
   if (
     name === 'children' ||
@@ -111,7 +73,7 @@ export function attrToHtml(name: string, value: unknown, isSvg = false): string 
 
   if (value === false) return ''
 
-  if (value === true || BOOLEAN_ATTRS.has(htmlName)) {
+  if (value === true || BOOLEAN_ATTRS.test(htmlName)) {
     return value ? ` ${htmlName}=""` : ''
   }
 
@@ -122,50 +84,7 @@ export function attrToHtml(name: string, value: unknown, isSvg = false): string 
   return ` ${htmlName}="${escapeAttr(String(value))}"`
 }
 
-const UNITLESS_STYLE = new Set([
-  'animationIterationCount',
-  'borderImageOutset',
-  'borderImageSlice',
-  'borderImageWidth',
-  'boxFlex',
-  'boxFlexGroup',
-  'boxOrdinalGroup',
-  'columnCount',
-  'columns',
-  'flex',
-  'flexGrow',
-  'flexPositive',
-  'flexShrink',
-  'flexNegative',
-  'flexOrder',
-  'gridArea',
-  'gridRow',
-  'gridRowEnd',
-  'gridRowSpan',
-  'gridRowStart',
-  'gridColumn',
-  'gridColumnEnd',
-  'gridColumnSpan',
-  'gridColumnStart',
-  'fontWeight',
-  'lineClamp',
-  'lineHeight',
-  'opacity',
-  'order',
-  'orphans',
-  'tabSize',
-  'widows',
-  'zIndex',
-  'zoom',
-  'fillOpacity',
-  'floodOpacity',
-  'stopOpacity',
-  'strokeDasharray',
-  'strokeDashoffset',
-  'strokeMiterlimit',
-  'strokeOpacity',
-  'strokeWidth',
-])
+
 
 function styleToString(style: Record<string, unknown>): string {
   let out = ''
@@ -174,9 +93,9 @@ function styleToString(style: Record<string, unknown>): string {
     if (v == null || v === false) continue
     const kebab = key.startsWith('--')
       ? key
-      : key.replace(/[A-Z]/g, (m) => '-' + m.toLowerCase())
+      : key.replace(/[A-Z]/g, (m) => '-' + m.toLowerCase()).replace(/^ms-/, '-ms-')
     const value =
-      typeof v === 'number' && !UNITLESS_STYLE.has(key) && v !== 0 ? v + 'px' : v
+      typeof v === 'number' && !UNITLESS_STYLE.test(key) && v !== 0 ? v + 'px' : v
     out += `${kebab}:${value};`
   }
   return out

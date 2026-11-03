@@ -1,6 +1,6 @@
 {
   "name": "@tanstack/redact",
-  "version": "0.2.0",
+  "version": "0.2.5",
   "description": "An alternative runtime for React apps, with a smaller footprint and synchronous rendering.",
   "type": "module",
   "main": "./dist/react/index.js",
@@ -71,7 +71,8 @@
   "files": [
     "dist",
     "src",
-    "vendor"
+    "vendor",
+    "LICENSE"
   ],
   "sideEffects": [
     "./src/dom/features/**",
@@ -83,6 +84,9 @@
     "./dist/dom/client.js",
     "./dist/dom/_all.js"
   ],
+  "dependencies": {
+    "magic-string": "^0.30.21"
+  },
   "peerDependencies": {
     "next": "~15.5.0 || ~16.0.0 || ~16.1.0 || ~16.2.0 || ~16.3.0 || ~16.4.0",
     "vite": ">=5",
@@ -113,5 +117,6 @@
     "type": "git",
     "url": "git+https://github.com/TanStack/redact.git",
     "directory": "packages/redact"
-  }
+  },
+  "license": "MIT"
 }

@@ -30,6 +30,8 @@ export interface Effect {
     s?: boolean | undefined; // Store subscriptions run in layout but stay connected in Suspense.
 }
 export interface Fiber {
+    br?: boolean; // This boundary is rendering its error recovery tree.
+    ix?: number; // Logical child position, including empty slots.
     t: FiberTag; // Tag.
     type: any;
     key: string | null;
@@ -72,6 +74,7 @@ export interface FiberRoot {
     tr?: Set<Fiber> & {
         s: Set<import('../react/action-scope').ActionScope>;
         w?: PromiseLike<unknown>;
+        u?: (() => void) | undefined;
     };
     hr?: Node | undefined; // Hydration recovery container.
     ri?: boolean; // React-compatible hydration IDs.
@@ -83,6 +86,7 @@ export interface FiberRoot {
     er?: Array<{
         error: unknown;
         stack: string;
+        ownerStack?: string | null;
     }> | undefined;
     eb?: boolean;
     sp?: boolean;

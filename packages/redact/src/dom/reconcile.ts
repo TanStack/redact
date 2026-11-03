@@ -1,3 +1,5 @@
+import { isTextContent } from '../core/functions';
+import { devToolsMetadata, readOwnerStack, runWithOwnerStack } from '../core/devtools';
 import { getRootContainer } from './root-internal';
 export { getHostParent, findRoot, getAnchor, firstDomNode } from './tree';
 export { isThenable } from '../core/functions';
@@ -12,13 +14,13 @@ export { deferHydration } from './features/hydration';
 import { m as markTransitionUpdate, d as deferTransition, c as cancelTransitions, l as deferTransitionLayout, p as deferTransitionPassive } from './features/view-transition';
 import { clearAttributes, clearHostContainer, documentMetadataParent, documentSingleton, DOCUMENT_HEAD_TAGS } from './document-metadata';
 import { acquireResource } from './resources';
-import { a as transitionRender, p as hasTransition, t as flushTransitions, c as cancelPendingTransitions } from './features/suspense-runtime';
+import { a as transitionRender, p as hasTransition, t as flushTransitions, c as cancelPendingTransitions, s as scheduleTransitionRoot } from './features/suspense-runtime';
 import { commitFragmentRef, placeFragmentCommits, updateFragmentHost, refreshFragmentInstances } from './features/fragment-refs';
 import { isObject } from '../core/functions';
 import { FiberTag, createFiber, REACT_ELEMENT_TYPE, REACT_LEGACY_ELEMENT_TYPE, REACT_FRAGMENT_TYPE, type Fiber, type FiberRoot, type ReactElement, type ReactNode, type Effect, type Hook, } from '../core';
 import { createHostNode, setProp } from './dom';
 import { rememberRefreshRender, scheduleRefreshRoot, commitRefreshRoot, failRefreshRoot, failRefreshBoundary, resolveRefreshType, sameRefreshFamily, needsRefreshRemount } from './refresh';
-import { forkId, assignReactIds, deferHydration, finishHydration, adoptHostDom, adoptTextDom, setHydrationCursor, getHydrationCursor, clearHydrationCursor, findHostParent as findHydrationHost, abortHydration, recoverHydration, isHydrationBailout, resumeHydration, } from './features/hydration';
+import { forkId, assignReactIds, deferHydration, queueHydrationEnd, finishHydration, adoptHostDom, adoptTextDom, setHydrationCursor, getHydrationCursor, clearHydrationCursor, findHostParent as findHydrationHost, abortHydration, recoverHydration, isHydrationBailout, resumeHydration, } from './features/hydration';
 import { rememberRetainedEffect, setRetainedFlag, disconnectClass } from './retained-effects';
 import { readThenable } from '../react/thenable';
 import { bindForm } from './form-actions';
@@ -77,6 +79,8 @@ function collectHostDoms(fiber: Fiber, out: Node[]): void {
     }
     if (fiber.t === FiberTag.Portal)
         return;
+    if (fiber.t === FiberTag.Suspense && fiber.b?.b)
+        out.push(fiber.b.b);
     let c = fiber.c;
     while (c) {
         collectHostDoms(c, out);
@@ -84,8 +88,10 @@ function collectHostDoms(fiber: Fiber, out: Node[]): void {
     }
     if (fiber.t === FiberTag.Suspense && fiber.b?.f)
         collectHostDoms(fiber.b.f, out);
+    if (fiber.t === FiberTag.Suspense && fiber.b?.e)
+        out.push(fiber.b.e);
 }
-function stageCommit(fiber: Fiber, work: Effect | (() => void), ref = false): void {
+export function stageCommit(fiber: Fiber, work: Effect | (() => void), ref = false): void {
     let entries = stagedCommits.get(fiber);
     if (!entries) {
         stagedCommits.set(fiber, entries = []);
@@ -121,9 +127,12 @@ export function childrenToArray(children: ReactNode): NormalizedChild[] {
 // ---------------------------------------------------------------------------
 export const fiberDepth = (fiber: Fiber): number => (fiber.d ??= fiber.p ? fiberDepth(fiber.p) + 1 : 0);
 function pushChildren(node: ReactNode, out: NormalizedChild[], ids?: bigint[], path = 1n): void {
-    if (node == null || typeof node === 'boolean')
+    if (node == null || typeof node === 'boolean' || node === '') {
+        out.push(null);
+        ids?.push(path);
         return;
-    if (isString(node) || typeof node === 'number') {
+    }
+    if (isTextContent(node)) {
         if (node !== '') {
             out.push('' + node);
             ids?.push(path);
@@ -182,6 +191,7 @@ function captureRootError(root: FiberRoot, stack: string, error: unknown): void 
     if (!errors.length)
         root.u = undefined;
     errors.push({ error, stack });
+    if (process.env.NODE_ENV !== 'production') errors[errors.length - 1]!.ownerStack = devToolsMetadata.errorStack ?? null;
     scheduleUpdate(root.r);
 }
 function captureError(capture: RenderErrorCapture): void {
@@ -328,14 +338,20 @@ const ACCEPTED_ELEMENT_MARKERS = new Set<symbol>([
 // fallback branch. Features register here for element types that aren't
 // marker-based (e.g. Portal, where element.type IS the symbol).
 const TYPE_MATCHERS: TypeMatcher[] = [];
-function renderUpdates(root: FiberRoot, pending: Fiber[]): void {
+function renderUpdates(root: FiberRoot, pending: Fiber[], update?: () => void): void {
     pending.sort((a, b) => fiberDepth(a) - fiberDepth(b));
     if (transitionRender)
         for (const fiber of pending)
             fiber.g = true;
+    update?.();
     for (const fiber of pending) {
         if (!fiber.g || fiber.u || fiber.pd)
             continue;
+        // An ancestor earlier in this batch may have retained this subscriber.
+        if (fiber.su) {
+            scheduleUpdate(fiber);
+            continue;
+        }
         if (!transitionRender) {
             if (fiber.bt && hasTransition?.(fiber))
                 continue;
@@ -485,8 +501,10 @@ export function handleErrorInRender(fiber: Fiber, err: any): void {
     const root = currentRoot ?? findRoot(fiber);
     if (root && currentCommit && (flushing || root.ue))
         throw new RenderErrorCapture(root.r, err, fiber);
-    if (root?.ue)
-        root.ue(err, { componentStack: componentStack(fiber) });
+    if (root?.ue) {
+        if (process.env.NODE_ENV !== 'production') runWithOwnerStack(readOwnerStack(fiber), () => root.ue!(err, { componentStack: componentStack(fiber) }));
+        else root.ue(err, { componentStack: componentStack(fiber) });
+    }
     else
         throw err;
 }
@@ -497,9 +515,10 @@ export function handleCommitError(fiber: Fiber, error: unknown): void {
         return;
     }
     const root = findRoot(fiber);
-    if (root)
-        captureRootError(root, componentStack(fiber), error);
-    else
+    if (root) {
+        if (process.env.NODE_ENV !== 'production') runWithOwnerStack(readOwnerStack(fiber), () => captureRootError(root, componentStack(fiber), error));
+        else captureRootError(root, componentStack(fiber), error);
+    } else
         queueMicrotask(() => { throw error; });
 }
 export function invokeCommit<T>(fiber: Fiber | undefined, callback: () => T): T | undefined {
@@ -570,9 +589,6 @@ function renderText(fiber: Fiber): void {
     if (fiber.n && fiber.m !== null && !fiber.n.parentNode &&
         domParent.firstChild?.nodeType === 3 && !domParent.firstChild.nextSibling) {
         fiber.n = domParent.firstChild;
-        queueText(fiber.n as Text, text);
-        fiber.m = text;
-        return;
     }
     // Identity-unchanged fast path: skip the native Text.data write entirely.
     if (fiber.n && fiber.m === text)
@@ -642,7 +658,7 @@ export function scheduleRootRender(root: FiberRoot, render: () => void): void {
     if (process.env.NODE_ENV !== 'production')
         rememberRefreshRender(root, render);
     markTransitionUpdate && markTransitionUpdate(root);
-    root.u = render;
+    if (!scheduleTransitionRoot?.(root, render)) root.u = render;
     pendingRoots.add(root);
     if (isBatching)
         return;
@@ -653,8 +669,10 @@ export function scheduleRootRender(root: FiberRoot, render: () => void): void {
 }
 export class RenderErrorCapture {
     s: string;
+    declare o?: string | null;
     constructor(public b: Fiber, public e: unknown, source: Fiber = b) {
         this.s = componentStack(source);
+        if (process.env.NODE_ENV !== 'production') this.o = readOwnerStack(source);
     }
 }
 function flushRootErrors(root: FiberRoot): void {
@@ -669,10 +687,12 @@ function flushRootErrors(root: FiberRoot): void {
                 if (process.env.NODE_ENV !== 'production' && ReactSharedInternals.A) {
                     ReactSharedInternals.A.push(() => { throw captured.error; });
                 }
-                else if (root.ue)
-                    root.ue(captured.error, { componentStack: captured.stack });
-                else if (isFunction(reportError))
-                    reportError(captured.error);
+                else if (root.ue) {
+                    if (process.env.NODE_ENV !== 'production') runWithOwnerStack(captured.ownerStack ?? null, () => root.ue!(captured.error, { componentStack: captured.stack }));
+                    else root.ue(captured.error, { componentStack: captured.stack });
+                }
+                else if (isFunction(globalThis.reportError))
+                    globalThis.reportError(captured.error);
                 else
                     queueMicrotask(() => { throw captured.error; });
             }
@@ -718,11 +738,13 @@ function flushPending(): void {
         flushing = false;
     }
 }
-export function batchedUpdates<T>(fn: () => T): T {
+export function batchedUpdates<T>(fn: () => T): T;
+export function batchedUpdates<A, T>(fn: (arg: A) => T, arg: A): T;
+export function batchedUpdates<T>(fn: (arg: any) => T, arg?: any): T {
     const wasBatching = isBatching;
     isBatching = true;
     try {
-        return fn();
+        return fn(arg);
     }
     finally {
         isBatching = wasBatching;
@@ -738,13 +760,13 @@ export function batchedUpdates<T>(fn: () => T): T {
  * Mutates parent.c and the sibling chain.
  * DOM placement runs after mutations and before layout effects.
  */
-export function reconcileChildren(parent: Fiber, nodes: Parameters<typeof reconcile>[1], _domParent: Node, _anchor: Node | null): void { reconcile(parent, nodes.some(node => node == null) ? Object.assign(nodes.filter(node => node != null), { ip: (nodes as any).ip }) : nodes); }
+export function reconcileChildren(parent: Fiber, nodes: Parameters<typeof reconcile>[1], _domParent: Node, _anchor: Node | null): void { reconcile(parent, nodes); }
 export function installRenderer(tag: FiberTag, fn: RenderFn): void {
     RENDERERS[tag] = fn;
 }
 function findErrorBoundary(fiber: Fiber): Fiber | null {
     for (let parent = fiber.p; parent; parent = parent.p) {
-        if (parent.u || parent.pd)
+        if (parent.u || parent.pd || parent.br)
             continue;
         const instance = parent.i;
         if (instance?._f === parent && (parent.b?.b?.getDerivedStateFromError || instance.componentDidCatch))
@@ -832,6 +854,8 @@ export function runEffects(root: FiberRoot): void {
                 if (batch.length) {
                     const passive = () => {
                         for (const [fiber, effect] of batch)
+                            if (!fiber.u && !isActivityHidden(fiber) && !activityIsDisconnected(fiber)) effect.d?.();
+                        for (const [fiber, effect] of batch)
                             runEffect(fiber, effect);
                     };
                     if (process.env.NODE_ENV !== 'production') {
@@ -884,6 +908,8 @@ export function renderRoot(root: FiberRoot, children: ReactNode): void {
     finally {
         currentRoot = null;
     }
+    // Layout effects can synchronously update stores, after hydration has ended.
+    queueHydrationEnd?.(root);
     runEffects(root);
     if (process.env.NODE_ENV !== 'production')
         commitRefreshRoot(root);
@@ -979,10 +1005,21 @@ function renderHost(fiber: Fiber): void {
             applyHostProps(fiber.n as Element, props, undefined, isSvg, isInput, isTextarea, deferValue);
         }
         updateFragmentHost(fiber, true);
+        if (!hydrated && props.autoFocus && !isSvg && (deferValue || type === 'button'))
+            scheduleLifecycle(fiber, () => (fiber.n as HTMLElement).focus());
         attachRef(fiber, fiber.n);
     }
     else if (prev !== props) {
         queueMutation(() => applyHostProps(fiber.n as Element, props, prev, isSvg, isInput, isTextarea, deferValue));
+    }
+    if (process.env.NODE_ENV !== 'production') {
+        const node = fiber.n!;
+        const previous = devToolsMetadata.hosts.get(node);
+        onCommitRollback(() => {
+            if (previous) devToolsMetadata.hosts.set(node, previous);
+            else devToolsMetadata.hosts.delete(node);
+        });
+        devToolsMetadata.hosts.set(node, fiber);
     }
     if (type === 'form')
         queueMutation(() => bindForm(fiber, handleCommitError));
@@ -1012,6 +1049,7 @@ export function renderNode(fiber: Fiber): void {
                         siblings[i]!.s = siblings[i + 1] ?? null;
                 });
                 const next = fiberFromChild({ $$typeof: REACT_ELEMENT_TYPE, type: fiber.type, key: fiber.key, ref: fiber.ref, props: fiber.v }, parent);
+                if (fiber.ix !== undefined) next.ix = fiber.ix;
                 next.s = fiber.s;
                 const previous = siblings[siblings.indexOf(fiber) - 1];
                 if (previous)
@@ -1060,128 +1098,69 @@ export function renderNode(fiber: Fiber): void {
  * Mutates parent.c and the sibling chain.
  * Mounts new host DOM into `domParent` before `anchor` (or appends if anchor === null).
  */
+function indexChildren(parent: Fiber, next: Fiber | null): Map<string | number, Fiber> {
+    rememberChildList(parent, collectChildren(parent));
+    const remaining = new Map<string | number, Fiber>();
+    for (; next; next = next.s) remaining.set(next.key ?? next.ix!, next);
+    return remaining;
+}
 export function reconcile(parent: Fiber, newChildren: NormalizedChild[]): void {
     // Keep positional updates allocation-free. Only a structural difference
     // needs the key index and deletion set; both paths share the same writes.
     let next = parent.c;
     let previous: Fiber | null = null;
-    let existing: Array<Fiber | null> | undefined;
-    let keyed: Record<string, number> | undefined;
-    let existingIdx = 0;
-    let budget = 0;
+    let remaining: Map<string | number, Fiber> | undefined;
     const hydrating = !!currentRoot?.h;
     for (let i = 0; i < newChildren.length; i++) {
-        const child = newChildren[i]!;
-        let match: Fiber | null = null;
-        let matchIndex = -1;
-        if (!existing && !hydrating && next && sameType(next, child)) {
+        const child = newChildren[i];
+        if (child == null) continue;
+        let match: Fiber | undefined;
+        if (!remaining && !hydrating && next && next.ix === i && sameType(next, child)) {
             match = next;
             next = next.s;
-            existingIdx++;
-        }
-        else {
-            if (!existing) {
-                existing = collectChildren(parent);
-                rememberChildList(parent, existing.slice() as Fiber[]);
-                if (existing.length) {
-                    keyed = Object.create(null);
-                    for (let index = 0; index < existing.length; index++) {
-                        const fiber = existing[index]!;
-                        if (fiber.key == null)
-                            budget--;
-                        else if (index >= existingIdx)
-                            keyed![fiber.key] = index;
-                        if (index < existingIdx)
-                            existing[index] = null;
-                    }
-                }
-                budget += newChildren.length;
+        } else {
+            if (!remaining) {
+                remaining = indexChildren(parent, next);
             }
-            if (!isString(child) && child.key != null) {
-                const index = keyed?.[child.key];
-                const candidate = index === undefined ? null : existing[index];
-                if (process.env.NODE_ENV !== 'production' && candidate && sameRefreshFamily(candidate.type, child.type))
-                    candidate.type = child.type;
-                if (candidate && sameType(candidate, child)) {
-                    match = candidate;
-                    matchIndex = index!;
-                }
-            }
-            if (!match) {
-                while (existingIdx < existing.length) {
-                    const candidate = existing[existingIdx]!;
-                    if (!candidate || candidate.key != null) {
-                        existingIdx++;
-                        continue;
-                    }
-                    if (sameType(candidate, child)) {
-                        match = candidate;
-                        matchIndex = existingIdx++;
-                        break;
-                    }
-                    if (budget > 0)
-                        break;
-                    existingIdx++;
-                    budget++;
-                }
-            }
-            if (match) {
-                existing[matchIndex] = null;
+            const key = isString(child) ? i : child.key ?? i;
+            const candidate = remaining.get(key);
+            if (candidate && sameType(candidate, child)) {
+                match = candidate;
+                remaining.delete(key);
             }
         }
-        let fiber: Fiber;
+        const fiber = match ?? fiberFromChild(child, parent);
         if (match) {
-            fiber = match;
-            if (isString(child))
-                fiber.v = child;
+            if (isString(child)) fiber.v = child;
             else {
-                if (fiber.type !== child.type)
-                    fiber.t = tagForType(child.type);
+                if (fiber.type !== child.type) fiber.t = tagForType(child.type);
                 fiber.type = child.type;
                 fiber.v = child.props;
                 if (process.env.NODE_ENV !== 'production') rememberDevToolsFiber(fiber, child);
                 fiber.ref = (child as any).ref ?? null;
             }
         }
-        else {
-            fiber = fiberFromChild(child, parent);
-            if (budget > 0)
-                budget--;
-        }
-        if (existing) {
+        fiber.ix = i;
+        if (remaining) {
             fiber.p = parent;
-            if (previous)
-                previous.s = fiber;
-            else
-                parent.c = fiber;
+            if (previous) previous.s = fiber;
+            else parent.c = fiber;
         }
         previous = fiber;
     }
-    if (!existing && !next && !hydrating) {
+    if (!remaining && !next && !hydrating) {
         renderChildChain(parent);
         return;
     }
-    // A shorter positional list has a deletion suffix without a keyed lookup.
-    if (!existing && next) {
-        existing = collectChildren(parent);
-        rememberChildList(parent, existing.slice() as Fiber[]);
-        existing.fill(null, 0, existingIdx);
+    if (!remaining && next) {
+        remaining = indexChildren(parent, next);
     }
-    if (previous)
-        previous.s = null;
-    else
-        parent.c = null;
-    if (hydrating)
-        assignReactIds(parent, newChildren);
+    if (previous) previous.s = null;
+    else parent.c = null;
+    // Deletions must commit before replacement document roots are placed.
+    for (const fiber of remaining?.values() ?? []) removeFiber(fiber);
+    if (hydrating) assignReactIds(parent, newChildren);
     renderChildChain(parent);
-    // Unmatched head nodes belong to server metadata and remain additive.
-    if (!(parent.t === FiberTag.Host && parent.type.toLowerCase() === 'head')) {
-        for (const fiber of existing ?? []) {
-            if (fiber) {
-                removeFiber(fiber);
-            }
-        }
-    }
 }
 // ---------------------------------------------------------------------------
 // Effects
@@ -1247,6 +1226,10 @@ export function removeFiber(fiber: Fiber, remove = true): void {
     if (fiber.t === FiberTag.Suspense && fiber.b?.b) {
         const state = fiber.b;
         state.b._reactRetry = undefined;
+        if (remove && !state.w) {
+            state.b.remove();
+            state.e?.remove();
+        }
         if (remove && state.w) {
             let node: Node | null = state.b;
             while (node) {
@@ -1296,13 +1279,13 @@ export function removeFiber(fiber: Fiber, remove = true): void {
 // layout work after its children, without another tree walk at commit time.
 export function flushFiberCommits(fiber: Fiber): void {
     const entries = stagedCommits.get(fiber);
-    if (!entries)
+    if (!entries || layoutIsDisconnected(fiber))
         return;
     stagedCommits.delete(fiber);
     if (placeFragmentCommits(fiber, entries, pendingCommits))
         return;
-    if (fiber.t === FiberTag.Class || fiber.i?._f === fiber)
-        entries.sort((a, b) => +a[2] - +b[2]);
+    // Commit phase, rather than the wrapper's fiber tag, determines order.
+    entries.sort((a, b) => +a[2] - +b[2]);
     for (const entry of entries)
         pendingCommits.push(entry);
 }
@@ -1416,7 +1399,8 @@ export function recoverRootError(error: unknown, abort?: () => void): boolean {
     abort?.();
     discardPendingWork(root);
     discardPendingEffects(root);
-    captureRootError(root, error.s, error.e);
+    if (process.env.NODE_ENV !== 'production') runWithOwnerStack(error.o ?? null, () => captureRootError(root, error.s, error.e));
+    else captureRootError(root, error.s, error.e);
     return true;
 }
 // Memo, lazy and ref wrappers render through the same fiber. Always restore

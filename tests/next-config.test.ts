@@ -23,7 +23,7 @@ describe('withRedact', () => {
     nextVersion.value = version
     const config = withRedact() as any
     const plugin = config.webpack({}, { isServer: false, webpack }).plugins[0]
-    for (const entry of ['react', 'react/jsx-runtime', 'react/jsx-dev-runtime', 'react/compiler-runtime', 'react-dom', 'react-dom/client', 'react-dom/test-utils', 'scheduler']) {
+    for (const entry of ['react', 'react/jsx-runtime', 'react/jsx-dev-runtime', 'react/compiler-runtime', 'react-dom', 'react-dom/client', 'react-dom/test-utils', 'react-dom/server', 'react-dom/server.browser', 'react-dom/server.edge', 'react-dom/server.node', 'react-dom/server.bun', 'scheduler']) {
       const requests = [entry]
       if (entry.startsWith('react')) {
         const [pkg, ...path] = entry.split('/')
@@ -36,7 +36,7 @@ describe('withRedact', () => {
         expect(resource.request).toMatch(/\/packages\/redact\/src\/.+\.js$/)
       }
     }
-    for (const request of ['react-dom/server', 'react-server-dom-webpack/client', 'react-server-dom-turbopack/client', 'react-native', 'some-react-library', 'react/unknown']) {
+    for (const request of ['react-server-dom-webpack/client', 'react-server-dom-turbopack/client', 'react-native', 'some-react-library', 'react/unknown']) {
       const resource = { request }
       plugin.replace(resource)
       expect(resource.request).toBe(request)
@@ -75,7 +75,7 @@ describe('withRedact', () => {
     const output = withRedact(input) as any
     expect(input.turbopack.rules['*.js']).toEqual([rule])
     expect(output.turbopack.rules['*.js'][0]).toBe(rule)
-    expect(output.turbopack.rules['*.js']).toHaveLength(9)
+    expect(output.turbopack.rules['*.js']).toHaveLength(14)
     expect((withRedact({ turbopack: { rules: { '*.js': rule } } }) as any).turbopack.rules['*.js'][0]).toBe(rule)
   })
 
@@ -151,12 +151,19 @@ describe('withRedact', () => {
       'node_modules/next/dist/compiled/react/index.js',
       'node_modules/next/dist/compiled/react-dom/client.js',
       'node_modules/react/jsx-runtime.js',
+      'node_modules/react-dom/server.browser.js',
+      'node_modules/next/dist/compiled/react-dom/server.browser.js',
+      'node_modules/next/dist/compiled/react-dom-experimental/server.browser.js',
       'node_modules/next/dist/compiled/react-experimental/index.js',
     ]) {
       const matching = rules.filter((rule: any) => rule.condition.all[1].path.test(path))
       expect(matching).toHaveLength(1)
       expect(matching[0].condition.all[0]).toBe('browser')
       expect(matching[0].loaders[0].loader).toMatch(/next\/loader\.cjs$/)
+      if (path.includes('server.browser')) {
+        expect(matching[0].loaders[0].options.defaultExport).toBe(true)
+        expect(matching[0].loaders[0].options.target).toMatch(/server\/index\.js$/)
+      }
     }
     expect(rules.some((rule: any) => rule.condition.all[1].path.test('node_modules/react-server-dom-turbopack/index.js'))).toBe(false)
   })

@@ -9,6 +9,12 @@ const entries: Record<string, string> = {
   'react-dom': '../dom/index.js',
   'react-dom/client': './client.js',
   'react-dom/test-utils': '../dom/test-utils.js',
+  'react-dom/server': '../server/index.js',
+  'react-dom/server.browser': '../server/index.js',
+  'react-dom/server.edge': '../server/index.js',
+  'react-dom/server.node': '../server/index.js',
+  'react-dom/server.bun': '../server/index.js',
+
   scheduler: '../scheduler/index.js',
 }
 
@@ -37,7 +43,7 @@ export function withRedact<T extends Record<string, any> | ((...args: any[]) => 
       loader: fileURLToPath(new URL('./loader.cjs', import.meta.url)),
       options: {
         target: fileURLToPath(new URL(entry, import.meta.url)),
-        defaultExport: name === 'react' || name === 'react-dom' || name === 'react-dom/client',
+        defaultExport: name === 'react' || name === 'react-dom' || name === 'react-dom/client' || name.startsWith('react-dom/server'),
       },
     }]
     if (major! >= 16) {

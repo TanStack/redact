@@ -1,12 +1,14 @@
+import { createSyntheticEvent } from './synthetic-event';
+import { UNITLESS_STYLE } from '../core/unitless-style';
+import { devToolsMetadata } from '../core/devtools';
 import { formActions } from './form-actions';
-import { attributeName, STRING_BOOLEAN_ATTRS } from '../core/attributes';
+import { attributeName, attributeValue } from '../core/attributes';
 import { isString } from "../core/functions";
 const SVG_NS = 'http://www.w3.org/2000/svg';
-const BOOLEAN_ATTRS = /^(allowfullscreen|async|autofocus|autoplay|checked|controls|credentialless|default|defer|disabled|formnovalidate|hidden|inert|ismap|itemscope|loop|multiple|muted|nomodule|novalidate|open|playsinline|readonly|required|reversed|selected)$/;
 const IDL_ATTRS = /^(value|checked|selected|disabled|multiple|muted|readonly)$/;
-export const isSvgElement = (el: Element): boolean => ((el as any).ownerSVGElement !== undefined || el.tagName === 'svg');
+export const isSvgElement = (el: Element): boolean => (el.namespaceURI === SVG_NS);
 export function setProp(el: Element, name: string, next: any, prev: any, isSvg: boolean): void {
-    if (isReservedProp(name))
+    if (isReservedProp(name) || name === 'autoFocus')
         return;
     // These names need no alias or boolean-attribute normalization.
     if (/^(aria|data)-./.test(name)) {
@@ -61,28 +63,15 @@ export function setProp(el: Element, name: string, next: any, prev: any, isSvg: 
         return;
     }
     const attr = attributeName(name, isSvg);
-    if (name === 'className' || name === 'class' || name === 'htmlFor' || STRING_BOOLEAN_ATTRS.test(attr)) {
-        if (next != null)
-            next = '' + next;
+    if (!isSvg && IDL_ATTRS.test(name) && name in el) {
+        try {
+            (el as any)[name] = next == null ? '' : next;
+            return;
+        } catch {}
     }
-    else {
-        if (!isSvg && IDL_ATTRS.test(name) && name in el) {
-            try {
-                ;
-                (el as any)[name] = next == null ? '' : next;
-                return;
-            }
-            catch { }
-        }
-        if (BOOLEAN_ATTRS.test(attr))
-            next = !!next;
-    }
-    if (next == null || next === false) {
-        el.removeAttribute(attr);
-    }
-    else {
-        el.setAttribute(attr, next === true ? '' : next);
-    }
+    const value = attributeValue(name, next, attr);
+    if (value === null) el.removeAttribute(attr);
+    else el.setAttribute(attr, value);
 }
 function setStyleProperty(style: CSSStyleDeclaration, key: string, value: any): void {
     if (key[0] === '-') {
@@ -91,7 +80,7 @@ function setStyleProperty(style: CSSStyleDeclaration, key: string, value: any): 
     else {
         ;
         (style as any)[key] = value == null || value === '' ? ''
-            : typeof value === 'number' && !UNITLESS_STYLE.test(key) ? value + 'px' : '' + value;
+            : value + (typeof value === 'number' && !UNITLESS_STYLE.test(key) ? 'px' : '');
     }
 }
 function setStyle(el: HTMLElement, next: any, prev: any): void {
@@ -136,27 +125,27 @@ function setEventHandler(el: Element, name: string, next: any): void {
     if (existing && (!enabled || existing.e[0] !== events[0])) {
         for (const event of existing.e)
             el.removeEventListener(event, existing, capture);
+        if (enabled) delete (el as any).__v;
         existing = handlers[name] = null;
     }
     if (!enabled)
         return;
     if (!existing) {
-        let inputValue: string | undefined;
         const entry = ((e: Event) => {
             if (events.length > 1) {
                 const value = (el as HTMLInputElement).value;
-                if (e.type === 'change' && inputValue === value)
+                if (e.type === 'change' && (el as any).__v === value)
                     return;
-                inputValue = e.type === 'input' ? value : undefined;
+                (el as any).__v = e.type === 'input' ? value : undefined;
             }
-            // React hands handlers a SyntheticEvent that carries `.nativeEvent`.
-            // Many libraries check `event.nativeEvent.isComposing` (react-instantsearch)
-            // or `event.nativeEvent.shiftKey` (UI kits) — without the alias they throw
-            // on `undefined.foo`. Aliasing the native event to itself is the cheapest
-            // way to satisfy the shape without building a full synthetic layer.
-            if ((e as any).nativeEvent === undefined)
-                (e as any).nativeEvent = e;
-            entry.c(e);
+            const event = createSyntheticEvent(e);
+            try {
+                if (process.env.NODE_ENV !== 'production') {
+                    const previous = devToolsMetadata.current;
+                    devToolsMetadata.current = devToolsMetadata.hosts.get(el) || null;
+                    try { entry.c(event); } finally { devToolsMetadata.current = previous; }
+                } else entry.c(event);
+            } finally { event.currentTarget = null; }
         }) as ((e: Event) => void) & {
             c: Function;
             e: string[];
@@ -168,7 +157,7 @@ function setEventHandler(el: Element, name: string, next: any): void {
     }
     existing.c = next;
 }
-const UNITLESS_STYLE = /^(animationIterationCount|borderImage(Outset|Slice|Width)|box(Flex(Group)?|OrdinalGroup)|column(Count|s)|flex(Grow|Positive|Shrink|Negative|Order)?|grid(Area|(Row|Column)(End|Span|Start)?)|fontWeight|line(Clamp|Height)|opacity|order|orphans|tabSize|widows|zIndex|zoom|(fill|flood|stop|stroke)Opacity|stroke(Dasharray|Dashoffset|Miterlimit|Width))$/;
+
 export interface SyntheticEvent extends Event {
     nativeEvent: Event;
     isDefaultPrevented(): boolean;
@@ -176,11 +165,17 @@ export interface SyntheticEvent extends Event {
     persist(): void;
     currentTarget: EventTarget & Element;
 }
-export function createHostNode(type: string, isSvg: boolean): Element {
+export function createHostNode(type: string, isSvg: boolean, owner: Document = document): Element {
     if (isSvg || type === 'svg') {
-        return document.createElementNS(SVG_NS, type);
+        return owner.createElementNS(SVG_NS, type);
     }
-    return document.createElement(type);
+    return owner.createElement(type);
 }
 import { isObject } from '../core/functions';
 import { isFunction, isReservedProp } from '../core/functions';
+
+// Renderer writes have already been observed by the app. Native change events
+// should only report a value that differs from that renderer-owned value.
+export function trackInputValue(el: HTMLInputElement | HTMLTextAreaElement): void {
+    (el as any).__v = el.value;
+}

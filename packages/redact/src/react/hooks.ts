@@ -206,7 +206,9 @@ export function useSyncExternalStoreWithSelector<Snapshot, Selection>(
 
   const value = useSyncExternalStore(subscribe, getSelection, getServerSelection)
   useDebugValue(value)
-  if (committed.current) committed.current.value = value
-  else committed.current = { value }
+  useLayoutEffect(() => {
+    if (committed.current) committed.current.value = value
+    else committed.current = { value }
+  }, [value])
   return value
 }

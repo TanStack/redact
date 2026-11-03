@@ -1,5 +1,77 @@
 # @tanstack/redact
 
+## 0.2.5
+
+### Patch Changes
+
+- Bubble errors thrown during boundary recovery to an enclosing boundary and preserve hydrated Suspense marker placement. ([#109](https://github.com/TanStack/redact/pull/109))
+
+- Focus newly mounted autoFocus form controls during the commit, before refs and layout effects. Preserve user focus while adopting server-rendered controls. ([#132](https://github.com/TanStack/redact/pull/132))
+
+## 0.2.4
+
+### Patch Changes
+
+- Reduce completion bookkeeping for streamed Suspense boundaries while preserving abort, error and allReady behavior. ([#123](https://github.com/TanStack/redact/pull/123))
+
+- Remove streamed Suspense hydration operations when hydration is disabled. ([#125](https://github.com/TanStack/redact/pull/125))
+
+## 0.2.3
+
+### Patch Changes
+
+- Adopt server-rendered metadata that remains in the document body during hydration. This prevents React Router's production module-preload links from triggering body replacement and preserves the existing interactive DOM. ([#94](https://github.com/TanStack/redact/pull/94))
+
+## 0.2.2
+
+### Patch Changes
+
+- Render bigint children in client and server output, preserve them during hydration, and use their full text when selecting an option by its default value. ([#95](https://github.com/TanStack/redact/pull/95))
+
+- Run passive effect cleanup before new effects so overlay listeners hand off in the same order as React. ([#95](https://github.com/TanStack/redact/pull/95))
+
+- Preserve browser changes to unchanged text, including document.title, while keeping later text updates attached to the current text node. ([#95](https://github.com/TanStack/redact/pull/95))
+
+- Fix hydration loops when useSyncExternalStore reads different server and client snapshots. Keep queued store updates inside their active Suspense boundary. ([#95](https://github.com/TanStack/redact/pull/95))
+
+- Preserve visible content and pending ownership when a root render suspends inside a transition. Keep urgent updates, retries, replacement transitions and unmount cancellation ordered correctly. ([#91](https://github.com/TanStack/redact/pull/91))
+
+- Preserve matching server DOM when a component suspends during hydration. Retry at the root or nearest marked Suspense boundary, keep outside siblings interactive, and avoid committing unfinished effects. ([#95](https://github.com/TanStack/redact/pull/95))
+
+## 0.2.1
+
+### Patch Changes
+
+- Add the development-only captureOwnerStack API to named and default React exports. Track creator stacks without requiring DevTools, fixing fully prefetched Next.js links with Cache Components. ([#76](https://github.com/TanStack/redact/pull/76))
+
+- Apply class component default props during client and server rendering, including elements created by automatic JSX runtimes. Preserve explicit null values and caller-owned props. ([#76](https://github.com/TanStack/redact/pull/76))
+
+- Reset React Compiler memo caches during Fast Refresh while preserving component state. ([#76](https://github.com/TanStack/redact/pull/76))
+
+- Keep controlled text input and textarea change tracking in sync with values written by the renderer, so blur does not report the app's own value as user input. ([#76](https://github.com/TanStack/redact/pull/76))
+
+- Preserve unkeyed sibling identity across conditional empty children so inputs retain their DOM, focus, and state. ([#76](https://github.com/TanStack/redact/pull/76))
+
+- Preserve synthetic event values after dispatch and avoid resource-bearing probes during hydration. Keep canonical SVG attribute casing, support ES5 component subclasses, run class update callbacks after commit lifecycles, forward batchedUpdates callback arguments, and render synchronous server Suspense fallbacks while reporting boundary errors. ([#76](https://github.com/TanStack/redact/pull/76))
+
+  Normalize SVG focus and CORS attribute names, clean up removed head children, preserve refreshed child positions, and report only errors from the retained streaming shell attempt.
+
+- Declare the MIT license and include its full text in the published package. ([#76](https://github.com/TanStack/redact/pull/76))
+
+- Use the Redact server renderer for browser-side react-dom/server imports in Next.js, including renderToStaticMarkup, while keeping Next server rendering on native React. ([#76](https://github.com/TanStack/redact/pull/76))
+
+- Preserve the original uncaught render error in hosts without the optional reportError API. ([#76](https://github.com/TanStack/redact/pull/76))
+
+- Detect React 18 in Vite consumers and adapt its element markers, context shapes, and version string at build time, without adding runtime version checks or increasing production bundles. React 19 runtime code stays unchanged. Add packed-package browser comparisons against React 18 and 19, plus a strict bundle-size comparison against the base branch. Concurrent features keep their synchronous behavior. Deprecated legacy ReactDOM roots are not included. ([#77](https://github.com/TanStack/redact/pull/77))
+
+- Keep the last committed external-store selection through abandoned Suspense renders so equal selections retain their identity and do not rerun dependent effects. ([#76](https://github.com/TanStack/redact/pull/76))
+
+- Put `useSyncExternalStoreWithSelector` on the default export. The Vite plugin aliases `use-sync-external-store/shim/with-selector` here, and zustand reads it as a CJS default import (`import shim from '...'; const { useSyncExternalStoreWithSelector } = shim`), so anything built on zustand's `useStoreWithEqualityFn`, React Flow, for one, threw `useSyncExternalStoreWithSelector is not a function`. ([#76](https://github.com/TanStack/redact/pull/76))
+
+- Keep numeric scale, aspectRatio, and vendor-prefixed unitless styles valid in client rendering and server markup. Share style and boolean-attribute classification between renderers. ([#76](https://github.com/TanStack/redact/pull/76))
+
+- Alias `use-sync-external-store/shim/index.js` and `use-sync-external-store/index.js` in the Vite plugin. Libraries such as react-aria import the explicit file subpath, which previously fell through to the raw CJS shim in dev and failed with "does not provide an export named 'useSyncExternalStore'". ([#76](https://github.com/TanStack/redact/pull/76))
+
 ## 0.2.0
 
 ### Minor Changes

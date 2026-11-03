@@ -1,5 +1,6 @@
 import { FiberTag, type Fiber, type FiberRoot } from '../core'
 import { devToolsMetadata } from '../core/devtools'
+import { onCommitRollback } from './commit'
 import { notifyDevToolsCommit, hasPendingDevToolsEffects } from './devtools-effects'
 
 // React DevTools consumes React's private fiber layout. Keep that layout in a
@@ -34,7 +35,6 @@ type Timing = { start: number; children: number; delegated: number; parent: Timi
 const durations = /* @__PURE__ */ new WeakMap<Fiber, { self: number; actual: number }>()
 const resolvedTypes = /* @__PURE__ */ new WeakMap<Fiber, { type: any; tag: FiberTag }>()
 let timing: Timing | null = null
-let callbackFiber: Fiber | null = null
 let errorHandler: ((fiber: DebugFiber) => boolean | null) | undefined
 let suspenseHandler: ((fiber: DebugFiber) => boolean) | undefined
 const forcedSuspensions = /* @__PURE__ */ new WeakMap<Fiber, { promise: Promise<void>; resolve: () => void }>()
@@ -53,13 +53,13 @@ export function wrapDevToolsRender<T extends Function>(render: T): T {
 }
 
 export function beginDevToolsCallback(fiber: Fiber): Fiber | null {
-  const previous = callbackFiber
-  if (enabled) callbackFiber = fiber
+  const previous = devToolsMetadata.current
+  devToolsMetadata.current = fiber
   return previous
 }
 
 export function endDevToolsCallback(previous: Fiber | null | undefined): void {
-  callbackFiber = previous || null
+  devToolsMetadata.current = previous || null
 }
 
 export function markDevToolsError(fiber: Fiber): void {
@@ -162,11 +162,10 @@ export function enableDevTools(hook: any, dependencies: DevToolsRuntime): void {
 }
 
 export function rememberDevToolsFiber(fiber: Fiber, element: object): void {
-  if (!enabled) return
   const metadata = devToolsMetadata.elements.get(element)
   if (!metadata) return
   const previous = devToolsMetadata.fibers.get(fiber)
-  runtime.onCommitRollback(() => {
+  onCommitRollback(() => {
     if (previous) devToolsMetadata.fibers.set(fiber, previous)
     else devToolsMetadata.fibers.delete(fiber)
   })
@@ -411,7 +410,7 @@ export function commitDevTools(root: FiberRoot, adapter: any, hook: any, id: num
   const snapshot = project(root.r, null, 0, seen, deferred)
   const pendingUpdaters = updaters.get(root) || new Set()
   updaters.delete(root)
-  adapter._debugRootType ||= root.h ? 'hydrateRoot()' : 'createRoot()'
+  adapter._debugRootType ||= devToolsMetadata.hydratedRoots.has(root) ? 'hydrateRoot()' : 'createRoot()'
   notifyDevToolsCommit(root, (layout, passive) => {
     const view = deferred ? materialize(snapshot, null) : snapshot
     view.stateNode = adapter
@@ -483,7 +482,7 @@ export function devToolsRenderer(): Record<string, any> {
     version: '19.2.3', reconcilerVersion: '19.2.3',
     currentDispatcherRef: runtime.shared,
     getCurrentFiber: () => {
-      const fiber = callbackFiber || timing?.fiber || runtime.shared.F
+      const fiber = devToolsMetadata.current || timing?.fiber || runtime.shared.F
       return fiber ? fibers.get(fiber) || mountingFibers.get(fiber) || null : null
     },
     findFiberByHostInstance(node: Node) {
@@ -512,6 +511,17 @@ export function invokeDevToolsCallback<T>(fiber: Fiber, callback: () => T): T {
 }
 
 export function renderWithDevTools(fiber: Fiber, render?: (fiber: Fiber) => void): void {
+  const previousOwner = devToolsMetadata.owner
+  const previousCurrent = devToolsMetadata.current
+  if (!previousOwner && performance.now() - devToolsMetadata.stackResetTime > 1000) {
+    devToolsMetadata.stackBudget = 10000
+    devToolsMetadata.stackResetTime = performance.now()
+  }
+  devToolsMetadata.owner = devToolsMetadata.current = fiber
   const timing = beginDevToolsRender(fiber)
-  try { render?.(fiber) } finally { endDevToolsRender(timing) }
+  try { render?.(fiber) } finally {
+    endDevToolsRender(timing)
+    devToolsMetadata.owner = previousOwner
+    devToolsMetadata.current = previousCurrent
+  }
 }

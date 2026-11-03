@@ -1,3 +1,4 @@
+import { c as compilerCache } from 'react/compiler-runtime'
 import { createRequire } from 'node:module'
 import { afterEach, expect, it, vi } from 'vitest'
 import { Component, Suspense, forwardRef, lazy, memo, useCallback, useEffect, useLayoutEffect, useMemo, useReducer, useRef, useState, type ReactNode } from 'react'
@@ -341,4 +342,40 @@ it.each([false, true])('preserves refreshed state when Flight replaces its lazy 
     expect(container.textContent).toBe(label + ':1')
     expect(container.firstChild).toBe(button)
   }
+})
+
+it('resets compiler memo slots on refresh while preserving component state', () => {
+  function version(label: string) {
+    return function Compiled() {
+      const slots = compilerCache(3)
+      const [count, setCount] = useState(0)
+      if (slots[0] === Symbol.for('react.memo_cache_sentinel')) slots[0] = () => setCount(n => n + 1)
+      if (slots[1] !== count) {
+        slots[1] = count
+        slots[2] = <button onClick={slots[0] as () => void}>{label}:{count}</button>
+      }
+      return slots[2] as ReactNode
+    }
+  }
+  const Before = version('before'), update = family(Before, 'compiler')
+  const { container } = setup(<Before />)
+  click(container)
+  update(version('after'))
+  Refresh.performReactRefresh()
+  expect(container.textContent).toBe('after:1')
+  click(container)
+  expect(container.textContent).toBe('after:2')
+})
+
+it('keeps the child index after a signature-changing refresh remount', () => {
+  const Before = counter('before'), update = family(Before, 'old-signature')
+  const { root, container } = setup(<Before />)
+  const After = counter('after')
+  update(After, 'new-signature')
+  Refresh.performReactRefresh()
+  click(container)
+  const button = container.firstChild
+  root.render(<After />)
+  expect(container.textContent).toBe('after:1')
+  expect(container.firstChild).toBe(button)
 })

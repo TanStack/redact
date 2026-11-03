@@ -1,0 +1,6 @@
+import {useState} from 'react';
+export function CompilerCounter({label}) {
+  const [count, setCount] = useState(0);
+  const caption = label.toUpperCase();
+  return <button onClick={() => setCount(count + 1)}><span>{caption}</span><strong>{count}</strong></button>;
+}

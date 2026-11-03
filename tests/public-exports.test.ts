@@ -55,6 +55,7 @@ describe('public API surface', () => {
         "addTransitionType",
         "cache",
         "cacheSignal",
+        "captureOwnerStack",
         "cloneElement",
         "createContext",
         "createElement",

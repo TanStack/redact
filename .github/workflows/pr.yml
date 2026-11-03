@@ -12,6 +12,24 @@ permissions:
   contents: read
 
 jobs:
+  react18:
+    name: React ${{ matrix.version }} consumer
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ['18.0.0', '18.2.0', '18.3.1', '19.0.0', '19.3.1']
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - uses: TanStack/config/.github/setup@e4b48f16568324f76f467aa4c2aac2f05db632c3
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm test:react18
+        env:
+          REACT_VERSION: ${{ matrix.version }}
+
   test:
     name: Test
     runs-on: ubuntu-latest
@@ -25,6 +43,10 @@ jobs:
         uses: TanStack/config/.github/setup@e4b48f16568324f76f467aa4c2aac2f05db632c3
       - name: Run Checks
         run: pnpm run test:pr
+      - name: Check compatibility bundle size against base
+        run: node scripts/test-react-compatibility-size.mjs
+        env:
+          REACT_SIZE_BASE_REF: ${{ github.event.pull_request.base.sha || github.sha }}
 
   next-compatibility:
     uses: ./.github/workflows/next.yml

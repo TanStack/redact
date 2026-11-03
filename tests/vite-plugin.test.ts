@@ -2,10 +2,13 @@
 import { describe, it, expect } from 'vitest'
 import { resolve } from 'node:path'
 import { createRequire } from 'node:module'
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs'
+import { tmpdir } from 'node:os'
 import { redact } from '@tanstack/redact/vite'
 import { build } from 'vite'
 
 const { JSDOM } = createRequire(import.meta.url)('jsdom')
+const { parseAst } = createRequire(createRequire(import.meta.url).resolve('vite'))('rollup/parseAst')
 
 function flattenPlugins(plugins: any): Array<any> {
   return [plugins].flat(Infinity)
@@ -18,9 +21,31 @@ function findPlugin(plugins: any, name: string): any {
 }
 
 describe('redact vite plugin', () => {
+  it.each(['18.2.0', '18.3.1', '19.3.1'])('targets the consumer React %s without changing unrelated modules or RSC', async (version) => {
+    const root = mkdtempSync(resolve(tmpdir(), 'redact-version-'))
+    try {
+      const react = resolve(root, 'node_modules/react')
+      mkdirSync(react, { recursive: true })
+      writeFileSync(resolve(react, 'package.json'), JSON.stringify({ version }))
+      const plugins = redact({ resolveFrom: root, packageRoots: { '@tanstack/redact': resolve(import.meta.dirname, '../packages/redact') } })
+      const plugin = findPlugin(plugins, 'redact')
+      const compiler = findPlugin(plugins, 'redact:react18')
+      plugin.configResolved({ root })
+      const id = await plugin.resolveId.call({}, 'react')
+      const code = `export const version = '19.2.3'; export default { version: '19.2.3' };`
+      const result = compiler.transform.call({ parse: parseAst }, code, id)
+      if (version.startsWith('18.')) {
+        expect(result.code).toContain(JSON.stringify(version))
+        expect(() => compiler.transform.call({ parse: parseAst }, '', id)).toThrow('React 18 adaptation failed')
+      } else expect(result).toBeNull()
+      expect(compiler.transform.call({}, '', '/unrelated/react/index.js')).toBeNull()
+      expect(compiler.transform.call({ environment: { name: 'rsc' } }, '', id)).toBeNull()
+    } finally { rmSync(root, { recursive: true, force: true }) }
+  })
+
   it.each(['ts', 'js'])('redirects disabled registration imports in %s modules', async (extension) => {
     const plugin = findPlugin(redact({ preset: 'nano' }), 'redact')
-    const importer = `/package/${extension === 'ts' ? 'src' : 'dist'}/dom/features/index.${extension}`
+    const importer = `${resolve(import.meta.dirname, '../packages/redact')}/${extension === 'ts' ? 'src' : 'dist'}/dom/features/index.${extension}`
     const calls: Array<string> = []
     const context = {
       async resolve(id: string, from: string, options: any) {
@@ -41,8 +66,8 @@ describe('redact vite plugin', () => {
 
   it.each(['ts', 'js'])('keeps peer imports on the same disabled implementation in %s modules', async (extension) => {
     const plugin = findPlugin(redact({ preset: 'nano' }), 'redact')
-    const importer = `/package/${extension === 'ts' ? 'src' : 'dist'}/dom/features/suspense/full.${extension}`
-    for (const feature of ['context', 'hydration', 'fragment-refs', 'view-transition', 'class']) {
+    const importer = `${resolve(import.meta.dirname, '../packages/redact')}/${extension === 'ts' ? 'src' : 'dist'}/dom/features/suspense/full.${extension}`
+    for (const feature of ['context', 'hydration', 'fragment-refs', 'view-transition', 'class', 'suspense-hydration']) {
       for (const base of [`../${feature}`, `../../features/${feature}`]) {
         const specifier = base + (extension === 'js' ? '/index.js' : '')
         const context = {
@@ -60,7 +85,7 @@ describe('redact vite plugin', () => {
   })
 
   it.each(['ts', 'js'])('does not redirect enabled, unrelated, or RSC imports in %s modules', async (extension) => {
-    const importer = `/package/dist/dom/features/index.${extension}`
+    const importer = `${resolve(import.meta.dirname, '../packages/redact')}/dist/dom/features/index.${extension}`
     const suffix = extension === 'js' ? '/index.js' : ''
     const enabled = findPlugin(redact({ features: { viewTransitions: true } }), 'redact')
     const neverResolve = { resolve() { throw new Error('Unexpected feature redirect') } }
@@ -73,6 +98,17 @@ describe('redact vite plugin', () => {
     await expect(disabled.resolveId.call({
       resolve: async () => ({ id: `/other/context/index.${extension}` }),
     }, `../context${suffix}`, importer)).resolves.toBeNull()
+    for (const feature of ['hydration', 'suspense-hydration']) {
+      await expect(disabled.resolveId.call({
+        resolve: async () => ({ id: `/app/features/${feature}/index.${extension}` }),
+      }, `../${feature}${suffix}`, `/app/page.${extension}`)).resolves.toBeNull()
+    }
+    await expect(disabled.resolveId.call({
+      async resolve(id: string) {
+        expect(id).toBe(`./hydration${suffix}`)
+        return { id: `/app/features/hydration/index.${extension}` }
+      },
+    }, `./hydration${suffix}`, `/app/features/index.${extension}`)).resolves.toBeNull()
     await expect(disabled.resolveId.call(neverResolve, './unknown/index.js', importer)).resolves.toBeNull()
   })
 
@@ -385,6 +421,32 @@ describe('redact vite plugin', () => {
     )
   })
 
+  it('aliases use-sync-external-store file subpaths to the React entry', async () => {
+    const packageRoot = resolve(import.meta.dirname, '../packages/redact')
+    const plugin = findPlugin(redact({
+      packageRoots: {
+        '@tanstack/redact': packageRoot,
+      },
+    }), 'redact')
+
+    plugin.configResolved?.({
+      root: resolve(import.meta.dirname, '..'),
+      server: { fs: { allow: [] } },
+    } as any)
+
+    const context = { environment: { name: 'client' } }
+    const reactEntry = await plugin.resolveId.call(context, 'react')
+    expect(reactEntry).toMatch(/packages\/redact\/dist\//)
+    for (const specifier of [
+      'use-sync-external-store',
+      'use-sync-external-store/index.js',
+      'use-sync-external-store/shim',
+      'use-sync-external-store/shim/index.js',
+    ]) {
+      await expect(plugin.resolveId.call(context, specifier)).resolves.toBe(reactEntry)
+    }
+  })
+
   it('prunes force-included React optimizer deps outside RSC', () => {
     const plugin = findPlugin(redact({
       skip: ['scheduler'],
@@ -437,5 +499,25 @@ describe('redact vite plugin', () => {
       'react',
       'react-dom/server',
     ])
+  })
+})
+
+
+describe('streamed hydration feature boundary',()=>{
+  it.each([
+    {hydration:false,suspense:true},
+    {hydration:false,suspense:false},
+    {hydration:true,suspense:false},
+    {hydration:true,suspense:true},
+  ])('bundles hydration=$hydration suspense=$suspense without leaking disabled implementations',async features=>{
+    const source=resolve(import.meta.dirname,'../packages/redact/src'),fixture='\0streamed-hydration-feature-fixture'
+    let modules:string[]=[]
+    await build({configFile:false,logLevel:'silent',plugins:[...redact({preset:'full',features}),{
+      name:'streamed-hydration-feature-fixture',resolveId(id){if(id===fixture)return id},
+      load(id){if(id===fixture)return `export {createRoot,hydrateRoot} from ${JSON.stringify(source+'/dom/client.ts')};`},
+      generateBundle(_options,bundle){modules=Object.values(bundle).flatMap(item=>item.type==='chunk'?Object.keys(item.modules):[])},
+    }],build:{write:false,minify:true,rollupOptions:{input:fixture,preserveEntrySignatures:'strict',output:{format:'es'}}}})
+    expect(modules.some(id=>id.endsWith('/features/suspense-hydration/full.ts'))).toBe(features.hydration&&features.suspense)
+    expect(modules.some(id=>id.endsWith('/features/suspense/full.ts'))).toBe(features.suspense)
   })
 })

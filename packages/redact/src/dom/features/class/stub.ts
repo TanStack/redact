@@ -1,6 +1,7 @@
+import { resolveClassProps } from '../../../core/class-props';
 import { isFunction } from '../../../core/functions';
 import { FiberTag, type Fiber, type ReactNode } from '../../../core';
-import { installRenderer, reconcileRaw, childrenToArray, scheduleUpdate, isThenable, handleSuspended, handleErrorInRender, } from '../../reconcile';
+import { installRenderer, reconcileRaw, childrenToArray, scheduleUpdate, isThenable, handleSuspended, deferHydration, handleErrorInRender, } from '../../reconcile';
 // Stub: Class feature disabled. Class components still render — they're
 // detected by `type.prototype.isReactComponent` in the reconciler regardless —
 // but ONLY the core contract is honored: constructor, `render()`, and
@@ -16,7 +17,7 @@ import { installRenderer, reconcileRaw, childrenToArray, scheduleUpdate, isThena
 function renderClassStub(fiber: Fiber): void {
     const Ctor = fiber.type as any;
     let instance = fiber.i;
-    const props = fiber.v ?? {};
+    const props = resolveClassProps(Ctor, fiber.v ?? {});
     if (!instance) {
         instance = new Ctor(props, undefined);
         instance.props = props;
@@ -41,6 +42,7 @@ function renderClassStub(fiber: Fiber): void {
     }
     catch (e: any) {
         if (isThenable(e)) {
+            if (deferHydration(fiber, e)) return;
             handleSuspended(fiber, e);
             rendered = null;
         }

@@ -17,7 +17,7 @@ const server = createServer((request, response) => {
     response.writeHead(302, { location: '/?engine=' + url.searchParams.get('engine') + '&mode=target' }); response.end(); return
   }
   setTimeout(() => {
-    response.writeHead(mode === 'server-error' && count > 1 ? 500 : 200, { 'content-type': 'text/html' })
+    response.writeHead(mode.startsWith('server-error') && count > 1 ? 500 : 200, { 'content-type': 'text/html' })
     response.end(`<h1>Document ${count}</h1><button>Activate</button><script>${script}</script>`)
   }, mode === 'interrupted' && count > 1 ? 300 : 0)
 })
@@ -28,22 +28,34 @@ try {
   for (const engine of engines) {
     const browser = await types[engine].launch({ headless: true })
     try {
-      for (const mode of ['normal', 'interrupted', 'canceled', 'server-error', 'redirected']) {
+      for (const mode of ['normal', 'interrupted', 'canceled', 'server-error', 'redirected', 'missing-response-event', 'server-error-missing-response-event']) {
         const page = await browser.newPage()
         page.setDefaultTimeout(1500)
         await page.goto(`http://127.0.0.1:${server.address().port}/?engine=${engine}&mode=${mode}`)
         const previous = await page.evaluate(() => performance.timeOrigin)
+        // Reproduce a missing Playwright response event while the real browser
+        // still loads a document. URL, time origin and HTTP status remain real.
+        const reloadPage = mode.includes('missing-response-event') ? new Proxy(page, {
+          get(target, key) {
+            if (key === 'on' || key === 'off') return (event, listener) => {
+              if (event !== 'response') target[key](event, listener)
+              return target
+            }
+            const value = Reflect.get(target, key)
+            return typeof value === 'function' ? value.bind(target) : value
+          },
+        }) : page
         if (mode === 'canceled') {
           await page.getByRole('button').click()
           let dismissed = false
           page.once('dialog', async dialog => { dismissed = true; await dialog.dismiss() })
-          await assert.rejects(reloadDocument(page, { timeout: 1500 }))
+          await assert.rejects(reloadDocument(reloadPage, { timeout: 1500 }))
           assert.equal(dismissed, true)
           assert.equal(await page.evaluate(() => performance.timeOrigin), previous)
-        } else if (mode === 'server-error') await assert.rejects(reloadDocument(page), /received 500/)
-        else if (mode === 'redirected') await assert.rejects(reloadDocument(page), /preserve the current URL/)
+        } else if (mode.startsWith('server-error')) await assert.rejects(reloadDocument(reloadPage), /received 500/)
+        else if (mode === 'redirected') await assert.rejects(reloadDocument(reloadPage), /preserve the current URL/)
         else {
-          await reloadDocument(page)
+          await reloadDocument(reloadPage)
           assert.notEqual(await page.evaluate(() => performance.timeOrigin), previous)
           await page.getByRole('heading', { name: mode === 'interrupted' ? 'Document 3' : 'Document 2', exact: true }).waitFor()
         }

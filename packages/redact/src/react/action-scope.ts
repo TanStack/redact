@@ -1,9 +1,11 @@
+import type { FiberRoot } from '../core'
 import { ReactSharedInternals } from './shared-internals'
 import { isThenable } from '../core/functions'
 // Action lifetimes are separate from transition types used by ViewTransition.
 export interface ActionScope {
+  o?: FiberRoot | null | undefined
   v?: number
-  n?: () => void
+  n?: ((scope: ActionScope) => void) | undefined
   p: number
   d: Promise<void>
   r: () => void
@@ -30,11 +32,11 @@ export function finish(scope: ActionScope): void {
   scope.l.clear()
   scope.r()
 }
-export function runAction(callback: () => unknown): ActionScope {
+export function runAction(callback: () => unknown, owner?: FiberRoot | null, notify?: (scope: ActionScope) => void): ActionScope {
   const previous = ReactSharedInternals.B
   let resolve!: () => void
   const done = new Promise<void>(yes => { resolve = yes })
-  const scope: ActionScope = { p: 1, d: done, r: resolve, f: false, l: new Set() }
+  const scope: ActionScope = { p: 1, d: done, r: resolve, f: false, l: new Set(), o: owner ?? previous?.o, n: notify }
   try {
     const result = withinAction(scope, callback)
     if (isThenable(result)) trackAction(scope, result as PromiseLike<unknown>)

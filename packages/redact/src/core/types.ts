@@ -19,6 +19,7 @@ type ReactNodeValue =
   | ReactElement
   | string
   | number
+  | bigint
   | boolean
   | null
   | undefined

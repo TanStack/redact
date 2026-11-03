@@ -1,4 +1,4 @@
-import { renderRoot, scheduleRootRender, flushSyncWork, batchedUpdates } from './reconcile'
+import { discardPendingWork, renderRoot, scheduleRootRender, flushSyncWork, batchedUpdates } from './reconcile'
 
 import { createFiberRoot } from './root-internal'
 
@@ -40,6 +40,7 @@ export function createRoot(container: Element | DocumentFragment | Document, opt
       })
     },
     unmount() {
+      discardPendingWork(root)
       flushSyncWork(() => {
         renderRoot(root, null)
       })

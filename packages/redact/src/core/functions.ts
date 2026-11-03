@@ -7,3 +7,5 @@ export const isThenable = (x: any): x is Promise<any> => (x != null && isFunctio
 export const isString = (value: any): value is string => typeof value === 'string'
 
 export const isObject = (value: any): boolean => typeof value === 'object'
+
+export const isTextContent = (value: unknown): value is string | number | bigint => typeof value === 'string' || typeof value === 'number' || typeof value === 'bigint'
