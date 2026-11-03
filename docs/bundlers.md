@@ -56,3 +56,5 @@ redact({ preset: 'nano', features: { context: true, suspense: true } })
 Disabling a feature changes behavior, see the feature descriptions in the exported types. `skip` leaves the named import untouched, mixing React and Redact elements or hooks requires care. In a monorepo, `resolveFrom` identifies the application directory containing React. `packageRoots` can select a built Redact package explicitly.
 
 Aliases match exact public entrypoints. Feature replacement is limited to that selected package's canonical files, including symlinked installations, and preserves resource queries. Application modules with similar names are left alone. The React 18 loader parses only the selected runtime's published JavaScript and keeps source maps.
+
+`react-dom/profiling` uses the Redact DOM and root exports. It does not provide React's profiling instrumentation. Use React when that instrumentation is required.

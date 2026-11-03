@@ -8,7 +8,7 @@ import type { ResolvedFeatures } from '../bundler-core/selection'
 export type { RedactPreset, RedactFeatures } from '../bundler-core/selection'
 
 export type { RedactOptions } from '../bundler-core/resolution'
-import { findPackageDir, resolveSpecifier } from '../bundler-core/resolution'
+import { findPackageDir, resolveSpecifier, resolvePackageDir } from '../bundler-core/resolution'
 import type { RedactOptions } from '../bundler-core/resolution'
 const pluginDir = dirname(fileURLToPath(import.meta.url))
 
@@ -50,8 +50,12 @@ export function redact(options: RedactOptions = {}): any {
     const fromDir = options.resolveFrom ?? root
     const packageRoots = options.packageRoots ?? {}
     for (const [from, to] of entries) {
-      const resolved = resolveSpecifier(to, fromDir, packageRoots)
+      const resolved = resolveSpecifier(to, fromDir, packageRoots, options.resolveFrom !== undefined)
       if (resolved) resolvedMap[from] = resolved
+    }
+    const selectedDir = resolvePackageDir('@tanstack/redact', fromDir, packageRoots, options.resolveFrom !== undefined)
+    if (selectedDir) {
+      try { featurePackageRoot = realpathSync(selectedDir).replaceAll('\\', '/').replace(/\/$/, '') } catch { /* Keep the unbuilt-package fallback. */ }
     }
     done = true
   }

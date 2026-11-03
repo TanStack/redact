@@ -43,7 +43,7 @@ it('prioritizes exact Redact aliases without discarding unrelated application al
     mkdirSync(join(root, 'dist/react'), { recursive: true })
     writeFileSync(join(root, 'dist/react/index.js'), '')
     const exports: Record<string, { default: string }> = {}
-    for (const name of ['', 'jsx-runtime', 'jsx-dev-runtime', 'compiler-runtime', 'dom-client', 'dom', 'server', 'dom-test-utils', 'scheduler']) {
+    for (const name of ['', 'jsx-runtime', 'jsx-dev-runtime', 'compiler-runtime', 'dom-client', 'dom-profiling', 'dom', 'server', 'dom-test-utils', 'scheduler']) {
       exports[name ? './' + name : '.'] = { default: './dist/react/index.js' }
     }
     writeFileSync(join(root, 'package.json'), JSON.stringify({ exports }))

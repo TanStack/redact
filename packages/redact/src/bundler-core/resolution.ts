@@ -44,7 +44,7 @@ function splitSpecifier(specifier: string): { pkg: string; sub: string } {
 }
 
 export function findPackageDir(pkg: string, fromDir: string): string | null {
-  let dir = fromDir
+  let dir = resolvePath(fromDir)
   while (true) {
     const candidate = resolvePath(dir, 'node_modules', pkg)
     if (existsSync(resolvePath(candidate, 'package.json'))) return candidate
@@ -69,7 +69,7 @@ function resolveExport(packageDir: string, sub: string): string | null {
   const pick = (v: any): string | null => {
     if (typeof v === 'string') return v
     if (v && typeof v === 'object') {
-      return pick(v.import ?? v.module ?? v.source ?? v.default ?? null)
+      return pick(v.import) ?? pick(v.module) ?? pick(v.source) ?? pick(v.default)
     }
     return null
   }
@@ -91,16 +91,25 @@ function resolveExport(packageDir: string, sub: string): string | null {
 // back to the consumer root for hoisted installs.
 const pluginDir = dirname(fileURLToPath(import.meta.url))
 
+export function resolvePackageDir(
+  pkg: string,
+  fromDir: string,
+  packageRoots: Record<string, string>,
+  preferFrom = false,
+): string | null {
+  return packageRoots[pkg] ?? (preferFrom
+    ? findPackageDir(pkg, fromDir) ?? findPackageDir(pkg, pluginDir)
+    : findPackageDir(pkg, pluginDir) ?? findPackageDir(pkg, fromDir))
+}
+
 export function resolveSpecifier(
   specifier: string,
   fromDir: string,
   packageRoots: Record<string, string>,
+  preferFrom = false,
 ): string | null {
   const { pkg, sub } = splitSpecifier(specifier)
-  const packageDir =
-    packageRoots[pkg] ??
-    findPackageDir(pkg, pluginDir) ??
-    findPackageDir(pkg, fromDir)
+  const packageDir = resolvePackageDir(pkg, fromDir, packageRoots, preferFrom)
   if (!packageDir) return null
   const target = resolveExport(packageDir, sub)
   if (!target) return null

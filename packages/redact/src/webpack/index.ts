@@ -2,7 +2,7 @@ import { existsSync, readFileSync, realpathSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { ALIASES, resolveFeatures, isOwnedRuntimeFeature } from '../bundler-core/selection'
-import { findPackageDir, resolveSpecifier } from '../bundler-core/resolution'
+import { findPackageDir, resolveSpecifier, resolvePackageDir } from '../bundler-core/resolution'
 import type { ResolvedFeatures } from '../bundler-core/selection'
 import type { RedactOptions } from '../bundler-core/resolution'
 export type { RedactOptions } from '../bundler-core/resolution'
@@ -61,13 +61,13 @@ export function redact(options: RedactOptions = {}) {
       }
       const from = options.resolveFrom ?? compiler.context
       const roots = options.packageRoots ?? {}
-      const entry = resolveSpecifier('@tanstack/redact', from, roots)
-      if (!entry) throw new Error('Cannot find the built @tanstack/redact package. Install it before configuring the plugin.')
-      const root = realpathSync(resolve(dirname(entry), '../..'))
+      const packageDir = resolvePackageDir('@tanstack/redact', from, roots, options.resolveFrom !== undefined)
+      if (!packageDir) throw new Error('Cannot find the built @tanstack/redact package. Install it before configuring the plugin.')
+      const root = realpathSync(packageDir)
       const aliases: Array<{ name: string; alias: string; onlyModule: true }> = []
       for (const [name, specifier] of Object.entries(ALIASES)) {
         if (options.skip?.includes(name)) continue
-        const alias = resolveSpecifier(specifier, from, roots)
+        const alias = resolveSpecifier(specifier, from, roots, options.resolveFrom !== undefined)
         if (!alias) throw new Error(`Cannot resolve Redact alias: ${specifier}`)
         aliases.push({ name, alias, onlyModule: true })
       }
@@ -83,7 +83,7 @@ export function redact(options: RedactOptions = {}) {
       if (typeof version === 'string' && /^18\./.test(version)) {
         compiler.options.module.rules.push({
           test: /\.js$/,
-          include: (file: string) => realpathSync(file).replaceAll('\\', '/').startsWith(root.replaceAll('\\', '/') + '/dist/'),
+          include: (file: string) => existsSync(file) && realpathSync(file).replaceAll('\\', '/').startsWith(root.replaceAll('\\', '/') + '/dist/'),
           use: [{ loader: resolve(pluginDir, 'react18-loader.cjs'), options: { packageRoot: root, version } }],
         })
       }

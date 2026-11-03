@@ -74,6 +74,10 @@
     "./rspack": {
       "types": "./dist/rspack/index.d.ts",
       "default": "./dist/rspack/index.js"
+    },
+    "./dom-profiling": {
+      "types": "./dist/dom/profiling.d.ts",
+      "default": "./dist/dom/profiling.js"
     }
   },
   "files": [
@@ -93,14 +97,15 @@
     "./dist/dom/_all.js"
   ],
   "dependencies": {
-    "magic-string": "^0.30.21",
-    "acorn": "^8.19.0"
+    "@jridgewell/remapping": "^2.3.5",
+    "acorn": "^8.19.0",
+    "magic-string": "^0.30.21"
   },
   "peerDependencies": {
+    "@cloudflare/vite-plugin": "1.65.0",
     "next": "~15.5.0 || ~16.0.0 || ~16.1.0 || ~16.2.0 || ~16.3.0 || ~16.4.0",
-    "vite": ">=5",
     "vinext": "~1.3.0",
-    "@cloudflare/vite-plugin": "1.65.0"
+    "vite": ">=5"
   },
   "peerDependenciesMeta": {
     "next": {
