@@ -48,15 +48,7 @@ export interface ServerErrorInfo {
 
 export type BrowserBailoutCallback = (error: Error, errorInfo: ServerErrorInfo) => void
 
-export interface SuspendedBoundary {
-  id: number
-  insertionContext: InsertionContext
-  fallbackHTML: string
-  children: ReactNode
-  thenable: Promise<any>
-  contextSnapshot: ContextSnapshot
-  componentStack: string
-}
+export type SuspendedBoundary = [number, ReactNode, Promise<any>, ContextSnapshot, string, InsertionContext]
 
 export interface WalkOptions {
   insertionContext?: InsertionContext | undefined
@@ -490,10 +482,10 @@ function walkSuspense(
       emitBoundary(opts, id, fallbackParts.join(''), isBrowserError(thenable) ? '$!' : '$E')
     } else emitBoundary(opts, id, fallbackParts.join(''))
     for (const boundary of nested) opts.onSuspend?.(boundary)
-    if (suspended) opts.onSuspend?.({
-      id, insertionContext: opts.insertionContext ?? 'html', fallbackHTML: fallbackParts.join(''), children: props.children, thenable, contextSnapshot,
-      componentStack: thrownInfo.componentStack || opts.componentStack || '',
-    })
+    if (suspended) opts.onSuspend?.([
+      id, props.children, thenable, contextSnapshot,
+      thrownInfo.componentStack || opts.componentStack || '', opts.insertionContext ?? 'html',
+    ])
     return
   }
 

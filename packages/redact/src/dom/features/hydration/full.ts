@@ -20,7 +20,7 @@ function findNearestSafeHostAboveComposite(fiber: Fiber | null): Fiber | null {
     let f = fiber;
     while (f) {
         if (f.t === FiberTag.Host && f.n) {
-            if (!isSafeHostRecoveryElement(f))
+            if (DOCUMENT_SHELL_TAGS.test(f.type.toLowerCase()))
                 return null;
             const parentTag = f.p?.t as number;
             if (!host || (parentTag > FiberTag.Text && parentTag < FiberTag.Suspense)) {
@@ -62,34 +62,37 @@ export class HydrationCursor {
         }
         return null;
     }
-    /**
-     * Position-insensitive lookup for head/html adoption. Scans forward past
-     * non-matching nodes without removing them, matching by tag AND the key
-     * attributes that identify head elements uniquely (rel/href for links,
-     * name/property for meta, src for script). Non-matching nodes stay in
-     * place so the SSR'd stylesheet/script order is preserved.
-     */
-    head(tag: string, props: Record<string, any>): ChildNode | null {
-        const target = tag.toLowerCase();
-        const keyAttrs = HEAD_KEY_ATTRS[target];
-        let scan = this.p.firstChild;
-        while (scan) {
-            if (scan.nodeType === 1 &&
-                (scan as Element).tagName.toLowerCase() === target &&
-                headAttrsMatch(scan as Element, props, keyAttrs)) {
-                claimHydrationNode(scan);
-                return scan;
-            }
-            scan = scan.nextSibling;
-        }
-        return null;
-    }
     has(): boolean {
         const position = this.n;
         const found = this.take() !== null;
         this.n = position;
         return found;
     }
+}
+/**
+ * Position-insensitive lookup for head/html adoption. Scans forward past
+ * non-matching nodes without removing them, matching by tag AND the key
+ * attributes that identify head elements uniquely (rel/href for links,
+ * name/property for meta, src for script). Non-matching nodes stay in
+ * place so the SSR'd stylesheet/script order is preserved.
+ */
+function findMetadata(parent: Node | undefined, tag: string, props: Record<string, any>, fallback?: Node): ChildNode | null {
+    const keys = HEAD_KEY_ATTRS[tag] ?? [];
+    for (const location of [parent, fallback]) {
+        if (!location) continue;
+        scan: for (const el of (location as Element).children) {
+            if (el.localName !== tag || CLAIMED.has(el))
+                continue;
+            for (const key of keys) {
+                const value = props[key];
+                if (hydrationAttribute(el, attributeName(key)) !== (value == null ? null : String(value)))
+                    continue scan;
+            }
+            claimHydrationNode(el);
+            return el;
+        }
+    }
+    return null;
 }
 const PROD_HYDRATION_ERROR = 'Hydration mismatch.';
 const BOUNDARY_MARKER = /^(\$[?!E~]?)(\d*)$/;
@@ -135,22 +138,6 @@ const CLAIMED = new WeakSet<Node>();
 function claimHydrationNode(node: Node): void {
     CLAIMED.add(node);
     onCommitRollback(() => CLAIMED.delete(node));
-}
-function headAttrsMatch(el: Element, props: Record<string, any>, keys: ReadonlyArray<string> | undefined): boolean {
-    if (CLAIMED.has(el))
-        return false;
-    if (!keys)
-        return true;
-    for (const k of keys) {
-        const propVal = props[k];
-        const elVal = hydrationAttribute(el, attributeName(k));
-        if (propVal == null ? elVal != null : String(propVal) !== elVal)
-            return false;
-    }
-    return true;
-}
-function isSafeHostRecoveryElement(fiber: Fiber): boolean {
-    return !DOCUMENT_SHELL_TAGS.test(fiber.type.toLowerCase());
 }
 const hydrationAttribute = (el: Element, name: string): string | null => (name === 'nonce' && 'nonce' in el && el.hasAttribute(name)
     ? (el as HTMLElement).nonce ?? ''
@@ -266,30 +253,16 @@ export function adoptHostDom(fiber: Fiber, parent: Fiber): boolean {
     if (!cursor)
         return false;
     const tag = (fiber.type as string).toLowerCase();
+    const props = fiber.v ?? {};
     const documentHeadParent = documentMetadataParent(fiber) || (cursor.p.nodeType === 9 && DOCUMENT_HEAD_TAGS.test(tag)
         ? (cursor.p as Document).head
         : null);
-    const parentEl = cursor.p as Element;
-    const parentTag = parentEl.nodeType === 1 ? (parentEl as Element).tagName.toLowerCase() : '';
+    const parentTag = (cursor.p as Element).localName;
     const isHeadish = parentTag === 'head' || parentTag === 'html' || !!documentHeadParent;
-    let candidate: ChildNode | null;
-    if (documentHeadParent) {
-        // Adopt projected metadata from the same head used for client updates.
-        candidate = new HydrationCursor(documentHeadParent).head(tag, fiber.v ?? {});
-    }
-    else if (cursor.p.nodeType === 9 && tag !== 'html') {
-        candidate = new HydrationCursor((cursor.p as Document).body).head(tag, fiber.v ?? {});
-    }
-    else if (isHeadish) {
-        // Head/html children are position-insensitive — server may emit them in
-        // a different order than the React tree (React 19 head hoisting, etc.).
-        // Scan forward without removing non-matching nodes; match on attribute
-        // signature so we don't adopt the wrong <link> and clobber its props.
-        candidate = cursor.head(tag, fiber.v ?? {});
-    }
-    else {
-        candidate = cursor.take();
-    }
+    const metadataParent = documentHeadParent || (isHeadish ? cursor.p
+        : cursor.p.nodeType === 9 && tag !== 'html' ? (cursor.p as Document).body : null);
+    // Prefer hoisted metadata, then claim its original host position.
+    const candidate = metadataParent ? findMetadata(metadataParent, tag, props, documentHeadParent ? cursor.p : undefined) : cursor.take();
     if (!candidate) {
         // Client expected a host here but the cursor is exhausted — server gave
         // fewer children than the client tree. Report the structural gap (React
@@ -301,14 +274,13 @@ export function adoptHostDom(fiber: Fiber, parent: Fiber): boolean {
             onMismatch(fiber, null);
         return false;
     }
-    if (candidate.nodeType !== 1 || (candidate as Element).tagName.toLowerCase() !== tag) {
+    if ((candidate as Element).localName?.toLowerCase() !== tag) {
         // mismatch — log and re-render fresh from this point
         onMismatch(fiber, candidate);
         return false;
     }
     fiber.n = candidate;
     // Apply props (attach events, sync IDL props). Don't re-set existing attrs.
-    const props = fiber.v ?? {};
     const isSvg = tag === 'svg' ||
         ((candidate as Element).namespaceURI === 'http://www.w3.org/2000/svg' &&
             tag !== 'foreignobject');
@@ -332,22 +304,12 @@ export function adoptHostDom(fiber: Fiber, parent: Fiber): boolean {
     }
     return true;
 }
-function getRecoveryContainer(container: Element | Document, host: Fiber | null): Element | Document {
-    if (host?.t === FiberTag.Host &&
-        host.n &&
-        findNearestSafeHostAboveComposite(host.p)) {
-        return host.n as Element;
-    }
-    return container;
-}
 export function findHostParent(fiber: Fiber): Fiber {
     let f: Fiber | null = fiber;
     while (f) {
         // A fiber explicitly holding a cursor acts as a boundary for hydration
         // (e.g. Suspense with a scoped cursor during fallback/boundary hydration).
-        if (f.hc)
-            return f;
-        if (f.t === FiberTag.Host || f.t === FiberTag.Root || f.t === FiberTag.Portal) {
+        if (f.hc || f.t === FiberTag.Host || f.t === FiberTag.Root || f.t === FiberTag.Portal) {
             return f;
         }
         f = f.p;
@@ -492,7 +454,9 @@ export function recoverHydration(root: FiberRoot, error: unknown): boolean {
         return false;
     const container = root.c as Element | Document;
     const children = root.r.v?.children ?? null;
-    const recoveryContainer = getRecoveryContainer(container, error.f);
+    const host = error.f;
+    const recoveryContainer = host?.t === FiberTag.Host && host.n && findNearestSafeHostAboveComposite(host.p)
+        ? host.n as Element : container;
     resetAfterHydrationFailure(root, container, recoveryContainer);
     if (recoveryContainer !== container) {
         releaseClaims(container);

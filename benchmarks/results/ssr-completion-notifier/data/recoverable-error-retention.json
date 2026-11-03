@@ -1,0 +1,578 @@
+[
+  {
+    "variant": "base",
+    "repeat": 0,
+    "rows": [
+      {
+        "gap": 0,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 2,
+        "alive": [
+          null,
+          null
+        ]
+      },
+      {
+        "gap": 1,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 2,
+        "alive": [
+          null,
+          null
+        ]
+      },
+      {
+        "gap": 2,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 1,
+        "alive": [
+          null
+        ]
+      },
+      {
+        "gap": 3,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 1,
+        "alive": [
+          null
+        ]
+      },
+      {
+        "gap": 4,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 1,
+        "alive": [
+          null
+        ]
+      },
+      {
+        "gap": 5,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 1,
+        "alive": [
+          null
+        ]
+      },
+      {
+        "gap": 6,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 1,
+        "alive": [
+          null
+        ]
+      },
+      {
+        "gap": 7,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 1,
+        "alive": [
+          null
+        ]
+      }
+    ]
+  },
+  {
+    "variant": "base",
+    "repeat": 1,
+    "rows": [
+      {
+        "gap": 0,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 2,
+        "alive": [
+          null,
+          null
+        ]
+      },
+      {
+        "gap": 1,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 2,
+        "alive": [
+          null,
+          null
+        ]
+      },
+      {
+        "gap": 2,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 1,
+        "alive": [
+          null
+        ]
+      },
+      {
+        "gap": 3,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 1,
+        "alive": [
+          null
+        ]
+      },
+      {
+        "gap": 4,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 1,
+        "alive": [
+          null
+        ]
+      },
+      {
+        "gap": 5,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 1,
+        "alive": [
+          null
+        ]
+      },
+      {
+        "gap": 6,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 1,
+        "alive": [
+          null
+        ]
+      },
+      {
+        "gap": 7,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 1,
+        "alive": [
+          null
+        ]
+      }
+    ]
+  },
+  {
+    "variant": "base",
+    "repeat": 2,
+    "rows": [
+      {
+        "gap": 0,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 2,
+        "alive": [
+          null,
+          null
+        ]
+      },
+      {
+        "gap": 1,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 2,
+        "alive": [
+          null,
+          null
+        ]
+      },
+      {
+        "gap": 2,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 1,
+        "alive": [
+          null
+        ]
+      },
+      {
+        "gap": 3,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 1,
+        "alive": [
+          null
+        ]
+      },
+      {
+        "gap": 4,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 1,
+        "alive": [
+          null
+        ]
+      },
+      {
+        "gap": 5,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 1,
+        "alive": [
+          null
+        ]
+      },
+      {
+        "gap": 6,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 1,
+        "alive": [
+          null
+        ]
+      },
+      {
+        "gap": 7,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 1,
+        "alive": [
+          null
+        ]
+      }
+    ]
+  },
+  {
+    "variant": "notifier-reuse",
+    "repeat": 0,
+    "rows": [
+      {
+        "gap": 0,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 2,
+        "alive": [
+          null,
+          null
+        ]
+      },
+      {
+        "gap": 1,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 2,
+        "alive": [
+          null,
+          null
+        ]
+      },
+      {
+        "gap": 2,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 1,
+        "alive": [
+          null
+        ]
+      },
+      {
+        "gap": 3,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 1,
+        "alive": [
+          null
+        ]
+      },
+      {
+        "gap": 4,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 1,
+        "alive": [
+          null
+        ]
+      },
+      {
+        "gap": 5,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 1,
+        "alive": [
+          null
+        ]
+      },
+      {
+        "gap": 6,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 1,
+        "alive": [
+          null
+        ]
+      },
+      {
+        "gap": 7,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 1,
+        "alive": [
+          null
+        ]
+      }
+    ]
+  },
+  {
+    "variant": "notifier-reuse",
+    "repeat": 1,
+    "rows": [
+      {
+        "gap": 0,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 2,
+        "alive": [
+          null,
+          null
+        ]
+      },
+      {
+        "gap": 1,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 2,
+        "alive": [
+          null,
+          null
+        ]
+      },
+      {
+        "gap": 2,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 1,
+        "alive": [
+          null
+        ]
+      },
+      {
+        "gap": 3,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 1,
+        "alive": [
+          null
+        ]
+      },
+      {
+        "gap": 4,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 1,
+        "alive": [
+          null
+        ]
+      },
+      {
+        "gap": 5,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 1,
+        "alive": [
+          null
+        ]
+      },
+      {
+        "gap": 6,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 1,
+        "alive": [
+          null
+        ]
+      },
+      {
+        "gap": 7,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 1,
+        "alive": [
+          null
+        ]
+      }
+    ]
+  },
+  {
+    "variant": "notifier-reuse",
+    "repeat": 2,
+    "rows": [
+      {
+        "gap": 0,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 2,
+        "alive": [
+          null,
+          null
+        ]
+      },
+      {
+        "gap": 1,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 2,
+        "alive": [
+          null,
+          null
+        ]
+      },
+      {
+        "gap": 2,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 1,
+        "alive": [
+          null
+        ]
+      },
+      {
+        "gap": 3,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 1,
+        "alive": [
+          null
+        ]
+      },
+      {
+        "gap": 4,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 1,
+        "alive": [
+          null
+        ]
+      },
+      {
+        "gap": 5,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 1,
+        "alive": [
+          null
+        ]
+      },
+      {
+        "gap": 6,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 1,
+        "alive": [
+          null
+        ]
+      },
+      {
+        "gap": 7,
+        "events": [
+          "error:The server render could not complete because client rendering was requested outside a Suspense boundary.",
+          "destroy:The server render could not complete because client rendering was requested outside a Suspense boundary."
+        ],
+        "created": 1,
+        "alive": [
+          null
+        ]
+      }
+    ]
+  }
+]

@@ -1,49 +1,15 @@
-import { readOwnerStack, runWithOwnerStack } from '../../../core/devtools';
 import { a as transitionRender } from '../suspense-runtime';
 import { cleanupEffect } from '../../dispatcher';
-import { checkpointCommit, rewindCommit, queueMutation, onCommitFailure, commitSynchronously } from '../../commit';
+import { checkpointCommit, rewindCommit, queueMutation, onCommitFailure } from '../../commit';
 import { REACT_SUSPENSE_TYPE, ReactSharedInternals, startTransition } from '../../../react';
 import { FiberTag, createFiber, type Fiber } from '../../../core';
 import { disconnectClass, inSuspensePrimary, setRetainedFlag, walkRetained } from '../../retained-effects';
 import { hasContextChanged, renderContextConsumers } from '../context';
 import { installRenderer, registerTypeMatcher, installCapability, reconcileRaw, childrenToArray, renderNode, scheduleUpdate, unmountAllChildren, removeFiber, findRoot, runEffects, getCurrentRoot, withCurrentRoot, discardPendingWork, findSuspenseBoundary, RenderSuspenseCapture, activityIsDisconnected, isActivityHidden, attachRef, detachRef, enqueueEffect, flushFiberCommits, scheduleLifecycle, handleCommitError, disposeCleanup, isThenable, defaultHandleSuspended, } from '../../reconcile';
-import { HydrationCursor, setHydrationCursor, clearHydrationCursor, advanceCursorPast, tryConsumeBoundary, isHydrationBailout, } from '../hydration';
+import { tryConsumeBoundary, isHydrationBailout, } from '../hydration';
+import { hydrateSuspenseBoundary, recoverBoundaryHydration } from '../suspense-hydration';
 import { devToolsSuspension } from '../../devtools';
 let suspendHandler: ((t: Promise<any>) => void) | null = null;
-function clearBoundaryRange(startMark: Comment, endMark: Comment): void {
-    queueMutation(() => {
-        let node = startMark.nextSibling;
-        while (node && node !== endMark) {
-            const next = node.nextSibling;
-            (node as ChildNode).remove();
-            node = next;
-        }
-    });
-}
-function rehydrateBoundary(fiber: Fiber): void {
-    const state = fiber.b;
-    if (!state?.b || !state.e)
-        return;
-    const root = findRoot(fiber);
-    const parent = state.b.parentNode as Node;
-    if (!(root && parent))
-        return;
-    // Both initial hydration and a streamed reveal adopt the same marked range.
-    commitSynchronously(() => withCurrentRoot(root, () => {
-        const previous = root.h;
-        try {
-            const kind = state.b.data.startsWith('$E') ? 3 : state.b.data.startsWith('$!') ? 2 : 0;
-            if (!kind)
-                unmountAllChildren(fiber);
-            root.h = true;
-            hydrateSuspenseBoundary(fiber, { ...fiber.v, children: state.r }, [kind, 0, state.b, state.e], true);
-        }
-        finally {
-            root.h = previous;
-        }
-        runEffects(root);
-    }));
-}
 // React's Suspense semantics: when a re-render of an already-committed
 // boundary suspends, the previously-committed children are kept in the DOM
 // (hidden) so their scroll position, focus, selection, native form state,
@@ -70,52 +36,7 @@ interface SuspenseState {
     ]> | null;
     f?: Fiber | null;
 }
-function reportServerFailure(fiber: Fiber): void {
-    const error = new Error(process.env.NODE_ENV !== 'production' ? 'Switched to client rendering because the server render did not complete.' : '');
-    const handler = findRoot(fiber)?.re;
-    if (handler) {
-        if (process.env.NODE_ENV !== 'production') runWithOwnerStack(readOwnerStack(fiber), () => handler(error, { componentStack: null }));
-        else handler(error, { componentStack: null });
-    }
-    else
-        console.error(error);
-}
-function recoverBoundaryHydration(fiber: Fiber, children: any, parent: Node, startMark: Comment | null, endMark: Comment | null, retryBoundary?: boolean): void {
-    const clear = () => {
-        if (startMark && endMark)
-            clearBoundaryRange(startMark, endMark);
-        else
-            queueMutation(() => { parent.textContent = ''; });
-    };
-    const root = findRoot(fiber)!;
-    const prevHydrating = root.h;
-    if (!retryBoundary)
-        discardPendingWork(root);
-    clear();
-    unmountAllChildren(fiber);
-    root.h = false;
-    try {
-        if (retryBoundary) {
-            fiber.b = {};
-            renderSuspense(fiber);
-        }
-        else
-            reconcileRaw(fiber, children);
-        if (endMark)
-            advanceCursorPast(fiber.p!, endMark);
-    }
-    catch (clientError) {
-        onCommitFailure(() => {
-            clear();
-            unmountAllChildren(fiber);
-        });
-        throw clientError;
-    }
-    finally {
-        root.h = prevHydrating;
-    }
-}
-function scheduleRetry(fiber: Fiber): void {
+export function scheduleRetry(fiber: Fiber): void {
     const previous = ReactSharedInternals.T;
     ReactSharedInternals.T = null;
     try {
@@ -125,81 +46,9 @@ function scheduleRetry(fiber: Fiber): void {
         ReactSharedInternals.T = previous;
     }
 }
-function retryHydration(fiber: Fiber, thenable: Promise<any>): void {
+export function retryHydration(fiber: Fiber, thenable: Promise<any>): void {
     const retry = () => { if (!fiber.u) scheduleRetry(fiber); };
     thenable.then(retry, retry);
-}
-function hydrateSuspenseBoundary(fiber: Fiber, props: any, boundary: [
-    0 | 1 | 2 | 3,
-    number,
-    Comment,
-    Comment
-], reveal?: boolean): void {
-    const [pendingBoundary, id, startMark, endMark] = boundary;
-    // Record the boundary shape so we can re-hydrate on reveal.
-    fiber.b = {
-        b: startMark,
-        e: endMark,
-        r: props.children,
-    };
-    if (pendingBoundary >= 2) {
-        if (pendingBoundary === 3)
-            reportServerFailure(fiber);
-        recoverBoundaryHydration(fiber, props.children, startMark.parentNode!, startMark, endMark, true);
-        fiber.m = props;
-        return;
-    }
-    if (!pendingBoundary) {
-        // Real DOM is inline between startMark and endMark. Hydrate into it.
-        const checkpoint = checkpointCommit(fiber);
-        const parent = startMark.parentNode!;
-        try {
-            setHydrationCursor(fiber, new HydrationCursor(parent, startMark.nextSibling, endMark));
-            reconcileRaw(fiber, props.children);
-            advanceCursorPast(fiber.p!, endMark);
-        }
-        catch (e) {
-            // A marked boundary owns a known server range. Roll back only its
-            // unfinished preparation so siblings can hydrate while it waits.
-            if (isThenable(e)) {
-                rewindCommit(checkpoint);
-                fiber.b.w = true;
-                retryHydration(fiber, e);
-                advanceCursorPast(fiber.p!, endMark);
-            }
-            else if (!isHydrationBailout(e)) {
-                onCommitFailure(() => {
-                    clearBoundaryRange(startMark, endMark);
-                    unmountAllChildren(fiber);
-                });
-                throw e;
-            }
-            else recoverBoundaryHydration(fiber, props.children, parent, startMark, endMark);
-        }
-        finally {
-            clearHydrationCursor(fiber);
-        }
-        fiber.m = props;
-        return;
-    }
-    if (startMark.data === '$?' || startMark.data === '$~') {
-        // React owns this pending server range until its reveal script runs.
-        // Hydrating the fallback would consume the transport template as a host.
-        fiber.b.w = true;
-        (startMark as any)._reactRetry = () => {
-            if (!fiber.u)
-                scheduleRetry(fiber);
-        };
-        advanceCursorPast(fiber.p!, endMark);
-        fiber.m = props;
-        return;
-    }
-    // Pending transport owns this range until reveal. A template placeholder
-    // and sibling fallback cannot be hydrated as a div's children.
-    advanceCursorPast(fiber.p!, endMark);
-    (globalThis as any).$RH?.(id, () => rehydrateBoundary(fiber));
-    // If the inline runtime isn't present, nothing external will mark us dy.
-    fiber.m = props;
 }
 function reconnectLayout(fiber: Fiber): void {
     if (!fiber.ld || isActivityHidden(fiber) || activityIsDisconnected(fiber))
@@ -278,7 +127,7 @@ function setUpdateBoundary(fiber: Fiber, boundary: Fiber | null | undefined): vo
     if (fiber.t === FiberTag.Suspense && fiber.b?.f)
         setUpdateBoundary(fiber.b.f, boundary);
 }
-function renderSuspense(fiber: Fiber): void {
+export function renderSuspense(fiber: Fiber): void {
     const props = fiber.v ?? {};
     let state = (fiber.b ??= {}) as SuspenseState;
     // Streaming hydration: if the next DOM node is a server-emitted boundary
