@@ -82,3 +82,24 @@ it('does not let an old host callback split a later microtask batch after act dr
     act(() => root.unmount())
   }
 })
+
+it('lets an existing host callback recover queued work when act throws', async () => {
+  const container = document.createElement('div')
+  const root = createRoot(container)
+  let update!: (value: number) => void
+  function App() {
+    const [value, set] = useState(0)
+    update = set
+    return <span>{value}</span>
+  }
+  try {
+    act(() => root.render(<App />))
+    update(1)
+    expect(() => act(() => { update(2); throw new Error('callback failed') })).toThrow('callback failed')
+    await Promise.resolve()
+    expect(container.textContent).toBe('2')
+    update(3)
+    await Promise.resolve()
+    expect(container.textContent).toBe('3')
+  } finally { act(() => root.unmount()) }
+})

@@ -1332,7 +1332,6 @@ export function scheduleUpdate(fiber: Fiber): void {
         return;
     // Act owns in-scope work even when a normal microtask is already pending.
     if (process.env.NODE_ENV !== 'production' && ReactSharedInternals.A) {
-        root.s = true;
         ReactSharedInternals.A.push(flushPending);
         return;
     }
