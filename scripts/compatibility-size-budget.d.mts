@@ -18,3 +18,6 @@ export declare function recoveryAllowance(base: string | undefined, row: { profi
 
 export declare function autofocusFingerprint(root?: URL): string | undefined
 export declare function autofocusAllowance(base: string | undefined, row: {profile: string; entry: string; target: string}, metric: string, fingerprint: string | undefined): number
+
+export declare function shellReleaseFingerprint(root?: URL): string | undefined
+export declare function shellReleaseAllowance(base: string | undefined, row: {profile: string; entry: string; target: string}, metric: string, fingerprint: string | undefined): number
