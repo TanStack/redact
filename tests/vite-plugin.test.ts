@@ -84,6 +84,33 @@ describe('redact vite plugin', () => {
     }
   })
 
+  it.each(['ts', 'js'])('preserves query and fragment suffixes on disabled runtime features in %s modules', async (extension) => {
+    const packageRoot = resolve(import.meta.dirname, '../packages/redact')
+    const runtime = `${packageRoot}/${extension === 'ts' ? 'src' : 'dist'}/dom`
+    const plugin = findPlugin(redact({ preset: 'nano' }), 'redact')
+    for (const suffix of ['?v=abc123', '?v=abc123&mode=one?two#fragment', '#fragment', '']) {
+      const importer = `${runtime}/dispatcher.${extension}?v=importer`
+      for (const feature of ['context', 'hydration', 'fragment-refs', 'view-transition', 'class', 'suspense-runtime', 'suspense-hydration']) {
+        const specifier = `./features/${feature}/index.js`
+        const resolved = `${runtime}/features/${feature}/index.${extension}${suffix}`
+        await expect(plugin.resolveId.call({ resolve: async () => ({ id: resolved }) }, specifier, importer))
+          .resolves.toBe(`${runtime}/features/${feature}/stub.${extension}${suffix}`)
+        await expect(plugin.resolveId.call({ resolve: async () => ({ id: `/app/features/${feature}/index.${extension}${suffix}` }) }, specifier, importer))
+          .resolves.toBeNull()
+      }
+      const registration = `${runtime}/features/index.${extension}${suffix}`
+      const request = `./context/index.js${suffix}`
+      await expect(plugin.resolveId.call({
+        resolve: async (id: string) => {
+          expect(id).toBe(`./context/stub.js${suffix}`)
+          return { id: `${runtime}/features/context/stub.${extension}${suffix}` }
+        },
+      }, request, registration)).resolves.toBe(`${runtime}/features/context/stub.${extension}${suffix}`)
+      await expect(plugin.resolveId.call({ environment: { name: 'rsc' }, resolve() { throw new Error('RSC must retain native imports') } }, request, registration))
+        .resolves.toBeNull()
+    }
+  })
+
   it.each(['ts', 'js'])('does not redirect enabled, unrelated, or RSC imports in %s modules', async (extension) => {
     const importer = `${resolve(import.meta.dirname, '../packages/redact')}/dist/dom/features/index.${extension}`
     const suffix = extension === 'js' ? '/index.js' : ''
