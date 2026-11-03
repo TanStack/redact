@@ -1,5 +1,11 @@
 # @tanstack/redact
 
+## 0.3.0
+
+### Minor Changes
+
+- Add browser SPA plugins for Webpack and Rspack, with an Rsbuild setup guide. Share Vite feature selection and package resolution, retain exact aliases and package ownership, and adapt the selected runtime to React 18 when needed. ([#143](https://github.com/TanStack/redact/pull/143))
+
 ## 0.2.6
 
 ### Patch Changes
