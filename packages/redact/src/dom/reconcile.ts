@@ -1338,7 +1338,14 @@ export function scheduleUpdate(fiber: Fiber): void {
     }
     if (!root.s) {
         root.s = true;
-        queueMicrotask(flushPending);
+        if (process.env.NODE_ENV !== 'production') {
+            const scheduled = () => {
+                if (root.s === scheduled) flushPending();
+            };
+            root.s = scheduled;
+            queueMicrotask(scheduled);
+        }
+        else queueMicrotask(flushPending);
     }
 }
 setCommitCheckpointHook(() => {

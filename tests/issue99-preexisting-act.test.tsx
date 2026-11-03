@@ -1,5 +1,5 @@
 import { expect, it, vi } from 'vitest'
-import { act, useEffect, useState } from 'react'
+import { act, useEffect, useLayoutEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 
 it('flushes focus work scheduled before an event inside act', () => {
@@ -55,4 +55,30 @@ it('leaves prequeued work asynchronous when act schedules no new update', async 
     await act(async () => { await Promise.resolve() })
     expect(container.textContent).toBe('1')
   } finally { act(() => root.unmount()) }
+})
+it('does not let an old host callback split a later microtask batch after act drains it', async () => {
+  const container = document.createElement('div')
+  const root = createRoot(container)
+  const commits: number[] = []
+  let update!: (value: number) => void
+  function App() {
+    const [value, set] = useState(0)
+    update = set
+    useLayoutEffect(() => { commits.push(value) }, [value])
+    return <span>{value}</span>
+  }
+  try {
+    act(() => root.render(<App />))
+    update(1)
+    act(() => update(2))
+    expect(container.textContent).toBe('2')
+    commits.length = 0
+    queueMicrotask(() => update(4))
+    update(3)
+    await Promise.resolve()
+    expect(container.textContent).toBe('4')
+    expect(commits).toEqual([4])
+  } finally {
+    act(() => root.unmount())
+  }
 })
