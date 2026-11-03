@@ -66,6 +66,14 @@
     "./cloudflare": {
       "types": "./dist/cloudflare/index.d.ts",
       "default": "./dist/cloudflare/index.js"
+    },
+    "./webpack": {
+      "types": "./dist/webpack/index.d.ts",
+      "default": "./dist/webpack/index.js"
+    },
+    "./rspack": {
+      "types": "./dist/rspack/index.d.ts",
+      "default": "./dist/rspack/index.js"
     }
   },
   "files": [
@@ -85,7 +93,8 @@
     "./dist/dom/_all.js"
   ],
   "dependencies": {
-    "magic-string": "^0.30.21"
+    "magic-string": "^0.30.21",
+    "acorn": "^8.19.0"
   },
   "peerDependencies": {
     "next": "~15.5.0 || ~16.0.0 || ~16.1.0 || ~16.2.0 || ~16.3.0 || ~16.4.0",
