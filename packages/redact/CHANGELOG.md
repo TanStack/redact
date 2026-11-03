@@ -1,5 +1,17 @@
 # @tanstack/redact
 
+## 0.2.6
+
+### Patch Changes
+
+- Flush updates inside act even when the root already has a scheduled microtask. ([#135](https://github.com/TanStack/redact/pull/135))
+
+- Release emitted shell buffers while streamed Suspense boundaries remain pending. ([#140](https://github.com/TanStack/redact/pull/140))
+
+- Resolve React shims before package aliases so Storybook's docs addon can load the preview. ([#138](https://github.com/TanStack/redact/pull/138))
+
+- Keep disabled Vite features on their stub implementations when development module IDs contain version queries. ([#138](https://github.com/TanStack/redact/pull/138))
+
 ## 0.2.5
 
 ### Patch Changes
