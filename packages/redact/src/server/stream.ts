@@ -38,9 +38,8 @@ export interface PipeableWritable {
 
 export interface OrchestratorState {
   nextId: number
-  pending: Set<Promise<void>>
+  pending: (task?: Promise<void>) => Promise<void> | undefined
   closed: boolean
-  errored: unknown | null
   aborted: boolean
   reason: unknown
   abort: (reason?: unknown) => void
@@ -56,8 +55,17 @@ export interface OrchestratorState {
 
 function createState(): OrchestratorState {
   let wake!: () => void
+  let count = 0, notify: (() => void) | undefined, failed: unknown[] | undefined
   const state: OrchestratorState = {
-    nextId: 0, pending: new Set(), closed: false, errored: null,
+    nextId: 0, pending(task) {
+      if (task) {
+        count++
+        const done = () => { count--; notify?.() }
+        // The empty box marks a consumed failure without retaining it or accepting later failures.
+        task.then(done, error => { failed ||= [error]; done() })
+      } else if (failed?.length) return Promise.reject(failed.pop())
+      else if (count) return new Promise<void>(resolve => { notify = resolve })
+    }, closed: false,
     aborted: false, reason: undefined,
     cancelled: new Promise<void>((resolve) => { wake = resolve }),
     abort(reason) {
@@ -152,6 +160,8 @@ export async function streamHtml(
       if (hints) shellChunks.splice(head, 0, hints)
       if (state.frame) state.frame.shellFlushed = true
       let html = partsHtml(shellChunks, state)
+      shellChunks.length = 0
+      delete state.flush
 
       // Inject runtime + bootstrap scripts (once, after shell). Skip the
       // reveal/event-replay runtime when nothing needs it — no pending
@@ -182,13 +192,12 @@ export async function streamHtml(
 
     // 3. Stream suspended boundaries as they resolve
     for (const b of boundaries) streamBoundary(b, emit, options, state)
-    await drain(state)
+    for (let next; (next = state.pending());) await next
   } catch (err) {
     if (isBrowserError(err)) {
       err = new Error('The server render could not complete because client rendering was requested outside a Suspense boundary.',
         Object.hasOwn(err, 'cause') ? { cause: err.cause } : undefined)
     }
-    state.errored = err
     if (options.onError) options.onError(err)
     throw err
   } finally {
@@ -205,15 +214,15 @@ function streamBoundary(
   const nonce = scriptNonce(options)
   const task = (async () => {
     try {
-      await Promise.race([b.thenable, state.cancelled])
+      await Promise.race([b[2], state.cancelled])
     } catch {}
     if (state.closed) return
 
     const defer = (error: unknown) => {
-      if (isBrowserError(error)) options.onBrowserBailout?.(error, { componentStack: (error as any).componentStack || b.componentStack })
+      if (isBrowserError(error)) options.onBrowserBailout?.(error, { componentStack: (error as any).componentStack || b[4] })
       else options.onError?.(error)
-      if (b.written) emit(`<script${nonce ? ` nonce="${escapeAttr(nonce)}"` : ''}>$RB(${b.id}${isBrowserError(error) ? '' : ',1'})</script>`)
-      else b.marker = isBrowserError(error) ? '$!' : '$E'
+      if (b[8]) emit(`<script${nonce ? ` nonce="${escapeAttr(nonce)}"` : ''}>$RB(${b[0]}${isBrowserError(error) ? '' : ',1'})</script>`)
+      else b[7] = isBrowserError(error) ? '$!' : '$E'
     }
     if (state.aborted) { defer(state.reason); return }
 
@@ -221,28 +230,28 @@ function streamBoundary(
     // provider stack from when the boundary first suspended.
     // A boundary not yet written keeps its content for an inline write; its
     // resources stay with the unwritten shell or segment that will contain it.
-    const written = b.written
+    const written = b[8]
     const parts: HtmlPart[] = []
     const sub: SuspendedBoundary[] = []
     const resourceScope: ResourceScope = {}
     let styles: string[][] | undefined
     const previous = beginSSR(options.identifierPrefix, state.frame)
     if (written) state.frame?.resources?.takeStylesheets()
-    const restore = applyContextSnapshot(b.contextSnapshot)
+    const restore = applyContextSnapshot(b[3])
     try {
-      walk(b.children, {
+      walk(b[1], {
         emit: (s) => parts.push(s),
         onSuspend: (n) => sub.push(n),
         nextBoundaryId: () => state.nextId++,
         onBrowserBailout: options.onBrowserBailout,
           onError: options.onError,
-        componentStack: b.componentStack,
+        componentStack: b[4],
         resourceScope,
       })
       state.frame?.resources?.mergeScope(resourceScope)
     } catch (err) {
       if (isThenable(err)) {
-        b.thenable = err
+        b[2] = err
         streamBoundary(b, emit, options, state)
       } else defer(err)
       return
@@ -256,14 +265,13 @@ function streamBoundary(
       }
     }
 
-    if (written) emit(`<div hidden id="S:${b.id}">${partsHtml(parts, state)}</div>${revealScript(b.id, nonce, styles)}`)
-    else b.content = parts
+    if (written) emit(`<div hidden id="S:${b[0]}">${partsHtml(parts, state)}</div>${revealScript(b[0], nonce, styles)}`)
+    else b[6] = parts
 
     // Recurse: any nested suspensions inside the now-revealed content
     for (const s of sub) streamBoundary(s, emit, options, state)
   })()
-  state.pending.add(task)
-  task.then(() => state.pending.delete(task), () => state.pending.delete(task))
+  state.pending(task)
 }
 
 // Serialize buffered output. Boundaries that completed or failed before this
@@ -276,18 +284,12 @@ function partsHtml(parts: HtmlPart[], state: OrchestratorState): string {
       html += part
       continue
     }
-    const marker = part.content ? '$' : part.marker ?? '$?'
-    if (marker === '$?') part.written = state.outlined = true
-    const [open, close] = boundaryEdges(part.id, marker)
-    html += open + partsHtml(part.content ?? part.fallback, state) + close
+    const marker = part[6] ? '$' : part[7] ?? '$?'
+    if (marker === '$?') part[8] = state.outlined = true
+    const [open, close] = boundaryEdges(part[0], marker)
+    html += open + partsHtml(part[6] ?? part[5], state) + close
   }
   return html
-}
-
-async function drain(state: OrchestratorState): Promise<void> {
-  while (state.pending.size > 0) {
-    await Promise.race(state.pending)
-  }
 }
 
 function scriptNonce(options: StreamOptions): string | undefined {
@@ -389,6 +391,7 @@ export function renderToReadableStream(
   })
   state.onShellReady = () => queueMicrotask(() => shellResolve(Object.assign(stream, { allReady })))
 
+  let failed = false
   const close = (controller: ReadableStreamDefaultController<Uint8Array>) => {
     try {
       controller.close()
@@ -418,6 +421,7 @@ export function renderToReadableStream(
           allReadyResolve()
         },
         (err) => {
+          failed = true
           detachAbortListener()
           try {
             controller.error(err)
@@ -431,7 +435,7 @@ export function renderToReadableStream(
     pull(controller) {
       state.flowing = true
       state.flush?.()
-      if (state.closed && !state.errored) close(controller)
+      if (state.closed && !failed) close(controller)
     },
     cancel(reason) {
       state.abort(reason)

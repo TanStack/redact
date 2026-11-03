@@ -50,19 +50,13 @@ export type BrowserBailoutCallback = (error: Error, errorInfo: ServerErrorInfo) 
 /** Streamed output keeps pending boundaries addressable until it is written. */
 export type HtmlPart = string | SuspendedBoundary
 
-export interface SuspendedBoundary {
-  id: number
-  fallback: HtmlPart[]
-  children: ReactNode
-  thenable: Promise<any>
-  contextSnapshot: ContextSnapshot
-  componentStack: string
-  // Set by the stream: completed content and failure markers are inlined
-  // when the boundary is written; `written` boundaries need a later reveal.
-  content?: HtmlPart[]
-  marker?: string
-  written?: boolean
-}
+// Keep the compact suspension record used by the completion notifier. Buffered
+// output follows its existing id, children, thenable, context and stack fields.
+export type SuspendedBoundary = [
+  id: number, children: ReactNode, thenable: Promise<any>,
+  contextSnapshot: ContextSnapshot, componentStack: string, fallback: HtmlPart[],
+  content?: HtmlPart[], marker?: string, written?: boolean,
+]
 
 export interface WalkOptions {
   emit: (chunk: HtmlPart) => void
@@ -493,10 +487,10 @@ function walkSuspense(
     })
     // A streamed suspension is emitted as itself, so the stream can still
     // inline its content if it completes before these bytes are written.
-    const boundary: SuspendedBoundary | undefined = suspended && opts.onSuspend ? {
-      id, fallback: fallbackParts, children: props.children, thenable, contextSnapshot,
-      componentStack: thrownInfo.componentStack || opts.componentStack || '',
-    } : undefined
+    const boundary: SuspendedBoundary | undefined = suspended && opts.onSuspend ? [
+      id, props.children, thenable, contextSnapshot,
+      thrownInfo.componentStack || opts.componentStack || '', fallbackParts,
+    ] : undefined
     if (boundary) opts.emit(boundary)
     else emitBoundary(opts, id, fallbackParts, suspended ? '$?' : isBrowserError(thenable) ? '$!' : '$E')
     for (const inner of nested) opts.onSuspend?.(inner)
