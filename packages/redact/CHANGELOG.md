@@ -1,5 +1,13 @@
 # @tanstack/redact
 
+## 0.2.5
+
+### Patch Changes
+
+- Bubble errors thrown during boundary recovery to an enclosing boundary and preserve hydrated Suspense marker placement. ([#109](https://github.com/TanStack/redact/pull/109))
+
+- Focus newly mounted autoFocus form controls during the commit, before refs and layout effects. Preserve user focus while adopting server-rendered controls. ([#132](https://github.com/TanStack/redact/pull/132))
+
 ## 0.2.4
 
 ### Patch Changes
