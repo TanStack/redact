@@ -1,0 +1,68 @@
+import { test } from 'node:test'
+import assert from 'node:assert/strict'
+import { spawn } from 'node:child_process'
+import { mkdtemp, mkdir, writeFile, readFile, rm } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { fileURLToPath } from 'node:url'
+import { dirname, join, resolve } from 'node:path'
+import { createServer } from 'node:http'
+import { setTimeout as delay } from 'node:timers/promises'
+const scripts = resolve(process.env.HARNESS_SOURCE || dirname(fileURLToPath(import.meta.url)))
+async function write(root, name, text) { const p=join(root,name);await mkdir(dirname(p),{recursive:true});await writeFile(p,text) }
+function launch(file,args,env={}) {const child=spawn(process.execPath,[join(scripts,file),...args],{env:{...process.env,...env},stdio:['ignore','pipe','pipe']});let text='';child.stdout.on('data',c=>text+=c);child.stderr.on('data',c=>text+=c);const done=new Promise((accept,reject)=>{child.once('error',reject);child.once('close',(code,signal)=>{accept({code,signal,text})})});return {child,done,root:args[0],get text(){return text}}}
+async function bounded(run,ms=6000) { let timer;try{return await Promise.race([run.done,new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('process did not close: '+run.text)),ms)})])}finally{clearTimeout(timer)} }
+async function stop(run) {if(run.child.exitCode===null&&run.child.signalCode===null){run.child.kill('SIGTERM');try{await bounded(run,7000)}catch{for(const name of ['next','vinext'])for(const runtime of ['react','redact']){try{process.kill(Number(await readFile(join(run.root,name,runtime+'.pid'),'utf8')),'SIGKILL')}catch{}}run.child.kill('SIGKILL');await run.done}}}
+async function fixture() {const root=await mkdtemp(join(tmpdir(),'benchmark-lifecycle-'));await write(root,'package.json','{"private":true,"type":"module","dependencies":{}}');await write(root,'package-lock.json','{}');await write(root,'redact.tgz','synthetic fixture, never package evidence');return root}
+async function clean(root) {for(const name of ['next','vinext'])for(const runtime of ['react','redact']){try{process.kill(Number(await readFile(join(root,name,runtime+'.pid'),'utf8')),'SIGKILL')}catch{}}await rm(root,{recursive:true,force:true})}
+const mockBuild=`import{mkdirSync,writeFileSync}from'node:fs';import{join,basename}from'node:path';const app=process.cwd(),name=basename(app),renderer=process.env.RENDERER;const output=name==='next'?'.next-'+renderer+'/static':name==='vite'?'dist':'dist/client';mkdirSync(join(app,output),{recursive:true});writeFileSync(join(app,output,'main.js'),renderer==='redact-lean'?'export const value=1;':'export const value='+JSON.stringify('synthetic baseline content '.repeat(100))+';');process.stdout.end('stdout-finished\\n');setTimeout(()=>{process.stderr.end('x'.repeat(Number(process.env.BUILD_LOG_BYTES||0))+'stderr-tail:'+renderer+'\\n');process.exitCode=Number(process.env.BUILD_CODE||0)},40);`;
+async function builds(root){await write(root,'node_modules/vite/bin/vite.js',mockBuild);await write(root,'node_modules/next/dist/bin/next',mockBuild);await write(root,'node_modules/next/package.json','{"type":"module"}')}
+async function previews(root,{early=false,ignore=false}={}) {
+ for(const runtime of ['react','redact','redact-lean']){
+  await write(root,'vite/dist-'+runtime+'/index.html','<!doctype html>vite-'+runtime)
+  await write(root,'start/dist-'+runtime+'/client/assets/app.js','export default 1')
+  await write(root,'start/dist-'+runtime+'/server/server.js',`export default {fetch(request){const path=new URL(request.url).pathname;if(path==='/broken')return new Response(new ReadableStream({start(c){c.enqueue(new TextEncoder().encode('prefix'));setTimeout(()=>c.error(Error('deliberate stream failure')),30)}}));if(path==='/throw')throw Error('deliberate fetch failure');if(path==='/stream')return new Response(new ReadableStream({start(c){c.enqueue(new TextEncoder().encode('a'.repeat(65536)));c.enqueue(new TextEncoder().encode('b'.repeat(65536)));c.close()}}),{status:201,headers:{'x-test':'stream'}});return new Response('healthy')}}`)
+ }
+ const common=`import{createServer}from'node:http';import{writeFileSync}from'node:fs';writeFileSync(process.env.RENDERER+'.pid',String(process.pid));${ignore?"process.on('SIGTERM',()=>{});":''}`
+ await write(root,'node_modules/next/package.json','{"type":"module"}')
+ await write(root,'node_modules/next/dist/bin/next',common+`${early?"if(process.env.RENDERER==='redact')process.exit(0);":''}createServer((q,s)=>s.end('next')).listen(Number(process.argv.at(-1)),'127.0.0.1');`)
+ await write(root,'node_modules/vinext/package.json','{"type":"module"}')
+ await write(root,'node_modules/vinext/dist/server/prod-server.js',common+`export function startProdServer({port,host}){return new Promise((accept,reject)=>{const server=createServer((q,s)=>s.end('vinext'));server.once('error',reject);server.listen(port,host,()=>accept(server))})}`)
+ await mkdir(join(root,'next'),{recursive:true});await mkdir(join(root,'vinext'),{recursive:true})
+}
+async function ready(run,port){for(let i=0;i<100;i++){if(run.child.exitCode!==null||run.child.signalCode!==null)throw Error('server exited '+run.text);try{const r=await fetch('http://127.0.0.1:'+port+'/',{signal:AbortSignal.timeout(200)});if(r.ok)return}catch{}await delay(20)}throw Error('server not ready '+run.text)}
+async function bind(port){const s=createServer((q,r)=>r.end('keeper'));await new Promise((a,r)=>{s.once('error',r);s.listen(port,'127.0.0.1',a)});return s}
+async function close(s){s.closeAllConnections();await new Promise(a=>s.close(a))}
+async function portsFree(){for(let p=4380;p<4390;p++){const server=await bind(p);await close(server)}}
+test('measure preserves delayed stderr after stdout closes in all ten synthetic builds',async()=>{const root=await fixture();let run;try{await builds(root);run=launch('measure.mjs',[root]);const r=await bounded(run);assert.equal(r.code,0,r.text);const report=JSON.parse(await readFile(join(root,'results.json')));assert.equal(report.results.length,10);for(const {framework,renderer}of report.results){const app=framework==='Next.js'?'next':framework.toLowerCase();const log=await readFile(join(root,app,renderer+'.log'),'utf8');assert.ok(log.includes('stdout-finished'));assert.ok(log.includes('stderr-tail:'+renderer),log)}}finally{if(run)await stop(run);await clean(root)}})
+test('measure preserves the failure log and reports the actual child exit code',async()=>{const root=await fixture();let run;try{await builds(root);run=launch('measure.mjs',[root],{BUILD_CODE:'7'});const r=await bounded(run);assert.notEqual(r.code,0);assert.match(r.text,/exited 7/);assert.match(await readFile(join(root,'start/react.log'),'utf8'),/stderr-tail:react/)}finally{if(run)await stop(run);await clean(root)}})
+test('measure flushes a large buffered stderr log before rejecting the build',async()=>{const root=await fixture();let run;try{await builds(root);run=launch('measure.mjs',[root],{BUILD_CODE:'7',BUILD_LOG_BYTES:String(1024*1024)});const r=await bounded(run);assert.notEqual(r.code,0);assert.match(r.text,/exited 7/);const log=await readFile(join(root,'start/react.log'),'utf8');assert.equal([...log].filter(c=>c==='x').length,1024*1024);assert.match(log,/stderr-tail:react/)}finally{if(run)await stop(run);await clean(root)}})
+test('measure exits on an unwritable log',async()=>{const root=await fixture();let run;try{await builds(root);await mkdir(join(root,'start/react.log'),{recursive:true});run=launch('measure.mjs',[root]);const r=await bounded(run);assert.notEqual(r.code,0);assert.match(r.text,/EISDIR/)}finally{if(run)await stop(run);await clean(root)}})
+test('a streaming error closes only that response and leaves the preview usable',async()=>{const root=await fixture();let run;try{await previews(root);run=launch('serve.mjs',[root,'start','redact','4490']);await ready(run,4490);const r=await fetch('http://127.0.0.1:4490/broken');assert.equal(r.status,200);await assert.rejects(r.text());await delay(50);assert.equal(run.child.exitCode,null,run.text);assert.equal(await(await fetch('http://127.0.0.1:4490/healthy')).text(),'healthy')}finally{if(run)await stop(run);await clean(root)}})
+test('normal response streams retain all body bytes and headers',async()=>{const root=await fixture();let run;try{await previews(root);run=launch('serve.mjs',[root,'start','redact','4491']);await ready(run,4491);const r=await fetch('http://127.0.0.1:4491/stream');assert.equal(r.status,201);assert.equal(r.headers.get('x-test'),'stream');assert.equal(await r.text(),'a'.repeat(65536)+'b'.repeat(65536))}finally{if(run)await stop(run);await clean(root)}})
+test('a fetch error before headers produces 500 and keeps the preview alive',async()=>{const root=await fixture();let run;try{await previews(root);run=launch('serve.mjs',[root,'start','redact','4492']);await ready(run,4492);const r=await fetch('http://127.0.0.1:4492/throw');assert.equal(r.status,500);assert.match(await r.text(),/deliberate fetch failure/);assert.equal(await(await fetch('http://127.0.0.1:4492/healthy')).text(),'healthy')}finally{if(run)await stop(run);await clean(root)}})
+test('a port conflict fails the ten-preview group and releases its sibling ports',async()=>{const root=await fixture(),keeper=await bind(4380);let run;try{await previews(root);run=launch('serve.mjs',[root]);const r=await bounded(run,3000);assert.notEqual(r.code,0,r.text);assert.match(r.text,/start\/react/);assert.equal(await(await fetch('http://127.0.0.1:4380/')).text(),'keeper');for(let p=4381;p<4390;p++){const s=await bind(p);await close(s)}}finally{if(run)await stop(run);await close(keeper);await clean(root)}})
+test('an unexpected successful child exit also fails the preview group',async()=>{const root=await fixture();let run;try{await previews(root,{early:true});run=launch('serve.mjs',[root]);const r=await bounded(run,3000);assert.notEqual(r.code,0,r.text);assert.match(r.text,/next\/redact/);await portsFree()}finally{if(run)await stop(run);await clean(root)}})
+test('a healthy group serves all ten endpoints and shuts them down together',async()=>{const root=await fixture();let run;try{await previews(root);run=launch('serve.mjs',[root]);for(let p=4380;p<4390;p++)await ready(run,p);run.child.kill('SIGTERM');const r=await bounded(run);assert.ok(r.code===0||r.code===143,r.text);await portsFree()}finally{if(run)await stop(run);await clean(root)}})
+test('shutdown also retires a preview that ignores SIGTERM',async()=>{const root=await fixture();let run;try{await previews(root,{ignore:true});run=launch('serve.mjs',[root]);for(let p=4380;p<4390;p++)await ready(run,p);run.child.kill('SIGTERM');await bounded(run,7000);await portsFree()}finally{if(run)await stop(run);await clean(root)}})
+
+test('measure can replace its preserved build directories on a second run', async () => {
+ const root=await fixture();let run;
+ try {
+  await builds(root)
+  for(let attempt=0;attempt<2;attempt++) {
+   run=launch('measure.mjs',[root]);const result=await bounded(run)
+   assert.equal(result.code,0,result.text)
+   const report=JSON.parse(await readFile(join(root,'results.json')))
+   assert.equal(report.results.length,10)
+  }
+ } finally {if(run)await stop(run);await clean(root)}
+})
+test('the Vite preview serves its root and asset files from the public directory', async () => {
+ const root=await fixture();let run;
+ try {
+  await previews(root);await write(root,'vite/dist-redact/assets/example.js','export const value=1')
+  run=launch('serve.mjs',[root,'vite','redact','4493']);await ready(run,4493)
+  assert.match(await(await fetch('http://127.0.0.1:4493/')).text(),/vite-redact/)
+  assert.equal(await(await fetch('http://127.0.0.1:4493/assets/example.js')).text(),'export const value=1')
+ } finally {if(run)await stop(run);await clean(root)}
+})

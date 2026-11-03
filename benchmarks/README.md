@@ -4,6 +4,8 @@ The [ship review](./SHIP_RESULTS.md) is the current result. Earlier reports reta
 
 These benchmarks compare pinned React 19.3.0, published Redact 0.0.20, and the working-tree Redact implementation. An optional reconstructed snapshot measures the code before the performance pass, after the preceding size cleanup.
 
+For client bundle totals across TanStack Start, Vite, Vinext, and Next.js, see the [framework bundle comparison](./framework-bundles/README.md). It includes the pinned fixture and published-package measurements used by the Redact landing page.
+
 ## Run
 
 ```sh
