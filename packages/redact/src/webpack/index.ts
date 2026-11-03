@@ -64,19 +64,21 @@ export function redact(options: RedactOptions = {}) {
       const packageDir = resolvePackageDir('@tanstack/redact', from, roots, options.resolveFrom !== undefined)
       if (!packageDir) throw new Error('Cannot find the built @tanstack/redact package. Install it before configuring the plugin.')
       const root = realpathSync(packageDir)
-      const aliases: Array<{ name: string; alias: string; onlyModule: true }> = []
+      const aliases: Array<{ name: string; alias: string; onlyModule: boolean }> = []
       for (const [name, specifier] of Object.entries(ALIASES)) {
         if (options.skip?.includes(name)) continue
         const alias = resolveSpecifier(specifier, from, roots, options.resolveFrom !== undefined)
         if (!alias) throw new Error(`Cannot resolve Redact alias: ${specifier}`)
         aliases.push({ name, alias, onlyModule: true })
       }
+      aliases.push({ name: '@tanstack/redact/features', alias: resolve(root, 'dist/dom/features'), onlyModule: false })
+      const aliasKey = ({ name, onlyModule }: { name: string; onlyModule: boolean }) => name + (onlyModule ? '$' : '')
       const previous = compiler.options.resolve.alias || {}
       compiler.options.resolve.alias = Array.isArray(previous)
         ? [...aliases, ...previous]
         : Object.fromEntries([
-            ...aliases.map(({ name, alias }) => [name + '$', alias]),
-            ...Object.entries(previous).filter(([name]) => !aliases.some(alias => alias.name + '$' === name)),
+            ...aliases.map(entry => [aliasKey(entry), entry.alias]),
+            ...Object.entries(previous).filter(([name]) => !aliases.some(alias => aliasKey(alias) === name)),
           ])
       const reactDir = findPackageDir('react', from)
       const version = reactDir && JSON.parse(readFileSync(resolve(reactDir, 'package.json'), 'utf8')).version
