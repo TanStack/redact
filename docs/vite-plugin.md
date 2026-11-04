@@ -18,7 +18,7 @@ redact({
 | `preset` | `'full'` or `'nano'` | Defaults to `full`. Full enables every optional feature except native animation. Nano disables all optional features. |
 | `features` | `RedactFeatures` | Boolean overrides merged with the preset. See [Feature Flags](./feature-flags.md). |
 | `environments` | `ReadonlyArray<'client' \| 'ssr'>` | Defaults to both. Use `['client']` to keep native React for SSR. `['ssr']` keeps native React in the browser, see the hydration limit below. |
-| `skip` | `ReadonlyArray<string>` | Import specifiers to exclude from aliasing. |
+| `skip` | `ReadonlyArray<string>` | Import specifiers to exclude from aliasing across each enabled environment. See [custom React renderers](./compatibility.md#custom-react-renderers). |
 | `resolveFrom` | `string` | Package resolution root, defaults to the Vite config root. Useful in monorepos. |
 | `packageRoots` | `Record<string, string>` | Explicit package names mapped to absolute package directories, bypassing node_modules lookup for local builds. |
 

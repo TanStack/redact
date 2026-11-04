@@ -31,6 +31,10 @@ Use `createRoot` and `hydrateRoot` from `react-dom/client`. The deprecated `Reac
 
 Native animation is not exhaustive visual parity. Production animation, hidden-tab behavior, broader resource/navigation races, and Safari/Firefox remain unverified. [API details](https://github.com/TanStack/redact/blob/main/docs/REACT_19_3_SUPPORT.md), [upstream audit](https://github.com/TanStack/redact/blob/main/docs/REACT_19_3_AUDIT.md), [native animation limits](https://github.com/TanStack/redact/blob/main/docs/VIEW_TRANSITION_EXPERIMENT.md).
 
+## Custom React renderers
+
+Custom renderers that depend on private React internals, such as React Three Fiber, need native React. Redact does not provide those internals, so the renderer can fail as soon as its module loads under a React alias. The Vite plugin's `skip` option matches import specifiers across an enabled environment. It cannot exempt a single dependency or component subtree.
+
 ## Waiting for hydration in tests
 
 Redact does not expose React DOM's private `__reactFiber$` or `__reactProps$` node properties. Use a marker your application owns, set in an effect on the component your test will use:
