@@ -28,18 +28,22 @@ try {
   for (const engine of engines) {
     const browser = await types[engine].launch({ headless: true })
     try {
-      for (const mode of ['normal', 'interrupted', 'canceled', 'server-error', 'redirected', 'missing-response-event', 'server-error-missing-response-event']) {
+      for (const mode of ['normal', 'interrupted', 'canceled', 'server-error', 'redirected', 'missing-response-event', 'server-error-missing-response-event', 'firefox-replaced-response', 'firefox-no-replacement', 'server-error-firefox-replaced-response']) {
         const page = await browser.newPage()
         page.setDefaultTimeout(1500)
         await page.goto(`http://127.0.0.1:${server.address().port}/?engine=${engine}&mode=${mode}`)
         const previous = await page.evaluate(() => performance.timeOrigin)
-        // Reproduce a missing Playwright response event while the real browser
-        // still loads a document. URL, time origin and HTTP status remain real.
-        const reloadPage = mode.includes('missing-response-event') ? new Proxy(page, {
+        // Reproduce missing response events and rejected reload commands
+        // while the browser still supplies real document and HTTP evidence.
+        const reloadPage = mode.includes('missing-response-event') || mode.includes('firefox-') ? new Proxy(page, {
           get(target, key) {
             if (key === 'on' || key === 'off') return (event, listener) => {
-              if (event !== 'response') target[key](event, listener)
+              if (!mode.includes('missing-response-event') || event !== 'response') target[key](event, listener)
               return target
+            }
+            if (key === 'reload' && mode.includes('firefox-')) return async options => {
+              if (!mode.includes('no-replacement')) await target.reload({ ...options, waitUntil: 'commit' })
+              throw new Error('page.reload: NS_ERROR_FAILURE')
             }
             const value = Reflect.get(target, key)
             return typeof value === 'function' ? value.bind(target) : value
@@ -51,6 +55,9 @@ try {
           page.once('dialog', async dialog => { dismissed = true; await dialog.dismiss() })
           await assert.rejects(reloadDocument(reloadPage, { timeout: 1500 }))
           assert.equal(dismissed, true)
+          assert.equal(await page.evaluate(() => performance.timeOrigin), previous)
+        } else if (mode === 'firefox-no-replacement') {
+          await assert.rejects(reloadDocument(reloadPage, { timeout: 1500 }))
           assert.equal(await page.evaluate(() => performance.timeOrigin), previous)
         } else if (mode.startsWith('server-error')) await assert.rejects(reloadDocument(reloadPage), /received 500/)
         else if (mode === 'redirected') await assert.rejects(reloadDocument(reloadPage), /preserve the current URL/)

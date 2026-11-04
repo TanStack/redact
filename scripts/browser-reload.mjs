@@ -18,11 +18,13 @@ export async function reloadDocument(page, { timeout = 30000 } = {}) {
     try {
       directResponse = await page.reload({ waitUntil: 'load', timeout: remaining() })
     } catch (error) {
-      if (!/ERR_ABORTED|NS_BINDING_ABORTED|interrupted by another navigation|Frame load interrupted/.test(String(error))) throw error
+      if (!/ERR_ABORTED|NS_BINDING_ABORTED|NS_ERROR_FAILURE|interrupted by another navigation|Frame load interrupted/.test(String(error))) throw error
     }
     // The reload command returns its document response even if WebKit omits
     // the corresponding page response event. Interrupted reloads use the
     // resulting document observed above, without issuing another navigation.
+    // Firefox can report NS_ERROR_FAILURE for the interrupted command. The
+    // new time origin, matching URL, and successful response still must pass.
     response ||= directResponse
     await page.waitForFunction(previous => performance.timeOrigin !== previous, previous, { timeout: remaining() })
     await page.waitForLoadState('load', { timeout: remaining() })
