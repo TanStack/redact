@@ -37,6 +37,23 @@ Custom renderers that depend on private React internals, such as React Three Fib
 
 If a page needs both React Three Fiber and Redact, keep the renderer in a separate native React module graph and mount it in its own DOM root. That graph needs native React, native ReactDOM and the renderer's hook dependencies. For example, if both roots use Zustand, each graph needs its own instance of Zustand's React hook module. Routing every Zustand import of React to native React can break the Redact root.
 
+A native root can live inside a Redact-rendered DOM element. Leave that element empty in Redact and mount the separately built native bundle from an effect. Return the native root's unmount function so the effect cleans up when Redact removes the host.
+
+```tsx
+import { useEffect, useRef } from 'react'
+import { mountNative } from './native-dist/native.js'
+
+function NativeCanvas() {
+  const host = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (host.current) return mountNative(host.current)
+  }, [])
+  return <div ref={host} />
+}
+```
+
+In the native bundle, `mountNative` calls native ReactDOM's `createRoot`, renders the native component, and returns `() => root.unmount()`. Each root owns its own context and hook state.
+
 ## Waiting for hydration in tests
 
 Redact does not expose React DOM's private `__reactFiber$` or `__reactProps$` node properties. Use a marker your application owns, set in an effect on the component your test will use:
