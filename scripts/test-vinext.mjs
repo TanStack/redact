@@ -138,7 +138,7 @@ try {
   await writeFile(output, JSON.stringify({
     framework: 'vinext', version: pkg.dependencies.vinext, recordedAt: new Date().toISOString(), node: process.version,
     durationMs: Date.now() - started, evidence, results,
-    complete: results.length === engines.length && results.every(result => result.scenarios?.length === 20 + Number(!production) + Number(cacheComponents)) && !process.env.NEXT_TEST_SCENARIOS,
+    complete: results.length === engines.length && results.every(result => result.scenarios?.length === 21 + Number(!production) + Number(cacheComponents)) && !process.env.NEXT_TEST_SCENARIOS,
     passed: !failure && results.length === engines.length && results.every(result => result.passed),
     ...(failure ? { error: failure } : {}),
   }, null, 2) + '\n')
