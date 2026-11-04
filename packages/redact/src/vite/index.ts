@@ -7,9 +7,13 @@ import { ALIASES, resolveFeatures, isOwnedRuntimeFeature } from '../bundler-core
 import type { ResolvedFeatures } from '../bundler-core/selection'
 export type { RedactPreset, RedactFeatures } from '../bundler-core/selection'
 
-export type { RedactOptions } from '../bundler-core/resolution'
 import { findPackageDir, resolveSpecifier, resolvePackageDir } from '../bundler-core/resolution'
-import type { RedactOptions } from '../bundler-core/resolution'
+import type { RedactOptions as CommonRedactOptions } from '../bundler-core/resolution'
+
+export interface RedactOptions extends CommonRedactOptions {
+  /** Select browser and/or SSR replacement. RSC always keeps native React. */
+  environments?: ReadonlyArray<'client' | 'ssr'>
+}
 const pluginDir = dirname(fileURLToPath(import.meta.url))
 
 interface OptimizeDepsWithInclude {
@@ -36,6 +40,10 @@ export function redact(options: RedactOptions = {}): any {
   const features = resolveFeatures(options.preset ?? 'full', options.features ?? {})
 
   const resolvedMap: Record<string, string> = {}
+  const client = !options.environments || options.environments.includes('client')
+  const ssr = !options.environments || options.environments.includes('ssr')
+  const active = (environment: any, legacySsr?: boolean): boolean => environment?.name !== 'rsc' &&
+    (environment?.name === 'ssr' || environment?.config?.consumer === 'server' || legacySsr ? ssr : client)
   let done = false
   let react18Version: string | undefined
   let runtimeRoot: string | undefined
@@ -87,16 +95,16 @@ export function redact(options: RedactOptions = {}): any {
       // array form is silently ignored by rolldown's worker-runner.
       return {
         environments: {
-          client: {
+          ...(client ? { client: {
             optimizeDeps: { exclude: excludeList },
             resolve: { alias: aliasMap, dedupe },
-          },
-          ssr: {
+          } } : {}),
+          ...(ssr ? { ssr: {
             optimizeDeps: { exclude: excludeList },
             resolve: { alias: aliasMap, dedupe, noExternal: noExt },
-          },
+          } } : {}),
         },
-        ssr: { noExternal: noExt },
+        ...(ssr ? { ssr: { noExternal: noExt } } : {}),
       }
     },
 
@@ -128,8 +136,7 @@ export function redact(options: RedactOptions = {}): any {
       // Skip the RSC environment — it relies on real React internals via
       // @vitejs/plugin-rsc's vendored react-server-dom. Substituting our
       // shim there breaks Flight serialization. Client + SSR envs still swap.
-      const envName = this?.environment?.name
-      if (envName === 'rsc') return null
+      if (!active(this?.environment, opts?.ssr)) return null
 
       // Feature-flag swap: when the reconciler's `features/index` module
       // imports a feature by relative path, redirect to that feature's stub
@@ -170,16 +177,16 @@ export function redact(options: RedactOptions = {}): any {
     name: 'redact:canonical-imports',
     resolveId: {
       order: 'pre',
-      handler(this: any, id: string) {
-        if (this.environment?.name === 'rsc') return null
+      handler(this: any, id: string, _importer?: string, opts?: any) {
+        if (!active(this.environment, opts?.ssr)) return null
         return resolvedMap[id] ?? null
       },
     },
   }, {
     name: 'redact:react18',
     enforce: 'post',
-    transform(this: any, code: string, id: string) {
-      if (!react18Version || !runtimeRoot || this?.environment?.name === 'rsc') return null
+    transform(this: any, code: string, id: string, opts?: any) {
+      if (!react18Version || !runtimeRoot || !active(this?.environment, opts?.ssr)) return null
       const path = id.split('?')[0]!.replaceAll('\\', '/')
       if (!path.startsWith(runtimeRoot)) return null
       const module = path.slice(runtimeRoot.length).replace(/\.[jt]s$/, '')
@@ -194,9 +201,11 @@ export function redact(options: RedactOptions = {}): any {
       // ids to `include`. That lets Vite pre-bundle real React next to Redact,
       // producing duplicate dispatcher state. Prune after config settles so
       // Redact's client/SSR shims stay canonical.
-      pruneOptimizeDepsInclude(config.optimizeDeps, optimizeDepsBlocked)
-      pruneOptimizeDepsInclude(config.environments?.client?.optimizeDeps, optimizeDepsBlocked)
-      pruneOptimizeDepsInclude(config.environments?.ssr?.optimizeDeps, optimizeDepsBlocked)
+      if (client) {
+        pruneOptimizeDepsInclude(config.optimizeDeps, optimizeDepsBlocked)
+        pruneOptimizeDepsInclude(config.environments?.client?.optimizeDeps, optimizeDepsBlocked)
+      }
+      if (ssr) pruneOptimizeDepsInclude(config.environments?.ssr?.optimizeDeps, optimizeDepsBlocked)
       // Leave `environments.rsc` untouched. RSC depends on real React internals.
     },
   }]
