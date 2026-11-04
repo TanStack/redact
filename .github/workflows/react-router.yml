@@ -19,3 +19,4 @@ jobs:
       - uses: TanStack/config/.github/setup@e4b48f16568324f76f467aa4c2aac2f05db632c3
       - run: pnpm exec playwright install --with-deps chromium firefox webkit
       - run: pnpm test:react-router
+      - run: node scripts/test-react-router.mjs --development
