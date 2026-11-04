@@ -1,5 +1,13 @@
 # @tanstack/redact
 
+## 0.3.1
+
+### Patch Changes
+
+- Allow selecting client or SSR replacement independently while preserving native React in unselected environments and RSC. ([#148](https://github.com/TanStack/redact/pull/148))
+
+  Accept native React element declarations without requiring their runtime-only protocol fields or legacy ref accessor.
+
 ## 0.3.0
 
 ### Minor Changes
