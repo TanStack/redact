@@ -5,6 +5,7 @@
   "description": "A minimal React-compatible runtime for TanStack Start apps",
   "type": "module",
   "scripts": {
+    "test:react-router": "pnpm build && node scripts/test-react-router.mjs",
     "test:react18": "pnpm build && node scripts/test-react18.mjs",
     "test:compatibility:size": "pnpm build && node scripts/test-react-compatibility-size.mjs",
     "build": "node scripts/build.mjs && node scripts/verify-build.mjs",
