@@ -124,7 +124,10 @@ async function checkRefresh(browser, origin, reference) {
     const errors = []
     page.on('pageerror', error => errors.push(error.message))
     page.setDefaultTimeout(20_000)
-    await page.goto(origin)
+    await Promise.all([
+      page.waitForEvent('console', { predicate: message => message.text() === '[vite] connected.' }),
+      page.goto(origin),
+    ])
     await page.waitForFunction(() => window.routerReady === true)
     assert.equal(await page.evaluate(() => window.fixtureRenderer), reference ? 'native' : 'redact')
     const counter = page.locator('#hmr-counter')
