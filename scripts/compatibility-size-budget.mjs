@@ -364,7 +364,112 @@ export function shellReleaseAllowance(base, row, metric, fingerprint) {
   return ({min: 11, gzip: 4, brotli: 18})[metric] || 0
 }
 
+// Tanner approved these exact PR #146 rows, including Brotli, November 3, 2026.
+const ancestryBase = 'a2e7e1297af8696bad0ce6d1daf76c92c9590aff'
+const ancestryHash = '84511e7b93f795520eb9c1773e54244f11ee73058cb45346104d95a91a083581'
+const ancestryRows = {
+  "full:dom/index:react19": {
+    "min": 4,
+    "gzip": 0,
+    "brotli": -30
+  },
+  "full:dom/index:react18": {
+    "min": 4,
+    "gzip": 0,
+    "brotli": -22
+  },
+  "full:dom/client:react19": {
+    "min": 4,
+    "gzip": 1,
+    "brotli": 19
+  },
+  "full:dom/client:react18": {
+    "min": 4,
+    "gzip": 2,
+    "brotli": 13
+  },
+  "full:client-total:react19": {
+    "min": 4,
+    "gzip": 0,
+    "brotli": -50
+  },
+  "full:client-total:react18": {
+    "min": 4,
+    "gzip": 0,
+    "brotli": 63
+  },
+  "default:dom/index:react19": {
+    "min": 4,
+    "gzip": 0,
+    "brotli": -6
+  },
+  "default:dom/index:react18": {
+    "min": 4,
+    "gzip": 1,
+    "brotli": 23
+  },
+  "default:dom/client:react19": {
+    "min": 4,
+    "gzip": 0,
+    "brotli": 1
+  },
+  "default:dom/client:react18": {
+    "min": 4,
+    "gzip": 1,
+    "brotli": 21
+  },
+  "default:client-total:react19": {
+    "min": 4,
+    "gzip": 0,
+    "brotli": -43
+  },
+  "default:client-total:react18": {
+    "min": 4,
+    "gzip": 1,
+    "brotli": -42
+  },
+  "nano:dom/index:react19": {
+    "min": 2,
+    "gzip": 1,
+    "brotli": -4
+  },
+  "nano:dom/index:react18": {
+    "min": 2,
+    "gzip": 0,
+    "brotli": 39
+  },
+  "nano:dom/client:react19": {
+    "min": 2,
+    "gzip": 1,
+    "brotli": -5
+  },
+  "nano:dom/client:react18": {
+    "min": 2,
+    "gzip": 1,
+    "brotli": -4
+  },
+  "nano:client-total:react19": {
+    "min": 2,
+    "gzip": 2,
+    "brotli": -17
+  },
+  "nano:client-total:react18": {
+    "min": 2,
+    "gzip": 1,
+    "brotli": 16
+  }
+}
+export function ancestryFingerprint(root = new URL('../', import.meta.url)) {
+  return fingerprintInputs(['packages/redact/src', 'packages/redact/package.json', 'scripts/build.mjs', 'scripts/measure-size.mjs', 'scripts/test-react-compatibility-size.mjs', 'pnpm-lock.yaml', '.nvmrc', '.changeset/skip-unmarked-ancestry.md'], root)
+}
+export function ancestryAllowance(base, row, metric, fingerprint) {
+  if (base !== ancestryBase || fingerprint !== ancestryHash) return 0
+  const value = ancestryRows[`${row.profile}:${row.entry}:${row.target}`]?.[metric]
+  return typeof value === 'number' ? value : 0
+}
+
 export function compatibilitySizeAllowance(base, row, metric) {
+  if (base === ancestryBase) return ancestryAllowance(base, row, metric, ancestryFingerprint())
   const shell = shellReleaseAllowance(base, row, metric, base === shellReleaseBase ? shellReleaseFingerprint() : undefined)
   if (shell) return shell
   const autofocus = autofocusAllowance(base, row, metric, base === autofocusApproval.base ? autofocusFingerprint() : undefined)
