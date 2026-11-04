@@ -57,7 +57,7 @@ try {
           assert.equal(dismissed, true)
           assert.equal(await page.evaluate(() => performance.timeOrigin), previous)
         } else if (mode === 'firefox-no-replacement') {
-          await assert.rejects(reloadDocument(reloadPage, { timeout: 1500 }))
+          await assert.rejects(reloadDocument(reloadPage, { timeout: 1500 }), /page\.reload: NS_ERROR_FAILURE/)
           assert.equal(await page.evaluate(() => performance.timeOrigin), previous)
         } else if (mode.startsWith('server-error')) await assert.rejects(reloadDocument(reloadPage), /received 500/)
         else if (mode === 'redirected') await assert.rejects(reloadDocument(reloadPage), /preserve the current URL/)
