@@ -1,8 +1,8 @@
 // @vitest-environment node
 import { expect, test } from 'vitest'
 import { ancestryAllowance, ancestryFingerprint } from '../scripts/compatibility-size-budget.mjs'
-const base = 'a2e7e1297af8696bad0ce6d1daf76c92c9590aff'
-const hash = '84511e7b93f795520eb9c1773e54244f11ee73058cb45346104d95a91a083581'
+const base = '650cf03990ea7480723e3b912e3b34ff2d4415a6'
+const hash = '03196cc765b2b04307a1a2f8c36ea5d7e578f269ebceae210d90798f4563367e'
 const rows = [
   {
     "profile": "full",

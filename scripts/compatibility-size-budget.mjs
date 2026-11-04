@@ -365,8 +365,8 @@ export function shellReleaseAllowance(base, row, metric, fingerprint) {
 }
 
 // Tanner approved these exact PR #146 rows, including Brotli, November 3, 2026.
-const ancestryBase = 'a2e7e1297af8696bad0ce6d1daf76c92c9590aff'
-const ancestryHash = '84511e7b93f795520eb9c1773e54244f11ee73058cb45346104d95a91a083581'
+const ancestryBase = '650cf03990ea7480723e3b912e3b34ff2d4415a6'
+const ancestryHash = '03196cc765b2b04307a1a2f8c36ea5d7e578f269ebceae210d90798f4563367e'
 const ancestryRows = {
   "full:dom/index:react19": {
     "min": 4,
