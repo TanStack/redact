@@ -1,3 +1,4 @@
+// @vitest-environment node
 import { expect, test } from 'vitest'
 import { ancestryAllowance, ancestryFingerprint } from '../scripts/compatibility-size-budget.mjs'
 const base = 'a2e7e1297af8696bad0ce6d1daf76c92c9590aff'
