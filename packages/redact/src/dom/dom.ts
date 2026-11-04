@@ -2,6 +2,7 @@ import { createSyntheticEvent } from './synthetic-event';
 import { UNITLESS_STYLE } from '../core/unitless-style';
 import { devToolsMetadata } from '../core/devtools';
 import { formActions } from './form-actions';
+import { queueRestore } from './form-controls';
 import { attributeName, attributeValue } from '../core/attributes';
 import { isString } from "../core/functions";
 const SVG_NS = 'http://www.w3.org/2000/svg';
@@ -145,7 +146,10 @@ function setEventHandler(el: Element, name: string, next: any): void {
                     devToolsMetadata.current = devToolsMetadata.hosts.get(el) || null;
                     try { entry.c(event); } finally { devToolsMetadata.current = previous; }
                 } else entry.c(event);
-            } finally { event.currentTarget = null; }
+            } finally {
+                event.currentTarget = null;
+                queueRestore(e, el);
+            }
         }) as ((e: Event) => void) & {
             c: Function;
             e: string[];
