@@ -287,6 +287,9 @@ export function adoptHostDom(fiber: Fiber, parent: Fiber): boolean {
     // Form defaults precede event registration so input type owns event mapping.
     if (tag === 'input' || tag === 'textarea')
         queueHydrationFormState(candidate as Element, props, tag);
+    // Hydration skips the form syncs, which record props for controlled restores.
+    if (tag === 'input' || tag === 'textarea' || tag === 'select')
+        (candidate as any).__p = props;
     hydrateProps(fiber, candidate as Element, props, tag, isSvg);
     // React SSR adds transport fields for progressively enhanced Server Actions.
     // They have no corresponding client fibers and must not consume child slots.
