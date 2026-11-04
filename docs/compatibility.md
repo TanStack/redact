@@ -35,6 +35,8 @@ Native animation is not exhaustive visual parity. Production animation, hidden-t
 
 Custom renderers that depend on private React internals, such as React Three Fiber, need native React. Redact does not provide those internals, so the renderer can fail as soon as its module loads under a React alias. The Vite plugin's `skip` option matches import specifiers across an enabled environment. It cannot exempt a single dependency or component subtree.
 
+If a page needs both React Three Fiber and Redact, keep the renderer in a separate native React module graph and mount it in its own DOM root. That graph needs native React, native ReactDOM and the renderer's hook dependencies. For example, if both roots use Zustand, each graph needs its own instance of Zustand's React hook module. Routing every Zustand import of React to native React can break the Redact root.
+
 ## Waiting for hydration in tests
 
 Redact does not expose React DOM's private `__reactFiber$` or `__reactProps$` node properties. Use a marker your application owns, set in an effect on the component your test will use:
