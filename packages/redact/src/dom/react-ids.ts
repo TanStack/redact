@@ -1,8 +1,8 @@
 import type { Fiber, FiberRoot } from '../core';
 // React SSR encodes the original child slots, including empty slots, into IDs.
-// Keep this opt-in so existing Redact SSR IDs remain compatible across upgrades.
+// Redact SSR uses the same tree slots so suspended render order cannot change IDs.
 let clientId = 0;
-const leadingBit = (tree: bigint): bigint => 1n << BigInt(tree.toString(2).length - 1);
+export const leadingBit = (tree: bigint): bigint => 1n << BigInt(tree.toString(2).length - 1);
 export function forkId(base: bigint, count: number, index: number): bigint {
     const bit = leadingBit(base);
     return (bit << BigInt(32 - Math.clz32(count))) | (BigInt(index + 1) * bit) | (base ^ bit);
