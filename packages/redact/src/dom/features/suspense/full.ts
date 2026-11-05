@@ -28,6 +28,7 @@ interface SuspenseState {
     e?: Comment;
     r?: any;
     w?: boolean;
+    x?: () => void;
     u?: boolean;
     // Re-suspend preservation:
     d?: Array<[
@@ -143,7 +144,7 @@ export function renderSuspense(fiber: Fiber): void {
         }
     }
     if (state.w && state.b && state.e) {
-        if (state.b.data === '$?' || state.b.data === '$~') {
+        if (state.b.data.startsWith('$?') || state.b.data === '$~') {
             if (!root?.h && props.children !== fiber.m?.children) {
                 ;
                 (state.b as any)._reactRetry = undefined;

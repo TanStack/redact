@@ -1225,6 +1225,7 @@ export function removeFiber(fiber: Fiber, remove = true): void {
     fiber.u = true;
     if (fiber.t === FiberTag.Suspense && fiber.b?.b) {
         const state = fiber.b;
+        state.x?.();
         state.b._reactRetry = undefined;
         if (remove && !state.w) {
             state.b.remove();
