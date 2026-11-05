@@ -7,7 +7,7 @@ import {
   currentSSRFrame,
   type SSRFrame,
 } from './dispatcher'
-import { walk, type SuspendedBoundary, type BrowserBailoutCallback } from './walk'
+import { walk, boundaryEdges, type HtmlPart, type SuspendedBoundary, type BrowserBailoutCallback } from './walk'
 import { browserError, isBrowserToken, isBrowserError } from '../core/browser'
 import { BOUNDARY_REVEAL_RUNTIME, revealScript } from './bootstrap-script'
 import { escapeAttr, escapeScript } from './escape'
@@ -46,6 +46,11 @@ export interface OrchestratorState {
   cancelled: Promise<void>
   onShellReady?: () => void
   frame?: SSRFrame
+  // Output is written once the destination starts reading. Until then,
+  // completed boundaries stay inline, as React does before its first flush.
+  flowing?: boolean
+  flush?: () => void
+  outlined?: boolean
 }
 
 function createState(): OrchestratorState {
@@ -93,9 +98,9 @@ export async function streamHtml(
     // is ~100 stream-controller round-trips. Batching collapses those into
     // one encode and one enqueue per shell — measured ~2-4% of total SSR
     // time on CPU profiles.
-    const shellChunks: string[] = []
+    const shellChunks: HtmlPart[] = []
     let head = 0
-    const bufferedEmit: Emit = (chunk) => {
+    const bufferedEmit = (chunk: HtmlPart) => {
       shellChunks.push(chunk)
     }
 
@@ -145,35 +150,44 @@ export async function streamHtml(
       if (suspended) await Promise.race([suspended, state.cancelled])
     }
 
-    const hints = state.frame?.resources?.drain()
-    if (hints) shellChunks.splice(head, 0, hints)
-    if (state.frame) state.frame.shellFlushed = true
+    // 2. Write the shell when the destination starts reading. Boundaries that
+    // completed by then are inlined, and their resources join the shell's.
+    let written = false
+    state.flush = () => {
+      if (written) return
+      written = true
+      const hints = state.frame?.resources?.drain()
+      if (hints) shellChunks.splice(head, 0, hints)
+      if (state.frame) state.frame.shellFlushed = true
+      let html = partsHtml(shellChunks, state)
+      shellChunks.length = 0
+      delete state.flush
 
-    // 2. Inject runtime + bootstrap scripts (once, after shell). Skip the
-    // reveal/event-replay runtime when nothing needs it — no suspensions to
-    // reveal and no bootstrap scripts to guard against early user input. That
-    // keeps fully-static SSR responses byte-equivalent to a plain walk and
-    // matches React's behavior where `renderToReadableStream` of a static
-    // tree emits only the markup.
-    const hasBootstrap =
-      bootstrapScriptContentToArray(options.bootstrapScriptContent).length > 0 ||
-      (options.bootstrapScripts?.length ?? 0) > 0 ||
-      (options.bootstrapModules?.length ?? 0) > 0
-    if (boundaries.length > 0 || hasBootstrap) {
-      shellChunks.push(`<script${nonce ? ` nonce="${escapeAttr(nonce)}"` : ''}>${BOUNDARY_REVEAL_RUNTIME}</script>`)
-      for (const content of bootstrapScriptContentToArray(options.bootstrapScriptContent)) {
-        shellChunks.push(inlineBootstrapTag(content, nonce))
+      // Inject runtime + bootstrap scripts (once, after shell). Skip the
+      // reveal/event-replay runtime when nothing needs it — no pending
+      // boundaries to reveal and no bootstrap scripts to guard against early
+      // user input. That keeps fully-static SSR responses byte-equivalent to
+      // a plain walk and matches React's behavior where
+      // `renderToReadableStream` of a static tree emits only the markup.
+      const hasBootstrap =
+        bootstrapScriptContentToArray(options.bootstrapScriptContent).length > 0 ||
+        (options.bootstrapScripts?.length ?? 0) > 0 ||
+        (options.bootstrapModules?.length ?? 0) > 0
+      if (state.outlined || hasBootstrap) {
+        html += `<script${nonce ? ` nonce="${escapeAttr(nonce)}"` : ''}>${BOUNDARY_REVEAL_RUNTIME}</script>`
+        for (const content of bootstrapScriptContentToArray(options.bootstrapScriptContent)) {
+          html += inlineBootstrapTag(content, nonce)
+        }
+        for (const s of options.bootstrapScripts ?? []) {
+          html += bootstrapTag(s, 'script', nonce)
+        }
+        for (const m of options.bootstrapModules ?? []) {
+          html += bootstrapTag(m, 'module', nonce)
+        }
       }
-      for (const s of options.bootstrapScripts ?? []) {
-        shellChunks.push(bootstrapTag(s, 'script', nonce))
-      }
-      for (const m of options.bootstrapModules ?? []) {
-        shellChunks.push(bootstrapTag(m, 'module', nonce))
-      }
+      if (html) emit(normalizeDocumentShell(html))
     }
-
-    if (shellChunks.length) emit(normalizeDocumentShell(shellChunks.join('')))
-    shellChunks.length = 0
+    if (state.flowing) state.flush()
     state.onShellReady?.()
 
     // 3. Stream suspended boundaries as they resolve
@@ -207,18 +221,22 @@ function streamBoundary(
     const defer = (error: unknown) => {
       if (isBrowserError(error)) options.onBrowserBailout?.(error, { componentStack: (error as any).componentStack || b[4] })
       else options.onError?.(error)
-      emit(`<script${nonce ? ` nonce="${escapeAttr(nonce)}"` : ''}>$RB(${b[0]}${isBrowserError(error) ? '' : ',1'})</script>`)
+      if (b[8]) emit(`<script${nonce ? ` nonce="${escapeAttr(nonce)}"` : ''}>$RB(${b[0]}${isBrowserError(error) ? '' : ',1'})</script>`)
+      else b[7] = isBrowserError(error) ? '$!' : '$E'
     }
     if (state.aborted) { defer(state.reason); return }
 
     // Re-render the boundary's children into a string, restoring the
     // provider stack from when the boundary first suspended.
-    const parts: string[] = []
+    // A boundary not yet written keeps its content for an inline write; its
+    // resources stay with the unwritten shell or segment that will contain it.
+    const written = b[8]
+    const parts: HtmlPart[] = []
     const sub: SuspendedBoundary[] = []
     const resourceScope: ResourceScope = {}
     let styles: string[][] | undefined
     const previous = beginSSR(options.identifierPrefix, state.frame)
-    state.frame?.resources?.takeStylesheets()
+    if (written) state.frame?.resources?.takeStylesheets()
     const restore = applyContextSnapshot(b[3])
     try {
       walk(b[1], {
@@ -240,17 +258,38 @@ function streamBoundary(
     } finally {
       restore()
       endSSR(previous)
-      const hints = state.frame?.resources?.drain()
-      styles = state.frame?.resources?.takeStylesheets()
-      if (hints) emit(hints)
+      if (written) {
+        const hints = state.frame?.resources?.drain()
+        styles = state.frame?.resources?.takeStylesheets()
+        if (hints) emit(hints)
+      }
     }
 
-    emit(`<div hidden id="S:${b[0]}">${parts.join('')}</div>${revealScript(b[0], nonce, styles)}`)
+    if (written) emit(`<div hidden id="S:${b[0]}">${partsHtml(parts, state)}</div>${revealScript(b[0], nonce, styles)}`)
+    else b[6] = parts
 
     // Recurse: any nested suspensions inside the now-revealed content
     for (const s of sub) streamBoundary(s, emit, options, state)
   })()
   state.pending(task)
+}
+
+// Serialize buffered output. Boundaries that completed or failed before this
+// write are inlined; pending ones keep their fallback and are marked written,
+// so their later completion streams a hidden segment and reveal script.
+function partsHtml(parts: HtmlPart[], state: OrchestratorState): string {
+  let html = ''
+  for (const part of parts) {
+    if (typeof part === 'string') {
+      html += part
+      continue
+    }
+    const marker = part[6] ? '$' : part[7] ?? '$?'
+    if (marker === '$?') part[8] = state.outlined = true
+    const [open, close] = boundaryEdges(part[0], marker)
+    html += open + partsHtml(part[6] ?? part[5], state) + close
+  }
+  return html
 }
 
 function scriptNonce(options: StreamOptions): string | undefined {
@@ -352,6 +391,12 @@ export function renderToReadableStream(
   })
   state.onShellReady = () => queueMicrotask(() => shellResolve(Object.assign(stream, { allReady })))
 
+  let failed = false
+  const close = (controller: ReadableStreamDefaultController<Uint8Array>) => {
+    try {
+      controller.close()
+    } catch {}
+  }
   const stream = new ReadableStream<Uint8Array>({
     start(controller) {
       const emit = (chunk: string) => {
@@ -372,12 +417,11 @@ export function renderToReadableStream(
       streamHtml(children, emit, options, state).then(
         () => {
           detachAbortListener()
-          try {
-            controller.close()
-          } catch {}
+          if (state.flowing) close(controller)
           allReadyResolve()
         },
         (err) => {
+          failed = true
           detachAbortListener()
           try {
             controller.error(err)
@@ -388,11 +432,16 @@ export function renderToReadableStream(
       )
 
     },
+    pull(controller) {
+      state.flowing = true
+      state.flush?.()
+      if (state.closed && !failed) close(controller)
+    },
     cancel(reason) {
       state.abort(reason)
       detachAbortListener()
     },
-  })
+  }, { highWaterMark: 0 })
 
   return shell
 }
@@ -418,7 +467,6 @@ export function renderToPipeableStream(
 ): PipeableHandle {
   const state = createState()
 
-  const buffers: string[] = []
   let dest: PipeableWritable | null = null
   let shellReady = false
   let shellFailed = false
@@ -431,16 +479,9 @@ export function renderToPipeableStream(
     else target.end()
   }
 
-  const flushTo = (w: PipeableWritable) => {
-    if (!buffers.length) return
-    for (const b of buffers) w.write(b)
-    buffers.length = 0
-  }
-
+  // Nothing is emitted before pipe() starts the flow.
   const emit: Emit = (chunk) => {
-    if (finished) return
-    if (dest) dest.write(chunk)
-    else buffers.push(chunk)
+    if (!failed) dest!.write(chunk)
   }
 
   state.onShellReady = () => queueMicrotask(() => {
@@ -472,7 +513,8 @@ export function renderToPipeableStream(
   return {
     pipe<T extends PipeableWritable>(target: T): T {
       dest = target
-      if (!failed) flushTo(target)
+      state.flowing = true
+      if (!failed) state.flush?.()
       if (finished) finishDestination(target)
       return target
     },

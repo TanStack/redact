@@ -47,10 +47,19 @@ export interface ServerErrorInfo {
 
 export type BrowserBailoutCallback = (error: Error, errorInfo: ServerErrorInfo) => void
 
-export type SuspendedBoundary = [number, ReactNode, Promise<any>, ContextSnapshot, string]
+/** Streamed output keeps pending boundaries addressable until it is written. */
+export type HtmlPart = string | SuspendedBoundary
+
+// Keep the compact suspension record used by the completion notifier. Buffered
+// output follows its existing id, children, thenable, context and stack fields.
+export type SuspendedBoundary = [
+  id: number, children: ReactNode, thenable: Promise<any>,
+  contextSnapshot: ContextSnapshot, componentStack: string, fallback: HtmlPart[],
+  content?: HtmlPart[], marker?: string, written?: boolean,
+]
 
 export interface WalkOptions {
-  emit: (chunk: string) => void
+  emit: (chunk: HtmlPart) => void
   onHead?: () => void
   onSuspend?: ((boundary: SuspendedBoundary) => void) | undefined
   onBrowserBailout?: BrowserBailoutCallback | undefined
@@ -448,10 +457,10 @@ function walkSuspense(
 
   // Try to render the children synchronously. If a thenable is thrown,
   // record the boundary and emit the fallback.
-  const childParts: string[] = []
+  const childParts: HtmlPart[] = []
   const nested: SuspendedBoundary[] = []
   const thrownInfo: { componentStack?: string | undefined } = {}
-  const childEmit = (s: string) => childParts.push(s)
+  const childEmit = (s: HtmlPart) => childParts.push(s)
   const resourceScope: ResourceScope | undefined = currentSSRFrame().shellFlushed ? {} : undefined
   try {
     walkNode(props.children, {
@@ -469,21 +478,23 @@ function walkSuspense(
       if (isBrowserError(thenable)) opts.onBrowserBailout?.(thenable, { componentStack: (thenable as any).componentStack || opts.componentStack || '' })
       else opts.onError?.(thenable)
     }
-    const fallbackParts: string[] = []
+    const fallbackParts: HtmlPart[] = []
     walkNode(props.fallback, {
       ...opts,
       emit: (s) => fallbackParts.push(s),
       onSuspend: opts.onSuspend ? (boundary) => nested.push(boundary) : undefined,
       nextBoundaryId: opts.nextBoundaryId,
     })
-    if (!suspended) {
-      opts.emit(`<!--${isBrowserError(thenable) ? '$!' : '$E'}${id}-->${fallbackParts.join('')}<!--/$-->`)
-    } else emitBoundary(opts, id, fallbackParts.join(''))
-    for (const boundary of nested) opts.onSuspend?.(boundary)
-    if (suspended) opts.onSuspend?.([
+    // A streamed suspension is emitted as itself, so the stream can still
+    // inline its content if it completes before these bytes are written.
+    const boundary: SuspendedBoundary | undefined = suspended && opts.onSuspend ? [
       id, props.children, thenable, contextSnapshot,
-      thrownInfo.componentStack || opts.componentStack || '',
-    ])
+      thrownInfo.componentStack || opts.componentStack || '', fallbackParts,
+    ] : undefined
+    if (boundary) opts.emit(boundary)
+    else emitBoundary(opts, id, fallbackParts, suspended ? '$?' : isBrowserError(thenable) ? '$!' : '$E')
+    for (const inner of nested) opts.onSuspend?.(inner)
+    if (boundary) opts.onSuspend!(boundary)
     return
   }
 
@@ -496,17 +507,25 @@ function walkSuspense(
   // range to adopt on resolve — it creates fresh DOM next to the SSR content,
   // producing visible duplicates (e.g. double navbar logos). Markers let the
   // client treat this as a resolved boundary and hydrate in-place.
-  opts.emit(`<!--$${id}-->`)
-  opts.emit(childParts.join(''))
-  opts.emit(`<!--/$-->`)
+  emitBoundary(opts, id, childParts, '$')
   for (const boundary of nested) opts.onSuspend?.(boundary)
 }
 
-function emitBoundary(opts: WalkOptions, id: number, fallbackHTML: string): void {
-  // Visible div wrapper so the fallback UI shows; B: id lets $RC locate it on
-  // reveal. The leading/trailing comments let hydration detect a pending
-  // boundary and register a reveal callback.
-  opts.emit(`<!--$?${id}--><div id="B:${id}">`)
-  opts.emit(fallbackHTML)
-  opts.emit(`</div><!--/$-->`)
+function emitBoundary(opts: WalkOptions, id: number, parts: HtmlPart[], marker: string): void {
+  const [open, close] = boundaryEdges(id, marker)
+  opts.emit(open)
+  for (const part of parts) opts.emit(part)
+  opts.emit(close)
+}
+
+/**
+ * Boundary markers: `$` completed, `$E`/`$!` client-rendered, `$?` pending.
+ * A pending fallback gets a visible div wrapper so the fallback UI shows;
+ * B: id lets $RC locate it on reveal. The leading/trailing comments let
+ * hydration detect a pending boundary and register a reveal callback.
+ */
+export function boundaryEdges(id: number, marker: string): [string, string] {
+  return marker === '$?'
+    ? [`<!--$?${id}--><div id="B:${id}">`, '</div><!--/$-->']
+    : [`<!--${marker}${id}-->`, '<!--/$-->']
 }
