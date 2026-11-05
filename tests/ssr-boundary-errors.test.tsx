@@ -28,7 +28,7 @@ it('keeps rejected lazy components on the existing streaming failure path', asyn
  const errors: unknown[] = [], Lazy = lazy(() => Promise.reject(failure))
  const stream = await renderToReadableStream(h(Suspense, { fallback: h('p', null, 'loading') }, h(Lazy)), { onError: error => { errors.push(error) } })
  const html = await new Response(stream).text()
- expect(html).toContain('loading'); expect(errors).toEqual([failure]); expect(html).toContain('$RB(0,1)')
+ expect(html).toContain('loading'); expect(errors).toEqual([failure]); expect(html).toContain('$RB("B:0",1)')
 })
 it('recovers the failed boundary on the client without replacing a sibling', async () => {
  let server = true
