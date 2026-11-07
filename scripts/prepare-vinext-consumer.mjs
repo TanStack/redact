@@ -8,6 +8,12 @@ import { join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const root = fileURLToPath(new URL('..', import.meta.url))
+
+/**
+ * Packs Redact and creates a clean npm consumer for Vinext compatibility tests.
+ *
+ * @param destination Empty directory, or an existing Redact test consumer.
+ */
 export async function prepareVinextConsumer(destination) {
   const directory = destination || await mkdtemp(join(tmpdir(), 'redact-vinext-consumer-'))
   await mkdir(directory, { recursive: true })
@@ -18,6 +24,7 @@ export async function prepareVinextConsumer(destination) {
   const source = join(root, 'examples/vinext-demo')
   const packageRoot = resolve(process.env.VINEXT_TEST_PACKAGE || join(root, 'packages/redact'))
   const pkg = JSON.parse(await readFile(join(source, 'package.json'), 'utf8'))
+  if (process.env.VINEXT_TEST_VERSION) pkg.dependencies.vinext = process.env.VINEXT_TEST_VERSION
   const redact = JSON.parse(await readFile(join(packageRoot, 'package.json'), 'utf8'))
   const packed = spawn('pnpm', ['pack', '--pack-destination', directory], { cwd: packageRoot, stdio: ['ignore', 'pipe', 'pipe'] })
   let packLog = ''

@@ -17,9 +17,9 @@ export default defineConfig({
 
 Keep React, React DOM, and React Server DOM installed. Keep your normal `react`, `react-dom`, and `next/*` imports. Vinext uses native React for server rendering and Server Components, while Redact renders in the browser. Do not change `jsxImportSource` to Redact.
 
-The release matrix pins Vinext 1.3.0, Vite 8.3.5, React 19.3.1, React plugin 6.1.2, and RSC plugin 0.5.38. Local Workers use stable Cloudflare Vite plugin 1.65.0 and Wrangler 4.152.0. Use Node 24.22.0 from `.nvmrc`.
+The release matrix covers Vinext 1.3.0, 1.4.3 and 1.4.4, with Vite 8.3.5, React 19.3.1, React plugin 6.1.2, and RSC plugin 0.5.38. Local Workers use stable Cloudflare Vite plugin 1.65.0 and Wrangler 4.152.0. Use Node 24.22.0 from `.nvmrc`.
 
-The adapter includes maintained corrections for the pinned Vinext release. The stable release still requires every configuration to pass. [Results and root causes](https://github.com/TanStack/redact/blob/main/benchmarks/VINEXT_COVERAGE.md).
+The adapter includes maintained corrections for the supported Vinext releases. It treats 1.3.x and 1.4.x as supported, warns for prereleases and untested versions, and still rejects unknown internal module shapes. The stable release requires every configuration to pass. [Results and root causes](https://github.com/TanStack/redact/blob/main/benchmarks/VINEXT_COVERAGE.md).
 
 ## Dependency fixes
 
