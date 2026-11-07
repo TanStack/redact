@@ -14,7 +14,7 @@ export function pagesMatrix() {
   }
   return jobs
 }
-export async function collectVinextPagesCoverage(directory) {
+export async function collectVinextPagesCoverage(directory, expectedVersion = process.env.VINEXT_TEST_VERSION || '1.3.0') {
   const rows = [], issues = [], fingerprints = { sourceSha256: new Set(), buildSha256: new Set(), suiteSha256: new Set(), fixtureSha256: new Set() }
   for (const job of pagesMatrix()) {
     let artifact
@@ -23,6 +23,7 @@ export async function collectVinextPagesCoverage(directory) {
     const results = Array.isArray(artifact?.results) ? artifact.results : []
     if (artifact) {
       if (!Array.isArray(artifact.results)) issues.push(`${job.name}: missing results array`)
+      if (artifact.framework !== 'vinext' || artifact.version !== expectedVersion) issues.push(`${job.name}: unexpected framework version`)
       if (artifact.evidence?.installation !== 'npm-tarball') issues.push(`${job.name}: expected a fresh npm consumer`)
       for (const [field, values] of Object.entries(fingerprints)) {
         const value = artifact.evidence?.[field]
@@ -47,7 +48,7 @@ export async function collectVinextPagesCoverage(directory) {
   for (const [field, values] of Object.entries(fingerprints)) if (values.size !== 1) issues.push(`Expected one ${field}, found ${values.size}`)
   const complete = !issues.length && rows.every(row => row.complete)
   return {
-    recordedAt: new Date().toISOString(), framework: 'vinext', router: 'pages-only', complete, passed: complete && rows.every(row => row.passed), issues,
+    recordedAt: new Date().toISOString(), framework: 'vinext', version: expectedVersion, router: 'pages-only', complete, passed: complete && rows.every(row => row.passed), issues,
     fingerprints: Object.fromEntries(Object.entries(fingerprints).map(([field, values]) => [field, [...values]])),
     summary: { expectedConfigurations: rows.length, completeConfigurations: rows.filter(r => r.complete).length, passedConfigurations: rows.filter(r => r.passed).length, expectedScenarios: rows.reduce((n, r) => n + r.expected, 0), passedScenarios: rows.reduce((n, r) => n + r.scenarios.filter(s => s.passed).length, 0), missingScenarios: rows.reduce((n, r) => n + r.missing.length, 0) }, rows,
   }
