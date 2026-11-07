@@ -11,7 +11,7 @@ const differences = {
 }
 const key = row => [row.deployment, row.mode, row.rendering, row.browser, row.basePath].join('|')
 
-export async function collectVinextCoverage(directory, jobs = vinextMatrix()) {
+export async function collectVinextCoverage(directory, jobs = vinextMatrix(), expectedVersion = process.env.VINEXT_TEST_VERSION || '1.3.0') {
   const rows = [], issues = [], sourceHashes = new Set(), buildHashes = new Set(), suiteHashes = new Set()
   for (const job of jobs) {
     const file = `${job.name}.json`
@@ -28,7 +28,7 @@ export async function collectVinextCoverage(directory, jobs = vinextMatrix()) {
         if (/^[a-f0-9]{64}$/.test(hash || '')) hashes.add(hash)
         else issues.push(`${file}: missing ${field}`)
       }
-      if (artifact.framework !== 'vinext' || artifact.version !== '1.3.0') issues.push(`${file}: unexpected framework version`)
+      if (artifact.framework !== 'vinext' || artifact.version !== expectedVersion) issues.push(`${file}: unexpected framework version`)
       if (artifact.passed && (!artifact.complete || results.some(row => !row.passed))) issues.push(`${file}: incorrectly marked passed`)
     }
     for (const result of results) if (!engines.includes(result.browser)) issues.push(`${file}: unexpected browser ${result.browser}`)
@@ -78,7 +78,7 @@ export async function collectVinextCoverage(directory, jobs = vinextMatrix()) {
     redactFailures: failures.filter(failure => failure.kind === 'redact-failure').length,
   }
   const complete = !issues.length && rows.every(row => row.complete)
-  return { recordedAt: new Date().toISOString(), framework: 'vinext', version: '1.3.0', summary, complete, passed: complete && rows.every(row => row.passed), issues, fingerprints: { source: [...sourceHashes], build: [...buildHashes], suite: [...suiteHashes] }, rows, failures }
+  return { recordedAt: new Date().toISOString(), framework: 'vinext', version: expectedVersion, summary, complete, passed: complete && rows.every(row => row.passed), issues, fingerprints: { source: [...sourceHashes], build: [...buildHashes], suite: [...suiteHashes] }, rows, failures }
 }
 
 export function formatVinextCoverage(report) {

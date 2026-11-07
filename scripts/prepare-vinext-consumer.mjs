@@ -18,6 +18,7 @@ export async function prepareVinextConsumer(destination) {
   const source = join(root, 'examples/vinext-demo')
   const packageRoot = resolve(process.env.VINEXT_TEST_PACKAGE || join(root, 'packages/redact'))
   const pkg = JSON.parse(await readFile(join(source, 'package.json'), 'utf8'))
+  if (process.env.VINEXT_TEST_VERSION) pkg.dependencies.vinext = process.env.VINEXT_TEST_VERSION
   const redact = JSON.parse(await readFile(join(packageRoot, 'package.json'), 'utf8'))
   const packed = spawn('pnpm', ['pack', '--pack-destination', directory], { cwd: packageRoot, stdio: ['ignore', 'pipe', 'pipe'] })
   let packLog = ''

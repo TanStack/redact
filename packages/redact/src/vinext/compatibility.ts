@@ -8,6 +8,17 @@ const shimPackages = ['next', 'vinext', 'server-only', 'client-only', 'private-n
 const requestHandlers = ['vinext/server/app-rsc-handler', 'vinext/server/app-rsc-combined-handler']
 const clientDependencies = ['vinext > @unpic/react', 'vinext > ipaddr.js', 'vinext > web-vitals']
 
+export type VinextVersionSupport = 'supported' | 'prerelease' | 'untested'
+
+// 1.3.x and 1.4.x are the version families exercised by the maintained tests.
+// Other versions still run the source-shape checks below; they only warn because
+// this adapter depends on generated module shapes.
+export function vinextVersionSupport(version: string): VinextVersionSupport {
+  if (version.includes('-')) return 'prerelease'
+  const [major, minor] = version.split('.')
+  return major === '1' && (minor === '3' || minor === '4') ? 'supported' : 'untested'
+}
+
 // These modules carry framework state or request semantics. Both Vite's main
 // graph and its separate dependency optimizer must see the same correction.
 export function correctVinextModule(code: string, id: string, directory: string): string | null {
@@ -92,10 +103,12 @@ export function vinextCompatibility() {
         // Vinext is ESM-only, so resolve its public package manifest through its
         // import condition without loading a second copy of the plugin.
         const packagePath = findPackageJSON('vinext', pathToFileURL(resolve(config.root || '.', 'package.json')))
-        if (!packagePath) throw new Error('Install vinext 1.3.0 before using the Redact Vinext integration.')
+        if (!packagePath) throw new Error('Install vinext before using the Redact Vinext integration.')
         directory = resolve(dirname(packagePath), 'dist')
         const pkg = JSON.parse(readFileSync(packagePath, 'utf8'))
-        if (pkg.version !== '1.3.0') throw new Error(`Redact Vinext integration supports vinext 1.3.0; found ${pkg.version}.`)
+        const support = vinextVersionSupport(pkg.version)
+        if (support !== 'supported')
+          console.warn(`[redact] ${support === 'prerelease' ? 'Prerelease' : 'Untested'} vinext version ${pkg.version}; continuing with source checks.`)
         hasApp = !!config.environments?.rsc
         const aliases = Array.isArray(config.resolve?.alias) ? config.resolve.alias : Object.entries(config.resolve?.alias || {}).map(([find, replacement]) => ({ find, replacement }))
         const publicShims = Object.keys((await import(pathToFileURL(resolve(directory, 'shims/public-shim-map.json.js')).href)).default)
