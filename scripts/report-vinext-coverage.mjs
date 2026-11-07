@@ -11,6 +11,10 @@ const differences = {
 }
 const key = row => [row.deployment, row.mode, row.rendering, row.browser, row.basePath].join('|')
 
+/**
+ * Validates App Router matrix artifacts and native React controls for the
+ * expected Vinext version.
+ */
 export async function collectVinextCoverage(directory, jobs = vinextMatrix(), expectedVersion = process.env.VINEXT_TEST_VERSION || '1.3.0') {
   const rows = [], issues = [], sourceHashes = new Set(), buildHashes = new Set(), suiteHashes = new Set()
   for (const job of jobs) {

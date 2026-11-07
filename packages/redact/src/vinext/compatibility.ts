@@ -10,9 +10,11 @@ const clientDependencies = ['vinext > @unpic/react', 'vinext > ipaddr.js', 'vine
 
 export type VinextVersionSupport = 'supported' | 'prerelease' | 'untested'
 
-// 1.3.x and 1.4.x are the version families exercised by the maintained tests.
-// Other versions still run the source-shape checks below; they only warn because
-// this adapter depends on generated module shapes.
+/**
+ * Classifies a Vinext version for the adapter's compatibility policy.
+ * Stable 1.3.x and 1.4.x releases are supported; prereleases and other
+ * versions continue through the source-shape checks with a warning.
+ */
 export function vinextVersionSupport(version: string): VinextVersionSupport {
   if (version.includes('-')) return 'prerelease'
   const [major, minor] = version.split('.')
@@ -54,6 +56,10 @@ function isShimInclude(id: string, excludes: string[]) {
   return excludes.some(excluded => target === excluded || target.startsWith(excluded + '/'))
 }
 
+/**
+ * Builds the Vite plugin that applies Vinext compatibility corrections and
+ * resolves the public shims Redact needs.
+ */
 export function vinextCompatibility() {
   let directory = '', hasApp = false, excludes: string[] = [], externalRequire: any
   const transform = function(this: any, code: string, id: string) {
@@ -98,6 +104,7 @@ export function vinextCompatibility() {
   return {
     config: {
       order: 'post',
+      /** Resolves the installed Vinext package and configures compatibility hooks. */
       async handler(config: any) {
         const require = createRequire(resolve(config.root || '.', 'package.json'))
         // Vinext is ESM-only, so resolve its public package manifest through its

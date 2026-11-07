@@ -14,6 +14,11 @@ export function pagesMatrix() {
   }
   return jobs
 }
+
+/**
+ * Validates Pages Router matrix artifacts and native React controls for the
+ * expected Vinext version.
+ */
 export async function collectVinextPagesCoverage(directory, expectedVersion = process.env.VINEXT_TEST_VERSION || '1.3.0') {
   const rows = [], issues = [], fingerprints = { sourceSha256: new Set(), buildSha256: new Set(), suiteSha256: new Set(), fixtureSha256: new Set() }
   for (const job of pagesMatrix()) {

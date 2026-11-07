@@ -8,6 +8,12 @@ import { join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const root = fileURLToPath(new URL('..', import.meta.url))
+
+/**
+ * Packs Redact and creates a clean npm consumer for Vinext compatibility tests.
+ *
+ * @param destination Empty directory, or an existing Redact test consumer.
+ */
 export async function prepareVinextConsumer(destination) {
   const directory = destination || await mkdtemp(join(tmpdir(), 'redact-vinext-consumer-'))
   await mkdir(directory, { recursive: true })
