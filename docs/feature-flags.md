@@ -17,6 +17,7 @@ redact({ preset: 'nano', features: { context: true } })
 
 | Flag | Behavior when `false` |
 |---|---|
+| `svgAttributeAliases` | Use canonical SVG names such as `text-anchor`. Development reports React aliases such as `textAnchor` and explains how to enable them. |
 | `activity` | Hidden children unmount and lose state. |
 | `fragmentRefs` | No Fragment DOM instance. |
 | `viewTransitions` | No native snapshots or animation callbacks; the boundary retains state. |

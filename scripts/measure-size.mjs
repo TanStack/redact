@@ -25,13 +25,14 @@ export const sizeEntries = [
   })),
   {
     name: 'redact/dom-client (nano)', path: 'dom/client',
-    features: Object.fromEntries(Object.keys(featureDirectories).map(feature => [feature, false])),
+    features: { ...Object.fromEntries(Object.keys(featureDirectories).map(feature => [feature, false])), svgAttributeAliases: false },
   },
 ]
 
 function featureSwapPlugin(features, extension) {
   const disabled = new Set(Object.entries(featureDirectories)
     .filter(([feature]) => features[feature] === false).map(([, directory]) => directory))
+  if (features.svgAttributeAliases === false) disabled.add('svg-attributes')
   if (features.suspense === false) disabled.add('suspense-runtime')
   if (features.hydration === false) disabled.add('suspense-hydration')
   return {
@@ -41,7 +42,7 @@ function featureSwapPlugin(features, extension) {
         if (!args.importer) return null
         const registration = /[/\\]features[/\\]index\.[jt]s$/.test(args.importer)
           ? args.path.match(/^\.\/([a-z-]+)(?:\/index\.js)?$/)?.[1] : undefined
-        const peer = args.path.match(/[/\\](class|context|hydration|fragment-refs|view-transition|suspense-runtime|suspense-hydration)(?:\/index\.js)?$/)?.[1]
+        const peer = args.path.match(/[/\\](class|context|hydration|fragment-refs|view-transition|suspense-runtime|suspense-hydration|svg-attributes)(?:\/index\.js)?$/)?.[1]
         const directory = registration || peer
         if (!directory || !disabled.has(directory)) return null
         const stub = resolve(dirname(args.importer), args.path.replace(/\/index\.js$/, ''), `stub.${extension}`)
