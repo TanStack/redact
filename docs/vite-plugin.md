@@ -28,6 +28,21 @@ The plugin redirects React, JSX runtimes, React Compiler runtime, React DOM, DOM
 
 The RSC environment remains on upstream React, Redact does not implement Flight serialization.
 
+## Cloudflare Workers with native RSC
+
+The plain `@tanstack/redact/vite` entry can install alongside the official `@cloudflare/vite-plugin@2.0.0-beta.v.11` with strict peer checks. The separate vendored `@tanstack/redact/cloudflare` adapter still requires `@cloudflare/vite-plugin@1.65.0`.
+
+For the tested native RSC setup on Vite 8.3.6, the Worker development SSR optimizer needs Vite's `esmExternalRequirePlugin` for React peers that Redact excludes from prebundling. Add it to the existing SSR optimizer plugin list:
+
+```ts
+import { esmExternalRequirePlugin } from 'vite'
+
+// Inside environments.ssr.optimizeDeps.rolldownOptions.plugins
+esmExternalRequirePlugin({ external: ['react', 'react-dom'] })
+```
+
+This configuration addresses the development error about calling `require("react-dom")` inside a Worker. The underlying optimizer issue is tracked in [cloudflare/workers-sdk#16769](https://github.com/cloudflare/workers-sdk/issues/16769).
+
 ## React Router framework mode
 
 Select only the browser runtime alongside React Router's Vite plugin:
