@@ -168,7 +168,7 @@ importers:
   packages/redact:
     dependencies:
       '@cloudflare/vite-plugin':
-        specifier: 1.65.0
+        specifier: '1.65.0 || 2.0.0-beta.v.11'
         version: 1.65.0(@types/node@26.6.5)(vite@5.4.21(@types/node@26.6.5)(lightningcss@1.33.0)(terser@5.51.2))(workerd@1.20261019.1)(wrangler@4.152.0(@types/node@26.6.5))
       '@jridgewell/remapping':
         specifier: ^2.3.5
