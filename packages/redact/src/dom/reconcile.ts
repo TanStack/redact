@@ -355,11 +355,13 @@ function renderUpdates(root: FiberRoot, pending: Fiber[], update?: () => void): 
         if (!transitionRender) {
             if (fiber.bt && hasTransition?.(fiber))
                 continue;
-            let ancestor = fiber.p;
-            while (ancestor && !ancestor.bs)
-                ancestor = ancestor.p;
-            if (ancestor && fiber.bt)
-                continue;
+            if (fiber.bt) {
+                let ancestor = fiber.p;
+                while (ancestor && !ancestor.bs)
+                    ancestor = ancestor.p;
+                if (ancestor)
+                    continue;
+            }
         }
         const boundary = root.eb && findErrorBoundary(fiber);
         const checkpoint = boundary || (root.sp && findSuspenseBoundary(fiber)) ? checkpointCommit(fiber) : -1;
