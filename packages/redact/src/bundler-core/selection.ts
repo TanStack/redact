@@ -9,6 +9,7 @@ export type RedactPreset = 'nano' | 'full'
  */
 export interface RedactFeatures {
   /** Activity visibility, retained state and disconnected effects. */
+  svgAttributeAliases?: boolean
   activity?: boolean
   /** DOM instances, events, focus, layout and observers for Fragment refs. */
   fragmentRefs?: boolean
@@ -74,6 +75,7 @@ export interface RedactFeatures {
 }
 
 export interface ResolvedFeatures {
+  svgAttributeAliases: boolean
   activity: boolean
   fragmentRefs: boolean
   viewTransitions: boolean
@@ -90,12 +92,14 @@ export interface ResolvedFeatures {
 const PRESET_DEFAULTS: Record<RedactPreset, ResolvedFeatures> = {
   // Opt-in: everything off. Turn individual features on via `features`.
   nano: {
+    svgAttributeAliases: false,
     activity: false, fragmentRefs: false, viewTransitions: false,
     portal: false, context: false, suspense: false, memo: false,
     forwardRef: false, lazy: false, classComponents: false, hydration: false,
   },
   // Opt-out: everything on (drop-in React parity). Turn features off via `features`.
   full: {
+    svgAttributeAliases: true,
     activity: true, fragmentRefs: true, viewTransitions: false,
     portal: true, context: true, suspense: true, memo: true,
     forwardRef: true, lazy: true, classComponents: true, hydration: true,
@@ -108,6 +112,7 @@ export function resolveFeatures(
 ): ResolvedFeatures {
   const p = PRESET_DEFAULTS[preset]
   return {
+    svgAttributeAliases: overrides.svgAttributeAliases ?? p.svgAttributeAliases,
     activity: overrides.activity ?? p.activity,
     fragmentRefs: overrides.fragmentRefs ?? p.fragmentRefs,
     viewTransitions: overrides.viewTransitions ?? p.viewTransitions,

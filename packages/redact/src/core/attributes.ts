@@ -1,10 +1,12 @@
+import { svgAttributeAliases } from '../dom/features/svg-attributes'
+
 export const BOOLEAN_ATTRS = /^(allowfullscreen|async|autofocus|autoplay|checked|controls|credentialless|default|defer|disabled|formnovalidate|hidden|inert|ismap|itemscope|loop|multiple|muted|nomodule|novalidate|open|playsinline|readonly|required|reversed|selected)$/;
 export const STRING_BOOLEAN_ATTRS = /^(contenteditable|draggable|spellcheck)$/
 
 export function attributeName(name: string, isSvg?: boolean): string {
   if (name === 'className') return 'class'
   if (name === 'htmlFor') return 'for'
-  if ((isSvg && /^(clip|fill|stroke)/.test(name)) || /^(httpEquiv|acceptCharset|maskType)$/.test(name)) {
+  if ((isSvg && svgAttributeAliases?.test(name)) || /^(httpEquiv|acceptCharset|maskType)$/.test(name)) {
     return name.replace(/[A-Z]/g, m => '-' + m.toLowerCase())
   }
   if (name === 'tabIndex' || name === 'crossOrigin') return name.toLowerCase()

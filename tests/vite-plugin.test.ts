@@ -21,6 +21,70 @@ function findPlugin(plugins: any, name: string): any {
 }
 
 describe('redact vite plugin', () => {
+  it.each((['src', 'dist'] as const).flatMap(tree => ([
+    { preset: 'full', override: undefined, enabled: true },
+    { preset: 'nano', override: undefined, enabled: false },
+    { preset: 'full', override: false, enabled: false },
+    { preset: 'nano', override: true, enabled: true },
+  ] as const).flatMap(options => [false, true].map(development => ({ tree, ...options, development })))))('bundles $tree SVG aliases for $preset with override=$override and development=$development', async ({ tree, preset, override, enabled, development }) => {
+    const source = resolve(import.meta.dirname, `../packages/redact/${tree}`)
+    const extension = tree === 'src' ? 'ts' : 'js'
+    const fixture = '\0redact-svg-feature-fixture'
+    const result = await build({
+      configFile: false,
+      logLevel: 'silent',
+      define: { 'process.env.NODE_ENV': JSON.stringify(development ? 'development' : 'production') },
+      plugins: [
+        ...redact({ preset, packageRoots: { '@tanstack/redact': resolve(source, '..') }, features: { hydration: true, ...(override === undefined ? {} : { svgAttributeAliases: override }) } }),
+        {
+          name: 'svg-feature-fixture',
+          resolveId(id) { if (id === fixture) return id },
+          load(id) {
+            if (id === fixture) return `
+              export { attributeName } from ${JSON.stringify(source + '/core/attributes.' + extension)};
+              import { createElement } from ${JSON.stringify(source + '/react/index.' + extension)};
+              import { renderToString } from ${JSON.stringify(source + '/server/index.' + extension)};
+              import { hydrateRoot } from ${JSON.stringify(source + '/dom/client.' + extension)};
+              const element = name => createElement('svg', null, createElement('text', { [name]: 12, suppressHydrationWarning: true }, 'a'));
+              export const svgHtml = name => renderToString(element(name));
+              export const hydrateSvg = (container, name) => hydrateRoot(container, element(name));
+            `
+          },
+        },
+      ],
+      build: {
+        write: false,
+        minify: false,
+        rollupOptions: { input: fixture, preserveEntrySignatures: 'strict', output: { format: 'iife', name: 'SVGFixture' } },
+      },
+    })
+    const output = Array.isArray(result) ? result[0] : result
+    if (!output || !('output' in output)) throw new Error('Expected a completed Vite bundle')
+    const chunk = output.output.find(item => item.type === 'chunk')!
+    if (chunk.type !== 'chunk') throw new Error('Expected JavaScript')
+    const dom = new JSDOM()
+    const { attributeName, svgHtml, hydrateSvg } = new Function('document', chunk.code + '; return SVGFixture;')(dom.window.document)
+    for (const name of ['viewBox', 'gradientUnits', 'preserveAspectRatio', 'customCamelCase', 'fontSizeCustom', 'fontSize\n', 'text-anchor'])
+      expect(attributeName(name, true)).toBe(name)
+    expect(attributeName('fontSize', false)).toBe('fontsize')
+    if (!enabled && development) {
+      expect(() => attributeName('textAnchor', true)).toThrow('svgAttributeAliases: true')
+      expect(() => attributeName('fontSize', true)).toThrow('svgAttributeAliases: true')
+      expect(() => svgHtml('fontSize')).toThrow('svgAttributeAliases: true')
+      const container = dom.window.document.createElement('div')
+      container.innerHTML = '<svg><text font-size="12">a</text></svg>'
+      expect(() => hydrateSvg(container, 'fontSize')).toThrow('svgAttributeAliases: true')
+    } else {
+      expect(attributeName('textAnchor', true)).toBe(enabled ? 'text-anchor' : 'textAnchor')
+      expect(attributeName('fontSize', true)).toBe(enabled ? 'font-size' : 'fontSize')
+      expect(svgHtml('fontSize')).toContain(`${enabled ? 'font-size' : 'fontSize'}="12"`)
+    }
+    expect(chunk.code.includes('SVG_HYPHENATED_ATTRS')).toBe(enabled || development)
+    expect(chunk.code.includes('requires svgAttributeAliases')).toBe(!enabled && development)
+    expect(svgHtml('font-size')).toContain('font-size="12"')
+    dom.window.close()
+  })
+
   it.each(['18.2.0', '18.3.1', '19.3.1'])('targets the consumer React %s without changing unrelated modules or RSC', async (version) => {
     const root = mkdtempSync(resolve(tmpdir(), 'redact-version-'))
     try {

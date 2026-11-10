@@ -208,6 +208,9 @@ function hydrateProps(fiber: Fiber, el: Element, props: Record<string, any>, tag
         if (isReservedProp(k) || k === 'suppressHydrationWarning' || k === 'suppressContentEditableWarning' || isHydrationFormProp(tag, k)) continue;
         const event = isFunction(value) && (k === 'action' || k === 'formAction' || k[0] === 'o' && k[1] === 'n');
         if (event) queueProp(el, k, value, undefined, isSvg);
+        // Suppressing mismatch warnings does not enable an omitted feature.
+        if (process.env.NODE_ENV !== 'production' && isSvg && props.suppressHydrationWarning)
+            attributeName(k, true);
         if (event || props.suppressHydrationWarning) continue;
         let mismatch: boolean;
         if (k === 'dangerouslySetInnerHTML') {

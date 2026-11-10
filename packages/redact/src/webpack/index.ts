@@ -10,6 +10,7 @@ export type { RedactPreset, RedactFeatures } from '../bundler-core/selection'
 
 const pluginDir = dirname(fileURLToPath(import.meta.url))
 const directories: Record<string, keyof ResolvedFeatures> = {
+  'svg-attributes': 'svgAttributeAliases',
   activity: 'activity', 'fragment-refs': 'fragmentRefs', 'view-transition': 'viewTransitions',
   portal: 'portal', context: 'context', suspense: 'suspense', memo: 'memo',
   'forward-ref': 'forwardRef', lazy: 'lazy', class: 'classComponents', hydration: 'hydration',

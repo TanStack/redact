@@ -161,11 +161,11 @@ export function redact(options: RedactOptions = {}): any {
 
       // Peer imports must use the same feature selection as the registration
       // entrypoint, or an enabled feature can bring a disabled one back in.
-      const peer = path.match(/[\\/](context|hydration|fragment-refs|view-transition|class|suspense-runtime|suspense-hydration)(?:[\\/]index\.js)?$/)
-      const peerKey = peer?.[1] === 'suspense-hydration' ? 'hydration' : peer?.[1] === 'suspense-runtime' ? 'suspense' : peer?.[1] === 'fragment-refs' ? 'fragmentRefs' : peer?.[1] === 'view-transition' ? 'viewTransitions' : peer?.[1] === 'class' ? 'classComponents' : peer?.[1] as 'context' | 'hydration' | undefined
+      const peer = path.match(/[\\/](context|hydration|fragment-refs|view-transition|class|suspense-runtime|suspense-hydration|svg-attributes)(?:[\\/]index\.js)?$/)
+      const peerKey = peer?.[1] === 'svg-attributes' ? 'svgAttributeAliases' : peer?.[1] === 'suspense-hydration' ? 'hydration' : peer?.[1] === 'suspense-runtime' ? 'suspense' : peer?.[1] === 'fragment-refs' ? 'fragmentRefs' : peer?.[1] === 'view-transition' ? 'viewTransitions' : peer?.[1] === 'class' ? 'classComponents' : peer?.[1] as 'context' | 'hydration' | undefined
       if (importer && peer && peerKey && !features[peerKey]) {
         const r = await this.resolve(id, importer, { ...opts, skipSelf: true })
-        const resolvedFeature = r?.id.match(/features[\\/](context|hydration|fragment-refs|view-transition|class|suspense-runtime|suspense-hydration)[\\/]index\.(ts|js)(?=[?#]|$)/)
+        const resolvedFeature = r?.id.match(/features[\\/](context|hydration|fragment-refs|view-transition|class|suspense-runtime|suspense-hydration|svg-attributes)[\\/]index\.(ts|js)(?=[?#]|$)/)
         if (r && isRuntimeFeature(r.id) && resolvedFeature?.[1] === peer[1]) {
           return r.id.replace(/index\.(ts|js)(?=[?#]|$)/, 'stub.$1')
         }
