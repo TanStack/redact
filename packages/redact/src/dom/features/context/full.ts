@@ -1,3 +1,4 @@
+import { visitChildren } from '../../reconcile';
 import { isFunction } from '../../../core/functions';
 import { FiberTag, type Fiber } from '../../../core';
 import { REACT_CONTEXT_TYPE, REACT_PROVIDER_TYPE, REACT_CONSUMER_TYPE } from '../../../react';
@@ -49,15 +50,7 @@ export function ownContextChanged(fiber: Fiber): boolean {
 export function hasContextChanged(fiber: Fiber, includeFallback = true): boolean {
     if (!changingProviders)
         return false;
-    if (ownContextChanged(fiber))
-        return true;
-    let child = fiber.c;
-    while (child) {
-        if (hasContextChanged(child))
-            return true;
-        child = child.s;
-    }
-    return includeFallback && fiber.t === FiberTag.Suspense && !!fiber.b?.f && hasContextChanged(fiber.b.f);
+    return ownContextChanged(fiber) || !!visitChildren(fiber, hasContextChanged, undefined, !includeFallback);
 }
 export { renderPendingChildren as renderContextConsumers } from '../../reconcile';
 

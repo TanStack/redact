@@ -63,20 +63,11 @@ const STORE_HYDRATION_SIZE_ALLOWANCE = {
   'redact/dom-client (hydration=stub)': [3, 0],
 }
 
-// Tanner approved these eight exact queued child/store rows on 2026-11-02.
-// Source and built gzip increments, no other fixed limits change.
-const QUEUED_STORE_SIZE_ALLOWANCE = {
-  'client total (default Vite)': [40, 68],
-  'redact/dom-client (activity=stub)': [19, 13],
-  'redact/dom-client (viewTransitions=stub)': [35, 44],
-  'redact/dom-client (nano)': [16, 16],
-}
-
 let failed = false
 for (const tree of ['src', 'dist']) {
   for (const row of await measureSizes(tree)) {
     const baseBudget = BUDGETS[row.name]
-    const budget = baseBudget === undefined ? undefined : baseBudget + (QUEUED_STORE_SIZE_ALLOWANCE[row.name]?.[tree === 'src' ? 0 : 1] ?? 0) + (STORE_HYDRATION_SIZE_ALLOWANCE[row.name]?.[tree === 'src' ? 0 : 1] ?? 0) + (ROOT_TRANSITION_SIZE_ALLOWANCE[row.name]?.[tree === 'src' ? 0 : 1] ?? 0) + (QUEUE_SIZE_ALLOWANCE[row.name]?.[tree === 'src' ? 0 : 1] ?? 0)
+    const budget = baseBudget === undefined ? undefined : baseBudget + (STORE_HYDRATION_SIZE_ALLOWANCE[row.name]?.[tree === 'src' ? 0 : 1] ?? 0) + (ROOT_TRANSITION_SIZE_ALLOWANCE[row.name]?.[tree === 'src' ? 0 : 1] ?? 0) + (QUEUE_SIZE_ALLOWANCE[row.name]?.[tree === 'src' ? 0 : 1] ?? 0)
     const ok = budget !== undefined && row.gz <= budget
     failed ||= !ok
     console.log(`${ok ? 'PASS' : 'FAIL'} ${tree} ${row.name}: ${row.gz} B gzip, budget ${budget ?? 'missing'}`)

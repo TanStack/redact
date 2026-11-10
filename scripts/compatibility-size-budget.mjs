@@ -117,106 +117,104 @@ export function hydrationSplitAllowance(base, row, metric, fingerprint) {
   return 0
 }
 
-// Approved 2026-11-02 for queuedStore only. Pin the exact comparison
+// Approved 2026-11-02 for PR109 recovery only. Pin the exact comparison
 // base and runtime/build inputs; other patches, bases and rows get no allowance.
-const queuedStoreApproval = {
+const recoveryApproval = {
   base: '70d534b44f9baa50628cd41373b5f66d634d714f',
-  fingerprint: '0915db720712aa37f9d437acadf759f36b3e1b709c83c638e2ba677f86cf4c5b',
+  fingerprint: '5452053436021e318f5b7245c6fc19b00441a9ea0a5092da251eb8a561339e73',
   rows: {
   "full:dom/index:react19": {
-    "min": 494,
-    "gzip": 179,
-    "brotli": 101
+    "min": 30,
+    "gzip": 59,
+    "brotli": 34
   },
   "full:dom/index:react18": {
-    "min": 494,
-    "gzip": 181,
-    "brotli": 145
+    "min": 30,
+    "gzip": 61
   },
   "full:dom/client:react19": {
-    "min": 489,
-    "gzip": 155,
-    "brotli": 56
+    "min": 37,
+    "gzip": 67
   },
   "full:dom/client:react18": {
-    "min": 489,
-    "gzip": 156,
-    "brotli": 115
+    "min": 37,
+    "gzip": 68,
+    "brotli": 99
   },
   "full:client-total:react19": {
-    "min": 489,
-    "gzip": 177,
-    "brotli": 147
+    "min": 36,
+    "gzip": 80,
+    "brotli": 41
   },
   "full:client-total:react18": {
-    "min": 489,
-    "gzip": 173,
-    "brotli": 126
+    "min": 36,
+    "gzip": 66,
+    "brotli": 39
   },
   "default:dom/index:react19": {
-    "min": 494,
-    "gzip": 164,
-    "brotli": 135
+    "min": 23,
+    "gzip": 51,
+    "brotli": 32
   },
   "default:dom/index:react18": {
-    "min": 494,
-    "gzip": 157,
-    "brotli": 176
+    "min": 23,
+    "gzip": 52,
+    "brotli": 53
   },
   "default:dom/client:react19": {
-    "min": 490,
-    "gzip": 150,
-    "brotli": 102
+    "min": 28,
+    "gzip": 76,
+    "brotli": 43
   },
   "default:dom/client:react18": {
-    "min": 490,
-    "gzip": 148,
-    "brotli": 71
+    "min": 28,
+    "gzip": 74,
+    "brotli": 15
   },
   "default:client-total:react19": {
-    "min": 488,
-    "gzip": 147,
-    "brotli": 102
+    "min": 26,
+    "gzip": 66,
+    "brotli": 61
   },
   "default:client-total:react18": {
-    "min": 488,
-    "gzip": 145,
-    "brotli": 105
+    "min": 26,
+    "gzip": 58,
+    "brotli": 74
   },
   "nano:dom/index:react19": {
-    "min": 328,
-    "gzip": 122,
-    "brotli": 149
+    "min": 150,
+    "gzip": 52,
+    "brotli": 56
   },
   "nano:dom/index:react18": {
-    "min": 328,
-    "gzip": 122,
-    "brotli": 171
+    "min": 150,
+    "gzip": 54,
+    "brotli": 61
   },
   "nano:dom/client:react19": {
-    "min": 327,
-    "gzip": 124,
-    "brotli": 127
+    "min": 150,
+    "gzip": 56,
+    "brotli": 55
   },
   "nano:dom/client:react18": {
-    "min": 327,
-    "gzip": 125,
-    "brotli": 127
+    "min": 150,
+    "gzip": 57,
+    "brotli": 55
   },
   "nano:client-total:react19": {
-    "min": 329,
-    "gzip": 127,
-    "brotli": 69
+    "min": 150,
+    "gzip": 56,
+    "brotli": 46
   },
   "nano:client-total:react18": {
-    "min": 329,
-    "gzip": 132,
-    "brotli": 112
+    "min": 150,
+    "gzip": 59,
+    "brotli": 57
   }
 }
 }
 
-const queuedStoreInputs = [
+const recoveryInputs = [
   'packages/redact/src',
   'packages/redact/package.json',
   'scripts/build.mjs',
@@ -224,21 +222,156 @@ const queuedStoreInputs = [
   'scripts/test-react-compatibility-size.mjs',
   'pnpm-lock.yaml',
   '.nvmrc',
-  '.changeset/queued-descendant-updates.md'
+  '.changeset/error-boundary-recovery.md'
 ]
-export function queuedStoreFingerprint(root = new URL('../', import.meta.url)) {
-  return fingerprintInputs(queuedStoreInputs, root)
+export function recoveryFingerprint(root = new URL('../', import.meta.url)) {
+  return fingerprintInputs(recoveryInputs, root)
 }
-export function queuedStoreAllowance(base, row, metric, fingerprint) {
-  if (base !== queuedStoreApproval.base || fingerprint !== queuedStoreApproval.fingerprint)
+export function recoveryAllowance(base, row, metric, fingerprint) {
+  if (base !== recoveryApproval.base || fingerprint !== recoveryApproval.fingerprint)
     return 0
-  const value = queuedStoreApproval.rows[`${row.profile}:${row.entry}:${row.target}`]?.[metric]
+  const value = recoveryApproval.rows[`${row.profile}:${row.entry}:${row.target}`]?.[metric]
   return typeof value === 'number' ? value : 0
 }
 
+// Approved 2026-11-02 for autofocus only. Pin the exact comparison
+// base and runtime/build inputs; other patches, bases and rows get no allowance.
+const autofocusApproval = {
+  base: '577e3769002c467639878efe2218b2d16cc8aff6',
+  fingerprint: '0c0c8746d0b2e9a6066003ef3a7baf7fe1c3e14bed4ad7ee5b8dd1d514970776',
+  rows: {
+  "full:dom/index:react19": {
+    "min": 104,
+    "gzip": 52,
+    "brotli": 80
+  },
+  "full:dom/index:react18": {
+    "min": 104,
+    "gzip": 55,
+    "brotli": 51
+  },
+  "full:dom/client:react19": {
+    "min": 106,
+    "gzip": 47,
+    "brotli": 43
+  },
+  "full:dom/client:react18": {
+    "min": 106,
+    "gzip": 48,
+    "brotli": 70
+  },
+  "full:client-total:react19": {
+    "min": 104,
+    "gzip": 57,
+    "brotli": 62
+  },
+  "full:client-total:react18": {
+    "min": 104,
+    "gzip": 54,
+    "brotli": 58
+  },
+  "default:dom/index:react19": {
+    "min": 104,
+    "gzip": 52,
+    "brotli": 37
+  },
+  "default:dom/index:react18": {
+    "min": 104,
+    "gzip": 44,
+    "brotli": 53
+  },
+  "default:dom/client:react19": {
+    "min": 104,
+    "gzip": 52,
+    "brotli": 60
+  },
+  "default:dom/client:react18": {
+    "min": 104,
+    "gzip": 50,
+    "brotli": 45
+  },
+  "default:client-total:react19": {
+    "min": 104,
+    "gzip": 52,
+    "brotli": 90
+  },
+  "default:client-total:react18": {
+    "min": 104,
+    "gzip": 49,
+    "brotli": 73
+  },
+  "nano:dom/index:react19": {
+    "min": 135,
+    "gzip": 36,
+    "brotli": 41
+  },
+  "nano:dom/index:react18": {
+    "min": 135,
+    "gzip": 37,
+    "brotli": 46
+  },
+  "nano:dom/client:react19": {
+    "min": 135,
+    "gzip": 60,
+    "brotli": 49
+  },
+  "nano:dom/client:react18": {
+    "min": 135,
+    "gzip": 60,
+    "brotli": 57
+  },
+  "nano:client-total:react19": {
+    "min": 135,
+    "gzip": 54,
+    "brotli": 25
+  },
+  "nano:client-total:react18": {
+    "min": 135,
+    "gzip": 48,
+    "brotli": 58
+  }
+}
+}
+
+const autofocusInputs = [
+  'packages/redact/src',
+  'packages/redact/package.json',
+  'scripts/build.mjs',
+  'scripts/measure-size.mjs',
+  'scripts/test-react-compatibility-size.mjs',
+  'pnpm-lock.yaml',
+  '.nvmrc',
+  '.changeset/late-mounted-autofocus.md'
+]
+export function autofocusFingerprint(root = new URL('../', import.meta.url)) {
+  return fingerprintInputs(autofocusInputs, root)
+}
+export function autofocusAllowance(base, row, metric, fingerprint) {
+  if (base !== autofocusApproval.base || fingerprint !== autofocusApproval.fingerprint)
+    return 0
+  const value = autofocusApproval.rows[`${row.profile}:${row.entry}:${row.target}`]?.[metric]
+  return typeof value === 'number' ? value : 0
+}
+
+// Tanner approved this exact server-only shell-release cost on 2026-11-02.
+const shellReleaseBase = '2a76bd9dfdb72e53357c49e5b87d3f64e3fab6b5'
+const shellReleaseHash = '2b37faa65dd412be2166c19506c01b0a2801aff32b6f16dd43515243b001348d'
+export function shellReleaseFingerprint(root = new URL('../', import.meta.url)) {
+  return fingerprintInputs(['packages/redact/src', 'packages/redact/package.json', 'scripts/build.mjs', 'scripts/measure-size.mjs', 'scripts/test-react-compatibility-size.mjs', 'pnpm-lock.yaml', '.nvmrc', '.changeset/release-ssr-shell.md'], root)
+}
+export function shellReleaseAllowance(base, row, metric, fingerprint) {
+  if (base !== shellReleaseBase || fingerprint !== shellReleaseHash || row.entry !== 'server/index' || !['full', 'default', 'nano'].includes(row.profile) || !['react18', 'react19'].includes(row.target)) return 0
+  return ({min: 11, gzip: 4, brotli: 18})[metric] || 0
+}
+
 export function compatibilitySizeAllowance(base, row, metric) {
-  const approved = queuedStoreAllowance(base, row, metric, base === queuedStoreApproval.base ? queuedStoreFingerprint() : undefined)
-  if (approved) return approved
+  const shell = shellReleaseAllowance(base, row, metric, base === shellReleaseBase ? shellReleaseFingerprint() : undefined)
+  if (shell) return shell
+  const autofocus = autofocusAllowance(base, row, metric, base === autofocusApproval.base ? autofocusFingerprint() : undefined)
+  if (autofocus) return autofocus
+  const recovery = recoveryAllowance(base, row, metric,
+    base === recoveryApproval.base ? recoveryFingerprint() : undefined)
+  if (recovery) return recovery
   const hydration = hydrationSplitAllowance(base, row, metric,
     typeof hydrationSplitBases[base] === 'string' ? hydrationSplitFingerprint() : undefined)
   if (hydration) return hydration

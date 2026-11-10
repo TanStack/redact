@@ -5,6 +5,7 @@
   "description": "A minimal React-compatible runtime for TanStack Start apps",
   "type": "module",
   "scripts": {
+    "test:react-router": "pnpm build && node scripts/test-react-router.mjs",
     "test:react18": "pnpm build && node scripts/test-react18.mjs",
     "test:compatibility:size": "pnpm build && node scripts/test-react-compatibility-size.mjs",
     "build": "node scripts/build.mjs && node scripts/verify-build.mjs",
@@ -20,7 +21,7 @@
     "changeset": "changeset",
     "changeset:version": "changeset version && pnpm install --no-frozen-lockfile",
     "changeset:publish": "changeset publish",
-    "test:ci": "pnpm test && pnpm test:types && pnpm build && pnpm size:check",
+    "test:ci": "pnpm test && pnpm test:types && pnpm size:check",
     "test:pr": "pnpm test:ci",
     "example:next": "pnpm --filter next-demo dev",
     "example:next:journey": "pnpm build && node scripts/next-journey.mjs",

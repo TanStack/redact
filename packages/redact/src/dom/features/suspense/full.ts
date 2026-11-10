@@ -5,7 +5,7 @@ import { REACT_SUSPENSE_TYPE, ReactSharedInternals, startTransition } from '../.
 import { FiberTag, createFiber, type Fiber } from '../../../core';
 import { disconnectClass, inSuspensePrimary, setRetainedFlag, walkRetained } from '../../retained-effects';
 import { hasContextChanged, renderContextConsumers } from '../context';
-import { installRenderer, registerTypeMatcher, installCapability, reconcileRaw, childrenToArray, renderNode, scheduleUpdate, unmountAllChildren, removeFiber, findRoot, runEffects, getCurrentRoot, withCurrentRoot, discardPendingWork, findSuspenseBoundary, RenderSuspenseCapture, activityIsDisconnected, isActivityHidden, attachRef, detachRef, enqueueEffect, flushFiberCommits, scheduleLifecycle, handleCommitError, disposeCleanup, isThenable, defaultHandleSuspended, } from '../../reconcile';
+import { visitChildren, installRenderer, registerTypeMatcher, installCapability, reconcileRaw, childrenToArray, renderNode, scheduleUpdate, unmountAllChildren, removeFiber, findRoot, runEffects, getCurrentRoot, withCurrentRoot, discardPendingWork, findSuspenseBoundary, RenderSuspenseCapture, activityIsDisconnected, isActivityHidden, attachRef, detachRef, enqueueEffect, flushFiberCommits, scheduleLifecycle, handleCommitError, disposeCleanup, isThenable, defaultHandleSuspended, } from '../../reconcile';
 import { tryConsumeBoundary, isHydrationBailout, } from '../hydration';
 import { hydrateSuspenseBoundary, recoverBoundaryHydration } from '../suspense-hydration';
 import { devToolsSuspension } from '../../devtools';
@@ -113,17 +113,12 @@ function hideRootHostDoms(fiber: Fiber, out: Array<[
     }
     if (fiber.t === FiberTag.Portal)
         return;
-    let c = fiber.c;
-    while (c) {
-        hideRootHostDoms(c, out);
-        c = c.s;
-    }
+    visitChildren(fiber, hideRootHostDoms, out, true);
 }
 function setUpdateBoundary(fiber: Fiber, boundary: Fiber | null | undefined): void {
     fiber.su = boundary ?? null;
     const primary = fiber.t === FiberTag.Suspense && fiber.b?.p ? fiber : boundary;
-    for (let child = fiber.c; child; child = child.s)
-        setUpdateBoundary(child, primary);
+    visitChildren(fiber, setUpdateBoundary, primary, true);
     if (fiber.t === FiberTag.Suspense && fiber.b?.f)
         setUpdateBoundary(fiber.b.f, boundary);
 }
@@ -195,8 +190,7 @@ export function renderSuspense(fiber: Fiber): void {
     // Retried primary work belongs to this attempt, not its old hidden boundary.
     // The checkpoint restores these update targets if it suspends again.
     if (state.d)
-        for (let child = fiber.c; child; child = child.s)
-            setUpdateBoundary(child, fiber.su);
+        visitChildren(fiber, setUpdateBoundary, fiber.su, true);
     const prevHandler = suspendHandler;
     fiber.cx?.clear();
     let pendingThenable: any;
@@ -271,8 +265,7 @@ export function renderSuspense(fiber: Fiber): void {
         // Render succeeded. Clean up any preserved-suspend state from a prior
         // suspension cycle: unhide primary, unmount the orphan fallback fiber.
         if (state.d) {
-            for (let child = fiber.c; child; child = child.s)
-                setUpdateBoundary(child, fiber.su);
+            visitChildren(fiber, setUpdateBoundary, fiber.su, true);
             const hidden = state.d;
             queueMutation(() => {
                 for (const [el, origDisplay] of hidden)

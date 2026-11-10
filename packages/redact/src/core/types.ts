@@ -7,11 +7,12 @@ export const REACT_FRAGMENT_TYPE = Symbol.for('react.fragment')
 
 export type Key = string | number | null | undefined
 
+// Native React declarations omit these runtime protocol fields and the legacy ref accessor.
 export interface ReactElement<P = any, T = any> {
-  $$typeof: typeof REACT_ELEMENT_TYPE
+  $$typeof?: typeof REACT_ELEMENT_TYPE
   type: T
   key: string | null
-  ref: any
+  ref?: any
   props: P
 }
 

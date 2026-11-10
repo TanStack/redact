@@ -13,5 +13,11 @@ export declare function hydrationSplitAllowance(
   fingerprint: string | undefined,
 ): number
 
-export declare function queuedStoreFingerprint(root?: URL): string | undefined
-export declare function queuedStoreAllowance(base: string | undefined, row: {profile: string; entry: string; target: string}, metric: string, fingerprint: string | undefined): number
+export declare function recoveryFingerprint(root?: URL): string | undefined
+export declare function recoveryAllowance(base: string | undefined, row: { profile: string; entry: string; target: string }, metric: string, fingerprint: string | undefined): number
+
+export declare function autofocusFingerprint(root?: URL): string | undefined
+export declare function autofocusAllowance(base: string | undefined, row: {profile: string; entry: string; target: string}, metric: string, fingerprint: string | undefined): number
+
+export declare function shellReleaseFingerprint(root?: URL): string | undefined
+export declare function shellReleaseAllowance(base: string | undefined, row: {profile: string; entry: string; target: string}, metric: string, fingerprint: string | undefined): number

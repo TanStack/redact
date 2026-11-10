@@ -65,7 +65,7 @@ export function recoverBoundaryHydration(fiber: Fiber, children: any, parent: No
     root.h = false;
     try {
         if (retryBoundary) {
-            fiber.b = {};
+            fiber.b = { b: startMark, e: endMark };
             renderSuspense(fiber);
         }
         else
