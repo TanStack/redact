@@ -2,14 +2,13 @@ import { isFunction, isThenable } from '../core/functions'
 import type { ReactNode } from '../core'
 import {
   beginSSR,
-  endSSR,
   applyContextSnapshot,
   currentSSRFrame,
   type SSRFrame,
 } from './dispatcher'
 import { walk, type SuspendedBoundary, type BrowserBailoutCallback } from './walk'
 import { browserError, isBrowserToken, isBrowserError } from '../core/browser'
-import { BOUNDARY_REVEAL_RUNTIME, revealScript } from './bootstrap-script'
+import { injectBootstrapScript, inlineScript, revealScript } from './bootstrap-script'
 import { escapeAttr, escapeScript } from './escape'
 import { resourceURL } from '../core/resource-hints'
 import type { ResourceScope } from './resource-hints'
@@ -37,7 +36,6 @@ export interface PipeableWritable {
 }
 
 export interface OrchestratorState {
-  nextId: number
   pending: (task?: Promise<void>) => Promise<void> | undefined
   closed: boolean
   aborted: boolean
@@ -45,19 +43,22 @@ export interface OrchestratorState {
   abort: (reason?: unknown) => void
   cancelled: Promise<void>
   onShellReady?: () => void
-  frame?: SSRFrame
 }
 
 function createState(): OrchestratorState {
   let wake!: () => void
   let count = 0, notify: (() => void) | undefined, failed: unknown[] | undefined
+  const settled = () => { count--; notify?.() }
+  const rejected = (error: unknown) => {
+    // An empty box marks a consumed failure without retaining it or accepting later failures.
+    failed ||= [error]
+    settled()
+  }
   const state: OrchestratorState = {
-    nextId: 0, pending(task) {
+    pending(task) {
       if (task) {
         count++
-        const done = () => { count--; notify?.() }
-        // The empty box marks a consumed failure without retaining it or accepting later failures.
-        task.then(done, error => { failed ||= [error]; done() })
+        task.then(settled, rejected)
       } else if (failed?.length) return Promise.reject(failed.pop())
       else if (count) return new Promise<void>(resolve => { notify = resolve })
     }, closed: false,
@@ -103,51 +104,45 @@ export async function streamHtml(
     // boundary to capture it, but App Router SSR commonly suspends at this
     // level while resolving the RSC stream. Wait and retry without leaking
     // partial shell chunks or boundary ids from the aborted attempt.
-    let shellRendered = false
+    const shellErrors: unknown[] = []
     let rootRetries = 0
     let resources: SSRFrame['resources']
-    while (!shellRendered) {
-      const shellErrors: unknown[] = []
-      const chunkCount = shellChunks.length
-      const boundaryCount = boundaries.length
-      const nextId = state.nextId
-      head = 0
-      const previous = beginSSR(options.identifierPrefix)
-      currentSSRFrame().styleNonce = typeof options.nonce === 'object' ? options.nonce?.style : undefined
-      if (resources) currentSSRFrame().resources = resources
-      let suspended: Promise<unknown> | undefined
+    let frame: SSRFrame
+    for (;;) {
+      const restore = beginSSR(options.identifierPrefix)
+      frame = currentSSRFrame()
+      frame.styleNonce = typeof options.nonce === 'object' ? options.nonce?.style : undefined
+      if (resources) frame.resources = resources
+      let suspended: Promise<unknown>
       try {
         if (state.aborted) throw state.reason
         walk(children, {
           emit: bufferedEmit,
           onSuspend: (b) => boundaries.push(b),
-          nextBoundaryId: () => state.nextId++,
           onBrowserBailout: options.onBrowserBailout,
           onError: error => { shellErrors.push(error) },
           onHead: () => { head = shellChunks.length },
         })
-        shellRendered = true
-        state.frame = currentSSRFrame()
+        break
       } catch (err) {
-        shellChunks.length = chunkCount
-        boundaries.length = boundaryCount
-        state.nextId = nextId
+        shellChunks.length = boundaries.length = shellErrors.length = head = 0
         if (!isThenable(err)) throw err
         if (++rootRetries > 50) {
           throw new Error('renderToReadableStream exceeded 50 root suspension retries.')
         }
+        frame.resources?.discardMetas()
         suspended = err
       } finally {
-        resources = currentSSRFrame().resources
-        endSSR(previous)
+        resources = frame.resources
+        restore()
       }
-      if (shellRendered) for (const error of shellErrors) options.onError?.(error)
-      if (suspended) await Promise.race([suspended, state.cancelled])
+      await Promise.race([suspended, state.cancelled])
     }
+    for (const error of shellErrors) options.onError?.(error)
 
-    const hints = state.frame?.resources?.drain()
+    const hints = frame.resources?.drain()
     if (hints) shellChunks.splice(head, 0, hints)
-    if (state.frame) state.frame.shellFlushed = true
+    frame.shellFlushed = true
 
     // 2. Inject runtime + bootstrap scripts (once, after shell). Skip the
     // reveal/event-replay runtime when nothing needs it — no suspensions to
@@ -155,36 +150,34 @@ export async function streamHtml(
     // keeps fully-static SSR responses byte-equivalent to a plain walk and
     // matches React's behavior where `renderToReadableStream` of a static
     // tree emits only the markup.
-    const hasBootstrap =
-      bootstrapScriptContentToArray(options.bootstrapScriptContent).length > 0 ||
-      (options.bootstrapScripts?.length ?? 0) > 0 ||
-      (options.bootstrapModules?.length ?? 0) > 0
-    if (boundaries.length > 0 || hasBootstrap) {
-      shellChunks.push(`<script${nonce ? ` nonce="${escapeAttr(nonce)}"` : ''}>${BOUNDARY_REVEAL_RUNTIME}</script>`)
-      for (const content of bootstrapScriptContentToArray(options.bootstrapScriptContent)) {
-        shellChunks.push(inlineBootstrapTag(content, nonce))
+    const content = options.bootstrapScriptContent
+    const inlineScripts = typeof content === 'string' ? [content] : [...content ?? []]
+    if (boundaries.length || inlineScripts.length || options.bootstrapScripts?.length || options.bootstrapModules?.length) {
+      shellChunks.push(injectBootstrapScript(nonce))
+      for (const content of inlineScripts) {
+        shellChunks.push(inlineScript(escapeScript(content), nonce))
       }
       for (const s of options.bootstrapScripts ?? []) {
-        shellChunks.push(bootstrapTag(s, 'script', nonce))
+        shellChunks.push(bootstrapTag(s, false, nonce))
       }
       for (const m of options.bootstrapModules ?? []) {
-        shellChunks.push(bootstrapTag(m, 'module', nonce))
+        shellChunks.push(bootstrapTag(m, true, nonce))
       }
     }
 
     if (shellChunks.length) emit(normalizeDocumentShell(shellChunks.join('')))
     shellChunks.length = 0
-    state.onShellReady?.()
+    if (state.onShellReady) queueMicrotask(state.onShellReady)
 
     // 3. Stream suspended boundaries as they resolve
-    for (const b of boundaries) streamBoundary(b, emit, options, state)
+    for (const b of boundaries) streamBoundary(b, emit, options, state, frame)
     for (let next; (next = state.pending());) await next
   } catch (err) {
     if (isBrowserError(err)) {
       err = new Error('The server render could not complete because client rendering was requested outside a Suspense boundary.',
         Object.hasOwn(err, 'cause') ? { cause: err.cause } : undefined)
     }
-    if (options.onError) options.onError(err)
+    options.onError?.(err)
     throw err
   } finally {
     state.closed = true
@@ -196,6 +189,7 @@ function streamBoundary(
   emit: Emit,
   options: StreamOptions,
   state: OrchestratorState,
+  frame: SSRFrame,
 ): void {
   const nonce = scriptNonce(options)
   const task = (async () => {
@@ -205,9 +199,10 @@ function streamBoundary(
     if (state.closed) return
 
     const defer = (error: unknown) => {
-      if (isBrowserError(error)) options.onBrowserBailout?.(error, { componentStack: (error as any).componentStack || b[4] })
+      const browser = isBrowserError(error)
+      if (browser) options.onBrowserBailout?.(error, { componentStack: (error as any).componentStack || b[4] })
       else options.onError?.(error)
-      emit(`<script${nonce ? ` nonce="${escapeAttr(nonce)}"` : ''}>$RB(${b[0]}${isBrowserError(error) ? '' : ',1'})</script>`)
+      emit(inlineScript(`$RB(${b[0]}${browser ? '' : ',1'})`, nonce))
     }
     if (state.aborted) { defer(state.reason); return }
 
@@ -215,58 +210,46 @@ function streamBoundary(
     // provider stack from when the boundary first suspended.
     const parts: string[] = []
     const sub: SuspendedBoundary[] = []
-    const resourceScope: ResourceScope = {}
+    const resourceScope: ResourceScope = []
     let styles: string[][] | undefined
-    const previous = beginSSR(options.identifierPrefix, state.frame)
-    state.frame?.resources?.takeStylesheets()
-    const restore = applyContextSnapshot(b[3])
+    const restore = beginSSR(options.identifierPrefix, frame)
+    frame.resources?.takeStylesheets()
+    applyContextSnapshot(b[3])
     try {
       walk(b[1], {
         emit: (s) => parts.push(s),
         onSuspend: (n) => sub.push(n),
-        nextBoundaryId: () => state.nextId++,
         onBrowserBailout: options.onBrowserBailout,
           onError: options.onError,
         componentStack: b[4],
-        resourceScope,
-      })
-      state.frame?.resources?.mergeScope(resourceScope)
+        inFallback: b[6],
+      }, b[5], resourceScope, b[7])
+      frame.resources?.mergeScope(resourceScope)
     } catch (err) {
       if (isThenable(err)) {
         b[2] = err
-        streamBoundary(b, emit, options, state)
+        streamBoundary(b, emit, options, state, frame)
       } else defer(err)
       return
     } finally {
       restore()
-      endSSR(previous)
-      const hints = state.frame?.resources?.drain()
-      styles = state.frame?.resources?.takeStylesheets()
+      const resources = frame.resources
+      const hints = resources?.drain()
+      styles = resources?.takeStylesheets()
       if (hints) emit(hints)
     }
 
     emit(`<div hidden id="S:${b[0]}">${parts.join('')}</div>${revealScript(b[0], nonce, styles)}`)
 
     // Recurse: any nested suspensions inside the now-revealed content
-    for (const s of sub) streamBoundary(s, emit, options, state)
+    for (const s of sub) streamBoundary(s, emit, options, state, frame)
   })()
   state.pending(task)
 }
 
 function scriptNonce(options: StreamOptions): string | undefined {
-  return typeof options.nonce === 'string' ? options.nonce : options.nonce?.script
-}
-
-function bootstrapScriptContentToArray(
-  content: StreamOptions['bootstrapScriptContent'],
-): string[] {
-  if (content === undefined) return []
-  return typeof content === 'string' ? [content] : [...content]
-}
-
-function inlineBootstrapTag(content: string, defaultNonce: string | undefined): string {
-  const nAttr = defaultNonce ? ` nonce="${escapeAttr(defaultNonce)}"` : ''
-  return `<script${nAttr}>${escapeScript(content)}</script>`
+  const nonce = options.nonce
+  return typeof nonce === 'string' ? nonce : nonce?.script
 }
 
 function normalizeDocumentShell(html: string): string {
@@ -274,48 +257,26 @@ function normalizeDocumentShell(html: string): string {
   if (doctypeIndex <= 0) return html
 
   const headPrefix = html.slice(0, doctypeIndex)
-  if (!isHeadPrefix(headPrefix)) return html
+  const tags = /\s*<(?:(?:meta|link|base)\b[^>]*>|(title|style|script)\b[^>]*>[\s\S]*?<\/\1>)/iy
+  let end = 0
+  while (tags.test(headPrefix)) end = tags.lastIndex
+  if (headPrefix.slice(end).trim()) return html
 
-  const documentHtml = html.slice(doctypeIndex)
-  const headOpen = documentHtml.match(/<head(?:\s[^>]*)?>/)
-  if (!headOpen || headOpen.index === undefined) return html
-
-  const insertAt = headOpen.index + headOpen[0].length
-  return documentHtml.slice(0, insertAt) + headPrefix + documentHtml.slice(insertAt)
-}
-
-function isHeadPrefix(value: string): boolean {
-  if (!value) return false
-  return stripLeadingHeadTags(value).trim() === ''
-}
-
-function stripLeadingHeadTags(value: string): string {
-  let rest = value
-  let changed = true
-  while (changed) {
-    changed = false
-    const next = rest.replace(
-      /^\s*(?:<meta\b[^>]*>|<link\b[^>]*>|<base\b[^>]*>|<title\b[^>]*>[\s\S]*?<\/title>|<style\b[^>]*>[\s\S]*?<\/style>|<script\b[^>]*>[\s\S]*?<\/script>)/i,
-      '',
-    )
-    if (next !== rest) {
-      rest = next
-      changed = true
-    }
-  }
-  return rest
+  const headOpen = /<head(?:\s[^>]*)?>/g
+  headOpen.lastIndex = doctypeIndex
+  if (!headOpen.test(html)) return html
+  return html.slice(doctypeIndex, headOpen.lastIndex) + headPrefix + html.slice(headOpen.lastIndex)
 }
 
 function bootstrapTag(
   entry: string | { src: string; async?: boolean; nonce?: string },
-  kind: 'script' | 'module',
+  module: boolean,
   defaultNonce: string | undefined,
 ): string {
   const src = escapeAttr(resourceURL(typeof entry === 'string' ? entry : entry.src))
   const nonce = typeof entry === 'string' ? defaultNonce : entry.nonce ?? defaultNonce
   const nAttr = nonce ? ` nonce="${escapeAttr(nonce)}"` : ''
-  if (kind === 'module') return `<script type="module"${nAttr} src="${src}"></script>`
-  return `<script async${nAttr} src="${src}"></script>`
+  return `<script ${module ? 'type="module"' : 'async'}${nAttr} src="${src}"></script>`
 }
 
 // ---------------------------------------------------------------------------
@@ -328,29 +289,21 @@ export function renderToReadableStream(
 ): Promise<ReadableStreamResult> {
   const state = createState()
   const encoder = new TextEncoder()
-  let abortListener: (() => void) | undefined
-  const detachAbortListener = () => {
-    if (abortListener) {
-      options.signal?.removeEventListener('abort', abortListener)
-      abortListener = undefined
-    }
+  const signal = options.signal
+  const detachAbortListener = () => signal?.removeEventListener('abort', abortFromSignal)
+  const abortFromSignal = () => {
+    detachAbortListener()
+    state.abort(signal!.reason)
   }
 
-  let allReadyResolve!: () => void
-  let allReadyReject!: (e: unknown) => void
-  const allReady = new Promise<void>((r, rej) => {
-    allReadyResolve = r
-    allReadyReject = rej
-  })
-  // Shell failures reject the outer promise before callers receive allReady.
-  allReady.catch(() => {})
+  let allReady!: Promise<void>
   let shellResolve!: (stream: ReadableStreamResult) => void
   let shellReject!: (error: unknown) => void
   const shell = new Promise<ReadableStreamResult>((resolve, reject) => {
     shellResolve = resolve
     shellReject = reject
   })
-  state.onShellReady = () => queueMicrotask(() => shellResolve(Object.assign(stream, { allReady })))
+  state.onShellReady = () => shellResolve(Object.assign(stream, { allReady }))
 
   const stream = new ReadableStream<Uint8Array>({
     start(controller) {
@@ -360,33 +313,27 @@ export function renderToReadableStream(
         } catch {}
       }
 
-      if (options.signal) {
-        abortListener = () => {
-          detachAbortListener()
-          state.abort(options.signal!.reason)
-        }
-        options.signal.addEventListener('abort', abortListener)
-        if (options.signal.aborted) abortListener()
-      }
+      signal?.addEventListener('abort', abortFromSignal)
+      if (signal?.aborted) abortFromSignal()
 
-      streamHtml(children, emit, options, state).then(
+      allReady = streamHtml(children, emit, options, state).then(
         () => {
           detachAbortListener()
           try {
             controller.close()
           } catch {}
-          allReadyResolve()
         },
-        (err) => {
+        (error) => {
           detachAbortListener()
           try {
-            controller.error(err)
+            controller.error(error)
           } catch {}
-          allReadyReject(err)
-          shellReject(err)
+          shellReject(error)
+          throw error
         },
       )
-
+      // A shell failure reaches the caller before it can observe allReady.
+      allReady.catch(() => {})
     },
     cancel(reason) {
       state.abort(reason)
@@ -425,7 +372,7 @@ export function renderToPipeableStream(
   let failure: { reason: unknown } | undefined
 
   const finishDestination = (target: PipeableWritable) => {
-    if (target === dest) dest = undefined
+    if (dest === target) dest = undefined
     if (failure && target.destroy) target.destroy(failure.reason)
     else target.end()
   }
@@ -436,11 +383,11 @@ export function renderToPipeableStream(
     else buffers.push(chunk)
   }
 
-  state.onShellReady = () => queueMicrotask(() => {
+  state.onShellReady = () => {
     if (failure) return
     shellReady = true
     options.onShellReady?.()
-  })
+  }
 
   // Kick off rendering
   streamHtml(children, emit, options, state).then(
@@ -452,6 +399,7 @@ export function renderToPipeableStream(
     (err) => {
       finished = true
       failure = { reason: err }
+      buffers.length = 0
       try {
         if (!shellReady) options.onShellError?.(err)
       } finally {
@@ -463,11 +411,9 @@ export function renderToPipeableStream(
 
   return {
     pipe<T extends PipeableWritable>(target: T): T {
-      if (!failure) {
-        if (!finished) dest = target
-        for (const chunk of buffers) target.write(chunk)
-        buffers.length = 0
-      }
+      if (!finished) dest = target
+      for (const chunk of buffers) target.write(chunk)
+      buffers.length = 0
       if (finished) finishDestination(target)
       return target
     },

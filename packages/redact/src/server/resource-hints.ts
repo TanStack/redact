@@ -1,22 +1,21 @@
-import { isFunction } from '../core/functions'
-import { resourceKind, resourceURL, type ResourceHintKind, type ResourceHintOptions } from '../core/resource-hints'
-import { attrToHtml, escapeAttr } from './escape'
+import { ResourceField as R, ResourceFlag as F, ScopeField, type RenderPath } from './resource-fields'
+import { isFunction, isString } from '../core/functions'
+import { resourceURL, type HostResourceKind, type ResourceHintKind, type ResourceHintOptions } from '../core/resource-hints'
+import { attrToHtml, escapeAttr, isInternalAttribute } from './escape'
 import { attributeName } from '../core/attributes'
 
-interface Resource {
-  kind: ResourceHintKind | 'style'
-  href: string
-  options: Record<string, any>
-  sent?: boolean
-  cancelled?: boolean
-  preloaded?: boolean
-  css?: string
-}
+type Resource = [
+  kind: ResourceHintKind | 'style',
+  href: string,
+  options: Record<string, any>,
+  flags: number,
+  css?: string,
+]
 
-export interface ResourceScope {
-  stylesheets?: Map<string, string[]>
-  inline?: Set<string>
-}
+export type ResourceScope = [
+  stylesheets?: Map<string, string[]>,
+  inline?: Set<string>,
+]
 
 function styleText(props: any): string {
   const html = props.dangerouslySetInnerHTML
@@ -25,22 +24,31 @@ function styleText(props: any): string {
     if (props.children != null) throw new Error('Can only set one of children or dangerouslySetInnerHTML.')
     return html.__html == null ? '' : '' + html.__html
   }
-  const child = Array.isArray(props.children) ? props.children.length < 2 ? props.children[0] : null : props.children
+  let child = props.children
+  if (Array.isArray(child)) child = child.length < 2 ? child[0] : null
   return child == null || isFunction(child) || typeof child === 'symbol' ? ''
-    : ('' + child).replace(/(<\/?)(s)(tyle)/gi, (_, prefix: string, s: string, suffix: string) => prefix + '\\' + s.charCodeAt(0).toString(16) + ' ' + suffix)
+    : ('' + child).replace(/(<\/?)(s)(tyle)/gi, (_, prefix: string, s: string, suffix: string) => prefix + (s === 'S' ? '\\53 ' : '\\73 ') + suffix)
 }
 
 function markup(resource: Resource, late: boolean): string {
-  const { kind, href, options } = resource
+  const [kind, href, options] = resource
   const script = kind === 'script' || kind === 'module-script'
   const style = kind === 'stylesheet'
-  const props: Record<string, any> = script
-    ? { src: href, ...(kind === 'module-script' ? { type: 'module' } : {}), async: true, ...options }
-    : style
-      ? late
-        ? { rel: 'preload', as: 'style', href, crossOrigin: options.crossOrigin, fetchPriority: options.fetchPriority, integrity: options.integrity, media: options.media, hrefLang: options.hrefLang, referrerPolicy: options.referrerPolicy }
-        : { rel: 'stylesheet', href, 'data-precedence': options.precedence!, ...options }
-      : { rel: kind, ...(options.as === 'image' && options.imageSrcSet ? {} : { href }), ...options }
+  let props: Record<string, any>
+  if (style && late) {
+    props = { rel: 'preload', as: 'style', href }
+    for (const name of ['crossOrigin', 'fetchPriority', 'integrity', 'media', 'hrefLang', 'referrerPolicy'])
+      props[name] = options[name]
+  } else {
+    props = {
+      ...(script
+        ? { src: href, ...(kind === 'module-script' ? { type: 'module' } : {}), async: true }
+        : style
+          ? { rel: kind, href, 'data-precedence': options.precedence! }
+          : { rel: kind, ...(options.as === 'image' && options.imageSrcSet ? {} : { href }) }),
+      ...options,
+    }
+  }
   let output = script ? '<script' : '<link'
   for (const name in props) {
     if (name === 'precedence' || late && name === 'data-precedence') continue
@@ -56,8 +64,10 @@ export function createResourceHints(shellFlushed = false, styleNonce?: string) {
   const styles = new Map<string, Resource[]>()
   const dependencies = new Map<string, string[]>()
   const visibleInline = new Set<string>()
+  let charset = '', viewport = ''
+  const recordedMetas = new Set<string>()
   const collector = {
-    add(kind: ResourceHintKind | 'style', href: string, options: ResourceHintOptions): Resource {
+    add(kind: ResourceHintKind | 'style', href: string, options: ResourceHintOptions, eager?: boolean): Resource {
       let type: string = kind
       let source = href
       const init = kind === 'style' || kind === 'stylesheet' || kind === 'script' || kind === 'module-script'
@@ -69,83 +79,127 @@ export function createResourceHints(shellFlushed = false, styleNonce?: string) {
       else if (kind === 'preconnect') type += ':' + (options.crossOrigin ?? 'default')
       const key = JSON.stringify([type, source])
       const prior = resources.get(key)
-      if (prior && (!init || prior.kind !== 'preload' && prior.kind !== 'modulepreload')) return prior
+      // Image preloads that go ahead of the stylesheets: every fetchPriority="high" one and the
+      // first ten eager <img> per flush, as in React.
+      const high = kind === 'preload' && type === 'image' && (options.fetchPriority === 'high' || eager && groups[2]!.length < 10)
+      if (prior && (!init || prior[R.Kind] !== 'preload' && prior[R.Kind] !== 'modulepreload')) {
+        // An eager <img> also moves the preload() of the same image ahead, keeping its attributes.
+        if (eager && high && !(prior[R.Flags] & (F.Sent | F.High))) {
+          prior[R.Flags] |= F.High
+          // The normal group will skip this entry once the high group sends it.
+          groups[2]!.push(prior)
+        }
+        return prior
+      }
 
-      const resource: Resource = { kind, href, options: { ...options } }
-      if (kind === 'style' && (!styleNonce || options.nonce === styleNonce)) resource.css = styleText(options)
+      const resource: Resource = [kind, href, { ...options }, high ? F.High : 0]
+      if (kind === 'style' && (!styleNonce || options.nonce === styleNonce)) resource[R.Css] = styleText(options)
       if (prior) {
-        prior.cancelled = true
-        resource.preloaded = !!prior.sent
+        prior[R.Flags] |= F.Cancelled
+        if (prior[R.Flags] & F.Sent) resource[R.Flags] |= F.Preloaded
         for (const name of ['crossOrigin', 'integrity']) {
-          if (resource.options[name] == null && prior.options[name] != null) resource.options[name] = prior.options[name]!
+          if (resource[R.Options][name] == null && prior[R.Options][name] != null) resource[R.Options][name] = prior[R.Options][name]!
         }
       }
       resources.set(key, resource)
       if (kind === 'stylesheet' || kind === 'style') {
         const precedence = options.precedence!
-        let group = styles.get(precedence)
-        if (!group) styles.set(precedence, group = [])
-        group.push(resource)
+        const group = styles.get(precedence)
+        if (group) group.push(resource)
+        else styles.set(precedence, [resource])
       } else {
         const group = kind === 'dns-prefetch' || kind === 'preconnect' ? 0
-          : kind === 'preload' && options.as === 'font' ? 1
-          : kind === 'preload' && options.as === 'image' && options.fetchPriority === 'high' ? 2
+          : kind === 'preload' && type === 'font' ? 1
+          : high ? 2
           : init ? 3 : 4
         groups[group]!.push(resource)
       }
       return resource
     },
-    addHost(type: string, props: any, scope?: ResourceScope): boolean {
-      const kind = resourceKind(type, props)
-      if (!kind) return false
+    // Preload an eagerly rendered <img> as React does: the first ten per flush and every
+    // fetchPriority="high" image go ahead of the stylesheets, the rest after the scripts.
+    addImage(props: any): void {
+      const { src, srcSet, sizes, crossOrigin, integrity, type, fetchPriority, referrerPolicy, loading } = props
+      const source = srcSet || src
+      if (loading === 'lazy' || fetchPriority === 'low' || !source || src != null && !isString(src) || srcSet != null && !isString(srcSet) || /^data:/i.test(src || '') || /^data:/i.test(srcSet || '')) return
+      collector.add('preload', source, { as: 'image', imageSrcSet: srcSet, imageSizes: sizes, crossOrigin, integrity, type, fetchPriority, referrerPolicy } as any, true)
+    },
+    // Hoist <meta charSet> and <meta name="viewport"> to the start of the head. Content streamed
+    // after the shell keeps its metas in place.
+    addMeta(props: any, emit: (chunk: string) => void, path: RenderPath | null, inFallback?: boolean): ((chunk: string) => void) | true | null {
+      const isCharset = isString(props.charSet)
+      if (!(isCharset || props.name === 'viewport') || props.itemProp != null) return null
+      if (inFallback) return true
+      let markup = ''
+      return chunk => {
+        markup += chunk
+        if (chunk !== '/>') return
+        const key = JSON.stringify(path) + markup
+        if (!shellFlushed) {
+          // Only shell output is committed. A late attempt can still suspend.
+          recordedMetas.add(key)
+          if (isCharset) charset += markup
+          else viewport += markup
+        } else if (!recordedMetas.has(key)) emit(markup)
+      }
+    },
+    // An abandoned shell attempt re-walks its metas; the hints it registered stay deduplicated.
+    discardMetas(): void {
+      charset = viewport = ''
+      recordedMetas.clear()
+    },
+    addHost(kind: HostResourceKind, props: any, scope?: ResourceScope): true {
       const resource = collector.add(kind === 'script' && props.type === 'module' ? 'module-script' : kind, kind === 'script' ? props.src : props.href, props)
       if (shellFlushed && kind === 'stylesheet') {
-        const descriptor = [resourceURL(resource.href), resource.options.precedence]
-        for (const name in resource.options) {
-          if (name === 'href' || name === 'rel' || name === 'precedence' || name === 'data-precedence' || name === 'children' || name === 'dangerouslySetInnerHTML' || name === 'innerHTML' || name === 'style' || name === 'suppressHydrationWarning' || name === 'suppressContentEditableWarning' || name === 'ref' || name === 'key' || /^on/i.test(name) || !/^[a-zA-Z_:][a-zA-Z0-9:_.-]*$/.test(name)) continue
-          const value = resource.options[name]
+        const options = resource[R.Options]
+        const descriptor = [resourceURL(resource[R.Href]), options.precedence]
+        for (const name in options) {
+          if (isInternalAttribute(name) || /^(?:href|rel|(?:data-)?precedence|innerHTML|style)$/.test(name) || /^on/i.test(name) || !/^[a-zA-Z_:][a-zA-Z0-9:_.-]*$/.test(name)) continue
+          const value = options[name]
           if (value == null || isFunction(value) || typeof value === 'symbol' || name === 'hidden' && value === false) continue
           descriptor.push(attributeName(name), name === 'hidden' ? '' : name === 'src' ? resourceURL('' + value) : '' + value)
         }
-        ;(scope ? scope.stylesheets ||= new Map() : dependencies).set(resource.href, descriptor)
+        ;(scope ? scope[ScopeField.Stylesheets] ||= new Map() : dependencies).set(resource[R.Href], descriptor)
       } else if (shellFlushed && kind === 'style') {
-        ;(scope ? scope.inline ||= new Set() : visibleInline).add(resource.options.precedence)
+        ;(scope ? scope[ScopeField.Inline] ||= new Set() : visibleInline).add(resource[R.Options].precedence)
       }
       return true
     },
     mergeScope(scope: ResourceScope, parent?: ResourceScope): void {
-      if (scope.stylesheets) for (const [href, descriptor] of scope.stylesheets) {
-        ;(parent ? parent.stylesheets ||= new Map() : dependencies).set(href, descriptor)
+      const sheets = scope[ScopeField.Stylesheets]
+      if (sheets) for (const [href, descriptor] of sheets) {
+        ;(parent ? parent[ScopeField.Stylesheets] ||= new Map() : dependencies).set(href, descriptor)
       }
-      if (scope.inline) for (const precedence of scope.inline) {
-        ;(parent ? parent.inline ||= new Set() : visibleInline).add(precedence)
+      if (scope[ScopeField.Inline]) for (const precedence of scope[ScopeField.Inline]) {
+        ;(parent ? parent[ScopeField.Inline] ||= new Set() : visibleInline).add(precedence)
       }
     },
     takeStylesheets(): string[][] {
-      const result = Array.from(dependencies.values())
+      const result = [...dependencies.values()]
       dependencies.clear()
       return result
     },
     drain(): string {
-      let output = ''
+      let output = charset + viewport
+      charset = viewport = ''
       function flush(group: Resource[], precedence?: string) {
         let remaining = 0
         let inline = false, hasStylesheets = false
         let hrefs = '', rules = ''
         for (const resource of group) {
-          if (!resource.sent && !resource.cancelled) {
-            if (resource.kind === 'style') {
+          if (!(resource[R.Flags] & (F.Sent | F.Cancelled))) {
+            if (resource[R.Kind] === 'style') {
               if (shellFlushed && !visibleInline.has(precedence!)) { group[remaining++] = resource; continue }
               inline = true
-              if (resource.css !== undefined) {
-                hrefs += (hrefs ? ' ' : '') + resource.href
-                rules += resource.css
+              if (resource[R.Css] !== undefined) {
+                hrefs += (hrefs ? ' ' : '') + resource[R.Href]
+                rules += resource[R.Css]
               }
             } else {
-              if (resource.kind === 'stylesheet') hasStylesheets = true
-              if (!(shellFlushed && resource.kind === 'stylesheet' && resource.preloaded)) output += markup(resource, shellFlushed)
+              if (resource[R.Kind] === 'stylesheet') hasStylesheets = true
+              if (!(shellFlushed && resource[R.Kind] === 'stylesheet' && resource[R.Flags] & F.Preloaded)) output += markup(resource, shellFlushed)
             }
-            resource.sent = true
+            resource[R.Flags] |= F.Sent
           }
         }
         group.length = remaining

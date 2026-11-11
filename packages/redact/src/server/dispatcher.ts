@@ -3,13 +3,15 @@ import { readThenable } from '../react/thenable'
 import { idleFormStatus } from '../react/form-state'
 import { ReactSharedInternals, REACT_CONTEXT_TYPE } from '../react'
 import { isBrowserToken, browserError } from '../core/browser'
-import { resourceHintDispatcher } from '../core/resource-hints'
+import { resourceHintDispatcher, resourceKind } from '../core/resource-hints'
 import { createResourceHints, type ResourceScope } from './resource-hints'
+import type { RenderPath } from './resource-fields'
 
 export interface SSRFrame {
   idCounter: number
+  nextId: number
   identifierPrefix: string
-  contextStack: Array<{ context: any; prev: any }>
+  contextStack: ContextSnapshot
   resources?: ReturnType<typeof createResourceHints>
   shellFlushed?: boolean
   styleNonce?: string | undefined
@@ -17,74 +19,66 @@ export interface SSRFrame {
 
 let frame: SSRFrame | null = null
 
+function resourcesFor(frame: SSRFrame) {
+  return frame.resources ||= createResourceHints(frame.shellFlushed, frame.styleNonce)
+}
+
 resourceHintDispatcher.emit = (kind, href, options) => {
   if (!frame) return false
-  ;(frame.resources ||= createResourceHints(!!frame.shellFlushed, frame.styleNonce)).add(kind, href, options)
+  resourcesFor(frame).add(kind, href, options)
   return true
 }
 
-export function beginSSR(identifierPrefix = ':R', nextFrame?: SSRFrame) {
-  const previous = { frame, dispatcher: ReactSharedInternals.H }
-  frame = nextFrame ?? { idCounter: 0, identifierPrefix, contextStack: [] }
+export function beginSSR(identifierPrefix = ':R', nextFrame?: SSRFrame): () => void {
+  const previousFrame = frame
+  const previousDispatcher = ReactSharedInternals.H
+  frame = nextFrame ?? { idCounter: 0, nextId: 0, identifierPrefix, contextStack: [] }
   ReactSharedInternals.H = ssrDispatcher as any
-  return previous
+  return () => {
+    while (frame?.contextStack.length) popContext()
+    ReactSharedInternals.H = previousDispatcher ?? null
+    frame = previousFrame
+  }
 }
 
 export function currentSSRFrame(): SSRFrame {
   return frame!
 }
 
-export function recordHostResource(type: string, props: any, scope?: ResourceScope): boolean {
-  return !!frame && (frame.resources ||= createResourceHints(!!frame.shellFlushed, frame.styleNonce)).addHost(type, props, scope)
-}
-
-export function endSSR(previous?: ReturnType<typeof beginSSR>): void {
-  // Restore any remaining pushed contexts (defensive)
-  if (frame) {
-    for (let i = frame.contextStack.length - 1; i >= 0; i--) {
-      const { context, prev } = frame.contextStack[i]!
-      context._currentValue = prev
-    }
+export function recordHostResource(tag: string, props: any, emit: (chunk: string) => void, scope: ResourceScope, flags: number, path: RenderPath | null, inFallback?: boolean): ((chunk: string) => void) | true | null | void {
+  if (!frame) return
+  const kind = resourceKind(tag, props)
+  if (kind) return resourcesFor(frame).addHost(kind, props, scope)
+  if (flags & 16 && !(flags & 8)) {
+    if (tag === 'meta') return resourcesFor(frame).addMeta(props, emit, path, inFallback)
+    if (tag === 'img' && !(flags & 4)) return resourcesFor(frame).addImage(props)
   }
-  // Only synchronous renders restore their caller. A stream can finish
-  // after its caller has returned, so it must not reinstall that dispatcher.
-  ReactSharedInternals.H = previous?.dispatcher ?? null
-  frame = previous?.frame ?? null
 }
 
 export function pushContext(context: any, value: any): void {
   if (!frame) throw new Error(process.env.NODE_ENV !== 'production' ? 'pushContext called outside SSR' : '')
-  frame.contextStack.push({ context, prev: context._currentValue })
+  frame.contextStack.push([context, context._currentValue])
   context._currentValue = value
 }
 
-export function popContext(context: any): void {
-  if (!frame) return
-  const top = frame.contextStack.pop()
-  if (top && top.context === context) context._currentValue = top.prev
+export function popContext(context?: any): void {
+  const top = frame?.contextStack.pop()
+  if (top && (context === undefined || top[0] === context)) top[0]._currentValue = top[1]
 }
 
-export type ContextSnapshot = Array<{ context: any; value: any }>
+export type ContextSnapshot = Array<[context: any, value: any]>
 
 export function snapshotContexts(): ContextSnapshot {
-  if (!frame) return []
-  const out: ContextSnapshot = []
-  for (const entry of frame.contextStack) {
-    out.push({ context: entry.context, value: entry.context._currentValue })
-  }
-  return out
+  return frame?.contextStack.map(([context]) => [context, context._currentValue]) ?? []
 }
 
 /**
- * Push snapshot values and return a function that pops them.
+ * Push snapshot values for this render. The render restore callback clears them.
  * Called when we re-render a suspended boundary so it sees the same provider
  * values that were active at suspension time.
  */
-export function applyContextSnapshot(snapshot: ContextSnapshot): () => void {
-  for (const { context, value } of snapshot) pushContext(context, value)
-  return () => {
-    for (let i = snapshot.length - 1; i >= 0; i--) popContext(snapshot[i]!.context)
-  }
+export function applyContextSnapshot(snapshot: ContextSnapshot): void {
+  for (const [context, value] of snapshot) pushContext(context, value)
 }
 
 export const ssrDispatcher = {

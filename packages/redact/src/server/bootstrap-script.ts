@@ -75,12 +75,15 @@ export const BOUNDARY_REVEAL_RUNTIME =
     `window.$RE_stop=function(){for(var j=0;j<evs.length;j++)document.removeEventListener(evs[j],h,true)};` +
   `})();`
 
+export function inlineScript(body: string, nonce?: string): string {
+  const attr = nonce ? ` nonce="${escapeAttr(nonce)}"` : ''
+  return `<script${attr}>${body}</script>`
+}
+
 export function injectBootstrapScript(nonce?: string): string {
-  const n = nonce ? ` nonce="${escapeAttr(nonce)}"` : ''
-  return `<script${n}>${BOUNDARY_REVEAL_RUNTIME}</script>`
+  return inlineScript(BOUNDARY_REVEAL_RUNTIME, nonce)
 }
 
 export function revealScript(id: number, nonce?: string, styles?: string[][]): string {
-  const n = nonce ? ` nonce="${escapeAttr(nonce)}"` : ''
-  return `<script${n}>${styles?.length ? `$RL(${id},${JSON.stringify(styles).replace(/</g, '\\u003c')})` : `$RC(${id})`}</script>`
+  return inlineScript(styles?.length ? `$RL(${id},${JSON.stringify(styles).replace(/</g, '\\u003c')})` : `$RC(${id})`, nonce)
 }
