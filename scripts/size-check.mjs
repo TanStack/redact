@@ -63,11 +63,26 @@ const STORE_HYDRATION_SIZE_ALLOWANCE = {
   'redact/dom-client (hydration=stub)': [3, 0],
 }
 
+// Measured cost of mapping camelCase SVG presentation props to hyphenated
+// attribute names on main 0c7274e, [source, built], Node 24.22.0. React applies
+// the same table (shapeRendering, fontSize, stopColor, ...); without it the
+// browser ignores the attributes. Only entries exceeding existing limits
+// receive their measured increment.
+const SVG_ATTRIBUTE_SIZE_ALLOWANCE = {
+  'redact/server': [158, 157],
+  'client total (default Vite)': [140, 160],
+  'redact/dom-client (activity=stub)': [83, 77],
+  'redact/dom-client (fragmentRefs=stub)': [31, 25],
+  'redact/dom-client (viewTransitions=stub)': [104, 113],
+  'redact/dom-client (hydration=stub)': [179, 184],
+  'redact/dom-client (nano)': [84, 78],
+}
+
 let failed = false
 for (const tree of ['src', 'dist']) {
   for (const row of await measureSizes(tree)) {
     const baseBudget = BUDGETS[row.name]
-    const budget = baseBudget === undefined ? undefined : baseBudget + (STORE_HYDRATION_SIZE_ALLOWANCE[row.name]?.[tree === 'src' ? 0 : 1] ?? 0) + (ROOT_TRANSITION_SIZE_ALLOWANCE[row.name]?.[tree === 'src' ? 0 : 1] ?? 0) + (QUEUE_SIZE_ALLOWANCE[row.name]?.[tree === 'src' ? 0 : 1] ?? 0)
+    const budget = baseBudget === undefined ? undefined : baseBudget + (SVG_ATTRIBUTE_SIZE_ALLOWANCE[row.name]?.[tree === 'src' ? 0 : 1] ?? 0) + (STORE_HYDRATION_SIZE_ALLOWANCE[row.name]?.[tree === 'src' ? 0 : 1] ?? 0) + (ROOT_TRANSITION_SIZE_ALLOWANCE[row.name]?.[tree === 'src' ? 0 : 1] ?? 0) + (QUEUE_SIZE_ALLOWANCE[row.name]?.[tree === 'src' ? 0 : 1] ?? 0)
     const ok = budget !== undefined && row.gz <= budget
     failed ||= !ok
     console.log(`${ok ? 'PASS' : 'FAIL'} ${tree} ${row.name}: ${row.gz} B gzip, budget ${budget ?? 'missing'}`)
