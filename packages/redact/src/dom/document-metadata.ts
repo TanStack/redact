@@ -12,8 +12,11 @@ export function clearAttributes(node: Element): void {
 // React's document server renderer hoists metadata even when a component
 // returns it inside a body wrapper or a Suspense boundary.
 export function documentMetadataParent(fiber: Fiber): HTMLHeadElement | null {
-    if (fiber.r?.c.nodeType !== 9 || fiber.v?.itemProp != null ||
-        !['title', 'meta', 'base', 'link'].includes(fiber.type))
+    const container = fiber.r?.c;
+    const doc = container?.nodeType === 9 ? container as unknown as Document : container?.ownerDocument;
+    if (!doc?.head || fiber.v?.itemProp != null ||
+        !['title', 'meta', 'base', 'link'].includes(fiber.type) ||
+        fiber.type === 'link' && fiber.v?.rel === 'stylesheet')
         return null;
     for (let parent = fiber.p; parent; parent = parent.p) {
         if (parent.t === FiberTag.Portal || parent.type === 'svg')
@@ -21,7 +24,7 @@ export function documentMetadataParent(fiber: Fiber): HTMLHeadElement | null {
         if (parent.type === 'foreignObject')
             break;
     }
-    return (fiber.r.c as unknown as Document).head;
+    return doc.head;
 }
 export function clearHostContainer(container: Node): void {
     if (container.nodeType !== 9 && !DOCUMENT_SHELL_TAGS.test((container as Element).localName)) {
