@@ -6,7 +6,7 @@ const wait = () => new Promise((resolve) => setTimeout(resolve, 15));
 it("does not commit partial effects when a server reveal still awaits client data", async () => {
   const c = document.createElement("div");
   c.innerHTML =
-    '<main><!--$?7--><div id="B:7"><i>waiting</i></div><!--/$--><button>ready</button></main>';
+    '<main><!--$?7--><template id="B:7"></template><i>waiting</i><!--/$--><button>ready</button></main>';
   document.body.append(c);
   let reveal!: () => void, resolve!: (v: string) => void;
   vi.stubGlobal("$RH", (_id: number, callback: () => void) => {
@@ -43,6 +43,7 @@ it("does not commit partial effects when a server reveal still awaits client dat
     marker.data = "$7";
     const content = document.createElement("div");
     content.innerHTML = "<span>before</span><nav>nav</nav>";
+    c.querySelector("i")!.remove();
     c.querySelector('[id="B:7"]')!.replaceWith(content);
     const before = Array.from(content.querySelectorAll("*"));
     reveal();
