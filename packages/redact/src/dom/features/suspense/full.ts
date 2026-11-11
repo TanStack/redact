@@ -252,11 +252,8 @@ export function renderSuspense(fiber: Fiber): void {
             unmountAllChildren(fiber);
         }
         // Keep fallback identity across unsuccessful retries of an initial mount.
-        if (!state.f) {
-            state.f = createFiber(FiberTag.Fragment, null, null);
-            state.f.p = fiber;
-        }
-        renderFallback(state.f, props.fallback);
+        const fallback = state.f ??= createFiber(FiberTag.Fragment, null, null, fiber);
+        renderFallback(fallback, props.fallback);
     }
     else {
         state.p = null;

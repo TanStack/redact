@@ -15,7 +15,6 @@ function findHost(fiber: Fiber): Node | null {
         return fiber.i;
     return visitChildren(fiber, findHost, undefined, true) ?? null;
 }
-installRenderer(FiberTag.Class, renderClass);
 export function findDOMNode(instance: any): Node | null {
     const fiber = instance._f as Fiber | undefined;
     if (!fiber || fiber.u)
@@ -186,4 +185,8 @@ function renderClass(fiber: Fiber): void {
 function updateState(state: any, update: any, props: any): any {
     const next = isFunction(update) ? update(state, props) : update;
     return next == null ? state : { ...state, ...next };
+}
+
+export function installClass(): void {
+    installRenderer(FiberTag.Class, renderClass);
 }

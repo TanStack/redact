@@ -12,9 +12,9 @@ function options(input: any, fields: string, as?: string): ResourceHintOptions {
         }
     }
     const crossOrigin = input?.crossOrigin;
-    const font = as === 'font';
-    if (font || isString(crossOrigin))
-        result.crossOrigin = !font && crossOrigin === 'use-credentials' ? crossOrigin : '';
+    if (as === 'font' || isString(crossOrigin)) {
+        result.crossOrigin = as !== 'font' && crossOrigin === 'use-credentials' ? crossOrigin : '';
+    }
     return result;
 }
 const scriptDestination = (as: string): boolean => (/^(script|audioworklet|paintworklet|serviceworker|sharedworker|worker)$/.test(as));

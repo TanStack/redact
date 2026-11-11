@@ -21,7 +21,7 @@ import { isObject } from '../core/functions';
 import { FiberTag, createFiber, REACT_ELEMENT_TYPE, REACT_LEGACY_ELEMENT_TYPE, REACT_FRAGMENT_TYPE, type Fiber, type FiberRoot, type ReactElement, type ReactNode, type Effect, type Hook, } from '../core';
 import { createHostNode, setProp } from './dom';
 import { isRefreshing, rememberRefreshRender, scheduleRefreshRoot, commitRefreshRoot, failRefreshRoot, failRefreshBoundary, resolveRefreshType, sameRefreshFamily, needsRefreshRemount } from './refresh';
-import { forkId, assignReactIds, deferHydration, queueHydrationEnd, finishHydration, adoptHostDom, adoptTextDom, setHydrationCursor, getHydrationCursor, clearHydrationCursor, findHostParent as findHydrationHost, abortHydration, recoverHydration, isHydrationBailout, resumeHydration, } from './features/hydration';
+import { supportsHydration, forkId, assignReactIds, deferHydration, queueHydrationEnd, finishHydration, adoptHostDom, adoptTextDom, setHydrationCursor, getHydrationCursor, clearHydrationCursor, findHostParent as findHydrationHost, abortHydration, recoverHydration, isHydrationBailout, resumeHydration, } from './features/hydration';
 import { rememberRetainedEffect, setRetainedFlag, disconnectClass } from './retained-effects';
 import { readThenable } from '../react/thenable';
 import { bindForm } from './form-actions';
@@ -109,7 +109,7 @@ export function childrenToArray(children: ReactNode): NormalizedChild[] {
     const out: NormalizedChild[] & {
         ip?: bigint[];
     } = [];
-    const ids = currentRoot?.h && currentRoot.ri ? [] as bigint[] : undefined;
+    const ids = (supportsHydration && currentRoot?.h) && currentRoot.ri ? [] as bigint[] : undefined;
     pushChildren(children, out, ids);
     if (ids)
         out.ip = ids;
@@ -287,11 +287,10 @@ export function unmountAllChildren(parent: Fiber, remove = true): void {
 function fiberFromChild(child: Exclude<NormalizedChild, null>, parent: Fiber): Fiber {
     const text = isString(child);
     const type = text ? null : process.env.NODE_ENV !== 'production' ? resolveRefreshType(child.type) : child.type;
-    const fiber = createFiber(text ? FiberTag.Text : tagForType(type), type, text ? null : child.key ?? null);
+    const fiber = createFiber(text ? FiberTag.Text : tagForType(type), type, text ? null : child.key ?? null, parent);
     fiber.ref = text ? null : (child as any).ref ?? null;
     fiber.v = text ? child : child.props;
     if (process.env.NODE_ENV !== 'production' && !text) rememberDevToolsFiber(fiber, child);
-    fiber.p = parent;
     if (currentCommit?.c.length)
         onCommitRollback(() => { fiber.u = true; });
     return fiber;
@@ -305,7 +304,13 @@ export type TypeMatcher = (type: any, marker: any) => FiberTag | null;
 // renderer via installRenderer(); unregistered features render as no-ops. The
 // initial registrations below rely on function-declaration hoisting — every
 // render* function is declared with `function` later in this file.
-const RENDERERS: Array<RenderFn | undefined> = new Array(13);
+const RENDERERS: Partial<Record<FiberTag, RenderFn>> = {
+    [FiberTag.Host]: renderHost,
+    [FiberTag.Text]: renderText,
+    [FiberTag.Function]: renderFunction,
+    [FiberTag.Fragment]: renderFragment,
+    [FiberTag.Resource]: renderHost,
+};
 // Element-marker allowlist for child normalization (pushChildren). Core-always
 // markers are seeded here; features add their own via registerElementMarker.
 const ACCEPTED_ELEMENT_MARKERS = new Set<symbol>([
@@ -426,11 +431,6 @@ function sameType(fiber: Fiber, child: Exclude<NormalizedChild, null>): boolean 
 // rerenders of the memoized fiber itself (hook update / subscribed store),
 // where props haven't changed by definition.
 export const getForceRerenderingFiber = (): Fiber | null => (forceRerenderingFiber);
-installRenderer(FiberTag.Text, renderText);
-installRenderer(FiberTag.Host, renderHost);
-installRenderer(FiberTag.Resource, renderHost);
-installRenderer(FiberTag.Function, renderFunction);
-installRenderer(FiberTag.Fragment, renderFragment);
 function placeDomsInOrder(doms: Node[], domParent: Node): void {
     // Document siblings can be projected into head or body by the HTML parser.
     // Keep them in their physical container when their logical parent is Document.
@@ -485,7 +485,7 @@ export function handleErrorInRender(fiber: Fiber, err: any): void {
         throw err;
     stagedCommits.delete(fiber);
     removeEffects(candidate => candidate === fiber);
-    if (currentRoot?.h && findHydrationHost(fiber).hc) {
+    if ((supportsHydration && currentRoot?.h) && findHydrationHost(fiber).hc) {
         abortHydration(err, fiber);
     }
     // Bubble to nearest class boundary with getDerivedStateFromError / componentDidCatch
@@ -1050,7 +1050,7 @@ export function renderNode(fiber: Fiber): void {
     }
     // Stable JSX can keep component work while independently queued descendants run.
     if (fiber.t === FiberTag.Function && fiber.m !== null && fiber.v === fiber.m && !fiber.g && fiber !== forceRerenderingFiber &&
-        !currentRoot?.h && !fiber.ad && !CAPABILITIES.o?.(fiber) &&
+        !(supportsHydration && currentRoot?.h) && !fiber.ad && !CAPABILITIES.o?.(fiber) &&
         (process.env.NODE_ENV === 'production' || !isRefreshing(fiber))) {
         renderPendingChildren(fiber);
         return;
@@ -1070,10 +1070,10 @@ export function renderNode(fiber: Fiber): void {
     }
     catch (error) {
         stagedCommits.delete(fiber);
-        if (currentRoot?.h && !findErrorBoundary(fiber) || error instanceof RenderErrorCapture || error instanceof RenderSuspenseCapture || isHydrationBailout(error))
+        if ((supportsHydration && currentRoot?.h) && !findErrorBoundary(fiber) || error instanceof RenderErrorCapture || error instanceof RenderSuspenseCapture || isHydrationBailout(error))
             throw error;
         if (isThenable(error)) {
-            if (currentRoot?.h)
+            if ((supportsHydration && currentRoot?.h))
                 throw error;
             handleSuspended(fiber, error);
         }
@@ -1112,7 +1112,7 @@ export function reconcile(parent: Fiber, newChildren: NormalizedChild[]): void {
     let next = parent.c;
     let previous: Fiber | null = null;
     let remaining: Map<string | number, Fiber> | undefined;
-    const hydrating = !!currentRoot?.h;
+    const hydrating = !!(supportsHydration && currentRoot?.h);
     for (let i = 0; i < newChildren.length; i++) {
         const child = newChildren[i];
         if (child == null) continue;
@@ -1150,9 +1150,9 @@ export function reconcile(parent: Fiber, newChildren: NormalizedChild[]): void {
         }
         previous = fiber;
     }
-    if (remaining || next || hydrating) {
-        if (!remaining && next)
-            remaining = indexChildren(parent, next);
+    if (!remaining && next)
+        remaining = indexChildren(parent, next);
+    if (remaining || hydrating) {
         if (previous) previous.s = null;
         else parent.c = null;
         // Deletions must commit before replacement document roots are placed.

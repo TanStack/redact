@@ -13,8 +13,8 @@ export function renderContextConsumers(_f: Fiber): void { }
 // walking, which matches the no-Provider-fibers-in-tree reality.
 function renderConsumerStub(fiber: Fiber): void {
     const props = fiber.v ?? {};
-    reconcileRaw(fiber, isFunction(props.children)
-        ? props.children((fiber.type as any)._context._currentValue) : null);
+    reconcileRaw(fiber, isFunction(props.children) &&
+        props.children((fiber.type as any)._context._currentValue));
     fiber.m = props;
 }
 registerTypeMatcher((_type, marker) => marker === REACT_CONTEXT_TYPE || marker === REACT_PROVIDER_TYPE
