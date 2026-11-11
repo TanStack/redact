@@ -318,12 +318,6 @@ function walkHost(
   // Opening a host element starts a fresh text flow context for its children.
   // Children's text separator tracking is independent of the outer context.
 
-  if (tag === 'html' && !hasHeadChild(props.children)) {
-    emit('<head>')
-    opts.onHead?.()
-    emit('</head>')
-  }
-
   const dangerouslyHtml = props.dangerouslySetInnerHTML?.__html
 
   if (isTextarea && textareaValue != null) {
@@ -338,13 +332,32 @@ function walkHost(
       emit(escapeScript(content.filter(child => child != null).join('')))
     }
   } else if (dangerouslyHtml != null) {
+    if (tag === 'html') emitEmptyHead(opts)
     emit(String(dangerouslyHtml))
   } else {
     const previousState = textState[0]
     textState[0] = flags | +(isSvg && tag !== 'foreignObject') |
       (tag === 'picture' ? 4 : tag === 'noscript' ? 8 : tag === 'html' ? 16 : 0)
     try {
-      walkNode(props.children, opts)
+      if (tag === 'html') {
+        // Discover the head while rendering so single-use children are read only once.
+        let html = ''
+        let head = 0
+        walkNode(props.children, {
+          ...opts,
+          emit: chunk => { html += chunk },
+          onHead: () => { head = html.length },
+        })
+        if (head) {
+          emit(html.slice(0, head))
+          opts.onHead?.()
+        } else {
+          emitEmptyHead(opts)
+        }
+        emit(html.slice(head))
+      } else {
+        walkNode(props.children, opts)
+      }
     } finally {
       textState[0] = previousState
     }
@@ -355,18 +368,6 @@ function walkHost(
   } finally {
     if (isSelect) selectValue = previousSelect
   }
-}
-
-function hasHeadChild(children: unknown): boolean {
-  if (children == null || typeof children === 'boolean') return false
-  if (Array.isArray(children)) return children.some(hasHeadChild)
-  if (typeof children !== 'string' && isFunction((children as any)[Symbol.iterator])) {
-    for (const child of children as Iterable<unknown>) {
-      if (hasHeadChild(child)) return true
-    }
-    return false
-  }
-  return typeof children === 'object' && isElementMarker((children as ReactElement).$$typeof) && (children as ReactElement).type === 'head'
 }
 
 function walkComponent(
@@ -402,6 +403,12 @@ function walkComponent(
     }
     throw error
   }
+}
+
+function emitEmptyHead(opts: WalkOptions): void {
+  opts.emit('<head>')
+  opts.onHead?.()
+  opts.emit('</head>')
 }
 
 function emitBuffered(parts: string[], head: number, opts: WalkOptions): void {
