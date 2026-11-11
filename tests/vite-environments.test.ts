@@ -15,12 +15,13 @@ it.each(['client', 'ssr'] as const)('only substitutes React in the selected %s e
   const config = plugin.config()
   expect(Object.keys(config.environments)).toEqual([selected])
   for (const name of ['client', 'ssr', 'rsc']) {
-    const actual = await plugin.resolveId.call({ environment: { name } }, 'react')
+    const actual = await plugin.resolveId.handler.call({ environment: { name } }, 'react')
     expect(actual !== null).toBe(name === selected)
+    expect(plugin.applyToEnvironment({ name })).toBe(name === selected)
   }
   // Vite 5 communicates SSR through hook options instead of an environment.
-  expect(await plugin.resolveId.call({}, 'react', undefined, { ssr: true }) !== null).toBe(selected === 'ssr')
-  expect(await plugin.resolveId.call({ environment: { name: 'worker', config: { consumer: 'server' } } }, 'react') !== null).toBe(selected === 'ssr')
+  expect(await plugin.resolveId.handler.call({}, 'react', undefined, { ssr: true }) !== null).toBe(selected === 'ssr')
+  expect(await plugin.resolveId.handler.call({ environment: { name: 'worker', config: { consumer: 'server' } } }, 'react') !== null).toBe(selected === 'ssr')
 })
 
 it('keeps native SSR optimizer includes when only the browser uses Redact', () => {
@@ -44,7 +45,7 @@ it('keeps native SSR optimizer includes when only the browser uses Redact', () =
 it('does not swap feature modules in an unselected SSR environment', async () => {
   const plugin = redact({ environments: ['client'], preset: 'nano' }).find((item: { name: string }) => item.name === 'redact')
   const context = { environment: { name: 'ssr' }, resolve() { throw new Error('Native SSR must not be rewritten') } }
-  expect(await plugin.resolveId.call(context, './portal', '/package/src/dom/features/index.ts')).toBeNull()
+  expect(await plugin.resolveId.handler.call(context, './portal', '/package/src/dom/features/index.ts')).toBeNull()
 })
 
 it.each([{ selected: 'client', native: true }, { selected: 'ssr', native: false }] as const)('executes the selected $selected runtime in a Vite 5 SSR bundle', async ({ selected, native }) => {
@@ -81,7 +82,7 @@ it('leaves the native SSR protocol untouched when adapting a React 18 browser', 
     const main = plugins.find((item: { name: string }) => item.name === 'redact')
     const compiler = plugins.find((item: { name: string }) => item.name === 'redact:react18')
     main.configResolved({ root })
-    const id = await main.resolveId.call({}, 'react')
+    const id = await main.resolveId.handler.call({}, 'react')
     const code = "export const version = '19.2.3'; export default { version: '19.2.3' };"
     const require = createRequire(import.meta.url)
     const { parseAst } = createRequire(require.resolve('vite'))('rollup/parseAst')
