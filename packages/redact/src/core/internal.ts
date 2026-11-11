@@ -30,6 +30,7 @@ export interface Effect {
     s?: boolean | undefined; // Store subscriptions run in layout but stay connected in Suspense.
 }
 export interface Fiber {
+    br?: boolean; // This boundary is rendering its error recovery tree.
     ix?: number; // Logical child position, including empty slots.
     t: FiberTag; // Tag.
     type: any;
@@ -80,7 +81,7 @@ export interface FiberRoot {
     c: Element | DocumentFragment;
     r: Fiber;
     p: Set<Fiber>;
-    s: boolean;
+    s: boolean | (() => void); // Development host callbacks carry their own identity.
     u?: (() => void) | undefined;
     er?: Array<{
         error: unknown;
@@ -98,7 +99,7 @@ export interface FiberRoot {
     a?: boolean;
     fr?: boolean;
 }
-export function createFiber(tag: FiberTag, type: any, key: string | null): Fiber {
+export function createFiber(tag: FiberTag, type: any, key: string | null, parent: Fiber | null = null): Fiber {
     return {
         t: tag,
         type,
@@ -109,7 +110,7 @@ export function createFiber(tag: FiberTag, type: any, key: string | null): Fiber
         b: null,
         i: null,
         n: null,
-        p: null,
+        p: parent,
         c: null,
         s: null,
         h: null,

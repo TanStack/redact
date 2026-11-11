@@ -60,6 +60,14 @@ async function streamed(element: any) {
   return new Response(stream).text()
 }
 
+async function flushThenResolve(stream: ReadableStream<Uint8Array>, resolve: () => void) {
+  const reader = stream.getReader(), decoder = new TextDecoder()
+  let html = decoder.decode((await reader.read()).value)
+  resolve()
+  for (;;) { const next = await reader.read(); if (next.done) break; html += decoder.decode(next.value) }
+  return html
+}
+
 describe('image preloads', () => {
   it('preloads eagerly rendered images and opens the head with charset and viewport', () => {
     const html = renderToString(<Page>{images}</Page>)
@@ -178,9 +186,7 @@ describe('image preloads', () => {
       <Suspense fallback={<Page><Suspense fallback={null}><Late /></Suspense></Page>}><Broken /></Suspense>,
       { onError() {} },
     )
-    resolve()
-    await stream.allReady
-    const html = await new Response(stream).text()
+    const html = await flushThenResolve(stream, resolve)
     expect(html).toContain('<img src="/late.png" alt=""/>')
     expect(html).toContain('rel="preload" href="/late.png"')
   })
@@ -204,7 +210,7 @@ describe('image preloads', () => {
     expect(head(html).filter(tag => tag.charset)).toEqual([{ tag: 'meta', charset: 'utf-8' }])
   })
 
-  it('drops the metas of a boundary that suspends and keeps its preload', async () => {
+  it('preserves metadata and preloads discovered before a later sibling suspends', async () => {
     let resolve!: () => void
     const ready = new Promise<void>(next => { resolve = next })
     let done = false
@@ -222,13 +228,11 @@ describe('image preloads', () => {
         </Suspense>
       </Page>,
     )
-    resolve()
-    await stream.allReady
-    const html = await new Response(stream).text()
-    // The shell keeps only the head's viewport; the boundary's meta arrives in place with its content.
+    const html = await flushThenResolve(stream, resolve)
+    // Native retains prefix metadata in the head and does not repeat it on retry.
     expect(html.match(/<meta name="viewport"/g)).toHaveLength(2)
-    expect(head(html).filter(tag => tag.name === 'viewport')).toEqual([{ tag: 'meta', name: 'viewport', content: 'width=device-width' }])
-    expect(html).toContain('<meta name="viewport" content="late"/><img src="/late.png" alt=""/><p>late</p>')
+    expect(head(html).filter(tag => tag.name === 'viewport')).toEqual([{ tag: 'meta', name: 'viewport', content: 'width=device-width' }, { tag: 'meta', name: 'viewport', content: 'late' }])
+    expect(html).toContain('<img src="/late.png" alt=""/><p>late</p>')
     // The preload registered by the discarded attempt stays in the shell and is not repeated.
     expect(html.match(/rel="preload" href="\/late.png"/g)).toHaveLength(1)
     expect(head(html).some(tag => tag.href === '/late.png')).toBe(true)
@@ -246,9 +250,7 @@ describe('image preloads', () => {
     const stream = await renderToReadableStream(
       <Page><picture><source srcSet="/late.webp" type="image/webp" /><Suspense fallback={null}><Late /></Suspense></picture></Page>,
     )
-    resolve()
-    await stream.allReady
-    const html = await new Response(stream).text()
+    const html = await flushThenResolve(stream, resolve)
     expect(html).toContain('<img src="/late.png" alt=""/>')
     expect(html).not.toContain('rel="preload" href="/late.png"')
   })
@@ -264,9 +266,7 @@ describe('image preloads', () => {
     const { Suspense } = await import('react')
     const fallback = <><meta name="viewport" content="fallback" /><meta name="robots" content="noindex" /><img src="/fallback.png" alt="" /></>
     const stream = await renderToReadableStream(<Page><Suspense fallback={fallback}><Late /></Suspense></Page>)
-    resolve()
-    await stream.allReady
-    const html = await new Response(stream).text()
+    const html = await flushThenResolve(stream, resolve)
     expect(html).not.toContain('content="fallback"')
     expect(html).toContain('<meta name="robots" content="noindex"/><img src="/fallback.png" alt=""/>')
     expect(head(html).filter(tag => tag.name === 'viewport')).toEqual([{ tag: 'meta', name: 'viewport', content: 'width=device-width' }])
@@ -283,13 +283,56 @@ describe('image preloads', () => {
     }
     const { Suspense } = await import('react')
     const stream = await renderToReadableStream(<Page><Suspense fallback={<p>loading</p>}><Late /></Suspense></Page>)
-    resolve()
-    await stream.allReady
-    const html = await new Response(stream).text()
+    const html = await flushThenResolve(stream, resolve)
     expect(head(html).filter(tag => tag.name === 'viewport')).toEqual([{ tag: 'meta', name: 'viewport', content: 'width=device-width' }])
     const body = html.slice(html.indexOf('<body>'))
     expect(body).toContain('<link rel="preload" href="/late.png" as="image"/>')
     expect(body).toContain('<meta name="viewport" content="late"/><img src="/late.png" alt=""/>')
+  })
+
+  it.each([false, true])('keeps late metadata after a second suspension (early duplicate: %s)', async early => {
+    let releaseFirst!: () => void
+    let releaseSecond!: () => void
+    let reportSecondAttempt!: () => void
+    let firstReady = false
+    let secondReady = false
+    const first = new Promise<void>(resolve => {
+      releaseFirst = () => { firstReady = true; resolve() }
+    })
+    const second = new Promise<void>(resolve => {
+      releaseSecond = () => { secondReady = true; resolve() }
+    })
+    const secondAttempt = new Promise<void>(resolve => { reportSecondAttempt = resolve })
+
+    function Second() {
+      if (!secondReady) {
+        reportSecondAttempt()
+        throw second
+      }
+      return <strong>revealed</strong>
+    }
+    function First() {
+      if (!firstReady) throw first
+      return null
+    }
+    function Late() {
+      return <>
+        {early && <meta name="viewport" content="late-retry" />}
+        <First />
+        <meta name="viewport" content="late-retry" />
+        <Second />
+      </>
+    }
+
+    const { Suspense } = await import('react')
+    const stream = await renderToReadableStream(<Page><Suspense fallback={<p>loading</p>}><Late /></Suspense></Page>)
+    const body = new Response(stream).text()
+    releaseFirst()
+    await secondAttempt
+    releaseSecond()
+    const html = await body
+    expect(html).toContain('<strong>revealed</strong>')
+    expect(html.match(/<meta[^>]*content="late-retry"/g)).toHaveLength(early ? 2 : 1)
   })
 
   it('emits the metas of a retried shell once', async () => {

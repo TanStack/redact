@@ -32,36 +32,27 @@ export function syncInputValue(el: HTMLInputElement, props: any, prev?: any): vo
     }
     const value = props.value;
     const fallback = props.defaultValue;
-    if (!prev) {
-        if (value == null && (el.type === 'submit' || el.type === 'reset'))
-            return;
-        if (value != null || fallback != null) {
-            const initial = '' + (value ?? fallback);
-            if (el.value !== initial) {
-                el.value = initial;
-                trackInputValue(el);
-            }
-            el.defaultValue = initial;
-        }
+    const button = el.type === 'submit' || el.type === 'reset';
+    if (!prev && value == null && button)
+        return;
+    const next = value ?? fallback;
+    if (next == null) {
+        if (prev && (prev.defaultValue != null || button))
+            el.removeAttribute('value');
         return;
     }
-    if (value != null) {
-        // Number inputs keep equivalent user spelling, including trailing zeroes.
-        if (el.type === 'number' ? (value === 0 && el.value === '') || el.value != value : el.value !== '' + value) {
-            el.value = '' + value;
+    // Number inputs keep equivalent user spelling, including trailing zeroes.
+    const number = prev && value != null && el.type === 'number';
+    let nextDefault = number ? undefined : '' + next;
+    if (!prev || value != null) {
+        if (number ? (value === 0 && el.value === '') || el.value != value : el.value !== nextDefault) {
+            el.value = nextDefault ?? '' + value;
             trackInputValue(el);
         }
-        const nextDefault = el.type === 'number' && el.value == value ? el.value : '' + value;
-        if (el.defaultValue !== nextDefault)
-            el.defaultValue = nextDefault;
     }
-    else if (fallback != null) {
-        if (el.defaultValue !== '' + fallback)
-            el.defaultValue = '' + fallback;
-    }
-    else if (prev.defaultValue != null || el.type === 'submit' || el.type === 'reset') {
-        el.removeAttribute('value');
-    }
+    nextDefault ??= el.value == value ? el.value : '' + value;
+    if (!prev || el.defaultValue !== nextDefault)
+        el.defaultValue = nextDefault;
 }
 export function syncSelectValue(select: HTMLSelectElement, props: any, prev?: any): void {
     const multiple = select.multiple;

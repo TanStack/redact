@@ -1,6 +1,6 @@
 import { devToolsMetadata } from '../../../core/devtools';
 import { resolveClassProps } from '../../../core/class-props';
-import { invokeCommit, stageCommit } from '../../reconcile';
+import { invokeCommit, stageCommit, visitChildren } from '../../reconcile';
 import { installRenderer, reconcileRaw, childrenToArray, scheduleUpdate, scheduleLifecycle, isThenable, handleSuspended, handleErrorInRender, readContext, attachRef, syncRefIfChanged, isActivityHidden, layoutIsDisconnected, RenderErrorCapture, handleCommitError, } from '../../reconcile';
 import { checkpointCommit, rewindCommit, queueBeforeMutation, queueMutation } from '../../commit';
 import { FiberTag, type Fiber, type ReactNode } from '../../../core';
@@ -13,14 +13,8 @@ function findHost(fiber: Fiber): Node | null {
         return fiber.n;
     if (fiber.t === FiberTag.Resource)
         return fiber.i;
-    for (let child = fiber.c; child; child = child.s) {
-        const node = findHost(child);
-        if (node)
-            return node;
-    }
-    return null;
+    return visitChildren(fiber, findHost, undefined, true) ?? null;
 }
-installRenderer(FiberTag.Class, renderClass);
 export function findDOMNode(instance: any): Node | null {
     const fiber = instance._f as Fiber | undefined;
     if (!fiber || fiber.u)
@@ -98,38 +92,39 @@ function renderClass(fiber: Fiber): void {
         }
         instance.props = props;
     }
-    if (captured && Ctor.getDerivedStateFromError) {
-        const update = Ctor.getDerivedStateFromError(captured.e);
-        if (update != null)
-            instance.state = { ...instance.state, ...update };
-    }
-    let rendered: ReactNode = captured && !Ctor.getDerivedStateFromError ? null : didRender ? instance.render() : fiber.b?.r;
-    fiber.b = { ...(fiber.b ?? {}), r: rendered };
-    const canCatch = Ctor.getDerivedStateFromError || instance.componentDidCatch;
-    if (canCatch)
-        fiber.b.b = Ctor;
-    if (canCatch && fiber.r)
-        fiber.r.eb = true;
-    const checkpoint = canCatch ? checkpointCommit(fiber) : -1;
+    // Errors from recovery belong to an enclosing boundary. Reuse the same
+    // render path for the first attempt and its fallback so state stays aligned.
     try {
-        reconcileRaw(fiber, rendered);
-    }
-    catch (error) {
-        if (!(error instanceof RenderErrorCapture) || error.b !== fiber)
-            throw error;
-        rewindCommit(checkpoint);
-        captured = error;
-        didRender = true;
-        if (Ctor.getDerivedStateFromError) {
-            const update = Ctor.getDerivedStateFromError(error.e);
-            if (update != null)
-                instance.state = { ...instance.state, ...update };
-            rendered = instance.render();
+        for (;;) {
+            fiber.br = !!captured;
+            if (captured && Ctor.getDerivedStateFromError) {
+                const update = Ctor.getDerivedStateFromError(captured.e);
+                if (update != null)
+                    instance.state = { ...instance.state, ...update };
+            }
+            const rendered: ReactNode = captured && !Ctor.getDerivedStateFromError ? null : didRender ? instance.render() : fiber.b?.r;
+            fiber.b = { ...(fiber.b ?? {}), r: rendered };
+            const canCatch = Ctor.getDerivedStateFromError || instance.componentDidCatch;
+            if (canCatch)
+                fiber.b.b = Ctor;
+            if (canCatch && fiber.r)
+                fiber.r.eb = true;
+            const checkpoint = canCatch ? checkpointCommit(fiber) : -1;
+            try {
+                reconcileRaw(fiber, rendered);
+                break;
+            }
+            catch (error) {
+                if (captured || !(error instanceof RenderErrorCapture) || error.b !== fiber)
+                    throw error;
+                rewindCommit(checkpoint);
+                captured = error;
+                didRender = true;
+            }
         }
-        else
-            rendered = null;
-        fiber.b = { ...(fiber.b ?? {}), r: rendered };
-        reconcileRaw(fiber, rendered);
+    }
+    finally {
+        fiber.br = false;
     }
     fiber.m = props;
     const state = instance.state;
@@ -190,4 +185,8 @@ function renderClass(fiber: Fiber): void {
 function updateState(state: any, update: any, props: any): any {
     const next = isFunction(update) ? update(state, props) : update;
     return next == null ? state : { ...state, ...next };
+}
+
+export function installClass(): void {
+    installRenderer(FiberTag.Class, renderClass);
 }

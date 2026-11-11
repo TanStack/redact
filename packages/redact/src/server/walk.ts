@@ -2,9 +2,9 @@ import { isTextContent } from '../core/functions';
 import { isFunction, isThenable } from '../core/functions'
 import { resolveClassProps } from '../core/class-props'
 import {
+  REACT_FRAGMENT_TYPE,
   REACT_ELEMENT_TYPE,
   REACT_LEGACY_ELEMENT_TYPE,
-  REACT_FRAGMENT_TYPE,
   type ReactNode,
   type ReactElement,
 } from '../core'
@@ -27,19 +27,16 @@ import {
   escapeText,
   escapeScript,
   VOID_ELEMENTS,
-  RAW_TEXT_ELEMENTS,
 } from './escape'
 import {
   pushContext,
   popContext,
   snapshotContexts,
   recordHostResource,
-  recordHoisted,
   currentSSRFrame,
   type ContextSnapshot,
 } from './dispatcher'
 import { isBrowserError } from '../core/browser'
-import { resourceKind } from '../core/resource-hints'
 import type { ResourceScope } from './resource-hints'
 
 export interface ServerErrorInfo {
@@ -48,18 +45,10 @@ export interface ServerErrorInfo {
 
 export type BrowserBailoutCallback = (error: Error, errorInfo: ServerErrorInfo) => void
 
-export interface SuspendedBoundary {
-  id: number
-  fallbackHTML: string
-  children: ReactNode
-  thenable: Promise<any>
-  contextSnapshot: ContextSnapshot
-  componentStack: string
-  // SVG, picture, noscript and document flags of the parent, so a boundary rendered later keeps them.
-  textBits: number
-}
+export type SuspendedBoundary = [number, ReactNode, Promise<any>, ContextSnapshot, string, number, boolean | undefined]
 
 export interface WalkOptions {
+  inFallback?: boolean | undefined
   emit: (chunk: string) => void
   onHead?: () => void
   onSuspend?: ((boundary: SuspendedBoundary) => void) | undefined
@@ -67,14 +56,12 @@ export interface WalkOptions {
   onError?: ((error: unknown) => unknown) | undefined
   componentStack?: string | undefined
   thrownInfo?: { componentStack?: string | undefined }
-  nextBoundaryId: () => number
   bootstrapped?: boolean | undefined
   isBoundaryResolution?: boolean | undefined
   resourceScope?: ResourceScope | undefined
-  // Shared traversal flags: SVG = 1, adjacent text = 2, inside <picture> = 4, inside <noscript> = 8,
-  // inside <html> = 16.
+  // Shared traversal flags: SVG = 1, adjacent text = 2, picture = 4, noscript = 8, document = 16.
   // Host children restore previous flags on return or throw.
-  textState?: { bits: number }
+  textState?: [bits: number]
 }
 
 /**
@@ -82,33 +69,22 @@ export interface WalkOptions {
  * Suspended boundaries are emitted as fallbacks with marker IDs; if `opts.onSuspend`
  * is provided, the suspension is recorded for later streaming.
  */
-export function walk(node: ReactNode, opts: WalkOptions): void {
-  // Seed a text state if the caller didn't provide one so the separator logic
-  // is active for the whole tree.
-  if (!opts.textState) opts = { ...opts, textState: { bits: 0 } }
-  walkNode(node, opts)
+export function walk(
+  node: ReactNode,
+  opts: Omit<WalkOptions, 'textState' | 'resourceScope'>,
+  bits = 0,
+  resourceScope: ResourceScope = [],
+): void {
+  walkNode(node, { ...opts, textState: [bits], resourceScope })
 }
 
-// --- <select> selection context ----------------------------------------------
-// Stack of active select values (or `undefined` when the current select has
-// no controlled value). `<option>` walks read the top of stack to decide
-// whether to emit `selected=""`.
-const selectValueStack: unknown[] = []
-function pushSelectContext(value: unknown): void {
-  selectValueStack.push(value)
-}
-function popSelectContext(): void {
-  selectValueStack.pop()
-}
-function currentSelectValue(): unknown {
-  return selectValueStack.length ? selectValueStack[selectValueStack.length - 1] : undefined
-}
+// Nested selects restore the previous selection when their walk ends.
+let selectValue: unknown
 
 function optionChildText(children: unknown): string {
   // `<option>Text</option>` — if no `value` prop, the option's value is its
   // flat string/number child content. Matches DOM semantics (`option.value`
   // defaults to `textContent` when no attribute is set).
-  if (children == null) return ''
   if (isTextContent(children)) return '' + children
   if (Array.isArray(children)) return children.map(optionChildText).join('')
   return ''
@@ -118,9 +94,13 @@ function emitText(text: string, opts: WalkOptions): void {
   // Empty string renders no text node and doesn't start/extend a text flow —
   // skip entirely so sibling text isn't separated by a stray `<!-- -->`.
   if (text === '') return
-  if (opts.textState!.bits & 2) opts.emit('<!-- -->')
+  if (opts.textState![0] & 2) opts.emit('<!-- -->')
   opts.emit(escapeText(text))
-  opts.textState!.bits |= 2
+  opts.textState![0] |= 2
+}
+
+function isElementMarker(marker: unknown): boolean {
+  return marker === REACT_ELEMENT_TYPE || marker === REACT_LEGACY_ELEMENT_TYPE
 }
 
 function walkNode(node: ReactNode, opts: WalkOptions): void {
@@ -130,17 +110,18 @@ function walkNode(node: ReactNode, opts: WalkOptions): void {
     emitText('' + node, opts)
     return
   }
-  if (Array.isArray(node)) {
-    for (const c of node) walkNode(c, opts)
-    return
-  }
-  if (isFunction((node as any)[Symbol.iterator])) {
+  if (Array.isArray(node) || isFunction((node as any)[Symbol.iterator])) {
     for (const item of node as Iterable<ReactNode>) walkNode(item, opts)
     return
   }
 
   if (typeof node !== 'object') return
-  const t = (node as any).$$typeof
+  const marker: unknown = (node as ReactElement).$$typeof
+  if (isElementMarker(marker)) {
+    const element = node as ReactElement
+    walkElement(element.type, element.props ?? {}, opts)
+    return
+  }
 
   // Raw React.lazy in the tree (RSC Flight encodes 'use client' components —
   // CodeBlock, CodeExplorer, etc. — as bare Lazy objects directly in the
@@ -150,29 +131,22 @@ function walkNode(node: ReactNode, opts: WalkOptions): void {
   // 'fulfilled' and `_init()` returns the resolved element synchronously.
   // If still pending (shouldn't happen post-awaitLazyElements), throw the
   // thenable so streaming SSR suspends the current boundary and retries.
-  if (t === REACT_LAZY_TYPE) {
+  if (marker === REACT_LAZY_TYPE) {
     const lazy = node as any
     const resolved = lazy._init(lazy._payload)
     walkNode(resolved, opts)
     return
   }
-
-  if (t !== REACT_ELEMENT_TYPE && t !== REACT_LEGACY_ELEMENT_TYPE) return
-
-  const el = node as ReactElement
-  walkElement(el, opts)
 }
 
-function walkElement(el: ReactElement, opts: WalkOptions): void {
-  const type = el.type
-  const props = el.props ?? {}
+function walkElement(type: ReactElement['type'], props: Record<string, any>, opts: WalkOptions): void {
 
   if (typeof type === 'string') {
     walkHost(type, props, opts)
     return
   }
 
-  if (type === REACT_FRAGMENT_TYPE || type === REACT_STRICT_MODE_TYPE || type === REACT_PROFILER_TYPE) {
+  if (type === REACT_FRAGMENT_TYPE || type === REACT_STRICT_MODE_TYPE || type === REACT_PROFILER_TYPE || type === REACT_VIEW_TRANSITION_TYPE) {
     walkNode(props.children, opts)
     return
   }
@@ -184,10 +158,6 @@ function walkElement(el: ReactElement, opts: WalkOptions): void {
 
   if (type === REACT_ACTIVITY_TYPE) {
     if (props.mode !== 'hidden') walkNode(props.children, opts)
-    return
-  }
-  if (type === REACT_VIEW_TRANSITION_TYPE) {
-    walkNode(props.children, opts)
     return
   }
 
@@ -227,14 +197,14 @@ function walkElement(el: ReactElement, opts: WalkOptions): void {
 
   if (marker === REACT_MEMO_TYPE) {
     const inner = (type as any).type
-    walkElement({ ...el, type: inner } as ReactElement, opts)
+    walkElement(inner, props, opts)
     return
   }
 
   if (marker === REACT_LAZY_TYPE) {
     const { _payload, _init } = type as any
     const resolved = _init(_payload)
-    walkElement({ ...el, type: resolved } as ReactElement, opts)
+    walkElement(resolved, props, opts)
     return
   }
 
@@ -249,31 +219,25 @@ function walkHost(
   props: Record<string, any>,
   opts: WalkOptions,
 ): void {
-  const isSvg = !!(opts.textState!.bits & 1) || tag === 'svg'
-  if (!isSvg && resourceKind(tag, props) && recordHostResource(tag, props, opts.resourceScope)) return
-  // In a document render React's server renderer preloads the images it renders eagerly and
-  // opens <head> with the charset and viewport metas. Only document renders do this here, since
-  // their head is position-insensitive for hydration. Neither applies inside <svg> or <noscript>,
-  // and images inside <picture> are not preloaded.
-  const bits = opts.textState!.bits
-  if (!isSvg && bits & 16 && !(bits & 8) && (tag === 'meta' || tag === 'img' && !(bits & 4))) {
-    const emit = recordHoisted(tag, props)
-    if (emit) {
-      // The hoisted meta leaves the body, so keep the text around it apart as React does.
-      if (bits & 2) opts.emit('<!-- -->')
-      opts = { ...opts, emit }
+  let emit = opts.emit
+  const textState = opts.textState!
+  const isSvg = !!(textState[0] & 1) || tag === 'svg'
+  const flags = textState[0] & 28
+  if (!isSvg) {
+    const hoisted = recordHostResource(tag, props, opts.emit, opts.resourceScope!, flags, opts.inFallback)
+    if (hoisted === true) return
+    if (hoisted) {
+      if (textState[0] & 2) emit('<!-- -->')
+      emit = hoisted
     }
   }
+
   // <textarea value="..."> serializes its value as a TEXT CHILD, not an
   // attribute. `defaultValue` is the fallback when `value` is absent. This
   // matches React and the HTML spec — `<textarea value="x">` is not valid
   // HTML; the value is the element's textContent.
   const isTextarea = tag === 'textarea'
-  const textareaValue = isTextarea
-    ? props.value != null
-      ? props.value
-      : props.defaultValue
-    : undefined
+  const textareaValue = isTextarea ? props.value ?? props.defaultValue : undefined
 
   // <input defaultValue="..."> should parse with that value — emit it as a
   // `value` attribute. Similarly `defaultChecked` becomes `checked`. This
@@ -282,11 +246,11 @@ function walkHost(
   // without stomping the user-typed value.
   const isInput = tag === 'input'
   const inputValueAttr =
-    isInput && props.value == null && props.defaultValue != null
+    isInput && props.value == null
       ? props.defaultValue
       : undefined
   const inputCheckedAttr =
-    isInput && props.checked == null && props.defaultChecked != null
+    isInput && props.checked == null
       ? props.defaultChecked
       : undefined
 
@@ -295,10 +259,8 @@ function walkHost(
   // `selected` on the matching `<option>` children during render. Stash the
   // target value(s) on the walk state and the child `<option>` walk reads it.
   const isSelect = tag === 'select'
-  if (isSelect) {
-    const val = props.value != null ? props.value : props.defaultValue
-    pushSelectContext(val)
-  }
+  const previousSelect = selectValue
+  if (isSelect) selectValue = props.value ?? props.defaultValue
   const isOption = tag === 'option'
   try {
 
@@ -307,123 +269,94 @@ function walkHost(
   // CSS sizing (documentElement.clientHeight returns the content height, not
   // the viewport) — and Floating-UI-based libraries (Radix dropdowns etc.)
   // then compute off-screen positions for overlays.
-  if (tag === 'html') opts.emit('<!DOCTYPE html>')
+  if (tag === 'html') emit('<!DOCTYPE html>')
 
-  opts.emit('<' + tag)
+  emit('<' + tag)
+  const textValue = isTextarea || isSelect
   for (const k in props) {
-    if (isTextarea && (k === 'value' || k === 'defaultValue')) continue
-    if (isInput && (k === 'defaultValue' || k === 'defaultChecked')) continue
-    if (isSelect && (k === 'value' || k === 'defaultValue')) continue
-    if (isOption && k === 'selected') continue
-    opts.emit(attrToHtml(k, props[k], isSvg))
+    if (textValue && k === 'value' || (textValue || isInput) && k === 'defaultValue' ||
+        isInput && k === 'defaultChecked' || isOption && k === 'selected') continue
+    emit(attrToHtml(k, props[k], isSvg))
   }
-  if (inputValueAttr !== undefined) {
-    opts.emit(attrToHtml('value', inputValueAttr, isSvg))
+  if (inputValueAttr != null) {
+    emit(attrToHtml('value', inputValueAttr, isSvg))
   }
-  if (inputCheckedAttr !== undefined) {
-    opts.emit(attrToHtml('checked', inputCheckedAttr, isSvg))
+  if (inputCheckedAttr != null) {
+    emit(attrToHtml('checked', inputCheckedAttr, isSvg))
   }
   if (isOption) {
-    const selectVal = currentSelectValue()
+    const selectVal = selectValue
     if (selectVal !== undefined) {
       const optionValue =
         props.value != null ? props.value : optionChildText(props.children)
       const matches = Array.isArray(selectVal)
         ? selectVal.some((v) => '' + v === '' + optionValue)
         : '' + selectVal === '' + optionValue
-      if (matches) opts.emit(' selected=""')
+      if (matches) emit(' selected=""')
     } else if (props.selected) {
-      opts.emit(' selected=""')
+      emit(' selected=""')
     }
   }
 
-  if (VOID_ELEMENTS.has(tag)) {
-    opts.emit('/>')
-    opts.textState!.bits &= 29
+  if (VOID_ELEMENTS.test(tag)) {
+    emit('/>')
+    textState[0] &= ~2
     return
   }
-  opts.emit('>')
+  emit('>')
   if (tag === 'head') opts.onHead?.()
   // Opening a host element starts a fresh text flow context for its children.
   // Children's text separator tracking is independent of the outer context.
-  const parentTextState = opts.textState
 
   if (tag === 'html' && !hasHeadChild(props.children)) {
-    opts.emit('<head>')
+    emit('<head>')
     opts.onHead?.()
-    opts.emit('</head>')
+    emit('</head>')
   }
 
   const dangerouslyHtml = props.dangerouslySetInnerHTML?.__html
 
   if (isTextarea && textareaValue != null) {
-    opts.emit(escapeText(String(textareaValue)))
-    opts.emit(`</${tag}>`)
-    parentTextState!.bits &= 29
-    return
-  }
-
-  if (RAW_TEXT_ELEMENTS.has(tag)) {
+    emit(escapeText(String(textareaValue)))
+  } else if (tag === 'script' || tag === 'style') {
     // script/style: raw-text. React allows either a string/number child or
     // dangerouslySetInnerHTML — some libs (Start's Scripts) use the latter.
-    if (dangerouslyHtml != null) {
-      opts.emit(escapeScript(String(dangerouslyHtml)))
-    } else {
-      const children = props.children
-      if (typeof children === 'string' || typeof children === 'number') {
-        opts.emit(escapeScript(String(children)))
-      } else if (Array.isArray(children)) {
-        opts.emit(escapeScript(children.filter((c) => c != null).join('')))
-      }
+    const content = dangerouslyHtml ?? props.children
+    if (dangerouslyHtml != null || typeof content === 'string' || typeof content === 'number') {
+      emit(escapeScript(String(content)))
+    } else if (Array.isArray(content)) {
+      emit(escapeScript(content.filter(child => child != null).join('')))
     }
-    opts.emit(`</${tag}>`)
-    parentTextState!.bits &= 29
-    return
-  }
-
-  if (dangerouslyHtml != null) {
-    opts.emit(String(dangerouslyHtml))
+  } else if (dangerouslyHtml != null) {
+    emit(String(dangerouslyHtml))
   } else {
-    const previousState = parentTextState!.bits
-    parentTextState!.bits = +(isSvg && tag !== 'foreignObject') | previousState & 28 | (tag === 'picture' ? 4 : tag === 'noscript' ? 8 : tag === 'html' ? 16 : 0)
+    const previousState = textState[0]
+    textState[0] = flags | +(isSvg && tag !== 'foreignObject') |
+      (tag === 'picture' ? 4 : tag === 'noscript' ? 8 : tag === 'html' ? 16 : 0)
     try {
       walkNode(props.children, opts)
     } finally {
-      parentTextState!.bits = previousState
+      textState[0] = previousState
     }
   }
-  opts.emit(`</${tag}>`)
+  emit(`</${tag}>`)
   // Host element closing resets outer flow — next sibling text starts fresh.
-  parentTextState!.bits &= 29
+  textState[0] &= ~2
   } finally {
-    if (isSelect) popSelectContext()
+    if (isSelect) selectValue = previousSelect
   }
 }
 
 function hasHeadChild(children: unknown): boolean {
   if (children == null || typeof children === 'boolean') return false
   if (Array.isArray(children)) return children.some(hasHeadChild)
-  if (typeof children !== 'string' && isIterable(children)) {
+  if (typeof children !== 'string' && isFunction((children as any)[Symbol.iterator])) {
     for (const child of children as Iterable<unknown>) {
       if (hasHeadChild(child)) return true
     }
     return false
   }
-  return isElementOfType(children, 'head')
-}
-
-function isElementOfType(value: unknown, type: string): value is ReactElement {
-  const marker = (value as ReactElement | null)?.$$typeof as unknown
-  return (
-    !!value &&
-    typeof value === 'object' &&
-    (marker === REACT_ELEMENT_TYPE || marker === REACT_LEGACY_ELEMENT_TYPE) &&
-    (value as ReactElement).type === type
-  )
-}
-
-function isIterable(value: unknown): value is Iterable<unknown> {
-  return !!value && isFunction((value as { [Symbol.iterator]?: unknown })[Symbol.iterator])
+  return typeof children === 'object' && isElementMarker((children as ReactElement).$$typeof) && (children as ReactElement).type === 'head'
 }
 
 function walkComponent(
@@ -436,22 +369,22 @@ function walkComponent(
     opts = { ...opts, componentStack: `\n    at ${(fn as any).displayName || fn.name || 'Anonymous'}${opts.componentStack || ''}` }
   }
   try {
-  if ((fn as any).prototype?.isReactComponent) {
-    props = resolveClassProps(fn, props)
-    const ctxType = (fn as any).contextType
-    const ctxValue = ctxType ? ctxType._currentValue : undefined
-    const instance = new (fn as any)(props, ctxValue)
-    instance.props = props
-    instance.context = ctxValue
-    if ((fn as any).getDerivedStateFromProps) {
-      const d = (fn as any).getDerivedStateFromProps(props, instance.state)
-      if (d) instance.state = { ...instance.state, ...d }
+    let rendered: ReactNode
+    if ((fn as any).prototype?.isReactComponent) {
+      props = resolveClassProps(fn, props)
+      const ctxValue = (fn as any).contextType?._currentValue
+      const instance = new (fn as any)(props, ctxValue)
+      instance.props = props
+      instance.context = ctxValue
+      if ((fn as any).getDerivedStateFromProps) {
+        const d = (fn as any).getDerivedStateFromProps(props, instance.state)
+        if (d) instance.state = { ...instance.state, ...d }
+      }
+      rendered = instance.render()
+    } else {
+      rendered = (fn as any)(props, ref)
     }
-    walkNode(instance.render(), opts)
-    return
-  }
-  const rendered = (fn as any)(props, ref)
-  walkNode(rendered, opts)
+    walkNode(rendered, opts)
   } catch (error) {
     if (opts.thrownInfo && !opts.thrownInfo.componentStack) opts.thrownInfo.componentStack = opts.componentStack
     if (isBrowserError(error) && !(error as any).componentStack) {
@@ -461,89 +394,71 @@ function walkComponent(
   }
 }
 
+function emitBuffered(parts: string[], head: number, opts: WalkOptions): void {
+  const tail = head < 0 ? null : parts.splice(head)
+  opts.emit(parts.join(''))
+  if (tail) {
+    opts.onHead?.()
+    opts.emit(tail.join(''))
+  }
+}
+
 function walkSuspense(
   props: Record<string, any>,
   opts: WalkOptions,
 ): void {
-  const id = opts.nextBoundaryId()
+  const frame = currentSSRFrame()
+  const id = frame.nextId++
   // Snapshot contexts BEFORE attempting children, so if a descendant suspends
   // we can replay the same provider stack when re-rendering the boundary.
   const contextSnapshot = snapshotContexts()
 
   // Try to render the children synchronously. If a thenable is thrown,
   // record the boundary and emit the fallback.
-  const childParts: string[] = []
+  const parts: string[] = []
+  let head = -1
   const nested: SuspendedBoundary[] = []
   const thrownInfo: { componentStack?: string | undefined } = {}
-  const childEmit = (s: string) => childParts.push(s)
-  // Where <head> opened inside the buffered children, reported to the renderer once they commit.
-  let head = -1
-  const resourceScope: ResourceScope | undefined = currentSSRFrame().shellFlushed ? {} : undefined
-  const frame = currentSSRFrame()
-  const metas = frame.resources?.metas()
+  const resourceScope: ResourceScope = [id]
+  const buffered = {
+    ...opts,
+    emit: (chunk: string) => parts.push(chunk),
+    onHead: () => { head = parts.length },
+    onSuspend: opts.onSuspend ? (boundary: SuspendedBoundary) => nested.push(boundary) : undefined,
+  }
+  let marker = ''
+  let pending: Promise<any> | undefined
   try {
-    walkNode(props.children, {
-      ...opts,
-      resourceScope,
-      thrownInfo,
-      emit: childEmit,
-      onHead: () => { head = childParts.length },
-      onSuspend: opts.onSuspend ? (boundary) => nested.push(boundary) : undefined,
-      nextBoundaryId: opts.nextBoundaryId,
-    })
-  } catch (thenable: any) {
-    nested.length = 0
-    frame.resources?.metas(metas || ['', ''])
-    const suspended = isThenable(thenable)
-    if (!suspended) {
-      if (isBrowserError(thenable)) opts.onBrowserBailout?.(thenable, { componentStack: (thenable as any).componentStack || opts.componentStack || '' })
-      else opts.onError?.(thenable)
-    }
-    const fallbackParts: string[] = []
+    walkNode(props.children, { ...buffered, resourceScope, thrownInfo })
+  } catch (error: any) {
+    nested.length = parts.length = 0
     head = -1
-    walkNode(props.fallback, {
-      ...opts,
-      emit: (s) => fallbackParts.push(s),
-      onHead: () => { head = fallbackParts.length },
-      onSuspend: opts.onSuspend ? (boundary) => nested.push(boundary) : undefined,
-      nextBoundaryId: opts.nextBoundaryId,
-    })
-    // A fallback's charset and viewport metas are omitted, as React omits hoistables from fallbacks.
-    frame.resources?.metas(metas || ['', ''])
-    // Visible div wrapper for a pending boundary so the fallback UI shows; B: id lets $RC locate it on
-    // reveal. The leading/trailing comments let hydration detect a pending boundary and register a
-    // reveal callback.
-    opts.emit(suspended ? `<!--$?${id}--><div id="B:${id}">` : `<!--${isBrowserError(thenable) ? '$!' : '$E'}${id}-->`)
-    emitParts(opts, fallbackParts, head)
-    opts.emit(suspended ? '</div><!--/$-->' : '<!--/$-->')
-    for (const boundary of nested) opts.onSuspend?.(boundary)
-    if (suspended) opts.onSuspend?.({
-      id, fallbackHTML: fallbackParts.join(''), children: props.children, thenable, contextSnapshot,
-      componentStack: thrownInfo.componentStack || opts.componentStack || '',
-      textBits: opts.textState!.bits & 29,
-    })
-    return
+    if (isThenable(error)) {
+      pending = error
+      marker = '?'
+    } else if (isBrowserError(error)) {
+      opts.onBrowserBailout?.(error, { componentStack: (error as any).componentStack || opts.componentStack || '' })
+      marker = '!'
+    } else {
+      opts.onError?.(error)
+      marker = 'E'
+    }
+    walkNode(props.fallback, { ...buffered, inFallback: true })
   }
 
-  if (resourceScope) currentSSRFrame().resources?.mergeScope(resourceScope, opts.resourceScope)
+  if (!marker) frame.resources?.mergeScope(resourceScope, opts.resourceScope)
 
-  // Children rendered fully — emit them wrapped in resolved-boundary markers
-  // (`<!--$N-->` / `<!--/$-->`). Without markers, the client hydrator has no
-  // way to know this subtree is inside a Suspense, so if the client version
-  // of a descendant (e.g. `React.lazy`) suspends it can't pinpoint which DOM
-  // range to adopt on resolve — it creates fresh DOM next to the SSR content,
-  // producing visible duplicates (e.g. double navbar logos). Markers let the
-  // client treat this as a resolved boundary and hydrate in-place.
-  opts.emit(`<!--$${id}-->`)
-  emitParts(opts, childParts, head)
-  opts.emit(`<!--/$-->`)
+  // Keep the boundary markers even when its contents resolve on the first pass.
+  // Hydration uses them to locate the existing range.
+  opts.emit(`<!--$${marker}${id}-->`)
+  if (pending) opts.emit(`<div id="B:${id}">`)
+  emitBuffered(parts, head, opts)
+  if (pending) opts.emit('</div>')
+  opts.emit('<!--/$-->')
   for (const boundary of nested) opts.onSuspend?.(boundary)
-}
-
-// Emit buffered output, reporting where <head> opened in it so the renderer inserts its hints there.
-function emitParts(opts: WalkOptions, parts: string[], head: number): void {
-  if (head < 0) return opts.emit(parts.join(''))
-  opts.emit(parts.slice(0, head).join(''))
-  opts.onHead?.()
-  opts.emit(parts.slice(head).join(''))
+  if (pending) opts.onSuspend?.([
+    id, props.children, pending, contextSnapshot,
+    thrownInfo.componentStack || opts.componentStack || '',
+    opts.textState![0] & 28, opts.inFallback,
+  ])
 }

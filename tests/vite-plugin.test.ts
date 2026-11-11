@@ -31,7 +31,7 @@ describe('redact vite plugin', () => {
       const plugin = findPlugin(plugins, 'redact')
       const compiler = findPlugin(plugins, 'redact:react18')
       plugin.configResolved({ root })
-      const id = await plugin.resolveId.call({}, 'react')
+      const id = await plugin.resolveId.handler.call({}, 'react')
       const code = `export const version = '19.2.3'; export default { version: '19.2.3' };`
       const result = compiler.transform.call({ parse: parseAst }, code, id)
       if (version.startsWith('18.')) {
@@ -45,7 +45,7 @@ describe('redact vite plugin', () => {
 
   it.each(['ts', 'js'])('redirects disabled registration imports in %s modules', async (extension) => {
     const plugin = findPlugin(redact({ preset: 'nano' }), 'redact')
-    const importer = `/package/${extension === 'ts' ? 'src' : 'dist'}/dom/features/index.${extension}`
+    const importer = `${resolve(import.meta.dirname, '../packages/redact')}/${extension === 'ts' ? 'src' : 'dist'}/dom/features/index.${extension}`
     const calls: Array<string> = []
     const context = {
       async resolve(id: string, from: string, options: any) {
@@ -57,7 +57,7 @@ describe('redact vite plugin', () => {
     }
     for (const feature of ['activity', 'fragment-refs', 'view-transition', 'portal', 'context', 'memo', 'suspense', 'forward-ref', 'lazy', 'class', 'hydration']) {
       const specifier = `./${feature}${extension === 'js' ? '/index.js' : ''}`
-      await expect(plugin.resolveId.call(context, specifier, importer, { custom: true }))
+      await expect(plugin.resolveId.handler.call(context, specifier, importer, { custom: true }))
         .resolves.toBe(resolve(importer, '..', feature, `stub.${extension}`))
       expect(calls.at(-1)).toBe(`./${feature}/stub${extension === 'js' ? '.js' : ''}`)
     }
@@ -66,8 +66,8 @@ describe('redact vite plugin', () => {
 
   it.each(['ts', 'js'])('keeps peer imports on the same disabled implementation in %s modules', async (extension) => {
     const plugin = findPlugin(redact({ preset: 'nano' }), 'redact')
-    const importer = `/package/${extension === 'ts' ? 'src' : 'dist'}/dom/features/suspense/full.${extension}`
-    for (const feature of ['context', 'hydration', 'fragment-refs', 'view-transition', 'class']) {
+    const importer = `${resolve(import.meta.dirname, '../packages/redact')}/${extension === 'ts' ? 'src' : 'dist'}/dom/features/suspense/full.${extension}`
+    for (const feature of ['context', 'hydration', 'fragment-refs', 'view-transition', 'class', 'suspense-hydration', 'suspense-runtime']) {
       for (const base of [`../${feature}`, `../../features/${feature}`]) {
         const specifier = base + (extension === 'js' ? '/index.js' : '')
         const context = {
@@ -78,27 +78,67 @@ describe('redact vite plugin', () => {
             return { id: resolve(importer, '..', base, `index.${extension}`) }
           },
         }
-        await expect(plugin.resolveId.call(context, specifier, importer))
+        await expect(plugin.resolveId.handler.call(context, specifier, importer))
           .resolves.toBe(resolve(importer, '..', base, `stub.${extension}`))
       }
     }
   })
 
+  it.each(['ts', 'js'])('preserves query and fragment suffixes on disabled runtime features in %s modules', async (extension) => {
+    const packageRoot = resolve(import.meta.dirname, '../packages/redact')
+    const runtime = `${packageRoot}/${extension === 'ts' ? 'src' : 'dist'}/dom`
+    const plugin = findPlugin(redact({ preset: 'nano' }), 'redact')
+    for (const suffix of ['?v=abc123', '?v=abc123&mode=one?two#fragment', '#fragment', '']) {
+      const importer = `${runtime}/dispatcher.${extension}?v=importer`
+      for (const feature of ['context', 'hydration', 'fragment-refs', 'view-transition', 'class', 'suspense-runtime', 'suspense-hydration']) {
+        const specifier = `./features/${feature}/index.js${suffix}`
+        expect(plugin.resolveId.filter.id.some((pattern: RegExp) => pattern.test(specifier))).toBe(true)
+        const resolved = `${runtime}/features/${feature}/index.${extension}${suffix}`
+        await expect(plugin.resolveId.handler.call({ resolve: async () => ({ id: resolved }) }, specifier, importer))
+          .resolves.toBe(`${runtime}/features/${feature}/stub.${extension}${suffix}`)
+        await expect(plugin.resolveId.handler.call({ resolve: async () => ({ id: `/app/features/${feature}/index.${extension}${suffix}` }) }, specifier, importer))
+          .resolves.toBeNull()
+      }
+      const registration = `${runtime}/features/index.${extension}${suffix}`
+      const request = `./context/index.js${suffix}`
+      expect(plugin.resolveId.filter.id.some((pattern: RegExp) => pattern.test(request))).toBe(true)
+      await expect(plugin.resolveId.handler.call({
+        resolve: async (id: string) => {
+          expect(id).toBe(`./context/stub.js${suffix}`)
+          return { id: `${runtime}/features/context/stub.${extension}${suffix}` }
+        },
+      }, request, registration)).resolves.toBe(`${runtime}/features/context/stub.${extension}${suffix}`)
+      await expect(plugin.resolveId.handler.call({ environment: { name: 'rsc' }, resolve() { throw new Error('RSC must retain native imports') } }, request, registration))
+        .resolves.toBeNull()
+    }
+  })
+
   it.each(['ts', 'js'])('does not redirect enabled, unrelated, or RSC imports in %s modules', async (extension) => {
-    const importer = `/package/dist/dom/features/index.${extension}`
+    const importer = `${resolve(import.meta.dirname, '../packages/redact')}/dist/dom/features/index.${extension}`
     const suffix = extension === 'js' ? '/index.js' : ''
     const enabled = findPlugin(redact({ features: { viewTransitions: true } }), 'redact')
     const neverResolve = { resolve() { throw new Error('Unexpected feature redirect') } }
     for (const feature of ['context', 'hydration', 'fragment-refs', 'view-transition']) {
-      await expect(enabled.resolveId.call(neverResolve, `./${feature}${suffix}`, importer)).resolves.toBeNull()
-      await expect(enabled.resolveId.call(neverResolve, `../${feature}${suffix}`, importer)).resolves.toBeNull()
+      await expect(enabled.resolveId.handler.call(neverResolve, `./${feature}${suffix}`, importer)).resolves.toBeNull()
+      await expect(enabled.resolveId.handler.call(neverResolve, `../${feature}${suffix}`, importer)).resolves.toBeNull()
     }
     const disabled = findPlugin(redact({ preset: 'nano' }), 'redact')
-    await expect(disabled.resolveId.call({ ...neverResolve, environment: { name: 'rsc' } }, `./context${suffix}`, importer)).resolves.toBeNull()
-    await expect(disabled.resolveId.call({
+    await expect(disabled.resolveId.handler.call({ ...neverResolve, environment: { name: 'rsc' } }, `./context${suffix}`, importer)).resolves.toBeNull()
+    await expect(disabled.resolveId.handler.call({
       resolve: async () => ({ id: `/other/context/index.${extension}` }),
     }, `../context${suffix}`, importer)).resolves.toBeNull()
-    await expect(disabled.resolveId.call(neverResolve, './unknown/index.js', importer)).resolves.toBeNull()
+    for (const feature of ['hydration', 'suspense-hydration']) {
+      await expect(disabled.resolveId.handler.call({
+        resolve: async () => ({ id: `/app/features/${feature}/index.${extension}` }),
+      }, `../${feature}${suffix}`, `/app/page.${extension}`)).resolves.toBeNull()
+    }
+    await expect(disabled.resolveId.handler.call({
+      async resolve(id: string) {
+        expect(id).toBe(`./hydration${suffix}`)
+        return { id: `/app/features/hydration/index.${extension}` }
+      },
+    }, `./hydration${suffix}`, `/app/features/index.${extension}`)).resolves.toBeNull()
+    await expect(disabled.resolveId.handler.call(neverResolve, './unknown/index.js', importer)).resolves.toBeNull()
   })
 
   it.each([
@@ -400,12 +440,12 @@ describe('redact vite plugin', () => {
 
     const context = { environment: { name: 'ssr' } }
     for (const entry of ['react-dom/server', 'react-dom/server.browser', 'react-dom/server.bun', 'react-dom/server.edge', 'react-dom/server.node']) {
-      await expect(plugin.resolveId.call(context, entry)).resolves.toMatch(
+      await expect(plugin.resolveId.handler.call(context, entry)).resolves.toMatch(
         /packages\/redact\/dist\/server\/index\.js$/,
       )
-      await expect(plugin.resolveId.call({ environment: { name: 'rsc' } }, entry)).resolves.toBeNull()
+      await expect(plugin.resolveId.handler.call({ environment: { name: 'rsc' } }, entry)).resolves.toBeNull()
     }
-    await expect(plugin.resolveId.call(context, 'react-dom/static.edge')).resolves.toMatch(
+    await expect(plugin.resolveId.handler.call(context, 'react-dom/static.edge')).resolves.toMatch(
       /packages\/redact\/dist\/server\/index\.js$/,
     )
   })
@@ -424,7 +464,7 @@ describe('redact vite plugin', () => {
     } as any)
 
     const context = { environment: { name: 'client' } }
-    const reactEntry = await plugin.resolveId.call(context, 'react')
+    const reactEntry = await plugin.resolveId.handler.call(context, 'react')
     expect(reactEntry).toMatch(/packages\/redact\/dist\//)
     for (const specifier of [
       'use-sync-external-store',
@@ -432,7 +472,7 @@ describe('redact vite plugin', () => {
       'use-sync-external-store/shim',
       'use-sync-external-store/shim/index.js',
     ]) {
-      await expect(plugin.resolveId.call(context, specifier)).resolves.toBe(reactEntry)
+      await expect(plugin.resolveId.handler.call(context, specifier)).resolves.toBe(reactEntry)
     }
   })
 
@@ -488,5 +528,47 @@ describe('redact vite plugin', () => {
       'react',
       'react-dom/server',
     ])
+  })
+})
+
+
+describe('streamed hydration feature boundary',()=>{
+  it.each([
+    {hydration:false,suspense:true},
+    {hydration:false,suspense:false},
+    {hydration:true,suspense:false},
+    {hydration:true,suspense:true},
+  ])('bundles hydration=$hydration suspense=$suspense without leaking disabled implementations',async features=>{
+    const source=resolve(import.meta.dirname,'../packages/redact/src'),fixture='\0streamed-hydration-feature-fixture'
+    let modules:string[]=[]
+    await build({configFile:false,logLevel:'silent',plugins:[...redact({preset:'full',features}),{
+      name:'streamed-hydration-feature-fixture',resolveId(id){if(id===fixture)return id},
+      load(id){if(id===fixture)return `export {createRoot,hydrateRoot} from ${JSON.stringify(source+'/dom/client.ts')};`},
+      generateBundle(_options,bundle){modules=Object.values(bundle).flatMap(item=>item.type==='chunk'?Object.keys(item.modules):[])},
+    }],build:{write:false,minify:true,rollupOptions:{input:fixture,preserveEntrySignatures:'strict',output:{format:'es'}}}})
+    expect(modules.some(id=>id.endsWith('/features/suspense-hydration/full.ts'))).toBe(features.hydration&&features.suspense)
+    expect(modules.some(id=>id.endsWith('/features/suspense/full.ts'))).toBe(features.suspense)
+  })
+})
+
+// Private candidate coverage for the existing Suspense flag, no new public flag.
+describe('pending Suspense discovery feature boundary', () => {
+  it.each([true, false])('keeps discovery selected with suspense=%s', async suspense => {
+    const source = resolve(import.meta.dirname, '../packages/redact/src')
+    const fixture = '\0pending-discovery-feature'
+    let bundled = ''
+    await build({ configFile: false, logLevel: 'silent', plugins: [...redact({ preset: 'full', features: { suspense } }), {
+      name: 'pending-discovery-feature', enforce: 'pre',
+      transform(code, id) {
+        if (!id.endsWith('/dom/reconcile.ts')) return null
+        const needle = 'export function hasPendingFiber(fiber: Fiber): boolean {'
+        if (!code.includes(needle)) throw new Error('Missing pending predicate diagnostic target')
+        return code.replace(needle, needle + '\n(globalThis as any).__redactPendingProbe();')
+      },
+      resolveId(id) { if (id === fixture) return id },
+      load(id) { if (id === fixture) return `export { createRoot } from ${JSON.stringify(source + '/dom/client.ts')}` },
+      generateBundle(_options, bundle) { bundled = Object.values(bundle).flatMap(item => item.type === 'chunk' ? [item.code] : []).join('') },
+    }], build: { write: false, minify: true, rollupOptions: { input: fixture, preserveEntrySignatures: 'strict', output: { format: 'es' } } } })
+    expect(bundled.includes('__redactPendingProbe')).toBe(suspense)
   })
 })

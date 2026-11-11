@@ -14,7 +14,7 @@ import { installRenderer, reconcileRaw, childrenToArray, scheduleUpdate, isThena
 // Apps that actually need these should keep the feature on. Apps that just
 // have a handful of legacy class components that do `render() + setState`
 // still work, and save ~400 B min / ~200 B gz.
-function renderClassStub(fiber: Fiber): void {
+function renderClass(fiber: Fiber): void {
     const Ctor = fiber.type as any;
     let instance = fiber.i;
     const props = resolveClassProps(Ctor, fiber.v ?? {});
@@ -54,5 +54,8 @@ function renderClassStub(fiber: Fiber): void {
     reconcileRaw(fiber, rendered);
     fiber.m = props;
 }
-installRenderer(FiberTag.Class, renderClassStub);
 export const findDOMNode = null;
+
+export function installClass(): void {
+    installRenderer(FiberTag.Class, renderClass);
+}

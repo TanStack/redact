@@ -1,5 +1,53 @@
 # @tanstack/redact
 
+## 0.3.1
+
+### Patch Changes
+
+- Allow selecting client or SSR replacement independently while preserving native React in unselected environments and RSC. ([#148](https://github.com/TanStack/redact/pull/148))
+
+  Accept native React element declarations without requiring their runtime-only protocol fields or legacy ref accessor.
+
+## 0.3.0
+
+### Minor Changes
+
+- Add browser SPA plugins for Webpack and Rspack, with an Rsbuild setup guide. Share Vite feature selection and package resolution, retain exact aliases and package ownership, and adapt the selected runtime to React 18 when needed. ([#143](https://github.com/TanStack/redact/pull/143))
+
+## 0.2.6
+
+### Patch Changes
+
+- Flush updates inside act even when the root already has a scheduled microtask. ([#135](https://github.com/TanStack/redact/pull/135))
+
+- Release emitted shell buffers while streamed Suspense boundaries remain pending. ([#140](https://github.com/TanStack/redact/pull/140))
+
+- Resolve React shims before package aliases so Storybook's docs addon can load the preview. ([#138](https://github.com/TanStack/redact/pull/138))
+
+- Keep disabled Vite features on their stub implementations when development module IDs contain version queries. ([#138](https://github.com/TanStack/redact/pull/138))
+
+## 0.2.5
+
+### Patch Changes
+
+- Bubble errors thrown during boundary recovery to an enclosing boundary and preserve hydrated Suspense marker placement. ([#109](https://github.com/TanStack/redact/pull/109))
+
+- Focus newly mounted autoFocus form controls during the commit, before refs and layout effects. Preserve user focus while adopting server-rendered controls. ([#132](https://github.com/TanStack/redact/pull/132))
+
+## 0.2.4
+
+### Patch Changes
+
+- Reduce completion bookkeeping for streamed Suspense boundaries while preserving abort, error and allReady behavior. ([#123](https://github.com/TanStack/redact/pull/123))
+
+- Remove streamed Suspense hydration operations when hydration is disabled. ([#125](https://github.com/TanStack/redact/pull/125))
+
+## 0.2.3
+
+### Patch Changes
+
+- Adopt server-rendered metadata that remains in the document body during hydration. This prevents React Router's production module-preload links from triggering body replacement and preserves the existing interactive DOM. ([#94](https://github.com/TanStack/redact/pull/94))
+
 ## 0.2.2
 
 ### Patch Changes

@@ -1,3 +1,4 @@
+import { visitChildren } from '../../reconcile';
 import { isFunction } from '../../../core/functions';
 import { FiberTag, type Fiber } from '../../../core';
 import { REACT_CONTEXT_TYPE, REACT_PROVIDER_TYPE, REACT_CONSUMER_TYPE } from '../../../react';
@@ -49,31 +50,10 @@ export function ownContextChanged(fiber: Fiber): boolean {
 export function hasContextChanged(fiber: Fiber, includeFallback = true): boolean {
     if (!changingProviders)
         return false;
-    if (ownContextChanged(fiber))
-        return true;
-    let child = fiber.c;
-    while (child) {
-        if (hasContextChanged(child))
-            return true;
-        child = child.s;
-    }
-    return includeFallback && fiber.t === FiberTag.Suspense && !!fiber.b?.f && hasContextChanged(fiber.b.f);
+    return ownContextChanged(fiber) || !!visitChildren(fiber, hasContextChanged, undefined, !includeFallback);
 }
-export function renderContextConsumers(fiber: Fiber): void {
-    if (!changingProviders)
-        return;
-    let child = fiber.c;
-    while (child) {
-        // Pending parents must reconcile before context reaches their old children.
-        if (child.g || (child.t === FiberTag.Suspense ? hasContextChanged(child) : ownContextChanged(child))) {
-            renderNode(child);
-        }
-        else {
-            renderContextConsumers(child);
-        }
-        child = child.s;
-    }
-}
+export { renderPendingChildren as renderContextConsumers } from '../../reconcile';
+
 function renderProvider(fiber: Fiber): void {
     const props = fiber.v ?? {};
     const changed = fiber.m && !Object.is(fiber.m.value, props.value);
@@ -105,3 +85,5 @@ registerTypeMatcher((_type, marker) => marker === REACT_CONTEXT_TYPE || marker =
 installRenderer(FiberTag.Provider, renderProvider);
 installRenderer(FiberTag.Consumer, renderConsumer);
 installCapability('c', realReadContext);
+
+installCapability('o', fiber => fiber.t === FiberTag.Suspense ? hasContextChanged(fiber) : ownContextChanged(fiber));

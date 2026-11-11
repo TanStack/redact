@@ -4,7 +4,7 @@ import { createResourceHints } from '../packages/redact/src/server/resource-hint
 describe('streamed resource dependency collection', () => {
   it('emits a preload, not a parser-blocking stylesheet, and keeps dependency options', () => {
     const resources = createResourceHints(true)
-    resources.addHost('link', { rel: 'stylesheet', href: '/late.css', precedence: 'theme', crossOrigin: 'anonymous', integrity: 'sha256-css', media: 'screen', className: 'theme', hidden: true, style: { color: 'red' }, 'aria-hidden': false })
+    resources.addHost('stylesheet', { rel: 'stylesheet', href: '/late.css', precedence: 'theme', crossOrigin: 'anonymous', integrity: 'sha256-css', media: 'screen', className: 'theme', hidden: true, style: { color: 'red' }, 'aria-hidden': false })
     const output = resources.drain()
     expect(output).toContain('rel="preload"')
     expect(output).toContain('as="style"')
@@ -25,10 +25,10 @@ describe('streamed resource dependency collection', () => {
   it('tracks a reused late resource for each new boundary without emitting duplicate preloads', () => {
     const resources = createResourceHints(true)
     const props = { rel: 'stylesheet', href: '/shared.css', precedence: 'theme' }
-    resources.addHost('link', props)
+    resources.addHost('stylesheet', props)
     expect(resources.drain()).toContain('/shared.css')
     expect(resources.takeStylesheets()).toEqual([['/shared.css', 'theme']])
-    resources.addHost('link', props)
+    resources.addHost('stylesheet', props)
     expect(resources.drain()).toBe('')
     expect(resources.takeStylesheets()).toEqual([['/shared.css', 'theme']])
   })
