@@ -15,6 +15,6 @@ export function vinextMatrix(deployments = ['node', 'standalone', 'static-export
 export const edgeScenarios = ['transition-retains-visible-content', 'deferred-search-retains-stale-results', 'uncontrolled-select-action-reset']
 export function vinextScenarios(job) {
   if (job.deployment === 'static-export') return ['static-export']
-  return ['hydration', 'ids', 'actions', 'direct-actions', 'progressive-actions', 'streaming', 'pages-router', 'routing', 'boundaries', 'loading-cancellation', 'navigation-cancellation', 'parallel-routes', 'mutations', 'components', 'pages-data', 'error-boundaries', 'server-runtime', ...edgeScenarios,
+  return ['hydration', 'ids', 'actions', 'direct-actions', 'progressive-actions', 'streaming', 'flight-promise', 'pages-router', 'routing', 'boundaries', 'loading-cancellation', 'navigation-cancellation', 'parallel-routes', 'mutations', 'components', 'pages-data', 'error-boundaries', 'server-runtime', ...edgeScenarios,
     ...(job.rendering === 'cache-components' ? ['cache-components'] : []), ...(job.mode === 'development' ? ['fast-refresh'] : [])]
 }

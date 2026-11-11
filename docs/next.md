@@ -46,6 +46,7 @@ The gate covers:
 - Pending form status, optimistic updates, and successful form resets.
 - Submission before JavaScript loads, followed by hydration of the returned state and another client submission.
 - Streamed Suspense content and interactive revealed components.
+- Promises passed from Server Components and read with `use()`, hydrated without replacing the server DOM.
 - Cache Components with partial prerendering and request-time content.
 - Fast Refresh that preserves state through a source edit and its reversal in both development bundlers.
 - Params, queries, push, replace, back, forward, refresh, retained layouts, redirects, rewrites, and not-found boundaries.
