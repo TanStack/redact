@@ -175,7 +175,7 @@ export function createResourceHints(shellFlushed = false, styleNonce?: string) {
       }
     },
     takeStylesheets(): string[][] {
-      const result = Array.from(dependencies.values())
+      const result = [...dependencies.values()]
       dependencies.clear()
       return result
     },

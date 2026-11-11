@@ -34,7 +34,7 @@ export function isInternalAttribute(name: string): boolean {
 
 export function attrToHtml(name: string, value: unknown, isSvg = false): string {
   if (value == null || isInternalAttribute(name) || name === 'defaultValue' || name === 'defaultChecked' ||
-      name[0] === 'o' && name[1] === 'n' && isFunction(value)) return ''
+      name.startsWith('on') && isFunction(value)) return ''
 
   const htmlName = attributeName(name, isSvg)
 

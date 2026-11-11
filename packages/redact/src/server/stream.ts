@@ -366,24 +366,25 @@ export function renderToPipeableStream(
   const state = createState()
 
   const buffers: string[] = []
-  let dest: PipeableWritable | null = null
+  let dest: PipeableWritable | undefined
   let shellReady = false
-  // 0 while rendering, 1 on success, 2 on failure.
-  let status = 0
-  let failure: unknown
+  let finished = false
+  let failure: { reason: unknown } | undefined
 
   const finishDestination = (target: PipeableWritable) => {
-    if (status === 2 && target.destroy) target.destroy(failure)
+    if (dest === target) dest = undefined
+    if (failure && target.destroy) target.destroy(failure.reason)
     else target.end()
   }
 
   const emit: Emit = (chunk) => {
-    if (status) return
+    if (finished) return
     if (dest) dest.write(chunk)
     else buffers.push(chunk)
   }
 
   state.onShellReady = () => {
+    if (failure) return
     shellReady = true
     options.onShellReady?.()
   }
@@ -391,26 +392,29 @@ export function renderToPipeableStream(
   // Kick off rendering
   streamHtml(children, emit, options, state).then(
     () => {
-      status = 1
+      finished = true
       if (dest) finishDestination(dest)
       options.onAllReady?.()
     },
     (err) => {
-      status = 2
-      failure = err
-      if (!shellReady) options.onShellError?.(err)
-      else if (dest) finishDestination(dest)
+      finished = true
+      failure = { reason: err }
+      buffers.length = 0
+      try {
+        if (!shellReady) options.onShellError?.(err)
+      } finally {
+        // onShellError can pipe the attached target itself.
+        if (dest) finishDestination(dest)
+      }
     },
   )
 
   return {
     pipe<T extends PipeableWritable>(target: T): T {
-      dest = target
-      if (status !== 2) {
-        for (const chunk of buffers) target.write(chunk)
-        buffers.length = 0
-      }
-      if (status) finishDestination(target)
+      if (!finished) dest = target
+      for (const chunk of buffers) target.write(chunk)
+      buffers.length = 0
+      if (finished) finishDestination(target)
       return target
     },
     abort: state.abort,

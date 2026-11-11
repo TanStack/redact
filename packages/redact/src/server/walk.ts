@@ -128,7 +128,7 @@ function walkNode(node: ReactNode, opts: WalkOptions, inArray?: boolean): void {
   const marker: unknown = (node as ReactElement).$$typeof
   if (isElementMarker(marker)) {
     const element = node as ReactElement
-    if (inArray && element.key != null) opts.path![1] = element.key
+    if (inArray) opts.path![1] = element.key ?? opts.path![1]
     walkElement(element.type, element.props ?? {}, opts)
     return
   }
@@ -405,12 +405,13 @@ function walkComponent(
 }
 
 function emitBuffered(parts: string[], head: number, opts: WalkOptions): void {
-  const tail = head < 0 ? null : parts.splice(head)
-  opts.emit(parts.join(''))
-  if (tail) {
+  if (head >= 0) {
+    const tail = parts.splice(head)
+    opts.emit(parts.join(''))
     opts.onHead?.()
-    opts.emit(tail.join(''))
+    parts = tail
   }
+  opts.emit(parts.join(''))
 }
 
 function walkSuspense(
