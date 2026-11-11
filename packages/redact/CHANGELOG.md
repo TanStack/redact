@@ -1,5 +1,17 @@
 # @tanstack/redact
 
+## 0.3.2
+
+### Patch Changes
+
+- Close an attached pipeable stream destination when the server shell fails, including when the error callback pipes to the same destination. ([#172](https://github.com/TanStack/redact/pull/172))
+
+- Allow the plain Redact Vite plugin to install alongside Cloudflare Vite plugin 2.0.0-beta.v.11 and document the optimizer setting required for native RSC in development. ([#169](https://github.com/TanStack/redact/pull/169))
+
+- Keep queued child state and context updates working when a parent reuses JSX, and retain pending work inside its Suspense boundary. ([#133](https://github.com/TanStack/redact/pull/133))
+
+- Skip Vite resolver calls for unrelated imports and skip the React 18 transform when the app uses React 19. ([#171](https://github.com/TanStack/redact/pull/171))
+
 ## 0.3.1
 
 ### Patch Changes
