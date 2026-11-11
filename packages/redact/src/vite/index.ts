@@ -36,6 +36,10 @@ export function redact(options: RedactOptions = {}): any {
   const skip = new Set(options.skip ?? [])
   const entries = Object.entries(ALIASES).filter(([k]) => !skip.has(k))
   const excludeList = entries.map(([k]) => k)
+  const aliasPattern = excludeList.map((id) => id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')
+  const aliasFilter = aliasPattern ? new RegExp(`^(?:${aliasPattern})$`) : /$a/
+  const featureImport = /^\.\/([a-z-]+)(\/index\.js)?$/
+  const peerImport = /[\\/](context|hydration|fragment-refs|view-transition|class|suspense-runtime|suspense-hydration)(?:[\\/]index\.js)?$/
   const optimizeDepsBlocked = new Set(excludeList)
   const features = resolveFeatures(options.preset ?? 'full', options.features ?? {})
 
@@ -132,51 +136,60 @@ export function redact(options: RedactOptions = {}): any {
       }
     },
 
-    async resolveId(this: any, id: string, importer?: string, opts?: any) {
-      // Skip the RSC environment — it relies on real React internals via
-      // @vitejs/plugin-rsc's vendored react-server-dom. Substituting our
-      // shim there breaks Flight serialization. Client + SSR envs still swap.
-      if (!active(this?.environment, opts?.ssr)) return null
+    applyToEnvironment: (environment: any) => active(environment),
+    resolveId: {
+      filter: { id: [aliasFilter,
+        new RegExp(featureImport.source.slice(0, -1) + '(?:[?#]|$)'),
+        new RegExp(peerImport.source.slice(0, -1) + '(?:[?#]|$)'),
+      ] },
+      async handler(this: any, id: string, importer?: string, opts?: any) {
+        // Skip the RSC environment — it relies on real React internals via
+        // @vitejs/plugin-rsc's vendored react-server-dom. Substituting our
+        // shim there breaks Flight serialization. Client + SSR envs still swap.
+        if (!active(this?.environment, opts?.ssr)) return null
 
-      // Feature-flag swap: when the reconciler's `features/index` module
-      // imports a feature by relative path, redirect to that feature's stub
-      // if the flag is off. The stub registers a graceful-degradation
-      // matcher (e.g. Portal → Fragment) so user code keeps working.
-      const path = id.split(/[?#]/, 1)[0]!
-      const suffix = id.slice(path.length)
-      if (importer && isRuntimeFeature(importer) && /[\\/]features[\\/]index\.[jt]sx?$/.test(importer.split(/[?#]/, 1)[0]!)) {
-        const m = path.match(/^\.\/([a-z-]+)(\/index\.js)?$/)
-        if (m) {
-          const dir = m[1]!
-          const name = (dir === 'forward-ref' ? 'forwardRef' : dir === 'fragment-refs' ? 'fragmentRefs' : dir === 'view-transition' ? 'viewTransitions' : dir === 'class' ? 'classComponents' : dir) as keyof ResolvedFeatures
-          if (name in features && !features[name]) {
-            const r = await this.resolve(`./${dir}/stub${m[2] ? '.js' : ''}${suffix}`, importer, {
-              ...opts,
-              skipSelf: true,
-            })
-            if (r) return r.id
+        // Feature-flag swap: when the reconciler's `features/index` module
+        // imports a feature by relative path, redirect to that feature's stub
+        // if the flag is off. The stub registers a graceful-degradation
+        // matcher (e.g. Portal → Fragment) so user code keeps working.
+        const path = id.split(/[?#]/, 1)[0]!
+        const suffix = id.slice(path.length)
+        if (importer && isRuntimeFeature(importer) && /[\\/]features[\\/]index\.[jt]sx?$/.test(importer.split(/[?#]/, 1)[0]!)) {
+          const m = path.match(featureImport)
+          if (m) {
+            const dir = m[1]!
+            const name = (dir === 'forward-ref' ? 'forwardRef' : dir === 'fragment-refs' ? 'fragmentRefs' : dir === 'view-transition' ? 'viewTransitions' : dir === 'class' ? 'classComponents' : dir) as keyof ResolvedFeatures
+            if (name in features && !features[name]) {
+              const r = await this.resolve(`./${dir}/stub${m[2] ? '.js' : ''}${suffix}`, importer, {
+                ...opts,
+                skipSelf: true,
+              })
+              if (r) return r.id
+            }
           }
         }
-      }
 
-      // Peer imports must use the same feature selection as the registration
-      // entrypoint, or an enabled feature can bring a disabled one back in.
-      const peer = path.match(/[\\/](context|hydration|fragment-refs|view-transition|class|suspense-runtime|suspense-hydration)(?:[\\/]index\.js)?$/)
-      const peerKey = peer?.[1] === 'suspense-hydration' ? 'hydration' : peer?.[1] === 'suspense-runtime' ? 'suspense' : peer?.[1] === 'fragment-refs' ? 'fragmentRefs' : peer?.[1] === 'view-transition' ? 'viewTransitions' : peer?.[1] === 'class' ? 'classComponents' : peer?.[1] as 'context' | 'hydration' | undefined
-      if (importer && peer && peerKey && !features[peerKey]) {
-        const r = await this.resolve(id, importer, { ...opts, skipSelf: true })
-        const resolvedFeature = r?.id.match(/features[\\/](context|hydration|fragment-refs|view-transition|class|suspense-runtime|suspense-hydration)[\\/]index\.(ts|js)(?=[?#]|$)/)
-        if (r && isRuntimeFeature(r.id) && resolvedFeature?.[1] === peer[1]) {
-          return r.id.replace(/index\.(ts|js)(?=[?#]|$)/, 'stub.$1')
+        // Peer imports must use the same feature selection as the registration
+        // entrypoint, or an enabled feature can bring a disabled one back in.
+        const peer = path.match(peerImport)
+        const peerKey = peer?.[1] === 'suspense-hydration' ? 'hydration' : peer?.[1] === 'suspense-runtime' ? 'suspense' : peer?.[1] === 'fragment-refs' ? 'fragmentRefs' : peer?.[1] === 'view-transition' ? 'viewTransitions' : peer?.[1] === 'class' ? 'classComponents' : peer?.[1] as 'context' | 'hydration' | undefined
+        if (importer && peer && peerKey && !features[peerKey]) {
+          const r = await this.resolve(id, importer, { ...opts, skipSelf: true })
+          const resolvedFeature = r?.id.match(/features[\\/](context|hydration|fragment-refs|view-transition|class|suspense-runtime|suspense-hydration)[\\/]index\.(ts|js)(?=[?#]|$)/)
+          if (r && isRuntimeFeature(r.id) && resolvedFeature?.[1] === peer[1]) {
+            return r.id.replace(/index\.(ts|js)(?=[?#]|$)/, 'stub.$1')
+          }
         }
-      }
 
-      return resolvedMap[id] ?? null
+        return resolvedMap[id] ?? null
+      },
     },
   }, {
     name: 'redact:canonical-imports',
+    applyToEnvironment: (environment: any) => active(environment),
     resolveId: {
       order: 'pre',
+      filter: { id: aliasFilter },
       handler(this: any, id: string, _importer?: string, opts?: any) {
         if (!active(this.environment, opts?.ssr)) return null
         return resolvedMap[id] ?? null
@@ -184,6 +197,7 @@ export function redact(options: RedactOptions = {}): any {
     },
   }, {
     name: 'redact:react18',
+    applyToEnvironment: (environment: any) => !!react18Version && !!runtimeRoot && active(environment),
     enforce: 'post',
     transform(this: any, code: string, id: string, opts?: any) {
       if (!react18Version || !runtimeRoot || !active(this?.environment, opts?.ssr)) return null
