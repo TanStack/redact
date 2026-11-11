@@ -419,22 +419,15 @@ export function renderToPipeableStream(
   const state = createState()
 
   const buffers: string[] = []
-  let dest: PipeableWritable | null = null
+  let dest: PipeableWritable | undefined
   let shellReady = false
-  let shellFailed = false
   let finished = false
-  let failed = false
-  let failure: unknown
+  let failure: { reason: unknown } | undefined
 
   const finishDestination = (target: PipeableWritable) => {
-    if (failed && target.destroy) target.destroy(failure)
+    if (target === dest) dest = undefined
+    if (failure && target.destroy) target.destroy(failure.reason)
     else target.end()
-  }
-
-  const flushTo = (w: PipeableWritable) => {
-    if (!buffers.length) return
-    for (const b of buffers) w.write(b)
-    buffers.length = 0
   }
 
   const emit: Emit = (chunk) => {
@@ -444,7 +437,7 @@ export function renderToPipeableStream(
   }
 
   state.onShellReady = () => queueMicrotask(() => {
-    if (shellFailed) return
+    if (failure) return
     shellReady = true
     options.onShellReady?.()
   })
@@ -453,17 +446,16 @@ export function renderToPipeableStream(
   streamHtml(children, emit, options, state).then(
     () => {
       finished = true
-      if (dest) dest.end()
+      if (dest) finishDestination(dest)
       options.onAllReady?.()
     },
     (err) => {
       finished = true
-      failed = true
-      failure = err
-      if (!shellReady) {
-        shellFailed = true
-        options.onShellError?.(err)
-      } else {
+      failure = { reason: err }
+      try {
+        if (!shellReady) options.onShellError?.(err)
+      } finally {
+        // onShellError can pipe the attached target itself.
         if (dest) finishDestination(dest)
       }
     },
@@ -471,13 +463,14 @@ export function renderToPipeableStream(
 
   return {
     pipe<T extends PipeableWritable>(target: T): T {
-      dest = target
-      if (!failed) flushTo(target)
+      if (!failure) {
+        if (!finished) dest = target
+        for (const chunk of buffers) target.write(chunk)
+        buffers.length = 0
+      }
       if (finished) finishDestination(target)
       return target
     },
-    abort(reason?: unknown) {
-      state.abort(reason)
-    },
+    abort: state.abort,
   }
 }
