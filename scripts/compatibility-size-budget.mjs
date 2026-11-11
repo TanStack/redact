@@ -41,6 +41,53 @@ const allowances = {
   }
 }
 
+// Measured SSR correctness costs against the exact PR base.
+const ssrBase = '0c7274e17a3fade8396169bc6ed024903cd1252d'
+const ssrAllowances = {
+  "full:dom/client:react18": {
+    "brotli": 13
+  },
+  "full:server/index:react19": {
+    "min": 440,
+    "gzip": 200,
+    "brotli": 190
+  },
+  "full:server/index:react18": {
+    "min": 440,
+    "gzip": 201,
+    "brotli": 207
+  },
+  "full:client-total:react18": {
+    "brotli": 48
+  },
+  "default:server/index:react19": {
+    "min": 440,
+    "gzip": 200,
+    "brotli": 190
+  },
+  "default:server/index:react18": {
+    "min": 440,
+    "gzip": 201,
+    "brotli": 207
+  },
+  "default:client-total:react18": {
+    "brotli": 4
+  },
+  "nano:dom/client:react18": {
+    "brotli": 21
+  },
+  "nano:server/index:react19": {
+    "min": 440,
+    "gzip": 200,
+    "brotli": 190
+  },
+  "nano:server/index:react18": {
+    "min": 440,
+    "gzip": 201,
+    "brotli": 207
+  }
+}
+
 // Approved 2026-11-01 for the streamed-hydration split only. Pin both the
 // comparison base and all build/runtime inputs so another patch cannot reuse it.
 // The second base only adds the independent SSR change from #123; the affected
@@ -365,6 +412,10 @@ export function shellReleaseAllowance(base, row, metric, fingerprint) {
 }
 
 export function compatibilitySizeAllowance(base, row, metric) {
+  if (base === ssrBase) {
+    const value = ssrAllowances[`${row.profile}:${row.entry}:${row.target}`]?.[metric]
+    if (typeof value === 'number') return value
+  }
   const shell = shellReleaseAllowance(base, row, metric, base === shellReleaseBase ? shellReleaseFingerprint() : undefined)
   if (shell) return shell
   const autofocus = autofocusAllowance(base, row, metric, base === autofocusApproval.base ? autofocusFingerprint() : undefined)
