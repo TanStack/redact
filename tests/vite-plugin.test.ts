@@ -67,7 +67,7 @@ describe('redact vite plugin', () => {
   it.each(['ts', 'js'])('keeps peer imports on the same disabled implementation in %s modules', async (extension) => {
     const plugin = findPlugin(redact({ preset: 'nano' }), 'redact')
     const importer = `${resolve(import.meta.dirname, '../packages/redact')}/${extension === 'ts' ? 'src' : 'dist'}/dom/features/suspense/full.${extension}`
-    for (const feature of ['context', 'hydration', 'fragment-refs', 'view-transition', 'class', 'suspense-hydration']) {
+    for (const feature of ['context', 'hydration', 'fragment-refs', 'view-transition', 'class', 'suspense-hydration', 'suspense-runtime']) {
       for (const base of [`../${feature}`, `../../features/${feature}`]) {
         const specifier = base + (extension === 'js' ? '/index.js' : '')
         const context = {
@@ -546,5 +546,27 @@ describe('streamed hydration feature boundary',()=>{
     }],build:{write:false,minify:true,rollupOptions:{input:fixture,preserveEntrySignatures:'strict',output:{format:'es'}}}})
     expect(modules.some(id=>id.endsWith('/features/suspense-hydration/full.ts'))).toBe(features.hydration&&features.suspense)
     expect(modules.some(id=>id.endsWith('/features/suspense/full.ts'))).toBe(features.suspense)
+  })
+})
+
+// Private candidate coverage for the existing Suspense flag, no new public flag.
+describe('pending Suspense discovery feature boundary', () => {
+  it.each([true, false])('keeps discovery selected with suspense=%s', async suspense => {
+    const source = resolve(import.meta.dirname, '../packages/redact/src')
+    const fixture = '\0pending-discovery-feature'
+    let bundled = ''
+    await build({ configFile: false, logLevel: 'silent', plugins: [...redact({ preset: 'full', features: { suspense } }), {
+      name: 'pending-discovery-feature', enforce: 'pre',
+      transform(code, id) {
+        if (!id.endsWith('/dom/reconcile.ts')) return null
+        const needle = 'export function hasPendingFiber(fiber: Fiber): boolean {'
+        if (!code.includes(needle)) throw new Error('Missing pending predicate diagnostic target')
+        return code.replace(needle, needle + '\n(globalThis as any).__redactPendingProbe();')
+      },
+      resolveId(id) { if (id === fixture) return id },
+      load(id) { if (id === fixture) return `export { createRoot } from ${JSON.stringify(source + '/dom/client.ts')}` },
+      generateBundle(_options, bundle) { bundled = Object.values(bundle).flatMap(item => item.type === 'chunk' ? [item.code] : []).join('') },
+    }], build: { write: false, minify: true, rollupOptions: { input: fixture, preserveEntrySignatures: 'strict', output: { format: 'es' } } } })
+    expect(bundled.includes('__redactPendingProbe')).toBe(suspense)
   })
 })

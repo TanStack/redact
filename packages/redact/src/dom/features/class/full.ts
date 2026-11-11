@@ -1,6 +1,6 @@
 import { devToolsMetadata } from '../../../core/devtools';
 import { resolveClassProps } from '../../../core/class-props';
-import { invokeCommit, stageCommit } from '../../reconcile';
+import { invokeCommit, stageCommit, visitChildren } from '../../reconcile';
 import { installRenderer, reconcileRaw, childrenToArray, scheduleUpdate, scheduleLifecycle, isThenable, handleSuspended, handleErrorInRender, readContext, attachRef, syncRefIfChanged, isActivityHidden, layoutIsDisconnected, RenderErrorCapture, handleCommitError, } from '../../reconcile';
 import { checkpointCommit, rewindCommit, queueBeforeMutation, queueMutation } from '../../commit';
 import { FiberTag, type Fiber, type ReactNode } from '../../../core';
@@ -13,14 +13,8 @@ function findHost(fiber: Fiber): Node | null {
         return fiber.n;
     if (fiber.t === FiberTag.Resource)
         return fiber.i;
-    for (let child = fiber.c; child; child = child.s) {
-        const node = findHost(child);
-        if (node)
-            return node;
-    }
-    return null;
+    return visitChildren(fiber, findHost, undefined, true) ?? null;
 }
-installRenderer(FiberTag.Class, renderClass);
 export function findDOMNode(instance: any): Node | null {
     const fiber = instance._f as Fiber | undefined;
     if (!fiber || fiber.u)
@@ -191,4 +185,8 @@ function renderClass(fiber: Fiber): void {
 function updateState(state: any, update: any, props: any): any {
     const next = isFunction(update) ? update(state, props) : update;
     return next == null ? state : { ...state, ...next };
+}
+
+export function installClass(): void {
+    installRenderer(FiberTag.Class, renderClass);
 }

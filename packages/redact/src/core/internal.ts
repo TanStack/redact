@@ -99,7 +99,7 @@ export interface FiberRoot {
     a?: boolean;
     fr?: boolean;
 }
-export function createFiber(tag: FiberTag, type: any, key: string | null): Fiber {
+export function createFiber(tag: FiberTag, type: any, key: string | null, parent: Fiber | null = null): Fiber {
     return {
         t: tag,
         type,
@@ -110,7 +110,7 @@ export function createFiber(tag: FiberTag, type: any, key: string | null): Fiber
         b: null,
         i: null,
         n: null,
-        p: null,
+        p: parent,
         c: null,
         s: null,
         h: null,

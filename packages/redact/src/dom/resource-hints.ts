@@ -4,10 +4,12 @@ import { isObject } from '../core/functions';
 const requestOptions = 'integrity fetchPriority';
 function options(input: any, fields: string, as?: string): ResourceHintOptions {
     const result: ResourceHintOptions = {};
-    for (const name of fields ? fields.split(' ') : []) {
-        const value = input?.[name];
-        if (isString(value))
-            result[name] = value;
+    if (fields) {
+        for (const name of fields.split(' ')) {
+            const value = input?.[name];
+            if (isString(value))
+                result[name] = value;
+        }
     }
     const crossOrigin = input?.crossOrigin;
     if (as === 'font' || isString(crossOrigin)) {
@@ -62,25 +64,20 @@ function emit(kind: ResourceHintKind, href: string, props: ResourceHintOptions):
     const resources = getResources(document);
     const preload = kind === 'preload' || kind === 'modulepreload';
     const as = props.as || 'script';
+    const image = kind === 'preload' && as === 'image' && props.imageSrcSet;
     let selector = `link[rel="${kind}"]`;
-    let resource = '';
-    if (preload) {
-        selector += resourceAttribute('as', as);
-        if (as === 'image' && props.imageSrcSet) {
-            selector += resourceAttribute('imagesrcset', props.imageSrcSet);
-            if (isString(props.imageSizes))
-                selector += resourceAttribute('imagesizes', props.imageSizes);
-        }
-        else
-            selector += resourceAttribute('href', href);
-        resource = (kind === 'preload' ? as === 'script' || as === 'style' : scriptDestination(as))
-            ? resourceSelector(href, as) : '';
-    }
-    else {
+    if (preload) selector += resourceAttribute('as', as);
+    if (image) {
+        selector += resourceAttribute('imagesrcset', image);
+        if (isString(props.imageSizes))
+            selector += resourceAttribute('imagesizes', props.imageSizes);
+    } else {
         selector += resourceAttribute('href', href);
-        if (props.crossOrigin != null)
-            selector += resourceAttribute('crossorigin', props.crossOrigin);
     }
+    if (!preload && props.crossOrigin != null)
+        selector += resourceAttribute('crossorigin', props.crossOrigin);
+    const resource = (kind === 'preload' ? as === 'script' || as === 'style'
+        : kind === 'modulepreload' && scriptDestination(as)) ? resourceSelector(href, as) : '';
     const key = resource || selector;
     if (resources.p.has(key))
         return;
@@ -89,7 +86,7 @@ function emit(kind: ResourceHintKind, href: string, props: ResourceHintOptions):
         return;
     const node = document.createElement('link');
     node.setAttribute('rel', kind);
-    if (!(kind === 'preload' && as === 'image' && props.imageSrcSet))
+    if (!image)
         node.setAttribute('href', resourceURL(href));
     for (const name in props)
         node.setAttribute(name.toLowerCase(), props[name]!);
