@@ -17,11 +17,10 @@ export function renderToString(
       onHead: () => { head = output.length },
     })
     const hints = currentSSRFrame().resources?.drain()
-    if (hints) output = output.slice(0, head) + hints + output.slice(head)
+    return hints ? output.slice(0, head) + hints + output.slice(head) : output
   } finally {
     restore()
   }
-  return output
 }
 
 export function renderToStaticMarkup(

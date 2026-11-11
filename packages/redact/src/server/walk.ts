@@ -38,6 +38,7 @@ import {
 } from './dispatcher'
 import { isBrowserError } from '../core/browser'
 import type { ResourceScope } from './resource-hints'
+import type { RenderPath } from './resource-fields'
 
 export interface ServerErrorInfo {
   componentStack: string
@@ -45,7 +46,7 @@ export interface ServerErrorInfo {
 
 export type BrowserBailoutCallback = (error: Error, errorInfo: ServerErrorInfo) => void
 
-export type SuspendedBoundary = [number, ReactNode, Promise<any>, ContextSnapshot, string, number, boolean | undefined]
+export type SuspendedBoundary = [number, ReactNode, Promise<any>, ContextSnapshot, string, number, boolean | undefined, RenderPath]
 
 export interface WalkOptions {
   inFallback?: boolean | undefined
@@ -62,6 +63,7 @@ export interface WalkOptions {
   // Shared traversal flags: SVG = 1, adjacent text = 2, picture = 4, noscript = 8, document = 16.
   // Host children restore previous flags on return or throw.
   textState?: [bits: number]
+  path: RenderPath | null
 }
 
 /**
@@ -71,11 +73,12 @@ export interface WalkOptions {
  */
 export function walk(
   node: ReactNode,
-  opts: Omit<WalkOptions, 'textState' | 'resourceScope'>,
+  opts: Omit<WalkOptions, 'textState' | 'resourceScope' | 'path'>,
   bits = 0,
   resourceScope: ResourceScope = [],
+  path: RenderPath | null = null,
 ): void {
-  walkNode(node, { ...opts, textState: [bits], resourceScope })
+  walkNode(node, { ...opts, textState: [bits], resourceScope, path })
 }
 
 // Nested selects restore the previous selection when their walk ends.
@@ -103,15 +106,21 @@ function isElementMarker(marker: unknown): boolean {
   return marker === REACT_ELEMENT_TYPE || marker === REACT_LEGACY_ELEMENT_TYPE
 }
 
-function walkNode(node: ReactNode, opts: WalkOptions): void {
-  if (node == null || node === false || node === true) return
+function walkNode(node: ReactNode, opts: WalkOptions, inArray?: boolean): void {
+  if (node == null || typeof node === 'boolean') return
 
   if (isTextContent(node)) {
     emitText('' + node, opts)
     return
   }
   if (Array.isArray(node) || isFunction((node as any)[Symbol.iterator])) {
-    for (const item of node as Iterable<ReactNode>) walkNode(item, opts)
+    const parent = opts.path
+    let index = 0
+    for (const item of node as Iterable<ReactNode>) {
+      opts.path = [parent!, index++]
+      walkNode(item, opts, true)
+    }
+    opts.path = parent
     return
   }
 
@@ -119,6 +128,7 @@ function walkNode(node: ReactNode, opts: WalkOptions): void {
   const marker: unknown = (node as ReactElement).$$typeof
   if (isElementMarker(marker)) {
     const element = node as ReactElement
+    if (inArray && element.key != null) opts.path![1] = element.key
     walkElement(element.type, element.props ?? {}, opts)
     return
   }
@@ -224,7 +234,7 @@ function walkHost(
   const isSvg = !!(textState[0] & 1) || tag === 'svg'
   const flags = textState[0] & 28
   if (!isSvg) {
-    const hoisted = recordHostResource(tag, props, opts.emit, opts.resourceScope!, flags, opts.inFallback)
+    const hoisted = recordHostResource(tag, props, opts.emit, opts.resourceScope!, flags, opts.path!, opts.inFallback)
     if (hoisted === true) return
     if (hoisted) {
       if (textState[0] & 2) emit('<!-- -->')
@@ -419,7 +429,9 @@ function walkSuspense(
   let head = -1
   const nested: SuspendedBoundary[] = []
   const thrownInfo: { componentStack?: string | undefined } = {}
-  const resourceScope: ResourceScope = [id]
+  // Mark the boundary so a nested single child has its own render address.
+  const path: RenderPath = [opts.path!, -1]
+  const resourceScope: ResourceScope = []
   const buffered = {
     ...opts,
     emit: (chunk: string) => parts.push(chunk),
@@ -429,7 +441,7 @@ function walkSuspense(
   let marker = ''
   let pending: Promise<any> | undefined
   try {
-    walkNode(props.children, { ...buffered, resourceScope, thrownInfo })
+    walkNode(props.children, { ...buffered, resourceScope, thrownInfo, path })
   } catch (error: any) {
     nested.length = parts.length = 0
     head = -1
@@ -459,6 +471,6 @@ function walkSuspense(
   if (pending) opts.onSuspend?.([
     id, props.children, pending, contextSnapshot,
     thrownInfo.componentStack || opts.componentStack || '',
-    opts.textState![0] & 28, opts.inFallback,
+    opts.textState![0] & 28, opts.inFallback, path,
   ])
 }

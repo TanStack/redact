@@ -151,7 +151,7 @@ export async function streamHtml(
     // matches React's behavior where `renderToReadableStream` of a static
     // tree emits only the markup.
     const content = options.bootstrapScriptContent
-    const inlineScripts = content === undefined ? [] : typeof content === 'string' ? [content] : [...content]
+    const inlineScripts = typeof content === 'string' ? [content] : [...content ?? []]
     if (boundaries.length || inlineScripts.length || options.bootstrapScripts?.length || options.bootstrapModules?.length) {
       shellChunks.push(injectBootstrapScript(nonce))
       for (const content of inlineScripts) {
@@ -177,7 +177,7 @@ export async function streamHtml(
       err = new Error('The server render could not complete because client rendering was requested outside a Suspense boundary.',
         Object.hasOwn(err, 'cause') ? { cause: err.cause } : undefined)
     }
-    if (options.onError) options.onError(err)
+    options.onError?.(err)
     throw err
   } finally {
     state.closed = true
@@ -210,7 +210,7 @@ function streamBoundary(
     // provider stack from when the boundary first suspended.
     const parts: string[] = []
     const sub: SuspendedBoundary[] = []
-    const resourceScope: ResourceScope = [b[0]]
+    const resourceScope: ResourceScope = []
     let styles: string[][] | undefined
     const restore = beginSSR(options.identifierPrefix, frame)
     frame.resources?.takeStylesheets()
@@ -223,7 +223,7 @@ function streamBoundary(
           onError: options.onError,
         componentStack: b[4],
         inFallback: b[6],
-      }, b[5], resourceScope)
+      }, b[5], resourceScope, b[7])
       frame.resources?.mergeScope(resourceScope)
     } catch (err) {
       if (isThenable(err)) {
@@ -248,7 +248,8 @@ function streamBoundary(
 }
 
 function scriptNonce(options: StreamOptions): string | undefined {
-  return typeof options.nonce === 'string' ? options.nonce : options.nonce?.script
+  const nonce = options.nonce
+  return typeof nonce === 'string' ? nonce : nonce?.script
 }
 
 function normalizeDocumentShell(html: string): string {
@@ -256,22 +257,15 @@ function normalizeDocumentShell(html: string): string {
   if (doctypeIndex <= 0) return html
 
   const headPrefix = html.slice(0, doctypeIndex)
-  if (!isHeadPrefix(headPrefix)) return html
+  const tags = /\s*<(?:(?:meta|link|base)\b[^>]*>|(title|style|script)\b[^>]*>[\s\S]*?<\/\1>)/iy
+  let end = 0
+  while (tags.test(headPrefix)) end = tags.lastIndex
+  if (headPrefix.slice(end).trim()) return html
 
-  const documentHtml = html.slice(doctypeIndex)
-  const headOpen = documentHtml.match(/<head(?:\s[^>]*)?>/)
-  if (!headOpen) return html
-
-  const insertAt = headOpen.index! + headOpen[0].length
-  return documentHtml.slice(0, insertAt) + headPrefix + documentHtml.slice(insertAt)
-}
-
-function isHeadPrefix(value: string): boolean {
-  for (;;) {
-    const rest = value.replace(/^\s*<(?:(?:meta|link|base)\b[^>]*>|(title|style|script)\b[^>]*>[\s\S]*?<\/\1>)/i, '')
-    if (rest === value) return !value.trim()
-    value = rest
-  }
+  const headOpen = /<head(?:\s[^>]*)?>/g
+  headOpen.lastIndex = doctypeIndex
+  if (!headOpen.test(html)) return html
+  return html.slice(doctypeIndex, headOpen.lastIndex) + headPrefix + html.slice(headOpen.lastIndex)
 }
 
 function bootstrapTag(

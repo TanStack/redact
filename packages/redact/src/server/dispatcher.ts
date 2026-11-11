@@ -5,6 +5,7 @@ import { ReactSharedInternals, REACT_CONTEXT_TYPE } from '../react'
 import { isBrowserToken, browserError } from '../core/browser'
 import { resourceHintDispatcher, resourceKind } from '../core/resource-hints'
 import { createResourceHints, type ResourceScope } from './resource-hints'
+import type { RenderPath } from './resource-fields'
 
 export interface SSRFrame {
   idCounter: number
@@ -44,13 +45,14 @@ export function currentSSRFrame(): SSRFrame {
   return frame!
 }
 
-export function recordHostResource(tag: string, props: any, emit: (chunk: string) => void, scope: ResourceScope, flags: number, inFallback?: boolean): ((chunk: string) => void) | true | null | void {
+export function recordHostResource(tag: string, props: any, emit: (chunk: string) => void, scope: ResourceScope, flags: number, path: RenderPath | null, inFallback?: boolean): ((chunk: string) => void) | true | null | void {
   if (!frame) return
   const kind = resourceKind(tag, props)
-  if (!kind && !(flags & 16 && !(flags & 8) && (tag === 'meta' || tag === 'img' && !(flags & 4)))) return
-  const collector = resourcesFor(frame)
-  if (kind) return collector.addHost(kind, props, scope)
-  return tag === 'img' ? collector.addImage(props) : collector.addMeta(props, emit, scope, inFallback)
+  if (kind) return resourcesFor(frame).addHost(kind, props, scope)
+  if (flags & 16 && !(flags & 8)) {
+    if (tag === 'meta') return resourcesFor(frame).addMeta(props, emit, path, inFallback)
+    if (tag === 'img' && !(flags & 4)) return resourcesFor(frame).addImage(props)
+  }
 }
 
 export function pushContext(context: any, value: any): void {

@@ -1,4 +1,4 @@
-import { ResourceField as R, ResourceFlag as F, ScopeField } from './resource-fields'
+import { ResourceField as R, ResourceFlag as F, ScopeField, type RenderPath } from './resource-fields'
 import { isFunction, isString } from '../core/functions'
 import { resourceURL, type HostResourceKind, type ResourceHintKind, type ResourceHintOptions } from '../core/resource-hints'
 import { attrToHtml, escapeAttr, isInternalAttribute } from './escape'
@@ -13,8 +13,6 @@ type Resource = [
 ]
 
 export type ResourceScope = [
-  metadataOwner?: number,
-  metadataCounts?: Map<string, number>,
   stylesheets?: Map<string, string[]>,
   inline?: Set<string>,
 ]
@@ -67,7 +65,7 @@ export function createResourceHints(shellFlushed = false, styleNonce?: string) {
   const dependencies = new Map<string, string[]>()
   const visibleInline = new Set<string>()
   let charset = '', viewport = ''
-  const recordedMetas = new Map<string, number>()
+  const recordedMetas = new Set<string>()
   const collector = {
     add(kind: ResourceHintKind | 'style', href: string, options: ResourceHintOptions, eager?: boolean): Resource {
       let type: string = kind
@@ -128,7 +126,7 @@ export function createResourceHints(shellFlushed = false, styleNonce?: string) {
     },
     // Hoist <meta charSet> and <meta name="viewport"> to the start of the head. Content streamed
     // after the shell keeps its metas in place.
-    addMeta(props: any, emit: (chunk: string) => void, scope: ResourceScope, inFallback?: boolean): ((chunk: string) => void) | true | null {
+    addMeta(props: any, emit: (chunk: string) => void, path: RenderPath | null, inFallback?: boolean): ((chunk: string) => void) | true | null {
       const isCharset = isString(props.charSet)
       if (!(isCharset || props.name === 'viewport') || props.itemProp != null) return null
       if (inFallback) return true
@@ -136,18 +134,13 @@ export function createResourceHints(shellFlushed = false, styleNonce?: string) {
       return chunk => {
         markup += chunk
         if (chunk !== '/>') return
-        const counts = scope[ScopeField.Counts] ||= new Map()
-        const count = (counts.get(markup) || 0) + 1
-        counts.set(markup, count)
-        const key = scope[ScopeField.Owner] + ':' + markup
-        if (count <= (recordedMetas.get(key) || 0)) return
-        if (shellFlushed) emit(markup)
-        else {
-          // Late boundary output can still be discarded if the boundary suspends again.
-          recordedMetas.set(key, count)
+        const key = JSON.stringify(path) + markup
+        if (!shellFlushed) {
+          // Only shell output is committed. A late attempt can still suspend.
+          recordedMetas.add(key)
           if (isCharset) charset += markup
           else viewport += markup
-        }
+        } else if (!recordedMetas.has(key)) emit(markup)
       }
     },
     // An abandoned shell attempt re-walks its metas; the hints it registered stay deduplicated.
@@ -173,7 +166,8 @@ export function createResourceHints(shellFlushed = false, styleNonce?: string) {
       return true
     },
     mergeScope(scope: ResourceScope, parent?: ResourceScope): void {
-      if (scope[ScopeField.Stylesheets]) for (const [href, descriptor] of scope[ScopeField.Stylesheets]) {
+      const sheets = scope[ScopeField.Stylesheets]
+      if (sheets) for (const [href, descriptor] of sheets) {
         ;(parent ? parent[ScopeField.Stylesheets] ||= new Map() : dependencies).set(href, descriptor)
       }
       if (scope[ScopeField.Inline]) for (const precedence of scope[ScopeField.Inline]) {

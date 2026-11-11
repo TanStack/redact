@@ -13,9 +13,9 @@ export const enum ResourceFlag {
   Preloaded = 8,
 }
 
+export type RenderPath = [parent: RenderPath | null, key: number | string]
+
 export const enum ScopeField {
-  Owner,
-  Counts,
   Stylesheets,
   Inline,
 }

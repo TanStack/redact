@@ -290,6 +290,32 @@ describe('image preloads', () => {
     expect(body).toContain('<meta name="viewport" content="late"/><img src="/late.png" alt=""/>')
   })
 
+  it.each([false, true])('keeps metadata ownership across an outer retry (new sibling: %s)', async insert => {
+    const { Suspense } = await import('react')
+    let release!: () => void
+    let ready = false
+    const pending = new Promise<void>(resolve => {
+      release = () => { ready = true; resolve() }
+    })
+    function Wait() {
+      if (!ready) throw pending
+      return <strong>revealed</strong>
+    }
+    function Content() {
+      return [
+        insert && ready && <Suspense key="new" fallback={null}><meta name="viewport" content="nested-retry" /><i>new</i></Suspense>,
+        <Suspense key="first" fallback={null}><meta name="viewport" content="nested-retry" /><i>first</i></Suspense>,
+        <Suspense key="second" fallback={null}><meta name="viewport" content="nested-retry" /><i>second</i></Suspense>,
+        <Wait key="wait" />,
+      ]
+    }
+    const stream = await renderToReadableStream(<Page><Suspense fallback={<p>waiting</p>}><Content /></Suspense></Page>)
+    const html = await flushThenResolve(stream, release)
+    expect(head(html).filter(tag => tag.content === 'nested-retry')).toHaveLength(2)
+    expect(html.match(/content="nested-retry"/g)).toHaveLength(insert ? 3 : 2)
+    expect(html).toContain('<strong>revealed</strong>')
+  })
+
   it.each([false, true])('keeps late metadata after a second suspension (early duplicate: %s)', async early => {
     let releaseFirst!: () => void
     let releaseSecond!: () => void
