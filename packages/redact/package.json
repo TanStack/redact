@@ -71,6 +71,10 @@
       "types": "./dist/webpack/index.d.ts",
       "default": "./dist/webpack/index.js"
     },
+    "./rsbuild": {
+      "types": "./dist/rsbuild/index.d.ts",
+      "default": "./dist/rsbuild/index.js"
+    },
     "./rspack": {
       "types": "./dist/rspack/index.d.ts",
       "default": "./dist/rspack/index.js"

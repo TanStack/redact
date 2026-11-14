@@ -26,20 +26,15 @@ export default {
 
 ## Rsbuild 2
 
-Add the Rspack plugin through Rsbuild's config hook:
+Add Redact to Rsbuild's plugins array:
 
 ```js
 import { defineConfig } from '@rsbuild/core'
-import { redact } from '@tanstack/redact/rspack'
+import { pluginRedact } from '@tanstack/redact/rsbuild'
 
 export default defineConfig({
   output: { target: 'web' },
-  tools: {
-    rspack(config) {
-      config.plugins ??= []
-      config.plugins.push(redact())
-    },
-  },
+  plugins: [pluginRedact()],
 })
 ```
 
