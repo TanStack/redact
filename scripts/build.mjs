@@ -167,7 +167,7 @@ async function buildPackage() {
     const relPath = relative(srcDir, tsFile).replace(/\.ts$/, '')
     // Build adapters run in Node and can leave builtins external. The Next
     // React bridge is browser code, so only its config entry uses Node.
-    const isNodeEntry = ['webpack', 'rspack', 'bundler-core', 'vite'].some(dir => relPath.startsWith(dir + sep)) || relPath === 'next' + sep + 'index' || relPath.startsWith('vinext' + sep) || relPath.startsWith('cloudflare' + sep)
+    const isNodeEntry = ['webpack', 'rspack', 'rsbuild', 'bundler-core', 'vite'].some(dir => relPath.startsWith(dir + sep)) || relPath === 'next' + sep + 'index' || relPath.startsWith('vinext' + sep) || relPath.startsWith('cloudflare' + sep)
     await build({
       absWorkingDir: pkgDir,
       entryPoints: [{ in: tsFile, out: relPath }],
