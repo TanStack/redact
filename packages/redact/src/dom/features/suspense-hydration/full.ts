@@ -1,6 +1,6 @@
 import { readOwnerStack, runWithOwnerStack } from '../../../core/devtools';
 import type { Fiber } from '../../../core';
-import { checkpointCommit, rewindCommit, queueMutation, onCommitFailure, commitSynchronously } from '../../commit';
+import { checkpointCommit, rewindCommit, queueMutation, onCommitFailure, onCommitRollback, commitSynchronously } from '../../commit';
 import { findRoot, unmountAllChildren, withCurrentRoot, runEffects, discardPendingWork, reconcileRaw, isThenable } from '../../reconcile';
 import { HydrationCursor, setHydrationCursor, clearHydrationCursor, advanceCursorPast, isHydrationBailout } from '../hydration';
 import { renderSuspense, scheduleRetry, retryHydration } from '../suspense/full';
@@ -51,6 +51,8 @@ function reportServerFailure(fiber: Fiber): void {
 }
 export function recoverBoundaryHydration(fiber: Fiber, children: any, parent: Node, startMark: Comment | null, endMark: Comment | null, retryBoundary?: boolean): void {
     const clear = () => {
+        const dispose = fiber.b?.x;
+        if (dispose) queueMutation(dispose);
         if (startMark && endMark)
             clearBoundaryRange(startMark, endMark);
         else
@@ -170,8 +172,14 @@ export function hydrateSuspenseBoundary(fiber: Fiber, props: any, boundary: [
     finally {
         clearHydrationCursor(fiber);
     }
+    // The server range remains owned even when its fallback has child fibers.
+    fiber.b.w = true;
     advanceCursorPast(fiber.p!, endMark);
-    (globalThis as any).$RH?.(id, () => rehydrateBoundary(fiber));
+    const dispose = (globalThis as any).$RH?.(id, () => {
+        if (!fiber.u && !fiber.pd) rehydrateBoundary(fiber);
+    });
+    fiber.b.x = dispose;
+    if (dispose) onCommitRollback(dispose);
     // If the inline runtime isn't present, nothing external will mark us dy.
     fiber.m = props;
 }

@@ -33,11 +33,11 @@ export const BOUNDARY_REVEAL_RUNTIME =
     `function load(n,e){return new Promise(function(y,x){n.onload=function(){e.p=null;y()};n.onerror=function(){e.p=null;x()}})}` +
     `window.$RH=function(i,f){` +
       `if(!document.getElementById("B:"+i))f();` +
-      `else c[i]=f;` +
+      `else{c[i]=f;return function(){if(c[i]===f)delete c[i]}}` +
     `};` +
     `window.$RC=function(i){` +
       `var s=document.getElementById("S:"+i),b=document.getElementById("B:"+i);` +
-      `if(!s||!b)return;` +
+      `if(!b){delete c[i];if(s)s.remove();return}if(!s)return;` +
       `var a=document.querySelectorAll('body link[rel="stylesheet"][data-precedence],body style[data-precedence]');` +
       `for(var j=0;j<a.length;j++){` +
         `var n=a[j];if(n.getAttribute("media")==="not all")n.removeAttribute("media");place(n,n.getAttribute("data-precedence"));` +
@@ -64,7 +64,7 @@ export const BOUNDARY_REVEAL_RUNTIME =
       `Promise.all(w).then(function(){$RC(i)},function(){$RB(i,1)});` +
     `};` +
     `window.$RB=function(i,e){` +
-      `var b=document.getElementById("B:"+i);if(!b)return;` +
+      `var b=document.getElementById("B:"+i);if(!b){delete c[i];return}` +
       `var m=b.previousSibling;if(m&&m.nodeType===8)m.data=(e?"$E":"$!")+i;` +
       `b.removeAttribute("id");if(c[i]){var f=c[i];delete c[i];f()}` +
     `};` +
