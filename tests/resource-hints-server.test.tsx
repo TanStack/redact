@@ -182,6 +182,25 @@ describe('server resource hints', () => {
     }
   })
 
+  it.each([true, false])('renders single-use document children with a head provided: %s', async (withHead) => {
+    function Child() {
+      preload('/data', { as: 'fetch' })
+      return <p>body</p>
+    }
+    function* children() {
+      if (withHead) yield <head><title>test</title></head>
+      yield <body><Child /></body>
+    }
+    const tree = () => <html>{[children()]}</html>
+    const streamed = await new Response(await renderToReadableStream(tree())).text()
+    for (const output of [renderToString(tree()), renderToStaticMarkup(tree()), streamed]) {
+      expect(output).toContain('<head><link')
+      expect(output).toContain('</head><body><p>body</p></body>')
+      expect(output.includes('<title>test</title>')).toBe(withHead)
+      expect(output.match(/<head>/g)).toHaveLength(1)
+    }
+  })
+
   it('ignores calls outside an active server render', () => {
     prefetchDNS('https://outside.test')
     preconnect('https://outside.test')
