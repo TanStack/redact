@@ -1,3 +1,4 @@
+import { boundaryId, segmentId, scriptId } from './stream-ids'
 import { isFunction, isThenable } from '../core/functions'
 import type { ReactNode } from '../core'
 import {
@@ -207,7 +208,7 @@ function streamBoundary(
     const defer = (error: unknown) => {
       if (isBrowserError(error)) options.onBrowserBailout?.(error, { componentStack: (error as any).componentStack || b[4] })
       else options.onError?.(error)
-      emit(`<script${nonce ? ` nonce="${escapeAttr(nonce)}"` : ''}>$RB(${b[0]}${isBrowserError(error) ? '' : ',1'})</script>`)
+      emit(`<script${nonce ? ` nonce="${escapeAttr(nonce)}"` : ''}>$RB(${scriptId(boundaryId(b[0], options.identifierPrefix))}${isBrowserError(error) ? '' : ',1'})</script>`)
     }
     if (state.aborted) { defer(state.reason); return }
 
@@ -245,7 +246,7 @@ function streamBoundary(
       if (hints) emit(hints)
     }
 
-    emit(`<div hidden id="S:${b[0]}">${parts.join('')}</div>${revealScript(b[0], nonce, styles)}`)
+    emit(`<div hidden id="${escapeAttr(segmentId(b[0], options.identifierPrefix))}">${parts.join('')}</div>${revealScript(b[0], nonce, styles, options.identifierPrefix)}`)
 
     // Recurse: any nested suspensions inside the now-revealed content
     for (const s of sub) streamBoundary(s, emit, options, state)
