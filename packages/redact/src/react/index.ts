@@ -1,5 +1,6 @@
 import { useState, useReducer, useEffect, useLayoutEffect, useInsertionEffect, useRef, useMemo, useCallback, useContext, useImperativeHandle, useDebugValue, useId, useTransition, useDeferredValue, useSyncExternalStore, useSyncExternalStoreWithSelector, use, useActionState, useFormStatus, useOptimistic, useEffectEvent, startTransition, unstable_useCacheRefresh, } from './hooks';
 export type { FragmentInstance } from '../dom/fragment-instance';
+export type { BaseSyntheticEvent, SyntheticEvent, ChangeEvent } from './events';
 export { Children } from './children';
 import { Suspense, StrictMode, Profiler } from './suspense';
 export { Suspense, StrictMode, Profiler, REACT_SUSPENSE_TYPE, REACT_STRICT_MODE_TYPE, REACT_PROFILER_TYPE, } from './suspense';
