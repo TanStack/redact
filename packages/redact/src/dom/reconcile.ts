@@ -1222,8 +1222,12 @@ export function commitPlacements(parents: Iterable<Fiber>): void {
         visitChildren(parent, collectHostDoms, doms, true);
         placeDomsInOrder(doms, domParent);
         const metadata = documentMetadataParent(parent);
-        if (metadata && parent.n!.parentNode !== metadata)
-            metadata.appendChild(parent.n!);
+        if (metadata && parent.n!.parentNode !== metadata) {
+            if (parent.type === 'title' && parent.r!.c.nodeType !== 9)
+                metadata.insertBefore(parent.n!, metadata.querySelector(':scope > title'));
+            else
+                metadata.appendChild(parent.n!);
+        }
     }
 }
 // ---------------------------------------------------------------------------
