@@ -1,3 +1,4 @@
+import { segmentHtml } from './insertion-context'
 import { isFunction, isThenable } from '../core/functions'
 import type { ReactNode } from '../core'
 import {
@@ -222,6 +223,7 @@ function streamBoundary(
     const restore = applyContextSnapshot(b[3])
     try {
       walk(b[1], {
+        insertionContext: b[5],
         emit: (s) => parts.push(s),
         onSuspend: (n) => sub.push(n),
         nextBoundaryId: () => state.nextId++,
@@ -245,7 +247,7 @@ function streamBoundary(
       if (hints) emit(hints)
     }
 
-    emit(`<div hidden id="S:${b[0]}">${parts.join('')}</div>${revealScript(b[0], nonce, styles)}`)
+    emit(segmentHtml(parts.join(''), `S:${b[0]}`, b[5]) + revealScript(b[0], nonce, styles))
 
     // Recurse: any nested suspensions inside the now-revealed content
     for (const s of sub) streamBoundary(s, emit, options, state)

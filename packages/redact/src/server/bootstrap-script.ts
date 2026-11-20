@@ -6,12 +6,10 @@
  *     main bundle can replay them against un-hydrated subtrees ($RE_q buffer).
  *
  * Wire format:
- *   Fallback:  <!--$?ID--><div id="B:ID">fallback</div><!--/$-->
- *   Resolved:  emits <div hidden id="S:ID">real</div><script>$RC(ID)</script>
- *              which splices real into place and rewrites the comment to <!--$ID-->.
- *              The fallback div is visible (it's the user-visible loading
- *              state); only the resolved-content staging div is `hidden`
- *              before $RC moves its children inline.
+ *   Fallback:  <!--$?ID--><template id="B:ID"></template>fallback<!--/$-->
+ *   Resolved:  a context-specific hidden segment followed by $RC(ID).
+ *              Reveal removes the entire fallback range, moves the segment's
+ *              children inline, and rewrites the opening comment to <!--$ID-->.
  *
  * Client hydration calls $RH(ID, cb) to register a callback invoked once the
  * boundary has been revealed (or immediately, if it was already revealed).
@@ -43,8 +41,9 @@ export const BOUNDARY_REVEAL_RUNTIME =
         `var n=a[j];if(n.getAttribute("media")==="not all")n.removeAttribute("media");place(n,n.getAttribute("data-precedence"));` +
       `}` +
       `var p=b.parentNode,m=b.previousSibling;` +
+      `var n=b.nextSibling,d=0;while(n){var t=n.nextSibling;if(n.nodeType===8){if(n.data==="/$"){if(d===0)break;d--}else if(/^\\$(?:[?!E~])?\\d*$/.test(n.data))d++}p.removeChild(n);n=t}` +
       `while(s.firstChild)p.insertBefore(s.firstChild,b);` +
-      `s.parentNode.removeChild(s);` +
+      `var w=/^(TBODY|TR|COLGROUP|mtext)$/.test(s.nodeName)?s.closest("table,math"):s;w.parentNode.removeChild(w);` +
       `p.removeChild(b);` +
       `if(m&&m.nodeType===8)m.data="$"+i;` +
       `if(c[i]){var f=c[i];delete c[i];f()}` +
