@@ -1,5 +1,23 @@
 # @tanstack/redact
 
+## 0.4.0
+
+### Minor Changes
+
+- Add a native Rsbuild 2 plugin for browser SPAs at `@tanstack/redact/rsbuild`. Register it in the Rsbuild plugins array to use the existing Redact presets, feature options, and React 18 compatibility. ([#175](https://github.com/TanStack/redact/pull/175))
+
+### Patch Changes
+
+- Export change event and base synthetic event types for typed React handlers. ([#180](https://github.com/TanStack/redact/pull/180))
+
+- Close an attached pipeable stream destination when the server shell fails, including when the error callback pipes to the same destination. ([#172](https://github.com/TanStack/redact/pull/172))
+
+- Allow the plain Redact Vite plugin to install alongside Cloudflare Vite plugin 2.0.0-beta.v.11 and document the optimizer setting required for native RSC in development. ([#169](https://github.com/TanStack/redact/pull/169))
+
+- Keep queued child state and context updates working when a parent reuses JSX, and retain pending work inside its Suspense boundary. ([#133](https://github.com/TanStack/redact/pull/133))
+
+- Skip Vite resolver calls for unrelated imports and skip the React 18 transform when the app uses React 19. ([#171](https://github.com/TanStack/redact/pull/171))
+
 ## 0.3.1
 
 ### Patch Changes
