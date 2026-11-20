@@ -1,3 +1,4 @@
+import { forkId } from '../dom/react-ids'
 import { isTextContent } from '../core/functions';
 import { isFunction, isThenable } from '../core/functions'
 import { resolveClassProps } from '../core/class-props'
@@ -47,9 +48,10 @@ export interface ServerErrorInfo {
 
 export type BrowserBailoutCallback = (error: Error, errorInfo: ServerErrorInfo) => void
 
-export type SuspendedBoundary = [number, ReactNode, Promise<any>, ContextSnapshot, string]
+export type SuspendedBoundary = [number, ReactNode, Promise<any>, ContextSnapshot, string, bigint]
 
 export interface WalkOptions {
+  treeId?: bigint | undefined
   emit: (chunk: string) => void
   onHead?: () => void
   onSuspend?: ((boundary: SuspendedBoundary) => void) | undefined
@@ -120,11 +122,12 @@ function walkNode(node: ReactNode, opts: WalkOptions): void {
     return
   }
   if (Array.isArray(node)) {
-    for (const c of node) walkNode(c, opts)
+    const treeId = opts.treeId ?? 1n
+    for (let i = 0; i < node.length; i++) walkNode(node[i], { ...opts, treeId: forkId(treeId, node.length, i) })
     return
   }
   if (isFunction((node as any)[Symbol.iterator])) {
-    for (const item of node as Iterable<ReactNode>) walkNode(item, opts)
+    walkNode(Array.from(node as Iterable<ReactNode>), opts)
     return
   }
 
@@ -411,6 +414,10 @@ function walkComponent(
   if (opts.onBrowserBailout) {
     opts = { ...opts, componentStack: `\n    at ${(fn as any).displayName || fn.name || 'Anonymous'}${opts.componentStack || ''}` }
   }
+  const frame = currentSSRFrame()
+  const previousTree = frame.treeId, previousLocal = frame.localId
+  frame.treeId = opts.treeId ?? 1n
+  frame.localId = 0
   try {
   if ((fn as any).prototype?.isReactComponent) {
     props = resolveClassProps(fn, props)
@@ -427,13 +434,17 @@ function walkComponent(
     return
   }
   const rendered = (fn as any)(props, ref)
-  walkNode(rendered, opts)
+  // A component which materialized IDs owns one extra tree slot for its children.
+  walkNode(rendered, frame.localId ? { ...opts, treeId: forkId(frame.treeId, 1, 0) } : opts)
   } catch (error) {
     if (opts.thrownInfo && !opts.thrownInfo.componentStack) opts.thrownInfo.componentStack = opts.componentStack
     if (isBrowserError(error) && !(error as any).componentStack) {
       Object.defineProperty(error, 'componentStack', { value: opts.componentStack })
     }
     throw error
+  } finally {
+    frame.treeId = previousTree
+    frame.localId = previousLocal
   }
 }
 
@@ -482,7 +493,7 @@ function walkSuspense(
     for (const boundary of nested) opts.onSuspend?.(boundary)
     if (suspended) opts.onSuspend?.([
       id, props.children, thenable, contextSnapshot,
-      thrownInfo.componentStack || opts.componentStack || '',
+      thrownInfo.componentStack || opts.componentStack || '', opts.treeId ?? 1n,
     ])
     return
   }

@@ -220,8 +220,8 @@ describe('hydrateRoot', () => {
     }
 
     const html = renderToString(<App />)
-    expect(html).toContain('id="radix-:R0"')
-    expect(html).toContain('id="radix-:R1"')
+    expect(html).toContain('id="radix-_R_1_"')
+    expect(html).toContain('id="radix-_R_2_"')
 
     const container = setupWithHTML(html)
     const originalSecond = container.querySelectorAll('button')[1]
@@ -234,7 +234,7 @@ describe('hydrateRoot', () => {
     const second = container.querySelectorAll('button')[1]!
     expect(errors).toEqual([])
     expect(second).toBe(originalSecond)
-    expect(second.getAttribute('id')).toBe('radix-:R1')
+    expect(second.getAttribute('id')).toBe('radix-_R_2_')
   })
 
   it('attaches event handlers to adopted DOM', () => {
@@ -360,7 +360,7 @@ describe('hydrateRoot', () => {
     expect(errors).toEqual([])
     expect(button).toBe(originalButton)
     expect(button?.id).toBe(serverId)
-    expect(button?.id).toBe('radix-app-0')
+    expect(button?.id).toBe('radix-_app-R_0_')
   })
 
   it('starts hydrated useId sequences from each server-rendered root', () => {
@@ -390,12 +390,12 @@ describe('hydrateRoot', () => {
 
     expect(errors).toEqual([])
     expect(container.querySelector('button')).toBe(originalButton)
-    expect(container.querySelector('button')?.id).toBe('radix-:R0')
+    expect(container.querySelector('button')?.id).toBe('radix-_R_0_')
     expect(container.querySelector('button')?.nextElementSibling).toBe(
       originalContent,
     )
     expect(container.querySelector('button')?.nextElementSibling?.id).toBe(
-      'radix-:R1',
+      'radix-_R_0H1_',
     )
   })
 
@@ -430,8 +430,8 @@ describe('hydrateRoot', () => {
     expect(errors).toEqual([])
     expect(buttons).toEqual(originalButtons)
     expect(buttons.map((button) => button.id)).toEqual([
-      'radix-:R0',
-      'radix-:R1',
+      'radix-_R_1_',
+      'radix-_R_2_',
     ])
   })
 
@@ -451,7 +451,7 @@ describe('hydrateRoot', () => {
 
     expect(errors).toHaveLength(1)
     expect(container.querySelector('button')).not.toBe(originalButton)
-    expect(container.querySelector('button')?.id).toMatch(/^radix-:r[0-9a-z]+$/)
+    expect(container.querySelector('button')?.id).toMatch(/^radix-_r_[0-9a-v]+_$/)
   })
 
   it('clears the container if clean client render also throws', () => {
