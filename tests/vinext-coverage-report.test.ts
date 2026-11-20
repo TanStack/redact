@@ -8,6 +8,7 @@ import { vinextMatrix, vinextScenarios } from '../scripts/vinext-matrix.mjs'
 import { collectVinextCoverage } from '../scripts/report-vinext-coverage.mjs'
 
 it('requires complete paired evidence and never converts known differences into passes', async () => {
+  const expectedVersion = '1.3.0'
   const directory = await mkdtemp(join(tmpdir(), 'vinext-report-'))
   const jobs = vinextMatrix(['node']).filter((job: any) => job.mode === 'production' && job.rendering === 'standard')
   try {
@@ -16,8 +17,9 @@ it('requires complete paired evidence and never converts known differences into 
       evidence: { installation: 'npm-tarball', sourceSha256: 'a'.repeat(64), buildSha256: 'b'.repeat(64), suiteSha256: 'c'.repeat(64), fixtureSha256: 'd'.repeat(64) },
       results: ['chromium', 'firefox', 'webkit'].map(browser => ({ ...job, browser, browserVersion: 'test', passed: true, scenarios: vinextScenarios(job).map((name: string) => ({ name, passed: true })) })),
     }))
-    const clean = await collectVinextCoverage(directory, jobs)
+    const clean = await collectVinextCoverage(directory, jobs, expectedVersion)
     expect(clean.passed).toBe(true)
+    expect(clean.version).toBe('1.3.0')
     expect(clean.summary).toMatchObject({ expectedConfigurations: 6, completeConfigurations: 6, passedConfigurations: 6, missingScenarios: 0 })
     const path = join(directory, jobs.find((job: any) => !job.reference).name + '.json')
     const original = await readFile(path, 'utf8')
@@ -32,7 +34,7 @@ it('requires complete paired evidence and never converts known differences into 
       const artifact = JSON.parse(original)
       corrupt(artifact)
       await writeFile(path, JSON.stringify(artifact))
-      expect((await collectVinextCoverage(directory, jobs)).passed).toBe(false)
+      expect((await collectVinextCoverage(directory, jobs, expectedVersion)).passed).toBe(false)
     }
     await writeFile(path, original)
     const result = JSON.parse(original)
@@ -41,7 +43,7 @@ it('requires complete paired evidence and never converts known differences into 
     transition.passed = false
     transition.actual = { pending: 'false', retained: false, fallback: true }
     await writeFile(path, JSON.stringify(result))
-    const difference = await collectVinextCoverage(directory, jobs)
+    const difference = await collectVinextCoverage(directory, jobs, expectedVersion)
     expect(difference.complete).toBe(true)
     expect(difference.passed).toBe(false)
     expect(difference.summary).toMatchObject({ concurrencyDifferences: 1, passedConfigurations: 5, failedScenarios: 1 })
@@ -50,12 +52,12 @@ it('requires complete paired evidence and never converts known differences into 
     const hydration = result.results[0].scenarios.find((scenario: any) => scenario.name === 'hydration')
     hydration.passed = false
     await writeFile(path, JSON.stringify(result))
-    expect((await collectVinextCoverage(directory, jobs)).summary.redactFailures).toBe(1)
+    expect((await collectVinextCoverage(directory, jobs, expectedVersion)).summary.redactFailures).toBe(1)
 
     result.evidence.buildSha256 = 'e'.repeat(64)
     result.results.pop()
     await writeFile(path, JSON.stringify(result))
-    const partial = await collectVinextCoverage(directory, jobs)
+    const partial = await collectVinextCoverage(directory, jobs, expectedVersion)
     expect(partial.complete).toBe(false)
     expect(partial.passed).toBe(false)
     expect(partial.summary.missingScenarios).toBe(vinextScenarios(jobs[0]).length)
@@ -63,9 +65,24 @@ it('requires complete paired evidence and never converts known differences into 
 
     result.results = {}
     await writeFile(path, JSON.stringify(result))
-    const malformed = await collectVinextCoverage(directory, jobs)
+    const malformed = await collectVinextCoverage(directory, jobs, expectedVersion)
     expect(malformed.complete).toBe(false)
     expect(malformed.summary.missingScenarios).toBe(vinextScenarios(jobs[0]).length * 3)
     expect(malformed.issues.some((issue: string) => issue.includes('missing results array'))).toBe(true)
+  } finally { await rm(directory, { recursive: true, force: true }) }
+})
+
+it('rejects results from an unexpected vinext version', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'vinext-report-version-'))
+  const jobs = vinextMatrix(['node']).filter((job: any) => job.mode === 'production' && job.rendering === 'standard').slice(0, 1)
+  try {
+    for (const job of jobs) await writeFile(join(directory, job.name + '.json'), JSON.stringify({
+      framework: 'vinext', version: '1.4.3', complete: true, passed: true,
+      evidence: { installation: 'npm-tarball', sourceSha256: 'a'.repeat(64), buildSha256: 'b'.repeat(64), suiteSha256: 'c'.repeat(64), fixtureSha256: 'd'.repeat(64) },
+      results: ['chromium', 'firefox', 'webkit'].map(browser => ({ ...job, browser, browserVersion: 'test', passed: true, scenarios: vinextScenarios(job).map((name: string) => ({ name, passed: true })) })),
+    }))
+    expect((await collectVinextCoverage(directory, jobs, '1.4.3')).passed).toBe(true)
+    expect((await collectVinextCoverage(directory, jobs, '1.3.0')).passed).toBe(false)
+    expect((await collectVinextCoverage(directory, jobs, '1.3.0')).issues.some((issue: string) => issue.includes('unexpected framework version'))).toBe(true)
   } finally { await rm(directory, { recursive: true, force: true }) }
 })

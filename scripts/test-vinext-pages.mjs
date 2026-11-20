@@ -17,6 +17,7 @@ const root = fileURLToPath(new URL('..', import.meta.url))
 const consumer = process.env.VINEXT_TEST_CONSUMER
 assert.ok(consumer, 'Prepare a fresh npm consumer with scripts/prepare-vinext-consumer.mjs first')
 assert.ok(!process.env.NEXT_TEST_SCENARIOS, 'The Pages-only gate requires every Pages scenario')
+const vinextVersion = JSON.parse(await readFile(join(consumer, 'node_modules/vinext/package.json'), 'utf8')).version
 const require = createRequire(join(consumer, 'package.json'))
 const vite = join(dirname(require.resolve('vite/package.json')), 'bin/vite.js')
 const cli = join(consumer, 'node_modules/vinext/dist/cli.js')
@@ -168,7 +169,7 @@ for (const deployment of deployments) for (const reference of [true, false]) {
       for (const child of children) child.kill('SIGTERM')
       clearTimeout(watchdog)
       await writeFile(join(output, name + '.log'), logs)
-      await writeFile(join(output, name + '.json'), JSON.stringify({ evidence, results: results.filter(r => r.deployment === deployment && r.reference === reference && r.mode === mode), ...(failure ? { error: failure } : {}) }, null, 2) + '\n')
+      await writeFile(join(output, name + '.json'), JSON.stringify({ framework: 'vinext', version: vinextVersion, evidence, results: results.filter(r => r.deployment === deployment && r.reference === reference && r.mode === mode), ...(failure ? { error: failure } : {}) }, null, 2) + '\n')
     }
   }
 }
