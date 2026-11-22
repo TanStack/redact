@@ -163,7 +163,7 @@ function setEventHandler(el: Element, name: string, next: any): void {
                 if (click)
                     scheduleControlledRestore(el as HTMLInputElement);
                 else
-                    queueRestore(e, el);
+                    queueRestore(e);
             }
         }) as ((e: Event) => void) & {
             c: Function;

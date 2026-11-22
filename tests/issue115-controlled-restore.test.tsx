@@ -287,3 +287,27 @@ it('restores a checkbox whose only handler is onInput', async () => {
   await click(box)
   expect(box.checked).toBe(false)
 })
+
+it('lets an ancestor\'s onChange accept a click on a checkbox with only onInput', async () => {
+  function Box() {
+    const [checked, setChecked] = useState(false)
+    return h('div', { onChange: (event: any) => setChecked(event.target.checked) },
+      h('input', { type: 'checkbox', checked, onInput: () => {} }))
+  }
+  const box = mount(h(Box)).querySelector('input')!
+  // A real click runs microtasks between input and change.
+  box.checked = true
+  box.dispatchEvent(new Event('input', { bubbles: true }))
+  await settle()
+  box.dispatchEvent(new Event('change', { bubbles: true }))
+  await settle()
+  expect(box.checked).toBe(true)
+})
+
+it('restores a checkbox click that an ancestor\'s onChange ignores', async () => {
+  const box = mount(h('div', { onChange: () => {} },
+    h('input', { type: 'checkbox', checked: false, onInput: () => {} }),
+  )).querySelector('input')!
+  await click(box)
+  expect(box.checked).toBe(false)
+})
