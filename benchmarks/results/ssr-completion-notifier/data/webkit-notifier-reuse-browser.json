@@ -1,0 +1,3014 @@
+{
+  "engine": "webkit",
+  "inputs": {
+    "base": {
+      "sha256": "bc4e4ee52973a0bbf545ff80d27c7b6f53615010f9fc2df74b482f24eed9b72d",
+      "files": [
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/core/functions.ts",
+          "sha256": "7f9e3286da7abfde91b86bfc2a70f0085aa98726bfd23ba6a3382df10522405d"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/react/shared-internals.ts",
+          "sha256": "5abeef2d413b51e58a6c63f76ec477991081bb030007c0c459a3eed878d794c4"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/react/hooks.ts",
+          "sha256": "aac373f5d2ec1053aa10a33dd932b60472826c7bc7a4843459ec63a66d4fcbc4"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/core/types.ts",
+          "sha256": "8aafcbcdbed63e6461ede6c8d19407c23470024511a48d322c535fc8c6ef722d"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/core/internal.ts",
+          "sha256": "b5377d8b657571c5e9abfef8ef7e1fbd2e79d1732b706a6ae4f1943621c04eb8"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/core/index.ts",
+          "sha256": "9afcb4a85c06b45f125f109d9af0cc75ea0f536b05c930a8c066dd553b58386b"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/core/devtools.ts",
+          "sha256": "f899c2d7045375170cb383801087b9b7dca38175ceb33647a08f1a4e1216a083"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/react/element.ts",
+          "sha256": "fd8a267f9afc0992b9ab66b17b4f104ff5c0189aa204dca6157df31986da25cc"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/react/children.ts",
+          "sha256": "79380a3bb4a69f4ea79e9d0abcba6ebc784f18505ce553fd665bdfbecf9cd891"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/react/suspense.ts",
+          "sha256": "487b236e813138ce54a0931a580254100fa790d429d4423ef09e370176565678"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/react/act.ts",
+          "sha256": "035f53523f34eba876f161d19a9958edaf1b24f2fe8d3977fb9d0e12379cd9fd"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/react/class.ts",
+          "sha256": "bccdcd7290f8a219a0b07028b1cc855f7003fbfa28e852dbfc3d4eb2005c7cb5"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/react/view-transition.ts",
+          "sha256": "deae1edf4bc2b1025b1e63e12f052435a415db3163b86cfb1c9135a3bebfe09b"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/react/context.ts",
+          "sha256": "865b7483cb0f9b790b2859714ad7ab2871010df07a36ae3bb1ff07d0ea16e838"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/react/thenable.ts",
+          "sha256": "fdbcfbee466902e3b87e7f19a0b81098bd526c7f89bb1d4428b11d102b6cce37"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/react/memo.ts",
+          "sha256": "786494c7d963c2c1d8ba7c297bdc0239d8232ff29b1da4075f18f062d1389055"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/react/activity.ts",
+          "sha256": "dac42f0847c53ea6233dd5c04491379f305547acbfbe7d6491728505e66fdf77"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/react/portal.ts",
+          "sha256": "0e0e28608e1dc5ef5e18649e1d8d122206468d4b9b4d1fdbebc36535612d4958"
+        },
+        {
+          "path": "../../../../../../tmp/rd-notifier-failurebox/base/src/react/index.ts",
+          "sha256": "047ed4d444590ff2f41c2142c2de612127cca7bd7cbcd015005bb44ffe84edc5"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/react/form-state.ts",
+          "sha256": "e9e20dd64c4a8ef1f963288ec995df144063d262c005ce095c5061351d0fda10"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/react/index.ts",
+          "sha256": "047ed4d444590ff2f41c2142c2de612127cca7bd7cbcd015005bb44ffe84edc5"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/core/browser.ts",
+          "sha256": "07ad11302ef69cc18cc45d6941e22b1b3e1913d6158f8036110203ed9abfa245"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/core/resource-hints.ts",
+          "sha256": "9e921e64d48e1fb7595660c88ae5882ba183c4a6c6c5a9547c774df6bc2e2cb7"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/core/unitless-style.ts",
+          "sha256": "e66d09b21a80f1d2920c672daf8cb93dfcca46f9e28048f10c9964682b1e44bf"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/core/attributes.ts",
+          "sha256": "0f756e90a7443f7d495b0d03d0e6909b83228d964318837b5d78a7acd10a7377"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/server/escape.ts",
+          "sha256": "6cc480f0823a37eed106c5956b545459572016fc8697e104de0ae98a06c7e5e1"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/server/resource-hints.ts",
+          "sha256": "1a6afd6dd99a022f83962b6dec7d865198b0cb3fccfa43c87ec47bb9ba27216b"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/server/dispatcher.ts",
+          "sha256": "5081f738e859d5684248f03fa99e619ea194822adf205c9d4935951488173359"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/core/class-props.ts",
+          "sha256": "693d285a0d573a6b453dcfb20251f0e51014b464779627dbce5c4fcfecdd3788"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/server/walk.ts",
+          "sha256": "689391403e5b257db21b39884969b8e70d968f2701bae3c2ec664dedd6c3faf8"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/server/renderToString.ts",
+          "sha256": "df6eb5070bde0b1b6d690c1cc053be52b3880733190ff76b87e06d8fd045e107"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/server/bootstrap-script.ts",
+          "sha256": "cbe958554ff1df966a7f2de585311bd8ba72bf84e8f95f78a16743b0ab0da243"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/server/stream.ts",
+          "sha256": "320d3842e7b723f5d02da815bebb50239df16493b279346621b05ba911c2defa"
+        },
+        {
+          "path": "../../../../../../tmp/rd-notifier-failurebox/base/src/server/index.ts",
+          "sha256": "1b5fa6eb9b09f4a68c0b46cbf20eec8e5f910283230a8ece6513e79ddc2d4410"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/rope-workload.ts",
+          "sha256": "8bc7b49a0ab05cc7326b5e261310533db8037c24657bdaf2166fe64327fee075"
+        }
+      ]
+    },
+    "control": {
+      "sha256": "bc4e4ee52973a0bbf545ff80d27c7b6f53615010f9fc2df74b482f24eed9b72d",
+      "files": [
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/core/functions.ts",
+          "sha256": "7f9e3286da7abfde91b86bfc2a70f0085aa98726bfd23ba6a3382df10522405d"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/react/shared-internals.ts",
+          "sha256": "5abeef2d413b51e58a6c63f76ec477991081bb030007c0c459a3eed878d794c4"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/react/hooks.ts",
+          "sha256": "aac373f5d2ec1053aa10a33dd932b60472826c7bc7a4843459ec63a66d4fcbc4"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/core/types.ts",
+          "sha256": "8aafcbcdbed63e6461ede6c8d19407c23470024511a48d322c535fc8c6ef722d"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/core/internal.ts",
+          "sha256": "b5377d8b657571c5e9abfef8ef7e1fbd2e79d1732b706a6ae4f1943621c04eb8"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/core/index.ts",
+          "sha256": "9afcb4a85c06b45f125f109d9af0cc75ea0f536b05c930a8c066dd553b58386b"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/core/devtools.ts",
+          "sha256": "f899c2d7045375170cb383801087b9b7dca38175ceb33647a08f1a4e1216a083"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/react/element.ts",
+          "sha256": "fd8a267f9afc0992b9ab66b17b4f104ff5c0189aa204dca6157df31986da25cc"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/react/children.ts",
+          "sha256": "79380a3bb4a69f4ea79e9d0abcba6ebc784f18505ce553fd665bdfbecf9cd891"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/react/suspense.ts",
+          "sha256": "487b236e813138ce54a0931a580254100fa790d429d4423ef09e370176565678"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/react/act.ts",
+          "sha256": "035f53523f34eba876f161d19a9958edaf1b24f2fe8d3977fb9d0e12379cd9fd"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/react/class.ts",
+          "sha256": "bccdcd7290f8a219a0b07028b1cc855f7003fbfa28e852dbfc3d4eb2005c7cb5"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/react/view-transition.ts",
+          "sha256": "deae1edf4bc2b1025b1e63e12f052435a415db3163b86cfb1c9135a3bebfe09b"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/react/context.ts",
+          "sha256": "865b7483cb0f9b790b2859714ad7ab2871010df07a36ae3bb1ff07d0ea16e838"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/react/thenable.ts",
+          "sha256": "fdbcfbee466902e3b87e7f19a0b81098bd526c7f89bb1d4428b11d102b6cce37"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/react/memo.ts",
+          "sha256": "786494c7d963c2c1d8ba7c297bdc0239d8232ff29b1da4075f18f062d1389055"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/react/activity.ts",
+          "sha256": "dac42f0847c53ea6233dd5c04491379f305547acbfbe7d6491728505e66fdf77"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/react/portal.ts",
+          "sha256": "0e0e28608e1dc5ef5e18649e1d8d122206468d4b9b4d1fdbebc36535612d4958"
+        },
+        {
+          "path": "../../../../../../tmp/rd-notifier-failurebox/base/src/react/index.ts",
+          "sha256": "047ed4d444590ff2f41c2142c2de612127cca7bd7cbcd015005bb44ffe84edc5"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/react/form-state.ts",
+          "sha256": "e9e20dd64c4a8ef1f963288ec995df144063d262c005ce095c5061351d0fda10"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/react/index.ts",
+          "sha256": "047ed4d444590ff2f41c2142c2de612127cca7bd7cbcd015005bb44ffe84edc5"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/core/browser.ts",
+          "sha256": "07ad11302ef69cc18cc45d6941e22b1b3e1913d6158f8036110203ed9abfa245"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/core/resource-hints.ts",
+          "sha256": "9e921e64d48e1fb7595660c88ae5882ba183c4a6c6c5a9547c774df6bc2e2cb7"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/core/unitless-style.ts",
+          "sha256": "e66d09b21a80f1d2920c672daf8cb93dfcca46f9e28048f10c9964682b1e44bf"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/core/attributes.ts",
+          "sha256": "0f756e90a7443f7d495b0d03d0e6909b83228d964318837b5d78a7acd10a7377"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/server/escape.ts",
+          "sha256": "6cc480f0823a37eed106c5956b545459572016fc8697e104de0ae98a06c7e5e1"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/server/resource-hints.ts",
+          "sha256": "1a6afd6dd99a022f83962b6dec7d865198b0cb3fccfa43c87ec47bb9ba27216b"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/server/dispatcher.ts",
+          "sha256": "5081f738e859d5684248f03fa99e619ea194822adf205c9d4935951488173359"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/core/class-props.ts",
+          "sha256": "693d285a0d573a6b453dcfb20251f0e51014b464779627dbce5c4fcfecdd3788"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/server/walk.ts",
+          "sha256": "689391403e5b257db21b39884969b8e70d968f2701bae3c2ec664dedd6c3faf8"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/server/renderToString.ts",
+          "sha256": "df6eb5070bde0b1b6d690c1cc053be52b3880733190ff76b87e06d8fd045e107"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/server/bootstrap-script.ts",
+          "sha256": "cbe958554ff1df966a7f2de585311bd8ba72bf84e8f95f78a16743b0ab0da243"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/base/src/server/stream.ts",
+          "sha256": "320d3842e7b723f5d02da815bebb50239df16493b279346621b05ba911c2defa"
+        },
+        {
+          "path": "../../../../../../tmp/rd-notifier-failurebox/base/src/server/index.ts",
+          "sha256": "1b5fa6eb9b09f4a68c0b46cbf20eec8e5f910283230a8ece6513e79ddc2d4410"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/rope-workload.ts",
+          "sha256": "8bc7b49a0ab05cc7326b5e261310533db8037c24657bdaf2166fe64327fee075"
+        }
+      ]
+    },
+    "notifier-reuse": {
+      "sha256": "86554de7fe2a6d10b18abbe4f95c933db463681f3c74eecc2ca4ba6ea18d3249",
+      "files": [
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/notifier-reuse/src/core/functions.ts",
+          "sha256": "7f9e3286da7abfde91b86bfc2a70f0085aa98726bfd23ba6a3382df10522405d"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/notifier-reuse/src/react/shared-internals.ts",
+          "sha256": "5abeef2d413b51e58a6c63f76ec477991081bb030007c0c459a3eed878d794c4"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/notifier-reuse/src/react/hooks.ts",
+          "sha256": "aac373f5d2ec1053aa10a33dd932b60472826c7bc7a4843459ec63a66d4fcbc4"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/notifier-reuse/src/core/types.ts",
+          "sha256": "8aafcbcdbed63e6461ede6c8d19407c23470024511a48d322c535fc8c6ef722d"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/notifier-reuse/src/core/internal.ts",
+          "sha256": "b5377d8b657571c5e9abfef8ef7e1fbd2e79d1732b706a6ae4f1943621c04eb8"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/notifier-reuse/src/core/index.ts",
+          "sha256": "9afcb4a85c06b45f125f109d9af0cc75ea0f536b05c930a8c066dd553b58386b"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/notifier-reuse/src/core/devtools.ts",
+          "sha256": "f899c2d7045375170cb383801087b9b7dca38175ceb33647a08f1a4e1216a083"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/notifier-reuse/src/react/element.ts",
+          "sha256": "fd8a267f9afc0992b9ab66b17b4f104ff5c0189aa204dca6157df31986da25cc"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/notifier-reuse/src/react/children.ts",
+          "sha256": "79380a3bb4a69f4ea79e9d0abcba6ebc784f18505ce553fd665bdfbecf9cd891"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/notifier-reuse/src/react/suspense.ts",
+          "sha256": "487b236e813138ce54a0931a580254100fa790d429d4423ef09e370176565678"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/notifier-reuse/src/react/act.ts",
+          "sha256": "035f53523f34eba876f161d19a9958edaf1b24f2fe8d3977fb9d0e12379cd9fd"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/notifier-reuse/src/react/class.ts",
+          "sha256": "bccdcd7290f8a219a0b07028b1cc855f7003fbfa28e852dbfc3d4eb2005c7cb5"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/notifier-reuse/src/react/view-transition.ts",
+          "sha256": "deae1edf4bc2b1025b1e63e12f052435a415db3163b86cfb1c9135a3bebfe09b"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/notifier-reuse/src/react/context.ts",
+          "sha256": "865b7483cb0f9b790b2859714ad7ab2871010df07a36ae3bb1ff07d0ea16e838"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/notifier-reuse/src/react/thenable.ts",
+          "sha256": "fdbcfbee466902e3b87e7f19a0b81098bd526c7f89bb1d4428b11d102b6cce37"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/notifier-reuse/src/react/memo.ts",
+          "sha256": "786494c7d963c2c1d8ba7c297bdc0239d8232ff29b1da4075f18f062d1389055"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/notifier-reuse/src/react/activity.ts",
+          "sha256": "dac42f0847c53ea6233dd5c04491379f305547acbfbe7d6491728505e66fdf77"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/notifier-reuse/src/react/portal.ts",
+          "sha256": "0e0e28608e1dc5ef5e18649e1d8d122206468d4b9b4d1fdbebc36535612d4958"
+        },
+        {
+          "path": "../../../../../../tmp/rd-notifier-failurebox/notifier-reuse/src/react/index.ts",
+          "sha256": "047ed4d444590ff2f41c2142c2de612127cca7bd7cbcd015005bb44ffe84edc5"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/notifier-reuse/src/react/form-state.ts",
+          "sha256": "e9e20dd64c4a8ef1f963288ec995df144063d262c005ce095c5061351d0fda10"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/notifier-reuse/src/react/index.ts",
+          "sha256": "047ed4d444590ff2f41c2142c2de612127cca7bd7cbcd015005bb44ffe84edc5"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/notifier-reuse/src/core/browser.ts",
+          "sha256": "07ad11302ef69cc18cc45d6941e22b1b3e1913d6158f8036110203ed9abfa245"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/notifier-reuse/src/core/resource-hints.ts",
+          "sha256": "9e921e64d48e1fb7595660c88ae5882ba183c4a6c6c5a9547c774df6bc2e2cb7"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/notifier-reuse/src/core/unitless-style.ts",
+          "sha256": "e66d09b21a80f1d2920c672daf8cb93dfcca46f9e28048f10c9964682b1e44bf"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/notifier-reuse/src/core/attributes.ts",
+          "sha256": "0f756e90a7443f7d495b0d03d0e6909b83228d964318837b5d78a7acd10a7377"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/notifier-reuse/src/server/escape.ts",
+          "sha256": "6cc480f0823a37eed106c5956b545459572016fc8697e104de0ae98a06c7e5e1"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/notifier-reuse/src/server/resource-hints.ts",
+          "sha256": "1a6afd6dd99a022f83962b6dec7d865198b0cb3fccfa43c87ec47bb9ba27216b"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/notifier-reuse/src/server/dispatcher.ts",
+          "sha256": "5081f738e859d5684248f03fa99e619ea194822adf205c9d4935951488173359"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/notifier-reuse/src/core/class-props.ts",
+          "sha256": "693d285a0d573a6b453dcfb20251f0e51014b464779627dbce5c4fcfecdd3788"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/notifier-reuse/src/server/walk.ts",
+          "sha256": "b6f1d5b124d3acb2641ce94552e766446bb6d1e7389d0a48901324f5cca5618e"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/notifier-reuse/src/server/renderToString.ts",
+          "sha256": "df6eb5070bde0b1b6d690c1cc053be52b3880733190ff76b87e06d8fd045e107"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/notifier-reuse/src/server/bootstrap-script.ts",
+          "sha256": "cbe958554ff1df966a7f2de585311bd8ba72bf84e8f95f78a16743b0ab0da243"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/notifier-reuse/src/server/stream.ts",
+          "sha256": "ca5107bf71f0873531acffda4730b87cf606534614af80542ad90c3d002377c0"
+        },
+        {
+          "path": "../../../../../../tmp/rd-notifier-failurebox/notifier-reuse/src/server/index.ts",
+          "sha256": "1b5fa6eb9b09f4a68c0b46cbf20eec8e5f910283230a8ece6513e79ddc2d4410"
+        },
+        {
+          "path": "../../../../../../private/tmp/rd-notifier-failurebox/rope-workload.ts",
+          "sha256": "8bc7b49a0ab05cc7326b5e261310533db8037c24657bdaf2166fe64327fee075"
+        }
+      ]
+    }
+  },
+  "rows": [
+    {
+      "name": "stream-delayed",
+      "variant": "control",
+      "block": 0,
+      "round": 0,
+      "ms": 368,
+      "completed": 3000,
+      "totalBytes": 23541000,
+      "totalChunks": 99000,
+      "outputSHA256": "93955114471c380b09d2d0f6092cee717855c4ebed8ebe9bd818b3ae0fd19ee9"
+    },
+    {
+      "name": "stream-delayed",
+      "variant": "notifier-reuse",
+      "block": 0,
+      "round": 0,
+      "ms": 357,
+      "completed": 3000,
+      "totalBytes": 23541000,
+      "totalChunks": 99000,
+      "outputSHA256": "93955114471c380b09d2d0f6092cee717855c4ebed8ebe9bd818b3ae0fd19ee9"
+    },
+    {
+      "name": "stream-delayed",
+      "variant": "base",
+      "block": 0,
+      "round": 0,
+      "ms": 406,
+      "completed": 3000,
+      "totalBytes": 23541000,
+      "totalChunks": 99000,
+      "outputSHA256": "93955114471c380b09d2d0f6092cee717855c4ebed8ebe9bd818b3ae0fd19ee9"
+    },
+    {
+      "name": "stream-delayed",
+      "variant": "notifier-reuse",
+      "block": 0,
+      "round": 1,
+      "ms": 347,
+      "completed": 3000,
+      "totalBytes": 23541000,
+      "totalChunks": 99000,
+      "outputSHA256": "93955114471c380b09d2d0f6092cee717855c4ebed8ebe9bd818b3ae0fd19ee9"
+    },
+    {
+      "name": "stream-delayed",
+      "variant": "base",
+      "block": 0,
+      "round": 1,
+      "ms": 354,
+      "completed": 3000,
+      "totalBytes": 23541000,
+      "totalChunks": 99000,
+      "outputSHA256": "93955114471c380b09d2d0f6092cee717855c4ebed8ebe9bd818b3ae0fd19ee9"
+    },
+    {
+      "name": "stream-delayed",
+      "variant": "control",
+      "block": 0,
+      "round": 1,
+      "ms": 363,
+      "completed": 3000,
+      "totalBytes": 23541000,
+      "totalChunks": 99000,
+      "outputSHA256": "93955114471c380b09d2d0f6092cee717855c4ebed8ebe9bd818b3ae0fd19ee9"
+    },
+    {
+      "name": "stream-delayed",
+      "variant": "base",
+      "block": 0,
+      "round": 2,
+      "ms": 365,
+      "completed": 3000,
+      "totalBytes": 23541000,
+      "totalChunks": 99000,
+      "outputSHA256": "93955114471c380b09d2d0f6092cee717855c4ebed8ebe9bd818b3ae0fd19ee9"
+    },
+    {
+      "name": "stream-delayed",
+      "variant": "control",
+      "block": 0,
+      "round": 2,
+      "ms": 353,
+      "completed": 3000,
+      "totalBytes": 23541000,
+      "totalChunks": 99000,
+      "outputSHA256": "93955114471c380b09d2d0f6092cee717855c4ebed8ebe9bd818b3ae0fd19ee9"
+    },
+    {
+      "name": "stream-delayed",
+      "variant": "notifier-reuse",
+      "block": 0,
+      "round": 2,
+      "ms": 388,
+      "completed": 3000,
+      "totalBytes": 23541000,
+      "totalChunks": 99000,
+      "outputSHA256": "93955114471c380b09d2d0f6092cee717855c4ebed8ebe9bd818b3ae0fd19ee9"
+    },
+    {
+      "name": "stream-ready",
+      "variant": "base",
+      "block": 0,
+      "round": 0,
+      "ms": 77,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "stream-ready",
+      "variant": "notifier-reuse",
+      "block": 0,
+      "round": 0,
+      "ms": 79,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "stream-ready",
+      "variant": "control",
+      "block": 0,
+      "round": 0,
+      "ms": 79,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "stream-ready",
+      "variant": "notifier-reuse",
+      "block": 0,
+      "round": 1,
+      "ms": 85,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "stream-ready",
+      "variant": "control",
+      "block": 0,
+      "round": 1,
+      "ms": 74,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "stream-ready",
+      "variant": "base",
+      "block": 0,
+      "round": 1,
+      "ms": 78,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "stream-ready",
+      "variant": "control",
+      "block": 0,
+      "round": 2,
+      "ms": 77,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "stream-ready",
+      "variant": "base",
+      "block": 0,
+      "round": 2,
+      "ms": 67,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "stream-ready",
+      "variant": "notifier-reuse",
+      "block": 0,
+      "round": 2,
+      "ms": 67,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "string-ready",
+      "variant": "base",
+      "block": 0,
+      "round": 0,
+      "ms": 57,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 0,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "string-ready",
+      "variant": "control",
+      "block": 0,
+      "round": 0,
+      "ms": 50,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 0,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "string-ready",
+      "variant": "notifier-reuse",
+      "block": 0,
+      "round": 0,
+      "ms": 57,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 0,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "string-ready",
+      "variant": "control",
+      "block": 0,
+      "round": 1,
+      "ms": 62,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 0,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "string-ready",
+      "variant": "notifier-reuse",
+      "block": 0,
+      "round": 1,
+      "ms": 56,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 0,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "string-ready",
+      "variant": "base",
+      "block": 0,
+      "round": 1,
+      "ms": 53,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 0,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "string-ready",
+      "variant": "notifier-reuse",
+      "block": 0,
+      "round": 2,
+      "ms": 48,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 0,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "string-ready",
+      "variant": "base",
+      "block": 0,
+      "round": 2,
+      "ms": 56,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 0,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "string-ready",
+      "variant": "control",
+      "block": 0,
+      "round": 2,
+      "ms": 57,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 0,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "string-fallback",
+      "variant": "notifier-reuse",
+      "block": 0,
+      "round": 0,
+      "ms": 229,
+      "completed": 3000,
+      "totalBytes": 10659000,
+      "totalChunks": 0,
+      "outputSHA256": "8b9bb4e08c01d66832200358b05c6d4873dfec09f50e09596e47eeb71be35458"
+    },
+    {
+      "name": "string-fallback",
+      "variant": "control",
+      "block": 0,
+      "round": 0,
+      "ms": 225,
+      "completed": 3000,
+      "totalBytes": 10659000,
+      "totalChunks": 0,
+      "outputSHA256": "8b9bb4e08c01d66832200358b05c6d4873dfec09f50e09596e47eeb71be35458"
+    },
+    {
+      "name": "string-fallback",
+      "variant": "base",
+      "block": 0,
+      "round": 0,
+      "ms": 242,
+      "completed": 3000,
+      "totalBytes": 10659000,
+      "totalChunks": 0,
+      "outputSHA256": "8b9bb4e08c01d66832200358b05c6d4873dfec09f50e09596e47eeb71be35458"
+    },
+    {
+      "name": "string-fallback",
+      "variant": "control",
+      "block": 0,
+      "round": 1,
+      "ms": 211,
+      "completed": 3000,
+      "totalBytes": 10659000,
+      "totalChunks": 0,
+      "outputSHA256": "8b9bb4e08c01d66832200358b05c6d4873dfec09f50e09596e47eeb71be35458"
+    },
+    {
+      "name": "string-fallback",
+      "variant": "base",
+      "block": 0,
+      "round": 1,
+      "ms": 214,
+      "completed": 3000,
+      "totalBytes": 10659000,
+      "totalChunks": 0,
+      "outputSHA256": "8b9bb4e08c01d66832200358b05c6d4873dfec09f50e09596e47eeb71be35458"
+    },
+    {
+      "name": "string-fallback",
+      "variant": "notifier-reuse",
+      "block": 0,
+      "round": 1,
+      "ms": 216,
+      "completed": 3000,
+      "totalBytes": 10659000,
+      "totalChunks": 0,
+      "outputSHA256": "8b9bb4e08c01d66832200358b05c6d4873dfec09f50e09596e47eeb71be35458"
+    },
+    {
+      "name": "string-fallback",
+      "variant": "base",
+      "block": 0,
+      "round": 2,
+      "ms": 217,
+      "completed": 3000,
+      "totalBytes": 10659000,
+      "totalChunks": 0,
+      "outputSHA256": "8b9bb4e08c01d66832200358b05c6d4873dfec09f50e09596e47eeb71be35458"
+    },
+    {
+      "name": "string-fallback",
+      "variant": "notifier-reuse",
+      "block": 0,
+      "round": 2,
+      "ms": 225,
+      "completed": 3000,
+      "totalBytes": 10659000,
+      "totalChunks": 0,
+      "outputSHA256": "8b9bb4e08c01d66832200358b05c6d4873dfec09f50e09596e47eeb71be35458"
+    },
+    {
+      "name": "string-fallback",
+      "variant": "control",
+      "block": 0,
+      "round": 2,
+      "ms": 226,
+      "completed": 3000,
+      "totalBytes": 10659000,
+      "totalChunks": 0,
+      "outputSHA256": "8b9bb4e08c01d66832200358b05c6d4873dfec09f50e09596e47eeb71be35458"
+    },
+    {
+      "name": "root-retry",
+      "variant": "control",
+      "block": 0,
+      "round": 0,
+      "ms": 76,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "root-retry",
+      "variant": "base",
+      "block": 0,
+      "round": 0,
+      "ms": 72,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "root-retry",
+      "variant": "notifier-reuse",
+      "block": 0,
+      "round": 0,
+      "ms": 73,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "root-retry",
+      "variant": "base",
+      "block": 0,
+      "round": 1,
+      "ms": 83,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "root-retry",
+      "variant": "notifier-reuse",
+      "block": 0,
+      "round": 1,
+      "ms": 79,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "root-retry",
+      "variant": "control",
+      "block": 0,
+      "round": 1,
+      "ms": 79,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "root-retry",
+      "variant": "notifier-reuse",
+      "block": 0,
+      "round": 2,
+      "ms": 71,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "root-retry",
+      "variant": "control",
+      "block": 0,
+      "round": 2,
+      "ms": 77,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "root-retry",
+      "variant": "base",
+      "block": 0,
+      "round": 2,
+      "ms": 89,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "string-ready",
+      "variant": "control",
+      "block": 1,
+      "round": 0,
+      "ms": 45,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 0,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "string-ready",
+      "variant": "base",
+      "block": 1,
+      "round": 0,
+      "ms": 44,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 0,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "string-ready",
+      "variant": "notifier-reuse",
+      "block": 1,
+      "round": 0,
+      "ms": 44,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 0,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "string-ready",
+      "variant": "base",
+      "block": 1,
+      "round": 1,
+      "ms": 47,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 0,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "string-ready",
+      "variant": "notifier-reuse",
+      "block": 1,
+      "round": 1,
+      "ms": 44,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 0,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "string-ready",
+      "variant": "control",
+      "block": 1,
+      "round": 1,
+      "ms": 45,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 0,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "string-ready",
+      "variant": "notifier-reuse",
+      "block": 1,
+      "round": 2,
+      "ms": 44,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 0,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "string-ready",
+      "variant": "control",
+      "block": 1,
+      "round": 2,
+      "ms": 44,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 0,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "string-ready",
+      "variant": "base",
+      "block": 1,
+      "round": 2,
+      "ms": 45,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 0,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "stream-delayed",
+      "variant": "base",
+      "block": 1,
+      "round": 0,
+      "ms": 343,
+      "completed": 3000,
+      "totalBytes": 23541000,
+      "totalChunks": 99000,
+      "outputSHA256": "93955114471c380b09d2d0f6092cee717855c4ebed8ebe9bd818b3ae0fd19ee9"
+    },
+    {
+      "name": "stream-delayed",
+      "variant": "control",
+      "block": 1,
+      "round": 0,
+      "ms": 345,
+      "completed": 3000,
+      "totalBytes": 23541000,
+      "totalChunks": 99000,
+      "outputSHA256": "93955114471c380b09d2d0f6092cee717855c4ebed8ebe9bd818b3ae0fd19ee9"
+    },
+    {
+      "name": "stream-delayed",
+      "variant": "notifier-reuse",
+      "block": 1,
+      "round": 0,
+      "ms": 349,
+      "completed": 3000,
+      "totalBytes": 23541000,
+      "totalChunks": 99000,
+      "outputSHA256": "93955114471c380b09d2d0f6092cee717855c4ebed8ebe9bd818b3ae0fd19ee9"
+    },
+    {
+      "name": "stream-delayed",
+      "variant": "control",
+      "block": 1,
+      "round": 1,
+      "ms": 330,
+      "completed": 3000,
+      "totalBytes": 23541000,
+      "totalChunks": 99000,
+      "outputSHA256": "93955114471c380b09d2d0f6092cee717855c4ebed8ebe9bd818b3ae0fd19ee9"
+    },
+    {
+      "name": "stream-delayed",
+      "variant": "notifier-reuse",
+      "block": 1,
+      "round": 1,
+      "ms": 332,
+      "completed": 3000,
+      "totalBytes": 23541000,
+      "totalChunks": 99000,
+      "outputSHA256": "93955114471c380b09d2d0f6092cee717855c4ebed8ebe9bd818b3ae0fd19ee9"
+    },
+    {
+      "name": "stream-delayed",
+      "variant": "base",
+      "block": 1,
+      "round": 1,
+      "ms": 366,
+      "completed": 3000,
+      "totalBytes": 23541000,
+      "totalChunks": 99000,
+      "outputSHA256": "93955114471c380b09d2d0f6092cee717855c4ebed8ebe9bd818b3ae0fd19ee9"
+    },
+    {
+      "name": "stream-delayed",
+      "variant": "notifier-reuse",
+      "block": 1,
+      "round": 2,
+      "ms": 324,
+      "completed": 3000,
+      "totalBytes": 23541000,
+      "totalChunks": 99000,
+      "outputSHA256": "93955114471c380b09d2d0f6092cee717855c4ebed8ebe9bd818b3ae0fd19ee9"
+    },
+    {
+      "name": "stream-delayed",
+      "variant": "base",
+      "block": 1,
+      "round": 2,
+      "ms": 338,
+      "completed": 3000,
+      "totalBytes": 23541000,
+      "totalChunks": 99000,
+      "outputSHA256": "93955114471c380b09d2d0f6092cee717855c4ebed8ebe9bd818b3ae0fd19ee9"
+    },
+    {
+      "name": "stream-delayed",
+      "variant": "control",
+      "block": 1,
+      "round": 2,
+      "ms": 357,
+      "completed": 3000,
+      "totalBytes": 23541000,
+      "totalChunks": 99000,
+      "outputSHA256": "93955114471c380b09d2d0f6092cee717855c4ebed8ebe9bd818b3ae0fd19ee9"
+    },
+    {
+      "name": "string-fallback",
+      "variant": "notifier-reuse",
+      "block": 1,
+      "round": 0,
+      "ms": 234,
+      "completed": 3000,
+      "totalBytes": 10659000,
+      "totalChunks": 0,
+      "outputSHA256": "8b9bb4e08c01d66832200358b05c6d4873dfec09f50e09596e47eeb71be35458"
+    },
+    {
+      "name": "string-fallback",
+      "variant": "base",
+      "block": 1,
+      "round": 0,
+      "ms": 235,
+      "completed": 3000,
+      "totalBytes": 10659000,
+      "totalChunks": 0,
+      "outputSHA256": "8b9bb4e08c01d66832200358b05c6d4873dfec09f50e09596e47eeb71be35458"
+    },
+    {
+      "name": "string-fallback",
+      "variant": "control",
+      "block": 1,
+      "round": 0,
+      "ms": 232,
+      "completed": 3000,
+      "totalBytes": 10659000,
+      "totalChunks": 0,
+      "outputSHA256": "8b9bb4e08c01d66832200358b05c6d4873dfec09f50e09596e47eeb71be35458"
+    },
+    {
+      "name": "string-fallback",
+      "variant": "base",
+      "block": 1,
+      "round": 1,
+      "ms": 209,
+      "completed": 3000,
+      "totalBytes": 10659000,
+      "totalChunks": 0,
+      "outputSHA256": "8b9bb4e08c01d66832200358b05c6d4873dfec09f50e09596e47eeb71be35458"
+    },
+    {
+      "name": "string-fallback",
+      "variant": "control",
+      "block": 1,
+      "round": 1,
+      "ms": 208,
+      "completed": 3000,
+      "totalBytes": 10659000,
+      "totalChunks": 0,
+      "outputSHA256": "8b9bb4e08c01d66832200358b05c6d4873dfec09f50e09596e47eeb71be35458"
+    },
+    {
+      "name": "string-fallback",
+      "variant": "notifier-reuse",
+      "block": 1,
+      "round": 1,
+      "ms": 219,
+      "completed": 3000,
+      "totalBytes": 10659000,
+      "totalChunks": 0,
+      "outputSHA256": "8b9bb4e08c01d66832200358b05c6d4873dfec09f50e09596e47eeb71be35458"
+    },
+    {
+      "name": "string-fallback",
+      "variant": "control",
+      "block": 1,
+      "round": 2,
+      "ms": 206,
+      "completed": 3000,
+      "totalBytes": 10659000,
+      "totalChunks": 0,
+      "outputSHA256": "8b9bb4e08c01d66832200358b05c6d4873dfec09f50e09596e47eeb71be35458"
+    },
+    {
+      "name": "string-fallback",
+      "variant": "notifier-reuse",
+      "block": 1,
+      "round": 2,
+      "ms": 213,
+      "completed": 3000,
+      "totalBytes": 10659000,
+      "totalChunks": 0,
+      "outputSHA256": "8b9bb4e08c01d66832200358b05c6d4873dfec09f50e09596e47eeb71be35458"
+    },
+    {
+      "name": "string-fallback",
+      "variant": "base",
+      "block": 1,
+      "round": 2,
+      "ms": 211,
+      "completed": 3000,
+      "totalBytes": 10659000,
+      "totalChunks": 0,
+      "outputSHA256": "8b9bb4e08c01d66832200358b05c6d4873dfec09f50e09596e47eeb71be35458"
+    },
+    {
+      "name": "root-retry",
+      "variant": "base",
+      "block": 1,
+      "round": 0,
+      "ms": 75,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "root-retry",
+      "variant": "control",
+      "block": 1,
+      "round": 0,
+      "ms": 75,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "root-retry",
+      "variant": "notifier-reuse",
+      "block": 1,
+      "round": 0,
+      "ms": 73,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "root-retry",
+      "variant": "control",
+      "block": 1,
+      "round": 1,
+      "ms": 82,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "root-retry",
+      "variant": "notifier-reuse",
+      "block": 1,
+      "round": 1,
+      "ms": 73,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "root-retry",
+      "variant": "base",
+      "block": 1,
+      "round": 1,
+      "ms": 80,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "root-retry",
+      "variant": "notifier-reuse",
+      "block": 1,
+      "round": 2,
+      "ms": 80,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "root-retry",
+      "variant": "base",
+      "block": 1,
+      "round": 2,
+      "ms": 72,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "root-retry",
+      "variant": "control",
+      "block": 1,
+      "round": 2,
+      "ms": 76,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "stream-ready",
+      "variant": "notifier-reuse",
+      "block": 1,
+      "round": 0,
+      "ms": 75,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "stream-ready",
+      "variant": "control",
+      "block": 1,
+      "round": 0,
+      "ms": 72,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "stream-ready",
+      "variant": "base",
+      "block": 1,
+      "round": 0,
+      "ms": 73,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "stream-ready",
+      "variant": "control",
+      "block": 1,
+      "round": 1,
+      "ms": 66,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "stream-ready",
+      "variant": "base",
+      "block": 1,
+      "round": 1,
+      "ms": 67,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "stream-ready",
+      "variant": "notifier-reuse",
+      "block": 1,
+      "round": 1,
+      "ms": 72,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "stream-ready",
+      "variant": "base",
+      "block": 1,
+      "round": 2,
+      "ms": 77,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "stream-ready",
+      "variant": "notifier-reuse",
+      "block": 1,
+      "round": 2,
+      "ms": 66,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "stream-ready",
+      "variant": "control",
+      "block": 1,
+      "round": 2,
+      "ms": 74,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "stream-ready",
+      "variant": "base",
+      "block": 2,
+      "round": 0,
+      "ms": 63,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "stream-ready",
+      "variant": "notifier-reuse",
+      "block": 2,
+      "round": 0,
+      "ms": 62,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "stream-ready",
+      "variant": "control",
+      "block": 2,
+      "round": 0,
+      "ms": 61,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "stream-ready",
+      "variant": "notifier-reuse",
+      "block": 2,
+      "round": 1,
+      "ms": 61,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "stream-ready",
+      "variant": "control",
+      "block": 2,
+      "round": 1,
+      "ms": 62,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "stream-ready",
+      "variant": "base",
+      "block": 2,
+      "round": 1,
+      "ms": 58,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "stream-ready",
+      "variant": "control",
+      "block": 2,
+      "round": 2,
+      "ms": 62,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "stream-ready",
+      "variant": "base",
+      "block": 2,
+      "round": 2,
+      "ms": 63,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "stream-ready",
+      "variant": "notifier-reuse",
+      "block": 2,
+      "round": 2,
+      "ms": 59,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "string-fallback",
+      "variant": "base",
+      "block": 2,
+      "round": 0,
+      "ms": 215,
+      "completed": 3000,
+      "totalBytes": 10659000,
+      "totalChunks": 0,
+      "outputSHA256": "8b9bb4e08c01d66832200358b05c6d4873dfec09f50e09596e47eeb71be35458"
+    },
+    {
+      "name": "string-fallback",
+      "variant": "notifier-reuse",
+      "block": 2,
+      "round": 0,
+      "ms": 221,
+      "completed": 3000,
+      "totalBytes": 10659000,
+      "totalChunks": 0,
+      "outputSHA256": "8b9bb4e08c01d66832200358b05c6d4873dfec09f50e09596e47eeb71be35458"
+    },
+    {
+      "name": "string-fallback",
+      "variant": "control",
+      "block": 2,
+      "round": 0,
+      "ms": 216,
+      "completed": 3000,
+      "totalBytes": 10659000,
+      "totalChunks": 0,
+      "outputSHA256": "8b9bb4e08c01d66832200358b05c6d4873dfec09f50e09596e47eeb71be35458"
+    },
+    {
+      "name": "string-fallback",
+      "variant": "notifier-reuse",
+      "block": 2,
+      "round": 1,
+      "ms": 207,
+      "completed": 3000,
+      "totalBytes": 10659000,
+      "totalChunks": 0,
+      "outputSHA256": "8b9bb4e08c01d66832200358b05c6d4873dfec09f50e09596e47eeb71be35458"
+    },
+    {
+      "name": "string-fallback",
+      "variant": "control",
+      "block": 2,
+      "round": 1,
+      "ms": 210,
+      "completed": 3000,
+      "totalBytes": 10659000,
+      "totalChunks": 0,
+      "outputSHA256": "8b9bb4e08c01d66832200358b05c6d4873dfec09f50e09596e47eeb71be35458"
+    },
+    {
+      "name": "string-fallback",
+      "variant": "base",
+      "block": 2,
+      "round": 1,
+      "ms": 222,
+      "completed": 3000,
+      "totalBytes": 10659000,
+      "totalChunks": 0,
+      "outputSHA256": "8b9bb4e08c01d66832200358b05c6d4873dfec09f50e09596e47eeb71be35458"
+    },
+    {
+      "name": "string-fallback",
+      "variant": "control",
+      "block": 2,
+      "round": 2,
+      "ms": 212,
+      "completed": 3000,
+      "totalBytes": 10659000,
+      "totalChunks": 0,
+      "outputSHA256": "8b9bb4e08c01d66832200358b05c6d4873dfec09f50e09596e47eeb71be35458"
+    },
+    {
+      "name": "string-fallback",
+      "variant": "base",
+      "block": 2,
+      "round": 2,
+      "ms": 213,
+      "completed": 3000,
+      "totalBytes": 10659000,
+      "totalChunks": 0,
+      "outputSHA256": "8b9bb4e08c01d66832200358b05c6d4873dfec09f50e09596e47eeb71be35458"
+    },
+    {
+      "name": "string-fallback",
+      "variant": "notifier-reuse",
+      "block": 2,
+      "round": 2,
+      "ms": 220,
+      "completed": 3000,
+      "totalBytes": 10659000,
+      "totalChunks": 0,
+      "outputSHA256": "8b9bb4e08c01d66832200358b05c6d4873dfec09f50e09596e47eeb71be35458"
+    },
+    {
+      "name": "string-ready",
+      "variant": "notifier-reuse",
+      "block": 2,
+      "round": 0,
+      "ms": 46,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 0,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "string-ready",
+      "variant": "control",
+      "block": 2,
+      "round": 0,
+      "ms": 46,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 0,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "string-ready",
+      "variant": "base",
+      "block": 2,
+      "round": 0,
+      "ms": 48,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 0,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "string-ready",
+      "variant": "control",
+      "block": 2,
+      "round": 1,
+      "ms": 49,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 0,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "string-ready",
+      "variant": "base",
+      "block": 2,
+      "round": 1,
+      "ms": 49,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 0,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "string-ready",
+      "variant": "notifier-reuse",
+      "block": 2,
+      "round": 1,
+      "ms": 45,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 0,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "string-ready",
+      "variant": "base",
+      "block": 2,
+      "round": 2,
+      "ms": 48,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 0,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "string-ready",
+      "variant": "notifier-reuse",
+      "block": 2,
+      "round": 2,
+      "ms": 48,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 0,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "string-ready",
+      "variant": "control",
+      "block": 2,
+      "round": 2,
+      "ms": 45,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 0,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "stream-delayed",
+      "variant": "control",
+      "block": 2,
+      "round": 0,
+      "ms": 346,
+      "completed": 3000,
+      "totalBytes": 23541000,
+      "totalChunks": 99000,
+      "outputSHA256": "93955114471c380b09d2d0f6092cee717855c4ebed8ebe9bd818b3ae0fd19ee9"
+    },
+    {
+      "name": "stream-delayed",
+      "variant": "base",
+      "block": 2,
+      "round": 0,
+      "ms": 354,
+      "completed": 3000,
+      "totalBytes": 23541000,
+      "totalChunks": 99000,
+      "outputSHA256": "93955114471c380b09d2d0f6092cee717855c4ebed8ebe9bd818b3ae0fd19ee9"
+    },
+    {
+      "name": "stream-delayed",
+      "variant": "notifier-reuse",
+      "block": 2,
+      "round": 0,
+      "ms": 345,
+      "completed": 3000,
+      "totalBytes": 23541000,
+      "totalChunks": 99000,
+      "outputSHA256": "93955114471c380b09d2d0f6092cee717855c4ebed8ebe9bd818b3ae0fd19ee9"
+    },
+    {
+      "name": "stream-delayed",
+      "variant": "base",
+      "block": 2,
+      "round": 1,
+      "ms": 341,
+      "completed": 3000,
+      "totalBytes": 23541000,
+      "totalChunks": 99000,
+      "outputSHA256": "93955114471c380b09d2d0f6092cee717855c4ebed8ebe9bd818b3ae0fd19ee9"
+    },
+    {
+      "name": "stream-delayed",
+      "variant": "notifier-reuse",
+      "block": 2,
+      "round": 1,
+      "ms": 329,
+      "completed": 3000,
+      "totalBytes": 23541000,
+      "totalChunks": 99000,
+      "outputSHA256": "93955114471c380b09d2d0f6092cee717855c4ebed8ebe9bd818b3ae0fd19ee9"
+    },
+    {
+      "name": "stream-delayed",
+      "variant": "control",
+      "block": 2,
+      "round": 1,
+      "ms": 359,
+      "completed": 3000,
+      "totalBytes": 23541000,
+      "totalChunks": 99000,
+      "outputSHA256": "93955114471c380b09d2d0f6092cee717855c4ebed8ebe9bd818b3ae0fd19ee9"
+    },
+    {
+      "name": "stream-delayed",
+      "variant": "notifier-reuse",
+      "block": 2,
+      "round": 2,
+      "ms": 327,
+      "completed": 3000,
+      "totalBytes": 23541000,
+      "totalChunks": 99000,
+      "outputSHA256": "93955114471c380b09d2d0f6092cee717855c4ebed8ebe9bd818b3ae0fd19ee9"
+    },
+    {
+      "name": "stream-delayed",
+      "variant": "control",
+      "block": 2,
+      "round": 2,
+      "ms": 348,
+      "completed": 3000,
+      "totalBytes": 23541000,
+      "totalChunks": 99000,
+      "outputSHA256": "93955114471c380b09d2d0f6092cee717855c4ebed8ebe9bd818b3ae0fd19ee9"
+    },
+    {
+      "name": "stream-delayed",
+      "variant": "base",
+      "block": 2,
+      "round": 2,
+      "ms": 363,
+      "completed": 3000,
+      "totalBytes": 23541000,
+      "totalChunks": 99000,
+      "outputSHA256": "93955114471c380b09d2d0f6092cee717855c4ebed8ebe9bd818b3ae0fd19ee9"
+    },
+    {
+      "name": "root-retry",
+      "variant": "notifier-reuse",
+      "block": 2,
+      "round": 0,
+      "ms": 68,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "root-retry",
+      "variant": "control",
+      "block": 2,
+      "round": 0,
+      "ms": 77,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "root-retry",
+      "variant": "base",
+      "block": 2,
+      "round": 0,
+      "ms": 68,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "root-retry",
+      "variant": "control",
+      "block": 2,
+      "round": 1,
+      "ms": 70,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "root-retry",
+      "variant": "base",
+      "block": 2,
+      "round": 1,
+      "ms": 80,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "root-retry",
+      "variant": "notifier-reuse",
+      "block": 2,
+      "round": 1,
+      "ms": 82,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "root-retry",
+      "variant": "base",
+      "block": 2,
+      "round": 2,
+      "ms": 70,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "root-retry",
+      "variant": "notifier-reuse",
+      "block": 2,
+      "round": 2,
+      "ms": 73,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "root-retry",
+      "variant": "control",
+      "block": 2,
+      "round": 2,
+      "ms": 76,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "string-fallback",
+      "variant": "notifier-reuse",
+      "block": 3,
+      "round": 0,
+      "ms": 210,
+      "completed": 3000,
+      "totalBytes": 10659000,
+      "totalChunks": 0,
+      "outputSHA256": "8b9bb4e08c01d66832200358b05c6d4873dfec09f50e09596e47eeb71be35458"
+    },
+    {
+      "name": "string-fallback",
+      "variant": "control",
+      "block": 3,
+      "round": 0,
+      "ms": 201,
+      "completed": 3000,
+      "totalBytes": 10659000,
+      "totalChunks": 0,
+      "outputSHA256": "8b9bb4e08c01d66832200358b05c6d4873dfec09f50e09596e47eeb71be35458"
+    },
+    {
+      "name": "string-fallback",
+      "variant": "base",
+      "block": 3,
+      "round": 0,
+      "ms": 223,
+      "completed": 3000,
+      "totalBytes": 10659000,
+      "totalChunks": 0,
+      "outputSHA256": "8b9bb4e08c01d66832200358b05c6d4873dfec09f50e09596e47eeb71be35458"
+    },
+    {
+      "name": "string-fallback",
+      "variant": "control",
+      "block": 3,
+      "round": 1,
+      "ms": 196,
+      "completed": 3000,
+      "totalBytes": 10659000,
+      "totalChunks": 0,
+      "outputSHA256": "8b9bb4e08c01d66832200358b05c6d4873dfec09f50e09596e47eeb71be35458"
+    },
+    {
+      "name": "string-fallback",
+      "variant": "base",
+      "block": 3,
+      "round": 1,
+      "ms": 209,
+      "completed": 3000,
+      "totalBytes": 10659000,
+      "totalChunks": 0,
+      "outputSHA256": "8b9bb4e08c01d66832200358b05c6d4873dfec09f50e09596e47eeb71be35458"
+    },
+    {
+      "name": "string-fallback",
+      "variant": "notifier-reuse",
+      "block": 3,
+      "round": 1,
+      "ms": 214,
+      "completed": 3000,
+      "totalBytes": 10659000,
+      "totalChunks": 0,
+      "outputSHA256": "8b9bb4e08c01d66832200358b05c6d4873dfec09f50e09596e47eeb71be35458"
+    },
+    {
+      "name": "string-fallback",
+      "variant": "base",
+      "block": 3,
+      "round": 2,
+      "ms": 203,
+      "completed": 3000,
+      "totalBytes": 10659000,
+      "totalChunks": 0,
+      "outputSHA256": "8b9bb4e08c01d66832200358b05c6d4873dfec09f50e09596e47eeb71be35458"
+    },
+    {
+      "name": "string-fallback",
+      "variant": "notifier-reuse",
+      "block": 3,
+      "round": 2,
+      "ms": 200,
+      "completed": 3000,
+      "totalBytes": 10659000,
+      "totalChunks": 0,
+      "outputSHA256": "8b9bb4e08c01d66832200358b05c6d4873dfec09f50e09596e47eeb71be35458"
+    },
+    {
+      "name": "string-fallback",
+      "variant": "control",
+      "block": 3,
+      "round": 2,
+      "ms": 205,
+      "completed": 3000,
+      "totalBytes": 10659000,
+      "totalChunks": 0,
+      "outputSHA256": "8b9bb4e08c01d66832200358b05c6d4873dfec09f50e09596e47eeb71be35458"
+    },
+    {
+      "name": "stream-delayed",
+      "variant": "notifier-reuse",
+      "block": 3,
+      "round": 0,
+      "ms": 340,
+      "completed": 3000,
+      "totalBytes": 23541000,
+      "totalChunks": 99000,
+      "outputSHA256": "93955114471c380b09d2d0f6092cee717855c4ebed8ebe9bd818b3ae0fd19ee9"
+    },
+    {
+      "name": "stream-delayed",
+      "variant": "control",
+      "block": 3,
+      "round": 0,
+      "ms": 379,
+      "completed": 3000,
+      "totalBytes": 23541000,
+      "totalChunks": 99000,
+      "outputSHA256": "93955114471c380b09d2d0f6092cee717855c4ebed8ebe9bd818b3ae0fd19ee9"
+    },
+    {
+      "name": "stream-delayed",
+      "variant": "base",
+      "block": 3,
+      "round": 0,
+      "ms": 350,
+      "completed": 3000,
+      "totalBytes": 23541000,
+      "totalChunks": 99000,
+      "outputSHA256": "93955114471c380b09d2d0f6092cee717855c4ebed8ebe9bd818b3ae0fd19ee9"
+    },
+    {
+      "name": "stream-delayed",
+      "variant": "control",
+      "block": 3,
+      "round": 1,
+      "ms": 336,
+      "completed": 3000,
+      "totalBytes": 23541000,
+      "totalChunks": 99000,
+      "outputSHA256": "93955114471c380b09d2d0f6092cee717855c4ebed8ebe9bd818b3ae0fd19ee9"
+    },
+    {
+      "name": "stream-delayed",
+      "variant": "base",
+      "block": 3,
+      "round": 1,
+      "ms": 332,
+      "completed": 3000,
+      "totalBytes": 23541000,
+      "totalChunks": 99000,
+      "outputSHA256": "93955114471c380b09d2d0f6092cee717855c4ebed8ebe9bd818b3ae0fd19ee9"
+    },
+    {
+      "name": "stream-delayed",
+      "variant": "notifier-reuse",
+      "block": 3,
+      "round": 1,
+      "ms": 339,
+      "completed": 3000,
+      "totalBytes": 23541000,
+      "totalChunks": 99000,
+      "outputSHA256": "93955114471c380b09d2d0f6092cee717855c4ebed8ebe9bd818b3ae0fd19ee9"
+    },
+    {
+      "name": "stream-delayed",
+      "variant": "base",
+      "block": 3,
+      "round": 2,
+      "ms": 345,
+      "completed": 3000,
+      "totalBytes": 23541000,
+      "totalChunks": 99000,
+      "outputSHA256": "93955114471c380b09d2d0f6092cee717855c4ebed8ebe9bd818b3ae0fd19ee9"
+    },
+    {
+      "name": "stream-delayed",
+      "variant": "notifier-reuse",
+      "block": 3,
+      "round": 2,
+      "ms": 316,
+      "completed": 3000,
+      "totalBytes": 23541000,
+      "totalChunks": 99000,
+      "outputSHA256": "93955114471c380b09d2d0f6092cee717855c4ebed8ebe9bd818b3ae0fd19ee9"
+    },
+    {
+      "name": "stream-delayed",
+      "variant": "control",
+      "block": 3,
+      "round": 2,
+      "ms": 358,
+      "completed": 3000,
+      "totalBytes": 23541000,
+      "totalChunks": 99000,
+      "outputSHA256": "93955114471c380b09d2d0f6092cee717855c4ebed8ebe9bd818b3ae0fd19ee9"
+    },
+    {
+      "name": "root-retry",
+      "variant": "base",
+      "block": 3,
+      "round": 0,
+      "ms": 74,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "root-retry",
+      "variant": "notifier-reuse",
+      "block": 3,
+      "round": 0,
+      "ms": 64,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "root-retry",
+      "variant": "control",
+      "block": 3,
+      "round": 0,
+      "ms": 76,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "root-retry",
+      "variant": "notifier-reuse",
+      "block": 3,
+      "round": 1,
+      "ms": 82,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "root-retry",
+      "variant": "control",
+      "block": 3,
+      "round": 1,
+      "ms": 72,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "root-retry",
+      "variant": "base",
+      "block": 3,
+      "round": 1,
+      "ms": 79,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "root-retry",
+      "variant": "control",
+      "block": 3,
+      "round": 2,
+      "ms": 79,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "root-retry",
+      "variant": "base",
+      "block": 3,
+      "round": 2,
+      "ms": 71,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "root-retry",
+      "variant": "notifier-reuse",
+      "block": 3,
+      "round": 2,
+      "ms": 79,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "stream-ready",
+      "variant": "control",
+      "block": 3,
+      "round": 0,
+      "ms": 72,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "stream-ready",
+      "variant": "base",
+      "block": 3,
+      "round": 0,
+      "ms": 76,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "stream-ready",
+      "variant": "notifier-reuse",
+      "block": 3,
+      "round": 0,
+      "ms": 70,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "stream-ready",
+      "variant": "base",
+      "block": 3,
+      "round": 1,
+      "ms": 65,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "stream-ready",
+      "variant": "notifier-reuse",
+      "block": 3,
+      "round": 1,
+      "ms": 65,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "stream-ready",
+      "variant": "control",
+      "block": 3,
+      "round": 1,
+      "ms": 77,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "stream-ready",
+      "variant": "notifier-reuse",
+      "block": 3,
+      "round": 2,
+      "ms": 62,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "stream-ready",
+      "variant": "control",
+      "block": 3,
+      "round": 2,
+      "ms": 63,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "stream-ready",
+      "variant": "base",
+      "block": 3,
+      "round": 2,
+      "ms": 73,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "string-ready",
+      "variant": "notifier-reuse",
+      "block": 3,
+      "round": 0,
+      "ms": 45,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 0,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "string-ready",
+      "variant": "control",
+      "block": 3,
+      "round": 0,
+      "ms": 56,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 0,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "string-ready",
+      "variant": "base",
+      "block": 3,
+      "round": 0,
+      "ms": 49,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 0,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "string-ready",
+      "variant": "control",
+      "block": 3,
+      "round": 1,
+      "ms": 50,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 0,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "string-ready",
+      "variant": "base",
+      "block": 3,
+      "round": 1,
+      "ms": 61,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 0,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "string-ready",
+      "variant": "notifier-reuse",
+      "block": 3,
+      "round": 1,
+      "ms": 60,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 0,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "string-ready",
+      "variant": "base",
+      "block": 3,
+      "round": 2,
+      "ms": 50,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 0,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "string-ready",
+      "variant": "notifier-reuse",
+      "block": 3,
+      "round": 2,
+      "ms": 50,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 0,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "string-ready",
+      "variant": "control",
+      "block": 3,
+      "round": 2,
+      "ms": 56,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 0,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "root-retry",
+      "variant": "notifier-reuse",
+      "block": 4,
+      "round": 0,
+      "ms": 66,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "root-retry",
+      "variant": "control",
+      "block": 4,
+      "round": 0,
+      "ms": 64,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "root-retry",
+      "variant": "base",
+      "block": 4,
+      "round": 0,
+      "ms": 64,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "root-retry",
+      "variant": "control",
+      "block": 4,
+      "round": 1,
+      "ms": 65,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "root-retry",
+      "variant": "base",
+      "block": 4,
+      "round": 1,
+      "ms": 65,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "root-retry",
+      "variant": "notifier-reuse",
+      "block": 4,
+      "round": 1,
+      "ms": 61,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "root-retry",
+      "variant": "base",
+      "block": 4,
+      "round": 2,
+      "ms": 63,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "root-retry",
+      "variant": "notifier-reuse",
+      "block": 4,
+      "round": 2,
+      "ms": 66,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "root-retry",
+      "variant": "control",
+      "block": 4,
+      "round": 2,
+      "ms": 63,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "string-fallback",
+      "variant": "base",
+      "block": 4,
+      "round": 0,
+      "ms": 208,
+      "completed": 3000,
+      "totalBytes": 10659000,
+      "totalChunks": 0,
+      "outputSHA256": "8b9bb4e08c01d66832200358b05c6d4873dfec09f50e09596e47eeb71be35458"
+    },
+    {
+      "name": "string-fallback",
+      "variant": "notifier-reuse",
+      "block": 4,
+      "round": 0,
+      "ms": 211,
+      "completed": 3000,
+      "totalBytes": 10659000,
+      "totalChunks": 0,
+      "outputSHA256": "8b9bb4e08c01d66832200358b05c6d4873dfec09f50e09596e47eeb71be35458"
+    },
+    {
+      "name": "string-fallback",
+      "variant": "control",
+      "block": 4,
+      "round": 0,
+      "ms": 220,
+      "completed": 3000,
+      "totalBytes": 10659000,
+      "totalChunks": 0,
+      "outputSHA256": "8b9bb4e08c01d66832200358b05c6d4873dfec09f50e09596e47eeb71be35458"
+    },
+    {
+      "name": "string-fallback",
+      "variant": "notifier-reuse",
+      "block": 4,
+      "round": 1,
+      "ms": 207,
+      "completed": 3000,
+      "totalBytes": 10659000,
+      "totalChunks": 0,
+      "outputSHA256": "8b9bb4e08c01d66832200358b05c6d4873dfec09f50e09596e47eeb71be35458"
+    },
+    {
+      "name": "string-fallback",
+      "variant": "control",
+      "block": 4,
+      "round": 1,
+      "ms": 206,
+      "completed": 3000,
+      "totalBytes": 10659000,
+      "totalChunks": 0,
+      "outputSHA256": "8b9bb4e08c01d66832200358b05c6d4873dfec09f50e09596e47eeb71be35458"
+    },
+    {
+      "name": "string-fallback",
+      "variant": "base",
+      "block": 4,
+      "round": 1,
+      "ms": 207,
+      "completed": 3000,
+      "totalBytes": 10659000,
+      "totalChunks": 0,
+      "outputSHA256": "8b9bb4e08c01d66832200358b05c6d4873dfec09f50e09596e47eeb71be35458"
+    },
+    {
+      "name": "string-fallback",
+      "variant": "control",
+      "block": 4,
+      "round": 2,
+      "ms": 209,
+      "completed": 3000,
+      "totalBytes": 10659000,
+      "totalChunks": 0,
+      "outputSHA256": "8b9bb4e08c01d66832200358b05c6d4873dfec09f50e09596e47eeb71be35458"
+    },
+    {
+      "name": "string-fallback",
+      "variant": "base",
+      "block": 4,
+      "round": 2,
+      "ms": 208,
+      "completed": 3000,
+      "totalBytes": 10659000,
+      "totalChunks": 0,
+      "outputSHA256": "8b9bb4e08c01d66832200358b05c6d4873dfec09f50e09596e47eeb71be35458"
+    },
+    {
+      "name": "string-fallback",
+      "variant": "notifier-reuse",
+      "block": 4,
+      "round": 2,
+      "ms": 215,
+      "completed": 3000,
+      "totalBytes": 10659000,
+      "totalChunks": 0,
+      "outputSHA256": "8b9bb4e08c01d66832200358b05c6d4873dfec09f50e09596e47eeb71be35458"
+    },
+    {
+      "name": "stream-delayed",
+      "variant": "control",
+      "block": 4,
+      "round": 0,
+      "ms": 336,
+      "completed": 3000,
+      "totalBytes": 23541000,
+      "totalChunks": 99000,
+      "outputSHA256": "93955114471c380b09d2d0f6092cee717855c4ebed8ebe9bd818b3ae0fd19ee9"
+    },
+    {
+      "name": "stream-delayed",
+      "variant": "notifier-reuse",
+      "block": 4,
+      "round": 0,
+      "ms": 334,
+      "completed": 3000,
+      "totalBytes": 23541000,
+      "totalChunks": 99000,
+      "outputSHA256": "93955114471c380b09d2d0f6092cee717855c4ebed8ebe9bd818b3ae0fd19ee9"
+    },
+    {
+      "name": "stream-delayed",
+      "variant": "base",
+      "block": 4,
+      "round": 0,
+      "ms": 345,
+      "completed": 3000,
+      "totalBytes": 23541000,
+      "totalChunks": 99000,
+      "outputSHA256": "93955114471c380b09d2d0f6092cee717855c4ebed8ebe9bd818b3ae0fd19ee9"
+    },
+    {
+      "name": "stream-delayed",
+      "variant": "notifier-reuse",
+      "block": 4,
+      "round": 1,
+      "ms": 320,
+      "completed": 3000,
+      "totalBytes": 23541000,
+      "totalChunks": 99000,
+      "outputSHA256": "93955114471c380b09d2d0f6092cee717855c4ebed8ebe9bd818b3ae0fd19ee9"
+    },
+    {
+      "name": "stream-delayed",
+      "variant": "base",
+      "block": 4,
+      "round": 1,
+      "ms": 330,
+      "completed": 3000,
+      "totalBytes": 23541000,
+      "totalChunks": 99000,
+      "outputSHA256": "93955114471c380b09d2d0f6092cee717855c4ebed8ebe9bd818b3ae0fd19ee9"
+    },
+    {
+      "name": "stream-delayed",
+      "variant": "control",
+      "block": 4,
+      "round": 1,
+      "ms": 356,
+      "completed": 3000,
+      "totalBytes": 23541000,
+      "totalChunks": 99000,
+      "outputSHA256": "93955114471c380b09d2d0f6092cee717855c4ebed8ebe9bd818b3ae0fd19ee9"
+    },
+    {
+      "name": "stream-delayed",
+      "variant": "base",
+      "block": 4,
+      "round": 2,
+      "ms": 330,
+      "completed": 3000,
+      "totalBytes": 23541000,
+      "totalChunks": 99000,
+      "outputSHA256": "93955114471c380b09d2d0f6092cee717855c4ebed8ebe9bd818b3ae0fd19ee9"
+    },
+    {
+      "name": "stream-delayed",
+      "variant": "control",
+      "block": 4,
+      "round": 2,
+      "ms": 334,
+      "completed": 3000,
+      "totalBytes": 23541000,
+      "totalChunks": 99000,
+      "outputSHA256": "93955114471c380b09d2d0f6092cee717855c4ebed8ebe9bd818b3ae0fd19ee9"
+    },
+    {
+      "name": "stream-delayed",
+      "variant": "notifier-reuse",
+      "block": 4,
+      "round": 2,
+      "ms": 348,
+      "completed": 3000,
+      "totalBytes": 23541000,
+      "totalChunks": 99000,
+      "outputSHA256": "93955114471c380b09d2d0f6092cee717855c4ebed8ebe9bd818b3ae0fd19ee9"
+    },
+    {
+      "name": "string-ready",
+      "variant": "control",
+      "block": 4,
+      "round": 0,
+      "ms": 48,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 0,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "string-ready",
+      "variant": "base",
+      "block": 4,
+      "round": 0,
+      "ms": 60,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 0,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "string-ready",
+      "variant": "notifier-reuse",
+      "block": 4,
+      "round": 0,
+      "ms": 61,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 0,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "string-ready",
+      "variant": "base",
+      "block": 4,
+      "round": 1,
+      "ms": 59,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 0,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "string-ready",
+      "variant": "notifier-reuse",
+      "block": 4,
+      "round": 1,
+      "ms": 51,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 0,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "string-ready",
+      "variant": "control",
+      "block": 4,
+      "round": 1,
+      "ms": 60,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 0,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "string-ready",
+      "variant": "notifier-reuse",
+      "block": 4,
+      "round": 2,
+      "ms": 60,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 0,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "string-ready",
+      "variant": "control",
+      "block": 4,
+      "round": 2,
+      "ms": 58,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 0,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "string-ready",
+      "variant": "base",
+      "block": 4,
+      "round": 2,
+      "ms": 55,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 0,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "stream-ready",
+      "variant": "base",
+      "block": 4,
+      "round": 0,
+      "ms": 68,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "stream-ready",
+      "variant": "control",
+      "block": 4,
+      "round": 0,
+      "ms": 72,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "stream-ready",
+      "variant": "notifier-reuse",
+      "block": 4,
+      "round": 0,
+      "ms": 71,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "stream-ready",
+      "variant": "control",
+      "block": 4,
+      "round": 1,
+      "ms": 66,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "stream-ready",
+      "variant": "notifier-reuse",
+      "block": 4,
+      "round": 1,
+      "ms": 66,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "stream-ready",
+      "variant": "base",
+      "block": 4,
+      "round": 1,
+      "ms": 70,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "stream-ready",
+      "variant": "notifier-reuse",
+      "block": 4,
+      "round": 2,
+      "ms": 75,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "stream-ready",
+      "variant": "base",
+      "block": 4,
+      "round": 2,
+      "ms": 63,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    },
+    {
+      "name": "stream-ready",
+      "variant": "control",
+      "block": 4,
+      "round": 2,
+      "ms": 71,
+      "completed": 3000,
+      "totalBytes": 8577000,
+      "totalChunks": 3000,
+      "outputSHA256": "8dd0abc9edea5870e678ab9dd7f3f94ba2e5523a506cc7c935703909d6c15f62"
+    }
+  ],
+  "iterations": 3000,
+  "blocks": 5,
+  "rounds": 3,
+  "version": "27.2",
+  "comparisons": {
+    "stream-delayed": {
+      "control": {
+        "pairedTimeChangePercent": 1.2048192771084265,
+        "blockBootstrap95CI": [
+          -2.608695652173909,
+          3.7681159420289934
+        ],
+        "independentBlocks": 5
+      },
+      "notifier-reuse": {
+        "pairedTimeChangePercent": -3.0303030303030276,
+        "blockBootstrap95CI": [
+          -4.142011834319526,
+          -1.9774011299435013
+        ],
+        "independentBlocks": 5
+      }
+    },
+    "stream-ready": {
+      "control": {
+        "pairedTimeChangePercent": -1.4925373134328401,
+        "blockBootstrap95CI": [
+          -3.8961038961038974,
+          5.882352941176472
+        ],
+        "independentBlocks": 5
+      },
+      "notifier-reuse": {
+        "pairedTimeChangePercent": 0,
+        "blockBootstrap95CI": [
+          -5.714285714285716,
+          4.4117647058823595
+        ],
+        "independentBlocks": 5
+      }
+    },
+    "string-ready": {
+      "control": {
+        "pairedTimeChangePercent": 0,
+        "blockBootstrap95CI": [
+          -4.1666666666666625,
+          2.2727272727272707
+        ],
+        "independentBlocks": 5
+      },
+      "notifier-reuse": {
+        "pairedTimeChangePercent": -1.6393442622950838,
+        "blockBootstrap95CI": [
+          -4.1666666666666625,
+          0
+        ],
+        "independentBlocks": 5
+      }
+    },
+    "string-fallback": {
+      "control": {
+        "pairedTimeChangePercent": -0.48309178743961567,
+        "blockBootstrap95CI": [
+          -2.3696682464455,
+          0.46511627906977715
+        ],
+        "independentBlocks": 5
+      },
+      "notifier-reuse": {
+        "pairedTimeChangePercent": 0.9478672985782088,
+        "blockBootstrap95CI": [
+          -0.42553191489361764,
+          2.7906976744185963
+        ],
+        "independentBlocks": 5
+      }
+    },
+    "root-retry": {
+      "control": {
+        "pairedTimeChangePercent": 0,
+        "blockBootstrap95CI": [
+          0,
+          5.555555555555558
+        ],
+        "independentBlocks": 5
+      },
+      "notifier-reuse": {
+        "pairedTimeChangePercent": 1.388888888888884,
+        "blockBootstrap95CI": [
+          -4.81927710843374,
+          3.797468354430378
+        ],
+        "independentBlocks": 5
+      }
+    }
+  },
+  "complete": true
+}

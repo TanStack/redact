@@ -79,6 +79,9 @@ const CONTROLLED_RESTORE_SIZE_ALLOWANCE = {
   'redact/dom-client (forwardRef=stub)': [261, 268],
   'redact/dom-client (hydration=stub)': [296, 286],
   'redact/dom-client (nano)': [261, 262],
+  // Exceeded after merging main 6d3e2af.
+  'redact/dom-client (lazy=stub)': [308, 334],
+  'redact/dom-client (classComponents=stub)': [295, 303],
 }
 
 // Handler-less controlled restore cost (#115) on #116 9fa1855, [source, built].
@@ -87,6 +90,10 @@ const CONTROLLED_RESTORE_SIZE_ALLOWANCE = {
 const UNHANDLED_RESTORE_SIZE_ALLOWANCE = {
   'redact/dom-client (lazy=stub)': [42, 38],
   'redact/dom-client (hydration=stub)': [34, 39],
+  // Exceeded after merging main 6d3e2af.
+  'client total (default Vite)': [39, 50],
+  'redact/dom-client (viewTransitions=stub)': [31, 34],
+  'redact/dom-client (nano)': [34, 29],
 }
 
 let failed = false

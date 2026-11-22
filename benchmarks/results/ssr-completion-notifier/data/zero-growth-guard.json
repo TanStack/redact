@@ -1,0 +1,31 @@
+{
+  "started": "2026-11-01T20:33:56.064953+00:00",
+  "command": [
+    "node",
+    "scripts/test-react-compatibility-size.mjs"
+  ],
+  "pollSeconds": 2,
+  "samples": [
+    {
+      "at": "2026-11-01T20:33:56.175654+00:00",
+      "competitors": []
+    },
+    {
+      "at": "2026-11-01T20:33:58.232650+00:00",
+      "competitors": []
+    },
+    {
+      "at": "2026-11-01T20:34:00.296483+00:00",
+      "competitors": []
+    },
+    {
+      "at": "2026-11-01T20:34:02.357563+00:00",
+      "competitors": []
+    }
+  ],
+  "excluded": false,
+  "childStarted": true,
+  "pid": 9069,
+  "exitCode": 0,
+  "ended": "2026-11-01T20:34:02.357761+00:00"
+}

@@ -45,12 +45,18 @@ export function firstDomNode(fiber: Fiber, domParent: Node): Node | null {
     if (fiber.t <= FiberTag.Text) {
         return fiber.n?.parentNode === domParent ? fiber.n : null;
     }
-    let c = fiber.c;
-    while (c) {
-        const d = firstDomNode(c, domParent);
-        if (d)
-            return d;
-        c = c.s;
+    return visitChildren(fiber, firstDomNode, domParent) ?? null;
+}
+export function visitChildren<State, Result>(
+    parent: Fiber,
+    visit: (fiber: Fiber, state: State) => Result,
+    state?: State,
+    skipFallback?: boolean,
+): Result | undefined {
+    for (let child = parent.c; child; child = child.s) {
+        const result = visit(child, state!);
+        if (result) return result;
     }
-    return fiber.t === FiberTag.Suspense && fiber.b?.f ? firstDomNode(fiber.b.f, domParent) : null;
+    if (!skipFallback && parent.t === FiberTag.Suspense && parent.b?.f)
+        return visit(parent.b.f, state!);
 }

@@ -31,6 +31,29 @@ Use `createRoot` and `hydrateRoot` from `react-dom/client`. The deprecated `Reac
 
 Native animation is not exhaustive visual parity. Production animation, hidden-tab behavior, broader resource/navigation races, and Safari/Firefox remain unverified. [API details](https://github.com/TanStack/redact/blob/main/docs/REACT_19_3_SUPPORT.md), [upstream audit](https://github.com/TanStack/redact/blob/main/docs/REACT_19_3_AUDIT.md), [native animation limits](https://github.com/TanStack/redact/blob/main/docs/VIEW_TRANSITION_EXPERIMENT.md).
 
+## Custom React renderers
+
+Custom renderers that depend on private React internals, such as React Three Fiber, need native React. Redact does not provide those internals, so the renderer can fail as soon as its module loads under a React alias. The Vite plugin's `skip` option matches import specifiers across an enabled environment. It cannot exempt a single dependency or component subtree.
+
+If a page needs both React Three Fiber and Redact, keep the renderer in a separate native React module graph and mount it in its own DOM root. That graph needs native React, native ReactDOM and the renderer's hook dependencies. For example, if both roots use Zustand, each graph needs its own instance of Zustand's React hook module. Routing every Zustand import of React to native React can break the Redact root.
+
+A native root can live inside a Redact-rendered DOM element. Leave that element empty in Redact and mount the separately built native bundle from an effect. Return the native root's unmount function so the effect cleans up when Redact removes the host.
+
+```tsx
+import { useEffect, useRef } from 'react'
+import { mountNative } from './native-dist/native.js'
+
+function NativeCanvas() {
+  const host = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (host.current) return mountNative(host.current)
+  }, [])
+  return <div ref={host} />
+}
+```
+
+In the native bundle, `mountNative` calls native ReactDOM's `createRoot`, renders the native component, and returns `() => root.unmount()`. Each root owns its own context and hook state.
+
 ## Waiting for hydration in tests
 
 Redact does not expose React DOM's private `__reactFiber$` or `__reactProps$` node properties. Use a marker your application owns, set in an effect on the component your test will use:

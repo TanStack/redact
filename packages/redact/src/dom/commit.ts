@@ -1,5 +1,4 @@
 import { walkRetained } from './walk';
-import { isString } from "../core/functions";
 import { isFunction } from '../core/functions';
 import { setProp } from './dom';
 export interface CommitPlan {
@@ -23,8 +22,7 @@ export function setCommitPlacementHook(hook: typeof placementHook): void { place
 export function checkpointCommit(fiber?: Fiber): number {
     if (!currentCommit)
         return -1;
-    const checkpoint = currentCommit.c.length;
-    currentCommit.c.push(currentCommit.q.map(queue => queue.length));
+    const checkpoint = currentCommit.c.push(currentCommit.q.map(queue => queue.length)) - 1;
     if (fiber)
         walkRetained(fiber, rememberFiber);
     checkpointHook?.();
@@ -57,10 +55,7 @@ export function queueText(node: Text, value: string): void {
         node.data = value;
 }
 export function queueProp(node: Element, key: string, value: any, previous: any, svg: boolean): void {
-    if (currentCommit)
-        currentCommit.q[1]!.push(node, key, value, previous, svg);
-    else
-        setProp(node, key, value, previous, svg);
+    queueMutation(() => setProp(node, key, value, previous, svg));
 }
 export function queueMutation(work: () => void): void {
     if (!currentCommit) {
@@ -104,10 +99,8 @@ export function commitMutation(plan: CommitPlan): void {
             const work = mutations[index];
             if (isFunction(work))
                 work();
-            else if (isString(work))
-                mutations[++index].data = work;
             else
-                setProp(work, mutations[++index], mutations[++index], mutations[++index], mutations[++index]);
+                mutations[++index].data = work;
         }
         placementHook?.(plan.q[5]!);
         for (const work of plan.q[2]!)
@@ -184,10 +177,18 @@ function rememberFiber(fiber: Fiber): void {
     });
 }
 import { isObject } from '../core/functions';
-// Structural reconciliation already builds the previous child list. Keep
-// that list for a failed preparation without allocating per-fiber closures.
-export function rememberChildList(parent: Fiber, children?: Fiber[]): void {
-    currentCommit?.q[4]!.push(parent, children);
+// Keep the old sibling list for a failed structural render.
+export function rememberChildList(parent: Fiber, children: Fiber[]): void {
+    if (!currentCommit) return;
+    onCommitFailure(() => {
+        for (let child = parent.c; child; child = child.s) {
+            if (!children.includes(child))
+                walkRetained(child, fiber => { fiber.u = true; });
+        }
+        parent.c = children[0] ?? null;
+        for (let index = 0; index < children.length; index++)
+            children[index]!.s = children[index + 1] ?? null;
+    });
 }
 export function prepareCommit(render: () => void, plan = createCommit()): CommitPlan {
     const previous = currentCommit;
@@ -197,23 +198,8 @@ export function prepareCommit(render: () => void, plan = createCommit()): Commit
     }
     catch (error) {
         currentCommit = null;
-        const failed = plan.q[4]!;
-        for (let i = 0; i < failed.length; i++) {
-            const work = failed[i];
-            if (isFunction(work))
-                work();
-            else {
-                const children = failed[++i] as Fiber[] | undefined;
-                for (let child = work.c; child; child = child.s) {
-                    if (!children?.includes(child))
-                        walkRetained(child, fiber => { fiber.u = true; });
-                }
-                work.c = children?.[0] ?? null;
-                if (children)
-                    for (let j = 0; j < children.length; j++)
-                        children[j]!.s = children[j + 1] ?? null;
-            }
-        }
+        for (const work of plan.q[4]!)
+            work();
         throw error;
     }
     finally {

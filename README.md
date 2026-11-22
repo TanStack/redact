@@ -31,6 +31,10 @@ export default defineConfig({
 
 Bundling server dependencies lets Vite redirect their React imports too. [TanStack Start setup](./docs/start.md).
 
+### Webpack, Rspack and Rsbuild
+
+[Browser SPA setup and feature options](./docs/bundlers.md).
+
 ### Vite
 
 ```ts

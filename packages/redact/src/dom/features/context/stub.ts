@@ -1,7 +1,7 @@
 import { isFunction } from '../../../core/functions';
 import { FiberTag, type Fiber } from '../../../core';
 import { REACT_CONTEXT_TYPE, REACT_PROVIDER_TYPE, REACT_CONSUMER_TYPE } from '../../../react';
-import { installRenderer, registerTypeMatcher, reconcileRaw, childrenToArray, } from '../../reconcile';
+import { installRenderer, registerTypeMatcher, reconcileRaw } from '../../reconcile';
 export const hasContextChanged: (_f: Fiber, _includeFallback?: boolean) => boolean = () => false;
 export const ownContextChanged = hasContextChanged;
 export function renderContextConsumers(_f: Fiber): void { }
@@ -13,9 +13,8 @@ export function renderContextConsumers(_f: Fiber): void { }
 // walking, which matches the no-Provider-fibers-in-tree reality.
 function renderConsumerStub(fiber: Fiber): void {
     const props = fiber.v ?? {};
-    const rendered = isFunction(props.children)
-        ? props.children((fiber.type as any)._context._currentValue) : null;
-    reconcileRaw(fiber, rendered);
+    reconcileRaw(fiber, isFunction(props.children) &&
+        props.children((fiber.type as any)._context._currentValue));
     fiber.m = props;
 }
 registerTypeMatcher((_type, marker) => marker === REACT_CONTEXT_TYPE || marker === REACT_PROVIDER_TYPE

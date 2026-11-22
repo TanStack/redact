@@ -325,9 +325,7 @@ const DISPATCHER = {
         // rely on this: they render `false` on server, `true` on client — and
         // if we return `true` during hydration, client and server diverge and
         // the tree mounts fresh next to the SSR fallback DOM.
-        const root = fiber.r ?? findRoot(fiber);
-        const isHydrating = Boolean(root?.h);
-        const value = isHydrating && getServerSnapshot ? getServerSnapshot() : getSnapshot();
+        const value = (fiber.r ?? findRoot(fiber))?.h && getServerSnapshot ? getServerSnapshot() : getSnapshot();
         hookValue(hook, value);
         useEffectImpl(1, () => {
             let active = true;
@@ -402,9 +400,9 @@ const DISPATCHER = {
         if (queue.f)
             throw queue.e;
         const pending = queue.p > 0;
-        if (!Object.is(hook.s, queue.v) || hook.d !== pending)
+        hookValue(hook, queue.v);
+        if (hook.d !== pending)
             hookFlags |= 1;
-        hook.s = queue.v;
         hook.d = pending;
         return [queue.v, hook.c, pending];
     },

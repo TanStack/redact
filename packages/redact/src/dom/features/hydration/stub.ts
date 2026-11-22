@@ -84,3 +84,5 @@ export function assignReactIds(_parent: Fiber, _children: object): void {}
 export const deferHydration: (_f: Fiber, _thenable: Promise<any>) => boolean = () => false
 
 export function finishHydration(_f: Fiber, _isTextarea: boolean): void {}
+
+export const supportsHydration = false;

@@ -560,3 +560,5 @@ export function hydrateRootImpl(container: Element | Document, initialChildren: 
         },
     };
 }
+
+export const supportsHydration = true;

@@ -13,8 +13,8 @@ export function attributeName(name: string, isSvg?: boolean): string {
 
 // Share property coercion with hydration without creating resource-bearing probes.
 export function attributeValue(name: string, value: any, attr: string): string | null {
-  if (/^on|^default(Value|Checked)$/.test(name)) return null
-  if (name === 'className' || name === 'class' || name === 'htmlFor' || STRING_BOOLEAN_ATTRS.test(attr)) return value == null ? null : '' + value
+  if (value == null || /^on|^default(Value|Checked)$/.test(name)) return null
+  if (/^(className|class|htmlFor)$/.test(name) || STRING_BOOLEAN_ATTRS.test(attr)) return '' + value
   if (BOOLEAN_ATTRS.test(attr)) return value ? '' : null
-  return value == null || value === false ? null : value === true ? '' : `${value}`
+  return value === false ? null : value === true ? '' : `${value}`
 }
