@@ -24,9 +24,14 @@ jobs:
     permissions:
       contents: read
 
+  react-router-compatibility:
+    uses: ./.github/workflows/react-router.yml
+    permissions:
+      contents: read
+
   release:
     name: Release
-    needs: [next-compatibility, vinext-compatibility]
+    needs: [next-compatibility, vinext-compatibility, react-router-compatibility]
     if: github.repository_owner == 'TanStack'
     runs-on: ubuntu-latest
     steps:

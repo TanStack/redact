@@ -1,0 +1,23 @@
+{
+  "started": "2026-11-01T20:41:58.544866+00:00",
+  "command": [
+    "/tmp/rd-node-24-22/node_modules/node/bin/node",
+    "/tmp/rd-notifier-failurebox/rd-notifier-retention.mjs"
+  ],
+  "pollSeconds": 2,
+  "samples": [
+    {
+      "at": "2026-11-01T20:41:58.657893+00:00",
+      "competitors": []
+    },
+    {
+      "at": "2026-11-01T20:42:00.719498+00:00",
+      "competitors": []
+    }
+  ],
+  "excluded": false,
+  "childStarted": true,
+  "pid": 12423,
+  "exitCode": 0,
+  "ended": "2026-11-01T20:42:00.719608+00:00"
+}

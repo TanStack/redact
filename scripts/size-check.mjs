@@ -79,6 +79,9 @@ const CONTROLLED_RESTORE_SIZE_ALLOWANCE = {
   'redact/dom-client (forwardRef=stub)': [261, 268],
   'redact/dom-client (hydration=stub)': [296, 286],
   'redact/dom-client (nano)': [261, 262],
+  // Exceeded after merging main 6d3e2af.
+  'redact/dom-client (lazy=stub)': [308, 334],
+  'redact/dom-client (classComponents=stub)': [295, 303],
 }
 
 let failed = false

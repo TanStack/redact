@@ -1,0 +1,38 @@
+[
+  {
+    "variant": "base",
+    "repeat": 0,
+    "alive": 0,
+    "retainedStreams": 12
+  },
+  {
+    "variant": "base",
+    "repeat": 1,
+    "alive": 0,
+    "retainedStreams": 12
+  },
+  {
+    "variant": "base",
+    "repeat": 2,
+    "alive": 0,
+    "retainedStreams": 12
+  },
+  {
+    "variant": "notifier-reuse",
+    "repeat": 0,
+    "alive": 0,
+    "retainedStreams": 12
+  },
+  {
+    "variant": "notifier-reuse",
+    "repeat": 1,
+    "alive": 0,
+    "retainedStreams": 12
+  },
+  {
+    "variant": "notifier-reuse",
+    "repeat": 2,
+    "alive": 0,
+    "retainedStreams": 12
+  }
+]

@@ -168,8 +168,14 @@ importers:
   packages/redact:
     dependencies:
       '@cloudflare/vite-plugin':
-        specifier: 1.65.0
+        specifier: '1.65.0 || 2.0.0-beta.v.11'
         version: 1.65.0(@types/node@26.6.5)(vite@5.4.21(@types/node@26.6.5)(lightningcss@1.33.0)(terser@5.51.2))(workerd@1.20261019.1)(wrangler@4.152.0(@types/node@26.6.5))
+      '@jridgewell/remapping':
+        specifier: ^2.3.5
+        version: 2.3.5
+      acorn:
+        specifier: ^8.19.0
+        version: 8.19.0
       magic-string:
         specifier: ^0.30.21
         version: 0.30.21
@@ -1168,6 +1174,9 @@ packages:
 
   '@jridgewell/gen-mapping@0.3.13':
     resolution: {integrity: sha512-2kkt/7niJ6MgEPxF0bYdQ6etZaA+fQvDcLKckhy1yIQOzaoKjBBjSj63/aLVjYE3qhRt5dvM+uUyfCg6UKCBbA==}
+
+  '@jridgewell/remapping@2.3.5':
+    resolution: {integrity: sha512-LI9u/+laYG4Ds1TDKSJW2YPrIlcVYOwi2fUC6xB43lueCjgxV4lffOCZCtYFiH6TNOX+tQKXx97T4IKHbhyHEQ==}
 
   '@jridgewell/resolve-uri@3.1.2':
     resolution: {integrity: sha512-bRISgCIjP20/tbWSPWMEi54QVPRZExkuD9lJL+UIxUKtwVJA8wW1Trb1jMs1RFXo1CBTNZ/5hpC9QvmKWdopKw==}
@@ -4031,6 +4040,11 @@ snapshots:
   '@jridgewell/gen-mapping@0.3.13':
     dependencies:
       '@jridgewell/sourcemap-codec': 1.6.0
+      '@jridgewell/trace-mapping': 0.3.31
+
+  '@jridgewell/remapping@2.3.5':
+    dependencies:
+      '@jridgewell/gen-mapping': 0.3.13
       '@jridgewell/trace-mapping': 0.3.31
 
   '@jridgewell/resolve-uri@3.1.2': {}
