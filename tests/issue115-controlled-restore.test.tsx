@@ -311,3 +311,19 @@ it('restores a checkbox click that an ancestor\'s onChange ignores', async () =>
   await click(box)
   expect(box.checked).toBe(false)
 })
+
+it('restores a shadow-root checkbox with only onInput under an outer onChange', async () => {
+  const outer = mount(h('div', { onChange: () => {} }, h('div')))
+  const container = (outer.firstChild!.firstChild as HTMLElement).attachShadow({ mode: 'open' }).appendChild(document.createElement('div'))
+  const root = createRoot(container)
+  flushSync(() => root.render(h('input', { type: 'checkbox', checked: false, onInput: () => {} })))
+  cleanups.unshift(() => flushSync(() => root.unmount()))
+  const box = container.firstChild as HTMLInputElement
+  // A click's input event crosses the shadow boundary, but its change event does not.
+  box.checked = true
+  box.dispatchEvent(new Event('input', { bubbles: true, composed: true }))
+  await settle()
+  box.dispatchEvent(new Event('change', { bubbles: true }))
+  await settle()
+  expect(box.checked).toBe(false)
+})
