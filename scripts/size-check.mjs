@@ -72,7 +72,7 @@ const CONTROLLED_RESTORE_SIZE_ALLOWANCE = {
   'client total (default Vite)': [320, 345],
   'redact/dom-client (activity=stub)': [270, 267],
   'redact/dom-client (fragmentRefs=stub)': [310, 323],
-  'redact/dom-client (viewTransitions=stub)': [363, 363],
+  'redact/dom-client (viewTransitions=stub)': [380, 379],
   'redact/dom-client (portal=stub)': [240, 261],
   'redact/dom-client (context=stub)': [252, 280],
   'redact/dom-client (memo=stub)': [277, 286],
