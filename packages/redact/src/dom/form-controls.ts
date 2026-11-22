@@ -65,10 +65,12 @@ function writeInputValue(el: HTMLInputElement | HTMLTextAreaElement, value: any)
 // Like React, restore from the root and portal containers, after every listener
 // on the control and its ancestors has read the edit. A checkbox, radio or
 // select fires input before change, so with a change listener on the control
-// or an ancestor it restores after change.
+// or an ancestor it restores after change. Change does not cross a shadow
+// boundary, so only listeners in the control's own tree count.
 export function queueRestore(e: any): void {
     const el = e.target;
-    if (el.__p && (e.type === 'change' || e.type === 'input' && !(/^(checkbox|radio|select|file)/.test(el.type) && e.composedPath().some((node: any) => Object.values(node.__h || {}).some((other: any) => other?.e.includes('change'))))))
+    const root = el.getRootNode?.();
+    if (el.__p && (e.type === 'change' || e.type === 'input' && !(/^(checkbox|radio|select|file)/.test(el.type) && e.composedPath().some((node: any) => node.getRootNode?.() === root && Object.values(node.__h || {}).some((other: any) => other?.e.includes('change'))))))
         e.__r = el;
     // A stopped or non-bubbling event never reaches the container, so restore
     // after the task, once the remaining listeners on this node read the edit.

@@ -95,6 +95,21 @@ it('lets an ancestor\'s onChange read a click on a checkbox with only onInput', 
   } finally { cleanup() }
 })
 
+it('restores a shadow-root checkbox with only onInput under an outer onChange', async () => {
+  const [outer, cleanup] = render(h('div', { onChange: () => {} }, h('div')))
+  const container = (outer.firstChild!.firstChild as HTMLElement).attachShadow({ mode: 'open' }).appendChild(document.createElement('div'))
+  const root = createRoot(container)
+  flushSync(() => root.render(h('input', { type: 'checkbox', checked: false, onInput: () => {} })))
+  const box = container.querySelector('input')!
+  try {
+    await userEvent.click(box)
+    await expect.poll(() => box.checked).toBe(false)
+  } finally {
+    flushSync(() => root.unmount())
+    cleanup()
+  }
+})
+
 it('keeps an edit that an ancestor\'s onInput accepts', async () => {
   function Form() {
     const [value, setValue] = useState('')
