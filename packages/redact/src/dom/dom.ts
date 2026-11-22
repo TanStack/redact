@@ -148,7 +148,7 @@ function setEventHandler(el: Element, name: string, next: any): void {
                 } else entry.c(event);
             } finally {
                 event.currentTarget = null;
-                queueRestore(e, el);
+                queueRestore(e);
             }
         }) as ((e: Event) => void) & {
             c: Function;

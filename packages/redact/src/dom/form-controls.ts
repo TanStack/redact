@@ -74,29 +74,31 @@ function writeInputValue(el: HTMLInputElement | HTMLTextAreaElement, value: any)
 }
 // Like React, restore from the root and portal containers, after every listener
 // on the control and its ancestors has read the edit. A checkbox, radio or
-// select fires input before change, so with a change listener it restores
-// after change.
-export function queueRestore(this: any, e: any, el: any = this): void {
-    if (el.__p && (e.type === 'change' || e.type === 'input' && !(/^(checkbox|radio|select|file)/.test(el.type) && Object.values(el.__h || {}).some((other: any) => other?.e.includes('change')))))
+// select fires input before change, so with a change listener on the control
+// or an ancestor it restores after change.
+export function queueRestore(e: any): void {
+    const el = e.target;
+    if (el.__p && (e.type === 'change' || e.type === 'input' && !(/^(checkbox|radio|select|file)/.test(el.type) && e.composedPath().some((node: any) => Object.values(node.__h || {}).some((other: any) => other?.e.includes('change'))))))
         e.__r = el;
-    // A stopped or non-bubbling event never reaches the container.
+    // A stopped or non-bubbling event never reaches the container, so restore
+    // after the task, once the remaining listeners on this node read the edit.
     if (e.cancelBubble || !e.bubbles)
-        restorePending(e);
+        restorePending(e, true);
 }
 export function listenForRestores(container: Node): void {
     container.addEventListener('input', restorePending);
     container.addEventListener('change', restorePending);
 }
-function restorePending(e: any): void {
+function restorePending(e: any, late?: boolean): void {
     if (e.__r)
-        scheduleControlledRestore(e.__r);
+        scheduleControlledRestore(e.__r, late);
     e.__r = null;
 }
 // Like React, write the rendered value and checked state back after onChange,
 // so an edit or click the app did not accept never stays in the DOM. Updates
 // from the handler flush in a microtask (or act's queue) queued before this
 // one, so the restore reads the props they render.
-function scheduleControlledRestore(el: HTMLInputElement): void {
+function scheduleControlledRestore(el: HTMLInputElement, late?: boolean): void {
     if (!(el as any).__p)
         return;
     const restore = () => {
@@ -117,6 +119,8 @@ function scheduleControlledRestore(el: HTMLInputElement): void {
     };
     if (process.env.NODE_ENV !== 'production' && ReactSharedInternals.A)
         ReactSharedInternals.A.push(restore);
+    else if (late)
+        setTimeout(restore);
     else
         queueMicrotask(restore);
 }

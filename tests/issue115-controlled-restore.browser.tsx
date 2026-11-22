@@ -69,6 +69,32 @@ it('lets a native listener added after Redact\'s read the typed edit', async () 
   } finally { cleanup() }
 })
 
+it('lets a native listener after a propagation-stopping onChange read the typed edit', async () => {
+  const seen: string[] = []
+  const [container, cleanup] = render(h('input', { value: '', onChange: (event: any) => event.stopPropagation() }))
+  const field = container.querySelector('input')!
+  field.addEventListener('input', () => seen.push(field.value))
+  try {
+    await userEvent.type(field, 'a')
+    expect(seen).toEqual(['a'])
+    await expect.poll(() => field.value).toBe('')
+  } finally { cleanup() }
+})
+
+it('lets an ancestor\'s onChange read a click on a checkbox with only onInput', async () => {
+  function Box() {
+    const [checked, setChecked] = useState(false)
+    return h('div', { onChange: (event: any) => setChecked(event.target.checked) },
+      h('input', { type: 'checkbox', checked, onInput: () => {} }))
+  }
+  const [container, cleanup] = render(h(Box))
+  const box = container.querySelector('input')!
+  try {
+    await userEvent.click(box)
+    expect(box.checked).toBe(true)
+  } finally { cleanup() }
+})
+
 it('keeps an edit that an ancestor\'s onInput accepts', async () => {
   function Form() {
     const [value, setValue] = useState('')
