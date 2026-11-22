@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "test": "vitest run",
-    "test:watch": "vitest"
+    "test": "pnpm --dir .. build && vitest run",
+    "test:watch": "pnpm --dir .. build && vitest"
   },
   "dependencies": {
     "@tanstack/redact": "workspace:*"

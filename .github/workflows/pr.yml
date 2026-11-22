@@ -53,3 +53,6 @@ jobs:
 
   vinext-compatibility:
     uses: ./.github/workflows/vinext.yml
+
+  react-router-compatibility:
+    uses: ./.github/workflows/react-router.yml

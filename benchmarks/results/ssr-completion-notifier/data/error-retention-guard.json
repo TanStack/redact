@@ -1,0 +1,23 @@
+{
+  "started": "2026-11-01T20:33:28.595372+00:00",
+  "command": [
+    "node",
+    "/tmp/rd-notifier-failurebox/error-retention.mjs"
+  ],
+  "pollSeconds": 2,
+  "samples": [
+    {
+      "at": "2026-11-01T20:33:28.708396+00:00",
+      "competitors": []
+    },
+    {
+      "at": "2026-11-01T20:33:30.772693+00:00",
+      "competitors": []
+    }
+  ],
+  "excluded": false,
+  "childStarted": true,
+  "pid": 8296,
+  "exitCode": 0,
+  "ended": "2026-11-01T20:33:30.772813+00:00"
+}

@@ -1,0 +1,37 @@
+{
+  "version": "0.2.0",
+  "distTag": "latest",
+  "publishedAt": "2026-10-26T00:05:03.365Z",
+  "verifiedAt": "2026-10-26T00:05:28.857Z",
+  "tarballUrl": "https://registry.npmjs.org/@tanstack/redact/-/redact-0.2.0.tgz",
+  "integrity": "sha512-shm9huNXu9mtNqPyXeF6PJDSTm7cI4RgjB7K5k6LJzx2U5xfAPOjEA5EtE+RLSwY2nAq2OeaaIoHT6nSPEawJg==",
+  "tarballSha256": "f96146af80a5c1e0a0e66ef9b981311b7c23e63c9fb25f40ca823084a351f23c",
+  "exports": [
+    ".",
+    "./jsx-runtime",
+    "./jsx-dev-runtime",
+    "./compiler-runtime",
+    "./dom",
+    "./dom-client",
+    "./dom-test-utils",
+    "./server",
+    "./scheduler",
+    "./vite",
+    "./features/*",
+    "./_all",
+    "./next",
+    "./vinext",
+    "./cloudflare"
+  ],
+  "candidateFilesMatched": 451,
+  "candidateCommit": "1666d37ba48c9fbb02e88769ca03d9234a640a76",
+  "checks": [
+    "registry tarball integrity",
+    "all export targets",
+    "identical source, built code, and vendor files to the measured release candidate",
+    "unchanged dependency versions and integrity hashes",
+    "Node ESM imports",
+    "server rendering",
+    "Vite, Vinext, and Next.js adapter exports"
+  ]
+}

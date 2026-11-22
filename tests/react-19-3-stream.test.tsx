@@ -70,4 +70,23 @@ describe('React 19.3 stream lifecycle fixes', () => {
     expect(onShellReady).not.toHaveBeenCalled()
     expect(onAllReady).not.toHaveBeenCalled()
   })
+
+  it.each(['none', 'same', 'different', 'end-only'] as const)('finishes an attached destination after a shell failure (%s)', async (repipe) => {
+    const failure = new Error('shell failed')
+    const destroy = vi.fn()
+    const target = { write: vi.fn(), end: vi.fn(), ...(repipe === 'end-only' ? {} : { destroy }) }
+    const other = { write: vi.fn(), end: vi.fn(), destroy: vi.fn() }
+    function Fail() { throw failure }
+    const handle = renderToPipeableStream(<Fail />, {
+      onError() {},
+      onShellError() {
+        if (repipe === 'same' || repipe === 'different') handle.pipe(repipe === 'same' ? target : other)
+      },
+    })
+    handle.pipe(target)
+    for (let i = 0; i < 4; i++) await Promise.resolve()
+    expect(destroy.mock.calls).toEqual(repipe === 'end-only' ? [] : [[failure]])
+    expect(target.end).toHaveBeenCalledTimes(repipe === 'end-only' ? 1 : 0)
+    expect(other.destroy).toHaveBeenCalledTimes(repipe === 'different' ? 1 : 0)
+  })
 })
