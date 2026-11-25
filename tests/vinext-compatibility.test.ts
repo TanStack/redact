@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest'
 import { runInNewContext } from 'node:vm'
-import { correctVinextModule } from '../packages/redact/src/vinext/compatibility'
+import { correctVinextModule, vinextVersionSupport } from '../packages/redact/src/vinext/compatibility'
 import { redact } from '../packages/redact/src/vinext'
 
 const directory = '/node_modules/vinext/dist'
@@ -53,5 +53,19 @@ describe('maintained Vinext compatibility', () => {
     expect(correctVinextModule(state, '/app/client/instrumentation-client-state.js', directory)).toBeNull()
     expect(() => correctVinextModule('different code', stateID, directory)).toThrow('Unsupported Vinext instrumentation')
     expect(() => correctVinextModule('different code', handlerID, directory)).toThrow('Unsupported Vinext Pages')
+  })
+})
+
+describe('Vinext version support', () => {
+  it('treats 1.3.x and 1.4.x stable releases as supported', () => {
+    for (const version of ['1.3.0', '1.3.9', '1.4.3', '1.4.4']) expect(vinextVersionSupport(version)).toBe('supported')
+  })
+
+  it('warns for prereleases', () => {
+    for (const version of ['1.3.5-beta.1', '1.4.0-rc.1', '1.4.4-next.0']) expect(vinextVersionSupport(version)).toBe('prerelease')
+  })
+
+  it('warns for untested version families', () => {
+    for (const version of ['1.2.9', '1.5.0', '2.0.0', '0.9.0']) expect(vinextVersionSupport(version)).toBe('untested')
   })
 })
