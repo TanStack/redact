@@ -1,6 +1,7 @@
 import { readFileSync, realpathSync } from 'node:fs'
 import { dirname, resolve as resolvePath } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import type { Plugin } from 'vite'
 import { adaptReact18 } from './react18'
 
 import { ALIASES, resolveFeatures, isOwnedRuntimeFeature } from '../bundler-core/selection'
@@ -32,7 +33,7 @@ function pruneOptimizeDepsInclude(
   })
 }
 
-export function redact(options: RedactOptions = {}): any {
+export function redact(options: RedactOptions = {}) {
   const skip = new Set(options.skip ?? [])
   const entries = Object.entries(ALIASES).filter(([k]) => !skip.has(k))
   const excludeList = entries.map(([k]) => k)
@@ -72,9 +73,11 @@ export function redact(options: RedactOptions = {}): any {
     done = true
   }
 
-  return [{
+  // Check the common Vite contract without erasing newer environment hooks
+  // or making optional Vite declarations part of the public return type.
+  const plugins = [{
     name: 'redact',
-    enforce: 'pre',
+    enforce: 'pre' as const,
 
     config() {
       // Single package — only one name to dedupe / no-external.
@@ -188,7 +191,7 @@ export function redact(options: RedactOptions = {}): any {
     name: 'redact:canonical-imports',
     applyToEnvironment: (environment: any) => active(environment),
     resolveId: {
-      order: 'pre',
+      order: 'pre' as const,
       filter: { id: aliasFilter },
       handler(this: any, id: string, _importer?: string, opts?: any) {
         if (!active(this.environment, opts?.ssr)) return null
@@ -198,7 +201,7 @@ export function redact(options: RedactOptions = {}): any {
   }, {
     name: 'redact:react18',
     applyToEnvironment: (environment: any) => !!react18Version && !!runtimeRoot && active(environment),
-    enforce: 'post',
+    enforce: 'post' as const,
     transform(this: any, code: string, id: string, opts?: any) {
       if (!react18Version || !runtimeRoot || !active(this?.environment, opts?.ssr)) return null
       const path = id.split('?')[0]!.replaceAll('\\', '/')
@@ -208,7 +211,7 @@ export function redact(options: RedactOptions = {}): any {
     },
   }, {
     name: 'redact:optimize-deps-guard',
-    enforce: 'post',
+    enforce: 'post' as const,
 
     configResolved(config: any) {
       // `optimizeDeps.exclude` loses when another plugin force-adds the same
@@ -223,6 +226,7 @@ export function redact(options: RedactOptions = {}): any {
       // Leave `environments.rsc` untouched. RSC depends on real React internals.
     },
   }]
+  return plugins satisfies Array<Plugin>
 }
 
 export default redact
