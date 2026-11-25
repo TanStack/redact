@@ -6,11 +6,19 @@ import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { execFileSync } from 'node:child_process'
 import { build } from 'vite'
+import type { Plugin } from 'vite'
 import { redact } from '@tanstack/redact/vite'
+
+// These unit fixtures supply only the Vite context fields used by each hook.
+function findPlugin(plugins: Array<Plugin>, name: string): any {
+  const plugin = plugins.find(item => item.name === name)
+  expect(plugin).toBeDefined()
+  return plugin
+}
 
 it.each(['client', 'ssr'] as const)('only substitutes React in the selected %s environment', async selected => {
   const plugins = redact({ environments: [selected], preset: 'nano', packageRoots: { '@tanstack/redact': resolve(import.meta.dirname, '../packages/redact') } })
-  const plugin = plugins.find((item: { name: string }) => item.name === 'redact')
+  const plugin = findPlugin(plugins, 'redact')
   plugin.configResolved({ root: resolve(import.meta.dirname, '..') })
   const config = plugin.config()
   expect(Object.keys(config.environments)).toEqual([selected])
@@ -26,7 +34,7 @@ it.each(['client', 'ssr'] as const)('only substitutes React in the selected %s e
 
 it('keeps native SSR optimizer includes when only the browser uses Redact', () => {
   const plugins = redact({ environments: ['client'] })
-  const guard = plugins.find((item: { name: string }) => item.name === 'redact:optimize-deps-guard')
+  const guard = findPlugin(plugins, 'redact:optimize-deps-guard')
   const config = {
     optimizeDeps: { include: ['react', 'other'] },
     environments: {
@@ -43,7 +51,7 @@ it('keeps native SSR optimizer includes when only the browser uses Redact', () =
 })
 
 it('does not swap feature modules in an unselected SSR environment', async () => {
-  const plugin = redact({ environments: ['client'], preset: 'nano' }).find((item: { name: string }) => item.name === 'redact')
+  const plugin = findPlugin(redact({ environments: ['client'], preset: 'nano' }), 'redact')
   const context = { environment: { name: 'ssr' }, resolve() { throw new Error('Native SSR must not be rewritten') } }
   expect(await plugin.resolveId.handler.call(context, './portal', '/package/src/dom/features/index.ts')).toBeNull()
 })
@@ -79,8 +87,8 @@ it('leaves the native SSR protocol untouched when adapting a React 18 browser', 
     mkdirSync(resolve(root, 'node_modules/react'), { recursive: true })
     writeFileSync(resolve(root, 'node_modules/react/package.json'), JSON.stringify({ version: '18.3.1' }))
     const plugins = redact({ environments: ['client'], resolveFrom: root, packageRoots: { '@tanstack/redact': resolve(import.meta.dirname, '../packages/redact') } })
-    const main = plugins.find((item: { name: string }) => item.name === 'redact')
-    const compiler = plugins.find((item: { name: string }) => item.name === 'redact:react18')
+    const main = findPlugin(plugins, 'redact')
+    const compiler = findPlugin(plugins, 'redact:react18')
     main.configResolved({ root })
     const id = await main.resolveId.handler.call({}, 'react')
     const code = "export const version = '19.2.3'; export default { version: '19.2.3' };"
@@ -94,8 +102,8 @@ it('leaves the native SSR protocol untouched when adapting a React 18 browser', 
 
  it.each(['client', 'ssr'] as const)('keeps canonical imports in the selected %s environment only', async selected => {
   const plugins = redact({ environments: [selected], packageRoots: { '@tanstack/redact': resolve(import.meta.dirname, '../packages/redact') } })
-  plugins.find((p: any) => p.name === 'redact').configResolved({ root: resolve(import.meta.dirname, '..') })
-  const hook = plugins.find((p: any) => p.name === 'redact:canonical-imports').resolveId.handler
+  findPlugin(plugins, 'redact').configResolved({ root: resolve(import.meta.dirname, '..') })
+  const hook = findPlugin(plugins, 'redact:canonical-imports').resolveId.handler
   for (const name of ['client', 'ssr', 'rsc']) expect((await hook.call({ environment: { name } }, 'react')) !== null).toBe(name === selected)
   expect(await hook.call({}, 'react', undefined, { ssr: true }) !== null).toBe(selected === 'ssr')
 })
