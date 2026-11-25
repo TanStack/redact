@@ -30,7 +30,7 @@ it('requires every matrix cell and scenario, consistent builds, and honest failu
   const record = () => ({ complete: true, evidence: { packageSha256: 'package', suiteSha256: 'suite' }, results: structuredClone(results) })
   try {
     expect(results).toHaveLength(162)
-    expect(results.flatMap(result => result.scenarios)).toHaveLength(2694)
+    expect(results.flatMap(result => result.scenarios)).toHaveLength(2844)
     expect(run([record()])).toMatchObject({ passed: true, report: { complete: true, passed: true, matrix: { executed: 162 } } })
     const missing = record(); missing.results.pop()
     expect(run([missing])).toMatchObject({ passed: false, report: { complete: false } })
