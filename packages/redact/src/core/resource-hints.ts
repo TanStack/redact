@@ -21,7 +21,9 @@ export const resourceHintDispatcher: {
 
 // The renderer excludes SVG before calling this. A ref does not opt a resource
 // out of sharing, but event ownership, disabled sheets and itemProp do.
-export function resourceKind(type: string, props: any): 'style' | 'stylesheet' | 'script' | undefined {
+export type HostResourceKind = 'style' | 'stylesheet' | 'script'
+
+export function resourceKind(type: string, props: any): HostResourceKind | undefined {
   if (props.itemProp != null) return
   if (type === 'style' || type === 'link') {
     if (isString(props.precedence) && isString(props.href) && props.href &&
