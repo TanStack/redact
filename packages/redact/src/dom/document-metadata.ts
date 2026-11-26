@@ -9,19 +9,26 @@ export function clearAttributes(node: Element): void {
     for (let attribute; attribute = node.attributes[0];)
         node.removeAttribute(attribute.name);
 }
-// React's document server renderer hoists metadata even when a component
-// returns it inside a body wrapper or a Suspense boundary.
+// Document roots hoist metadata; element roots only hoist titles.
 export function documentMetadataParent(fiber: Fiber): HTMLHeadElement | null {
-    if (fiber.r?.c.nodeType !== 9 || fiber.v?.itemProp != null ||
-        !['title', 'meta', 'base', 'link'].includes(fiber.type))
+    const container = fiber.r?.c;
+    if (!container || fiber.v?.itemProp != null ||
+        (container.nodeType === 9 ? !['title', 'meta', 'base', 'link'].includes(fiber.type) :
+            container.nodeType !== 1 || fiber.type !== 'title'))
         return null;
+    let inForeignObject = false;
     for (let parent = fiber.p; parent; parent = parent.p) {
-        if (parent.t === FiberTag.Portal || parent.type === 'svg')
+        if (parent.t === FiberTag.Portal)
             return null;
         if (parent.type === 'foreignObject')
-            break;
+            inForeignObject = true;
+        if (parent.type === 'svg' && !inForeignObject)
+            return null;
     }
-    return (fiber.r.c as unknown as Document).head;
+    if (!inForeignObject && (container as Element).namespaceURI === 'http://www.w3.org/2000/svg' &&
+        (container as Element).localName !== 'foreignObject')
+        return null;
+    return (container.nodeType === 9 ? container as unknown as Document : container.ownerDocument)?.head ?? null;
 }
 export function clearHostContainer(container: Node): void {
     if (container.nodeType !== 9 && !DOCUMENT_SHELL_TAGS.test((container as Element).localName)) {
