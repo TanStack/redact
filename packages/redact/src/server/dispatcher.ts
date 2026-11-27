@@ -1,3 +1,4 @@
+import { leadingBit } from '../dom/react-ids'
 import { isFunction } from '../core/functions'
 import { readThenable } from '../react/thenable'
 import { idleFormStatus } from '../react/form-state'
@@ -7,7 +8,8 @@ import { resourceHintDispatcher } from '../core/resource-hints'
 import { createResourceHints, type ResourceScope } from './resource-hints'
 
 export interface SSRFrame {
-  idCounter: number
+  treeId: bigint
+  localId: number
   identifierPrefix: string
   contextStack: Array<{ context: any; prev: any }>
   resources?: ReturnType<typeof createResourceHints>
@@ -23,9 +25,9 @@ resourceHintDispatcher.emit = (kind, href, options) => {
   return true
 }
 
-export function beginSSR(identifierPrefix = ':R', nextFrame?: SSRFrame) {
+export function beginSSR(identifierPrefix = '', nextFrame?: SSRFrame) {
   const previous = { frame, dispatcher: ReactSharedInternals.H }
-  frame = nextFrame ?? { idCounter: 0, identifierPrefix, contextStack: [] }
+  frame = nextFrame ?? { treeId: 1n, localId: 0, identifierPrefix, contextStack: [] }
   ReactSharedInternals.H = ssrDispatcher as any
   return previous
 }
@@ -128,7 +130,9 @@ export const ssrDispatcher = {
   },
   useId(): string {
     if (!frame) return ':r0:'
-    return `${frame.identifierPrefix}${(frame.idCounter++).toString(36)}`
+    const local = frame.localId++
+    const tree = frame.treeId
+    return '_' + frame.identifierPrefix + 'R_' + (tree ^ leadingBit(tree)).toString(32) + (local ? 'H' + local.toString(32) : '') + '_'
   },
   useTransition(): [boolean, (fn: () => void) => void] {
     return [false, (fn) => fn()]

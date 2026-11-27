@@ -29,7 +29,8 @@ it('limits the inline metadata allowance to the approved 16-byte Brotli comparis
   expect(compatibilitySizeAllowance(base, row, 'brotli')).toBe(16)
   expect(compatibilitySizeAllowance(base, row, 'gzip')).toBe(0)
   expect(compatibilitySizeAllowance(base, row, 'min')).toBe(0)
-  expect(compatibilitySizeAllowance(base, { ...row, target: 'react18' }, 'brotli')).toBe(0)
+  // This branch also retains its measured SSR correctness allowance.
+  expect(compatibilitySizeAllowance(base, { ...row, target: 'react18' }, 'brotli')).toBe(48)
   expect(compatibilitySizeAllowance(base, { ...row, profile: 'default' }, 'brotli')).toBe(0)
   expect(compatibilitySizeAllowance('another-base', row, 'brotli')).toBe(0)
 })
@@ -207,4 +208,15 @@ it('limits the approved autofocus comparison to exact inputs and rows', () => {
     }
     expect(autofocusAllowance(base,row,'constructor',fingerprint)).toBe(0)
   }
+})
+
+it('bounds the SSR correctness allowance to its measured base, entry and metric', () => {
+  const base = '0c7274e17a3fade8396169bc6ed024903cd1252d'
+  const server = { profile: 'full', entry: 'server/index', target: 'react19' }
+  expect(compatibilitySizeAllowance(base, server, 'min')).toBe(440)
+  expect(compatibilitySizeAllowance(base, server, 'gzip')).toBe(200)
+  expect(compatibilitySizeAllowance(base, server, 'brotli')).toBe(190)
+  expect(compatibilitySizeAllowance(base, server, 'constructor')).toBe(0)
+  expect(compatibilitySizeAllowance(base, { ...server, entry: 'react/index' }, 'gzip')).toBe(0)
+  expect(compatibilitySizeAllowance('another-base', server, 'gzip')).toBe(0)
 })

@@ -222,6 +222,7 @@ function streamBoundary(
     const restore = applyContextSnapshot(b[3])
     try {
       walk(b[1], {
+        treeId: b[5],
         emit: (s) => parts.push(s),
         onSuspend: (n) => sub.push(n),
         nextBoundaryId: () => state.nextId++,

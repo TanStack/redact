@@ -28,13 +28,13 @@ describe('hooks across client and server rendering', () => {
       const first = React.useId()
       expect(renderToString(<Context.Provider value="inner"><Inner /></Context.Provider>, {
         identifierPrefix: 'inner',
-      })).toBe('<i>inner:inner0</i>')
+      })).toBe('<i>inner:_innerR_0_</i>')
       const second = React.useId()
       return <span>{`${React.useContext(Context)}:${first}:${second}`}</span>
     }
     expect(renderToString(<Context.Provider value="outer"><Outer /></Context.Provider>, {
       identifierPrefix: 'outer',
-    })).toBe('<span>outer:outer0:outer1</span>')
+    })).toBe('<span>outer:_outerR_0_:_outerR_0H1_</span>')
     expect(Context._currentValue).toBe('default')
   })
 

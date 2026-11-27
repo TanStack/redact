@@ -16,8 +16,7 @@ export function createFiberRoot(container: Element | Document | DocumentFragment
         i: options.identifierPrefix,
         h: false,
     } as FiberRoot;
-    if (options.identifierStrategy === 'react')
-        root.ri = true;
+    root.ri = true;
     attachRootFiber(root, container);
     return root;
 }
