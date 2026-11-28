@@ -1,3 +1,4 @@
+import { boundaryId, segmentId, scriptId } from './stream-ids'
 /**
  * Inline client runtime injected into the streamed HTML. Two jobs:
  *
@@ -24,19 +25,22 @@ import { escapeAttr } from './escape'
 
 export const BOUNDARY_REVEAL_RUNTIME =
   `(function(){` +
+    // All independently prefixed streams in a document share one reveal registry.
+    `if(!window.$RH){` +
     `var c={},r=new Map;` +
     `function place(n,v){` +
       `var a=document.head.querySelectorAll('link[rel="stylesheet"][data-precedence],style[data-precedence]'),t=a.length?a[a.length-1]:null,p=t;` +
       `for(var k=0;k<a.length;k++){if(a[k].getAttribute("data-precedence")===v)p=a[k];else if(p!==t)break}` +
       `document.head.insertBefore(n,p?p.nextSibling:document.head.firstChild);` +
     `}` +
+    `function drop(s){var w=/^(TBODY|TR|COLGROUP|mtext)$/.test(s.nodeName)?s.closest("table,math"):s;w.remove()}` +
     `function load(n,e){return new Promise(function(y,x){n.onload=function(){e.p=null;y()};n.onerror=function(){e.p=null;x()}})}` +
     `window.$RH=function(i,f){` +
-      `if(!document.getElementById("B:"+i))f();` +
+      `if(!document.getElementById(i))f();` +
       `else c[i]=f;` +
     `};` +
-    `window.$RC=function(i){` +
-      `var s=document.getElementById("S:"+i),b=document.getElementById("B:"+i);` +
+    `window.$RC=function(i,j){` +
+      `var s=document.getElementById(j),b=document.getElementById(i);` +
       `if(!s||!b)return;` +
       `var a=document.querySelectorAll('body link[rel="stylesheet"][data-precedence],body style[data-precedence]');` +
       `for(var j=0;j<a.length;j++){` +
@@ -46,10 +50,10 @@ export const BOUNDARY_REVEAL_RUNTIME =
       `while(s.firstChild)p.insertBefore(s.firstChild,b);` +
       `s.parentNode.removeChild(s);` +
       `p.removeChild(b);` +
-      `if(m&&m.nodeType===8)m.data="$"+i;` +
+      `if(m&&m.nodeType===8)m.data=m.data.replace("$?","$");` +
       `if(c[i]){var f=c[i];delete c[i];f()}` +
     `};` +
-    `window.$RL=function(i,d){` +
+    `window.$RR=function(i,s,d){` +
       `var w=[];for(var j=0;j<d.length;j++){` +
         `var a=d[j],e=r.get(a[0]);if(!e){` +
           `var n=null,l=document.querySelectorAll('link[rel="stylesheet"]');for(var k=0;k<l.length;k++)if(l[k].getAttribute("href")===a[0]){n=l[k];break}` +
@@ -61,13 +65,15 @@ export const BOUNDARY_REVEAL_RUNTIME =
         `}` +
         `var m=e.n.getAttribute("media");if(e.p&&(!m||matchMedia(m).matches))w.push(e.p);` +
       `}` +
-      `Promise.all(w).then(function(){$RC(i)},function(){$RB(i,1)});` +
+      `Promise.all(w).then(function(){$RC(i,s)},function(){$RB(i,1,s)});` +
     `};` +
-    `window.$RB=function(i,e){` +
-      `var b=document.getElementById("B:"+i);if(!b)return;` +
-      `var m=b.previousSibling;if(m&&m.nodeType===8)m.data=(e?"$E":"$!")+i;` +
+    `window.$RB=function(i,e,j){` +
+      `var s=j&&document.getElementById(j);if(s)drop(s);` +
+      `var b=document.getElementById(i);if(!b)return;` +
+      `var m=b.previousSibling;if(m&&m.nodeType===8)m.data=(e?"$E":"$!")+m.data.replace(/^\\$[?~!E]?/,"");` +
       `b.removeAttribute("id");if(c[i]){var f=c[i];delete c[i];f()}` +
     `};` +
+    `}` +
     `var q=[];window.$RE_q=q;` +
     `var evs=["click","submit","input","change","keydown"];` +
     `function h(e){q.push([e.type,e.target,e.timeStamp])}` +
@@ -80,7 +86,8 @@ export function injectBootstrapScript(nonce?: string): string {
   return `<script${n}>${BOUNDARY_REVEAL_RUNTIME}</script>`
 }
 
-export function revealScript(id: number, nonce?: string, styles?: string[][]): string {
+export function revealScript(id: number, nonce?: string, styles?: string[][], identifierPrefix = ''): string {
   const n = nonce ? ` nonce="${escapeAttr(nonce)}"` : ''
-  return `<script${n}>${styles?.length ? `$RL(${id},${JSON.stringify(styles).replace(/</g, '\\u003c')})` : `$RC(${id})`}</script>`
+  const b = scriptId(boundaryId(id, identifierPrefix)), s = scriptId(segmentId(id, identifierPrefix))
+  return `<script${n}>${styles?.length ? `$RR(${b},${s},${JSON.stringify(styles).replace(/</g, '\\u003c')})` : `$RC(${b},${s})`}</script>`
 }
