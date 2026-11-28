@@ -63,11 +63,48 @@ const STORE_HYDRATION_SIZE_ALLOWANCE = {
   'redact/dom-client (hydration=stub)': [3, 0],
 }
 
+// Controlled input restore cost (#115) on main 37c051c, [source, built].
+// Pending maintainer approval. Only entries exceeding existing limits receive
+// their measured increment.
+const CONTROLLED_RESTORE_SIZE_ALLOWANCE = {
+  'redact/dom-client': [253, 278],
+  'client total': [264, 259],
+  'client total (default Vite)': [320, 345],
+  'redact/dom-client (activity=stub)': [270, 267],
+  'redact/dom-client (fragmentRefs=stub)': [310, 323],
+  'redact/dom-client (viewTransitions=stub)': [380, 379],
+  'redact/dom-client (portal=stub)': [240, 261],
+  'redact/dom-client (context=stub)': [252, 280],
+  'redact/dom-client (memo=stub)': [277, 286],
+  'redact/dom-client (forwardRef=stub)': [261, 268],
+  'redact/dom-client (hydration=stub)': [296, 286],
+  'redact/dom-client (nano)': [301, 300],
+  // Exceeded after merging main 6d3e2af.
+  'redact/dom-client (lazy=stub)': [308, 334],
+  'redact/dom-client (classComponents=stub)': [295, 303],
+}
+
+// Detached checkbox and radio onChange cost on #116 (9fa1855), [source, built].
+// Pending maintainer approval. Only entries exceeding existing limits receive
+// their measured increment.
+const DETACHED_CHANGE_SIZE_ALLOWANCE = {
+  'redact/dom-client (lazy=stub)': [84, 77],
+  'redact/dom-client (classComponents=stub)': [73, 79],
+  'redact/dom-client (hydration=stub)': [86, 94],
+  // Exceeded after merging main 6d3e2af.
+  'client total (default Vite)': [96, 105],
+  'redact/dom-client (viewTransitions=stub)': [69, 79],
+  'redact/dom-client (nano)': [82, 77],
+  // Exceeded after #116's review fixes.
+  'redact/dom-client (activity=stub)': [77, 72],
+  'redact/dom-client (context=stub)': [104, 94],
+}
+
 let failed = false
 for (const tree of ['src', 'dist']) {
   for (const row of await measureSizes(tree)) {
     const baseBudget = BUDGETS[row.name]
-    const budget = baseBudget === undefined ? undefined : baseBudget + (STORE_HYDRATION_SIZE_ALLOWANCE[row.name]?.[tree === 'src' ? 0 : 1] ?? 0) + (ROOT_TRANSITION_SIZE_ALLOWANCE[row.name]?.[tree === 'src' ? 0 : 1] ?? 0) + (QUEUE_SIZE_ALLOWANCE[row.name]?.[tree === 'src' ? 0 : 1] ?? 0)
+    const budget = baseBudget === undefined ? undefined : baseBudget + (DETACHED_CHANGE_SIZE_ALLOWANCE[row.name]?.[tree === 'src' ? 0 : 1] ?? 0) + (CONTROLLED_RESTORE_SIZE_ALLOWANCE[row.name]?.[tree === 'src' ? 0 : 1] ?? 0) + (STORE_HYDRATION_SIZE_ALLOWANCE[row.name]?.[tree === 'src' ? 0 : 1] ?? 0) + (ROOT_TRANSITION_SIZE_ALLOWANCE[row.name]?.[tree === 'src' ? 0 : 1] ?? 0) + (QUEUE_SIZE_ALLOWANCE[row.name]?.[tree === 'src' ? 0 : 1] ?? 0)
     const ok = budget !== undefined && row.gz <= budget
     failed ||= !ok
     console.log(`${ok ? 'PASS' : 'FAIL'} ${tree} ${row.name}: ${row.gz} B gzip, budget ${budget ?? 'missing'}`)

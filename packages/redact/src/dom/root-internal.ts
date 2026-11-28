@@ -1,3 +1,4 @@
+import { listenForRestores } from './form-controls';
 import { FiberTag, createFiber, type Fiber, type FiberRoot, type RecoverableErrorHandler } from '../core';
 export interface RootOptionsInternal {
     identifierStrategy?: 'react';
@@ -19,6 +20,7 @@ export function createFiberRoot(container: Element | Document | DocumentFragment
     if (options.identifierStrategy === 'react')
         root.ri = true;
     attachRootFiber(root, container);
+    listenForRestores(container);
     return root;
 }
 export function attachRootFiber(root: FiberRoot, container: Element | Document | DocumentFragment): void {
